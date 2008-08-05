@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for class tx_externalimport_importer</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="no_service">No service available</label>
+			<label index="data_not_fetched">Data could not be fetched</label>
+			<label index="records_inserted">%s new record(s) inserted</label>
+			<label index="records_updated">%s existing record(s) updated</label>
+			<label index="records_deleted">%s existing record(s) deleted</label>
+			<label index="records_errors">%s data import error(s) occurred</label>
+			<label index="records_relationships">%s mm-relationships created</label>
+			<label index="sync_all">Synchronising all tables</label>
+			<label index="sync_table">Synchronisation of table %s</label>
+			<label index="update_failed">Update failed:</label>
+			<label index="insert_failed">Insert failed:</label>
+			<label index="delete_failed">Delete failed:</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="no_service">Aucun service disponible</label>
+			<label index="data_not_fetched">Impossible d'obtenir les données</label>
+			<label index="records_inserted">%s nouveaux enregistrement(s) inséré(s)</label>
+			<label index="records_updated">%s enregistrement(s) existant(s) mis à jour</label>
+			<label index="records_deleted">%s enregistrement(s) existant(s) supprimé(s)</label>
+			<label index="records_errors">%s erreur(s) d'importation de données sont survenues</label>
+			<label index="records_relationships">%s relation(s) mm créée(s)</label>
+			<label index="sync_all">Synchronisation de toutes les tables</label>
+			<label index="sync_table">Synchronisation de la table %s</label>
+			<label index="update_failed">La mise à jour a échoué:</label>
+			<label index="insert_failed">L'insertion a échoué:</label>
+			<label index="delete_failed">La suppression a échoué:</label>
+		</languageKey>
+	</data>
+</T3locallang>

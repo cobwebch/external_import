@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;tools_txexternalimportM1&quot; - header, description</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="mlang_tabs_tab">External Data Import</label>
+			<label index="mlang_labels_tabdescr">This backend module can be used to import data from external sources into TYPO3 tables extended with special definitions in the TCA.</label>
+			<label index="mlang_labels_tablabel">Import data from external sources into TYPO3 tables</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="mlang_tabs_tab">Import de données externes</label>
+			<label index="mlang_labels_tabdescr">Ce module permet d'importer des données de sources externes dans des tables TYPO3 identifiées par des définitions spéciales dans le TCA.</label>
+			<label index="mlang_labels_tablabel">Importer des données externes dans des tables TYPO3</label>
+		</languageKey>
+	</data>
+</T3locallang>

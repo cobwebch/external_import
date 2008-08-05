@@ -1,0 +1,18 @@
+08-08-04 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Updated manual with missing notes about array data format
+
+08-08-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added array data format handling
+	* Added user rights setup instructions in the manual
+
+08-07-20 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Introduced use of TCEmain for proper data manipulation
+	* Cleaned up extended TCA syntax
+	* Added hook for pre-processing data before storage
+
+08-04-29 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Initial release

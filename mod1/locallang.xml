@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;tools_txexternalimportM1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="title">External Data Import</label>
+			<label index="function_import">Import external data</label>
+			<label index="external_tables">External tables</label>
+			<label index="external_tables_intro">Here is the list of all tables using external data as defined in the TCA. From here you can manually synchronise any table. Note that you should synchronise tables with high priority (lower number) first, since lower priority tables probably depend on them.</label>
+			<label index="table">Table</label>
+			<label index="priority">Priority</label>
+			<label index="synchronise">Synchronise</label>
+			<label index="running_synchronisation">Synchronisation currrently running</label>
+			<label index="running">Running...</label>
+			<label index="failed">The synchronisation failed!</label>
+			<label index="error">Error</label>
+			<label index="warning">Warning</label>
+			<label index="manual_sync">Automatic synchronisation</label>
+			<label index="autosync">Automatic synchronisation</label>
+			<label index="autosync_nosync_intro">Using the form below you can define a frequency for the automatic synchronisation of all external tables.</label>
+			<label index="autosync_update_intro">Using the form below you can change the frequency of the automatic synchronisation of all external tables. Current frequency is %d seconds.</label>
+			<label index="autosync_error">Automatic synchronisation of all external tables is not possible, because extension "gabriel" is not installed.</label>
+			<label index="start_date">Start date:</label>
+			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
+			<label index="period">Period:</label>
+			<label index="seconds">seconds</label>
+			<label index="minutes">minutes</label>
+			<label index="hours">hours</label>
+			<label index="days">days</label>
+			<label index="weeks">weeks</label>
+			<label index="months">months</label>
+			<label index="years">years</label>
+			<label index="set_sync">Set synchronisation</label>
+			<label index="autosync_activated">Automatic synchronisation has been activated.</label>
+			<label index="autosync_updated">Automatic synchronisation has been updated.</label>
+			<label index="no_autosync">The automatic synchronisation is not yet enabled.</label>
+			<label index="next_autosync">Automatic synchronisation is activated. The next run will take place on %s.</label>
+			<label index="error_value_below_0">Please enter a value larger than 0.</label>
+			<label index="error_invalid_start_date">The given start date is not valid.</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="title">Import de données externes</label>
+			<label index="function_import">Importer les données externes</label>
+			<label index="external_tables">Tables externes</label>
+			<label index="external_tables_intro">Voici la liste des toutes les tables utilisant des données externes, selon les définitions contenues dans le TCA. Depuis cette vue, vous pouvez lancer des synchronisations manuelles de n'importe laquelle des tables. Notez qu'il vous faut probablement synchroniser les tables dans l'ordre des priorités, car les tables de priorité plus basse (chiffre plus élevé) dépendent probablement des tables à priorité plus élevée.</label>
+			<label index="table">Table</label>
+			<label index="priority">Priorité</label>
+			<label index="synchronise">Synchroniser</label>
+			<label index="running_synchronisation">Synchronisation en cours</label>
+			<label index="running">En cours...</label>
+			<label index="failed">La synchronisation a échoué!</label>
+			<label index="error">Erreur</label>
+			<label index="warning">Avertissement</label>
+			<label index="manual_sync">Synchronisation automatique</label>
+			<label index="autosync">Synchronisation automatique</label>
+			<label index="autosync_nosync_intro">Au moyen du formulaire ci-dessous vous pouvez définir une fréquence pour la synchronisation automatique des tables externes.</label>
+			<label index="autosync_update_intro">Au moyen du formulaire ci-dessous vous pouvez changer la fréquence de la synchronisation automatique des tables externes. La fréquence actuelle est de %d secondes.</label>
+			<label index="autosync_error">La synchronisation automatique des tables externes n'est pas possible, car l'extension "gabriel" n'est pas installée.</label>
+			<label index="start_date">Date de début:</label>
+			<label index="start_date_help">(laissez vide pour une activation immédiate; format: aaaa-mm-jj hh:mm:ss)</label>
+			<label index="period">Période:</label>
+			<label index="seconds">secondes</label>
+			<label index="minutes">minutes</label>
+			<label index="hours">heures</label>
+			<label index="days">jours</label>
+			<label index="weeks">semaines</label>
+			<label index="months">mois</label>
+			<label index="years">années</label>
+			<label index="set_sync">Définir la synchronisation</label>
+			<label index="autosync_activated">La synchronisation automatique a été activée.</label>
+			<label index="autosync_updated">La synchronisation automatique a été mise à jour.</label>
+			<label index="no_autosync">La synchronisation automatique n'a pas encore été activée.</label>
+			<label index="next_autosync">La synchronisation automatique est activée. La prochaine exécution aura lieu le %s.</label>
+			<label index="error_value_below_0">Veuillez saisir une valeur plus grande que 0.</label>
+			<label index="error_invalid_start_date">La date de début n'est pas valable.</label>
+		</languageKey>
+	</data>
+</T3locallang>
