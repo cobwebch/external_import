@@ -72,7 +72,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * Main function of the module. Write the content to $this->content
 	 * If you chose "web" as main module, you will need to consider the $this->id parameter which will contain the uid-number of the page clicked in the page tree
 	 *
-	 * @return	[type]		...
+	 * @return	void
 	 */
 	function main()	{
 		global $BE_USER,$BACK_PATH;
@@ -219,20 +219,21 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 			// ShortCut
 			if ($BE_USER->mayMakeShortcut())	{
-				$this->content.=$this->doc->spacer(20).$this->doc->section('',$this->doc->makeShortcutIcon('id',implode(',',array_keys($this->MOD_MENU)),$this->MCONF['name']));
+				$this->content .= $this->doc->spacer(20).$this->doc->section('',$this->doc->makeShortcutIcon('id',implode(',',array_keys($this->MOD_MENU)),$this->MCONF['name']));
 			}
 
-			$this->content.=$this->doc->spacer(10);
-		} else {
+			$this->content .= $this->doc->spacer(10);
+		}
+		else {
 				// If no access or if ID == zero
 
 			$this->doc = t3lib_div::makeInstance('mediumDoc');
 			$this->doc->backPath = $BACK_PATH;
 
-			$this->content.=$this->doc->startPage($GLOBALS['LANG']->getLL('title'));
-			$this->content.=$this->doc->header($GLOBALS['LANG']->getLL('title'));
-			$this->content.=$this->doc->spacer(5);
-			$this->content.=$this->doc->spacer(10);
+			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
+			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
+			$this->content .= $this->doc->spacer(5);
+			$this->content .= $this->doc->spacer(10);
 		}
 	}
 
@@ -243,7 +244,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	function printContent()	{
 
-		$this->content.=$this->doc->endPage();
+		$this->content .= $this->doc->endPage();
 		echo $this->content;
 	}
 
@@ -329,7 +330,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 // Display form for automatic synchronisation
 
 				$this->displayAutoSyncSection();
-				
+
 				break;
 		}
 	}
