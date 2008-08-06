@@ -1,3 +1,8 @@
+08-08-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Introduced possibility to synchronise a table with multiple external sources
+	* Corrected bug in mapping feature
+
 08-08-04 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Updated manual with missing notes about array data format
