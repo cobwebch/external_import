@@ -289,25 +289,18 @@ class tx_externalimport_importer {
 	 * @return	array		the transformed records
 	 */
 	protected function transformData($records) {
-		$mappings = array();
+		$numRecords = count($records);
 
-// Get all the mappings
+// Loop on all tables to find any defined mapping
+// Get those mappings and apply them to records
 
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 			if (isset($columnData['external'][$this->index]['mapping'])) {
-				$mappings[$columnName] = $this->getMapping($columnData['external'][$this->index]['mapping']);
-			}
-		}
-
-// If there are any mappings, apply them to all records
-// TODO: do a mapping once, because it seems damn wrong down here!
-
-		if (count($mappings) > 0) {
-			$numRecords = count($records);
-			foreach ($mappings as $columnName => $aMapping) {
+				$mappings = $this->getMapping($columnData['external'][$this->index]['mapping']);
 				for ($i = 0; $i < $numRecords; $i++) {
-					if (isset($aMapping[$records[$i][$columnData['external'][$this->index]['mapping']['reference_field']]])) {
-						$records[$i][$columnName] = $aMapping[$records[$i][$columnData['external'][$this->index]['mapping']['reference_field']]];
+					$externalValue = $records[$i][$columnData['external'][$this->index]['field']];
+					if (isset($mappings[$externalValue])) {
+						$records[$i][$columnName] = $mappings[$externalValue];
 					}
 				}
 			}
@@ -602,13 +595,19 @@ class tx_externalimport_importer {
 
 // Assemble query and get data
 
-		$fields = $mappingData['reference_field'].', '.$mappingData['value_field'];
+		if (isset($mappingData['value_field'])) {
+			$valueField = $mappingData['value_field'];
+        }
+		else {
+			$valueField = 'uid';
+        }
+		$fields = $mappingData['reference_field'].', '.$valueField;
 		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1'.t3lib_BEfunc::deleteClause($mappingData['table']));
 
 // Fill hash table
 
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
-			$localMapping[$row[$mappingData['reference_field']]] = $row[$mappingData['value_field']];
+			$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
 		}
 		return $localMapping;
 	}
