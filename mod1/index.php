@@ -112,14 +112,15 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					<script language="javascript" type="text/javascript">
 						var syncRunningIcon = \'<img src="../res/icons/refresh_animated.gif" alt="'.$GLOBALS['LANG']->getLL('running_synchronisation').'" border="0" />\';
 						var syncStoppedIcon = \'<img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" />\';
-						function syncTable(theID, theTable) {
+						function syncTable(theID, theTable, theIndex) {
 							$("result" + theID).update("'.$GLOBALS['LANG']->getLL('running').'");
 							$("link" + theID).update(syncRunningIcon);
 							new Ajax.Request("'.$BACK_PATH.'ajax.php", {
 								method: "get",
 								parameters: {
 									"ajaxID": "externalimport::synchronizeExternalTable",
-									"table" : theTable
+									"table" : theTable,
+									"index": theIndex
 								},
 								onComplete: function(xhr) {
 										var response = xhr.responseText.evalJSON();
@@ -143,7 +144,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 										$("link" + theID).update(syncStoppedIcon);
 								}.bind(this),
 								onT3Error: function(xhr) {
-									$("result" + theID).update("Failed");
+									$("result" + theID).update("'.$GLOBALS['LANG']->getLL('failed').'");
 								}.bind(this)
 							});
 						}
@@ -160,7 +161,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					<script language="javascript" type="text/javascript">
 						var syncRunningIcon = \'<img src="../res/icons/refresh_animated.gif" alt="'.$GLOBALS['LANG']->getLL('running_synchronisation').'" border="0" />\';
 						var syncStoppedIcon = \'<img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" />\';
-						function syncTable(theID, theTable) {
+						function syncTable(theID, theTable, theIndex) {
 							$("result" + theID).update("'.$GLOBALS['LANG']->getLL('running').'");
 							$("link" + theID).update(syncRunningIcon);
 							new Ajax.Request("'.$ajaxURL.'",
@@ -168,7 +169,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 									method: "get",
 									parameters: {
 										"function": "synchronizeExternalTable",
-										"table": theTable
+										"table": theTable,
+										"index": theIndex
 									},
 									onSuccess: function(transport) {
 										var response = transport.responseText.evalJSON();
@@ -269,8 +271,15 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				foreach ($GLOBALS['TCA'] as $tableName => $sections) {
 					foreach ($sections as $sectionKey => $sectionData) {
 						if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
-							if (!isset($sectionData['external']['priority'])) $sectionData['external']['priority'] = 1000; // If priority is not defined, set to very low
-							$externalTables[$tableName] = $sectionData;
+							foreach ($sectionData['external'] as $index => $externalConfig) {
+								if (isset($externalConfig['priority'])) {
+									$priority = $externalConfig['priority'];
+								}
+								else {
+									$priority = 1000; // If priority is not defined, set to very low
+                                }
+								$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority);
+                            }
 						}
 					}
 				}
@@ -278,7 +287,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 // Sort tables by priority (lower number is highest priority)
 
-				uasort($externalTables, array('tx_externalimport_module1','prioritySort'));
+				usort($externalTables, array('tx_externalimport_module1','prioritySort'));
 
 // Prepare table to display list of external tables
 // First initialise the table layout
@@ -308,14 +317,17 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 // Generate table row for each table
 
-				foreach ($externalTables as $tableName => $ctrlData) {
+				foreach ($externalTables as $tableData) {
 					$tr++;
+					$tableName = $tableData['tablename'];
+					$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
+					$tableIndex = $tableData['index'];
 					$table[$tr] = array();
 					$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
 					$table[$tr][] = isset($ctrlData['iconfile']) ? '<img src="'.$BACK_PATH.$ctrlData['iconfile'].'" width="18" height="16" alt="'.$tableTitle.'" />' : '&nbsp;';
 					$table[$tr][] = $tableTitle.' ('.$tableName.')';
-					$table[$tr][] = $ctrlData['external']['priority'];
-					$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
+					$table[$tr][] = $tableData['priority'];
+					$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\', \''.$tableIndex.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
 					$table[$tr][] = '<div id="result'.$tr.'"></div>'; // Action result
 				}
 
@@ -497,11 +509,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @return	int		1, 0 or -1 if a is smaller, equal or greater than b, respectively
 	 */
 	function prioritySort($a, $b) {
-		if ($a['external']['priority'] == $b['external']['priority']) {
+		if ($a['priority'] == $b['priority']) {
 			return 0;
 		}
 		else {
-			return ($a['external']['priority'] < $b['external']['priority']) ? -1 : 1;
+			return ($a['priority'] < $b['priority']) ? -1 : 1;
 		}
 	}
 }

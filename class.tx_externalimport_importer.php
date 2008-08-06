@@ -52,14 +52,16 @@
  *
  */
 class tx_externalimport_importer {
-	var $extKey = 'external_import';
-	var $vars = array(); // Variables from the query string
-	var $extConf = array(); // Extension configuration
-	var $messages = array(); // List of result messages
-	var $table; // Name of the table being synchronised
-	var $tableTCA; // TCA of the table being synchronised
-	var $additionalFields = array(); // List of fields to import, but not to save
-	var $numAdditionalFields = 0; // Number of such fields
+	public $extKey = 'external_import';
+	protected $vars = array(); // Variables from the query string
+	protected $extConf = array(); // Extension configuration
+	protected $messages = array(); // List of result messages
+	protected $table; // Name of the table being synchronised
+	protected $index; // Index of the synchronisation configuration in use
+	protected $tableTCA; // TCA of the table being synchronised
+	protected $externalConfig; // Ctrl-section external config being used for synchronisation
+	protected $additionalFields = array(); // List of fields to import, but not to save
+	protected $numAdditionalFields = 0; // Number of such fields
 
 	/**
 	 * This is the constructor
@@ -125,25 +127,28 @@ class tx_externalimport_importer {
 	 * It returns information about the results of the operation
 	 *
 	 * @param	string		$table: name of the table to synchronise
+     * @param	integer		$index: index of the synchronisation configuration to choose
 	 * @return	string		error or success messages
 	 */
-	public function synchronizeData($table) {
+	public function synchronizeData($table, $index) {
 		$this->table = $table;
+		$this->index = $index;
 		t3lib_div::loadTCA($this->table);
 		$this->tableTCA = $GLOBALS['TCA'][$this->table];
+		$this->externalConfig = $GLOBALS['TCA'][$this->table]['ctrl']['external'][$index];
 
 // Get the list of additional fields
 // Additional fields are fields that must be taken from the imported data,
 // but that will not be saved into the database
 
-		if (!empty($this->tableTCA['ctrl']['external']['additional_fields'])) {
-			$this->additionalFields = explode(',', $this->tableTCA['ctrl']['external']['additional_fields']);
+		if (!empty($this->externalConfig['additional_fields'])) {
+			$this->additionalFields = explode(',', $this->externalConfig['additional_fields']);
 			$this->numAdditionalFields = count($this->additionalFields);
 		}
 
 // Instatiate specific connector service
 
-		$services = t3lib_extMgm::findService('connector', $this->tableTCA['ctrl']['external']['connector']);
+		$services = t3lib_extMgm::findService('connector', $this->externalConfig['connector']);
 
 // The service is not available
 
@@ -151,7 +156,7 @@ class tx_externalimport_importer {
 			$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
 		}
 		else {
-			$connector = t3lib_div::makeInstanceService('connector', $this->tableTCA['ctrl']['external']['connector']);
+			$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
 
 // The service was instatiated, but an error occurred while initiating the connection
 
@@ -162,11 +167,11 @@ class tx_externalimport_importer {
 
 // The connection is established, get the data
 
-				$rawData = $connector->fetchRaw($this->tableTCA['ctrl']['external']['parameters']);
+				$rawData = $connector->fetchRaw($this->externalConfig['parameters']);
 
 // Prepare the data, depending on result type
 
-				switch ($this->tableTCA['ctrl']['external']['data']) {
+				switch ($this->externalConfig['data']) {
 					case 'xml':
 						$records = $this->handleXML($rawData);
 						break;
@@ -244,7 +249,7 @@ class tx_externalimport_importer {
 
 // Get the nodes that represent the root of each data record
 
-		$records = $dom->getElementsByTagName($this->tableTCA['ctrl']['external']['nodetype']);
+		$records = $dom->getElementsByTagName($this->externalConfig['nodetype']);
 		for ($i = 0; $i < $records->length; $i++) {
 			$theRecord = $records->item($i);
 			$theData = array();
@@ -252,8 +257,8 @@ class tx_externalimport_importer {
 // Loop on the database columns and get the corresponding value from the import data
 
 			foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
-				if (isset($columnData['external']['field'])) {
-					$node = $theRecord->getElementsByTagName($columnData['external']['field']);
+				if (isset($columnData['external'][$this->index]['field'])) {
+					$node = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
 					if ($node->length > 0) {
 						$theData[$columnName] = $node->item(0)->nodeValue;
 					}
@@ -289,19 +294,20 @@ class tx_externalimport_importer {
 // Get all the mappings
 
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
-			if (isset($columnData['external']['mapping'])) {
-				$mappings[$columnName] = $this->getMapping($columnData['external']['mapping']);
+			if (isset($columnData['external'][$this->index]['mapping'])) {
+				$mappings[$columnName] = $this->getMapping($columnData['external'][$this->index]['mapping']);
 			}
 		}
 
 // If there are any mappings, apply them to all records
+// TODO: do a mapping once, because it seems damn wrong down here!
 
 		if (count($mappings) > 0) {
 			$numRecords = count($records);
 			foreach ($mappings as $columnName => $aMapping) {
 				for ($i = 0; $i < $numRecords; $i++) {
-					if (isset($aMapping[$records[$i][$columnData['external']['mapping']['reference_field']]])) {
-						$records[$i][$columnName] = $aMapping[$records[$i][$columnData['external']['mapping']['reference_field']]];
+					if (isset($aMapping[$records[$i][$columnData['external'][$this->index]['mapping']['reference_field']]])) {
+						$records[$i][$columnName] = $aMapping[$records[$i][$columnData['external'][$this->index]['mapping']['reference_field']]];
 					}
 				}
 			}
@@ -310,7 +316,7 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * This method applies any existing pre-processing to the data before it is stored
+	 * This method applies any existing pre-processing to the data before it is stored (but after is has been transformed)
 	 * Note that this method does not do anything by itself. It just calls on a pre-processing hook
 	 *
 	 * @param	array		$records: records containing the data
@@ -351,13 +357,13 @@ class tx_externalimport_importer {
 // 2.a	it is possible to store additional fields in the MM-relations. This is not TYPO3-standard, so TCEmain will
 //		not be able to handle it. We thus need to store all that data now and rework the MM-relations when TCEmain is done.
 // 2.b	if a pair of records is related to each other several times (because the additional fields vary), this will be filtered out
-//		by TCEmain. So we must preserver also these additional relations.
+//		by TCEmain. So we must preserve also these additional relations.
 
 		$mappings = array();
 		$fullMappings = array();
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
-			if (isset($columnData['external']['MM'])) {
-				$mmData = $columnData['external']['MM'];
+			if (isset($columnData['external'][$this->index]['MM'])) {
+				$mmData = $columnData['external'][$this->index]['MM'];
 				$sortingField = (isset($mmData['sorting'])) ? $mmData['sorting'] : false;
 				$additionalFields = (isset($mmData['additional_fields'])) ? $mmData['additional_fields'] : false;
 
@@ -371,12 +377,13 @@ class tx_externalimport_importer {
 				$foreignMappings = $this->getMapping($mmData['mappings']['uid_foreign']);
 
 // Get the name of the foreign reference field in the external data if it exists, otherwise keep name as is
+// NOTE: we have to assume that if such a field exists, it is defined in a configuration with the same index as the current configuration!!!
 
 				$foreignTable = $mmData['mappings']['uid_foreign']['table'];
 				$foreignColumn = $mmData['mappings']['uid_foreign']['reference_field'];
 				t3lib_div::loadTCA($foreignTable);
-				if (isset($GLOBALS['TCA'][$foreignTable]['columns'][$foreignColumn]['external']['field'])) {
-					$foreignReferenceField = $GLOBALS['TCA'][$foreignTable]['columns'][$foreignColumn]['external']['field'];
+				if (isset($GLOBALS['TCA'][$foreignTable]['columns'][$foreignColumn]['external'][$this->index]['field'])) {
+					$foreignReferenceField = $GLOBALS['TCA'][$foreignTable]['columns'][$foreignColumn]['external'][$this->index]['field'];
 				}
 				else {
 					$foreignReferenceField = $foreignColumn;
@@ -385,7 +392,7 @@ class tx_externalimport_importer {
 // Go through each record and assemble pairs of primary and foreign keys
 
 				foreach ($records as $theRecord) {
-					$externalUid = $theRecord[$this->tableTCA['ctrl']['external']['reference_uid']];
+					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
 					if (isset($foreignMappings[$theRecord[$foreignReferenceField]])) {
 						if (!isset($mappings[$columnName][$externalUid])) {
 							$mappings[$columnName][$externalUid] = array();
@@ -456,7 +463,7 @@ class tx_externalimport_importer {
 		$handledUids = array();
 		$tceData = array($this->table => array());
 		foreach ($records as $theRecord) {
-			$externalUid = $theRecord[$this->tableTCA['ctrl']['external']['reference_uid']];
+			$externalUid = $theRecord[$this->externalConfig['reference_uid']];
 			if (in_array($externalUid, $handledUids)) continue; // Skip handling of already handled records (this can happend with denormalised structures)
 			$handledUids[] = $externalUid;
 
@@ -490,8 +497,8 @@ class tx_externalimport_importer {
 
 			else {
 				$inserts++;
-				if (isset($this->tableTCA['ctrl']['external']['pid'])) { // Storage page (either specific for table or generic for extension)
-					$theRecord['pid'] = $this->tableTCA['ctrl']['external']['pid'];
+				if (isset($this->externalConfig['pid'])) { // Storage page (either specific for table or generic for extension)
+					$theRecord['pid'] = $this->externalConfig['pid'];
 				}
 				else {
 					$theRecord['pid'] = $this->extConf['storagePID'];
@@ -507,7 +514,7 @@ class tx_externalimport_importer {
 
 // Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
 
-		if (empty($this->tableTCA['ctrl']['external']['deleteNonSynchedRecords'])) {
+		if (empty($this->externalConfig['deleteNonSynchedRecords'])) {
 			$deletes = 0;
 		}
 		else {
@@ -577,9 +584,9 @@ class tx_externalimport_importer {
 	 */
 	protected function getExistingUids() {
 		$existingUids = array();
-		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->tableTCA['ctrl']['external']['reference_uid'].',uid', $this->table, '1 = 1'.t3lib_BEfunc::deleteClause($this->table));
+		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'].',uid', $this->table, '1 = 1'.t3lib_BEfunc::deleteClause($this->table));
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
-			$existingUids[$row[$this->tableTCA['ctrl']['external']['reference_uid']]] = $row['uid'];
+			$existingUids[$row[$this->externalConfig['reference_uid']]] = $row['uid'];
 		}
 		return $existingUids;
 	}

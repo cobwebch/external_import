@@ -71,8 +71,9 @@ class tx_externalimport_ajax {
 	 */
 	public function synchronizeExternalTable($params, &$ajaxObj) {
 		$theTable = t3lib_div::_GP('table');
+		$theIndex = t3lib_div::_GP('index');
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
-		$messages = $importer->synchronizeData($theTable);
+		$messages = $importer->synchronizeData($theTable, $theIndex);
 
 // Pre-4.2 calling method
 
