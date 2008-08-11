@@ -98,27 +98,32 @@ class tx_externalimport_importer {
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
 			foreach ($sections as $sectionKey => $sectionData) {
 				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
-					if (isset($sectionData['external']['priority'])) {
-						$priority = $sectionData['external']['priority'];
+					foreach ($sectionData['external'] as $index => $externalConfig) {
+						if (isset($externalConfig['priority'])) {
+							$priority = $externalConfig['priority'];
+						}
+						else {
+							$priority = 1000; // If priority is not defined, set to very low
+						}
 					}
-					else {
-						$priority = 1000; // If priority is not defined, set to very low
-					}
-					$externalTables[$tableName] = $priority;
+					if (!isset($externalTables[$priority])) $externalTables[$priority] = array();
+					$externalTables[$priority][] = array('table' => $tableName, 'index' => $index);
 				}
 			}
 		}
 
 // Sort tables by priority (lower number is highest priority)
 
-		asort($externalTables);
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog($GLOBALS['LANG']->getLL('sync_all'), 'external_import', 0, $externalTables);
+		ksort($externalTables);
+		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog($GLOBALS['LANG']->getLL('sync_all'), $this->extKey, 0, $externalTables);
 
 // Synchronise all tables
 
-		foreach ($externalTables as $tableName => $priority) {
-			$this->messages = array('error' => array(), 'warning' => array(), 'success' => array()); // Reset error messages array
-			$this->synchronizeData($tableName);
+		foreach ($externalTables as $priority => $tables) {
+			foreach ($tables as $tableData) {
+				$this->messages = array('error' => array(), 'warning' => array(), 'success' => array()); // Reset error messages array
+				$this->synchronizeData($tableData['table'], $tableData['index']);
+			}
 		}
 	}
 
@@ -214,7 +219,7 @@ class tx_externalimport_importer {
 			else {
 				$severity = -1;
 			}
-			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), 'external_import', $severity, $this->messages);
+			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity, $this->messages);
 		}
 		return $this->messages;
 	}
@@ -333,7 +338,7 @@ class tx_externalimport_importer {
 	 * @return	void
 	 */
 	protected function storeData($records) {
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Data received for storage', 'external_import', 0, $records);
+		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Data received for storage', $this->extKey, 0, $records);
 		$errors = 0;
 
 // Get the list of existing uids for the table
@@ -499,11 +504,12 @@ class tx_externalimport_importer {
 				$tceData[$this->table]['NEW_'.$inserts] = $theRecord;
 			}
 		}
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', 'external_import', 0, $tceData);
+		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
 		$tce->start($tceData, array());
 		$tce->process_datamap();
+		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('New IDs', 'external_import', 0, $tce->substNEWwithIDs);
 
 // Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
 
@@ -518,7 +524,7 @@ class tx_externalimport_importer {
 				foreach ($absentUids as $id) {
 					$tceCommands[$this->table][$id] = array('delete' => 1);
 				}
-				if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain commands', 'external_import', 0, $tceCommands);
+				if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain commands', $this->extKey, 0, $tceCommands);
 				$tce->start(array(), $tceCommands);
 				$tce->process_cmdmap();
 			}
@@ -527,7 +533,7 @@ class tx_externalimport_importer {
 // Perform post-processing of MM-relations if necessary
 
 		if (count($fullMappings) > 0) {
-			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Handling full mappings', 'external_import', 0, $fullMappings);
+			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Handling full mappings', $this->extKey, 0, $fullMappings);
 
 // Refresh list of existing primary keys now that new records have been inserted
 
@@ -566,7 +572,7 @@ class tx_externalimport_importer {
 		$this->messages['success'][] = sprintf($GLOBALS['LANG']->getLL('records_deleted'), $deletes);
 		if (count($tce->errorLog) > 0) {
 			$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('records_errors'), count($tce->errorLog));
-			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain errors', 'external_import', 3, $tce->errorLog);
+			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain errors', $this->extKey, 3, $tce->errorLog);
 		}
 	}
 
