@@ -2,7 +2,7 @@
 
 	* Introduced possibility to synchronise a table with multiple external sources
 	* Corrected bug in mapping feature
-	* Updated manual with instructions for setting up automatic synchronisation
+	* Updated manual with instructions for setting up automatic synchronisation and some troubleshooting help
 
 08-08-04 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
