@@ -11,6 +11,7 @@
 			<label index="external_tables">External tables</label>
 			<label index="external_tables_intro">Here is the list of all tables using external data as defined in the TCA. From here you can manually synchronise any table. Note that you should synchronise tables with high priority (lower number) first, since lower priority tables probably depend on them.</label>
 			<label index="table">Table</label>
+			<label index="description">Description</label>
 			<label index="priority">Priority</label>
 			<label index="synchronise">Synchronise</label>
 			<label index="running_synchronisation">Synchronisation currrently running</label>
@@ -47,6 +48,7 @@
 			<label index="external_tables">Tables externes</label>
 			<label index="external_tables_intro">Voici la liste des toutes les tables utilisant des données externes, selon les définitions contenues dans le TCA. Depuis cette vue, vous pouvez lancer des synchronisations manuelles de n'importe laquelle des tables. Notez qu'il vous faut probablement synchroniser les tables dans l'ordre des priorités, car les tables de priorité plus basse (chiffre plus élevé) dépendent probablement des tables à priorité plus élevée.</label>
 			<label index="table">Table</label>
+			<label index="description">Description</label>
 			<label index="priority">Priorité</label>
 			<label index="synchronise">Synchroniser</label>
 			<label index="running_synchronisation">Synchronisation en cours</label>

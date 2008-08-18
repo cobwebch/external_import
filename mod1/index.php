@@ -278,7 +278,13 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 								else {
 									$priority = 1000; // If priority is not defined, set to very low
                                 }
-								$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority);
+								if (isset($externalConfig['description'])) {
+									$description = $GLOBALS['LANG']->sL($externalConfig['description']);
+								}
+								else {
+									$description = '';
+                                }
+								$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority, 'description' => $description);
                             }
 						}
 					}
@@ -311,6 +317,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$table[$tr] = array();
 				$table[$tr][] = '&nbsp;'; // Table icon
 				$table[$tr][] = $GLOBALS['LANG']->getLL('table'); // Table name
+				$table[$tr][] = $GLOBALS['LANG']->getLL('description'); // Sync description
 				$table[$tr][] = $GLOBALS['LANG']->getLL('priority'); // Priority
 				$table[$tr][] = '&nbsp;'; // Action icons
 				$table[$tr][] = '&nbsp;'; // Action result
@@ -326,6 +333,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
 					$table[$tr][] = isset($ctrlData['iconfile']) ? '<img src="'.$BACK_PATH.$ctrlData['iconfile'].'" width="18" height="16" alt="'.$tableTitle.'" />' : '&nbsp;';
 					$table[$tr][] = $tableTitle.' ('.$tableName.')';
+					$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 					$table[$tr][] = $tableData['priority'];
 					$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\', \''.$tableIndex.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
 					$table[$tr][] = '<div id="result'.$tr.'"></div>'; // Action result
