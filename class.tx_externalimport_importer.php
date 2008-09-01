@@ -128,14 +128,13 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * This method calls on the distant data source and synchronises the data in the TYPO3 database
-	 * It returns information about the results of the operation
+	 * This method stores information about the synchronised table into member variables
 	 *
 	 * @param	string		$table: name of the table to synchronise
-     * @param	integer		$index: index of the synchronisation configuration to choose
-	 * @return	string		error or success messages
+     * @param	integer		$index: index of the synchronisation configuration to use
+	 * @return	void
 	 */
-	public function synchronizeData($table, $index) {
+	protected function initTCAData($table, $index) {
 		$this->table = $table;
 		$this->index = $index;
 		t3lib_div::loadTCA($this->table);
@@ -150,6 +149,18 @@ class tx_externalimport_importer {
 			$this->additionalFields = explode(',', $this->externalConfig['additional_fields']);
 			$this->numAdditionalFields = count($this->additionalFields);
 		}
+	}
+
+	/**
+	 * This method calls on the distant data source and synchronises the data in the TYPO3 database
+	 * It returns information about the results of the operation
+	 *
+	 * @param	string		$table: name of the table to synchronise
+     * @param	integer		$index: index of the synchronisation configuration to use
+	 * @return	array		List of error or success messages
+	 */
+	public function synchronizeData($table, $index) {
+		$this->initTCAData($table, $index);
 
 // Instatiate specific connector service
 
@@ -173,55 +184,77 @@ class tx_externalimport_importer {
 // The connection is established, get the data
 
 				$rawData = $connector->fetchRaw($this->externalConfig['parameters']);
-
-// Prepare the data, depending on result type
-
-				switch ($this->externalConfig['data']) {
-					case 'xml':
-						$records = $this->handleXML($rawData);
-						break;
-					case 'array':
-						$records = $this->handleArray($rawData);
-						break;
-					default:
-						$records = $rawData;
-						break;
-				}
-
-// Transform data
-
-				$records = $this->transformData($records);
-
-// Apply any existing preprocessing hook
-
-				$records = $this->preprocessData($records);
-
-// Store data
-
-				$this->storeData($records);
-
-// Apply postprocessing
-
-//				$this->postProcessing($records);
+				$this->handleRawData($rawData);
 			}
 		}
 
 // Log results to devlog
-// Severity depends on presence of errors or warnings
 
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
-			if (count($this->messages['error']) > 0) {
-				$severity = 3;
-			}
-			elseif (count($this->messages['warning']) > 0) {
-				$severity = 2;
-			}
-			else {
-				$severity = -1;
-			}
-			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity, $this->messages);
+			$this->logMessages();
 		}
 		return $this->messages;
+	}
+
+	/**
+	 * This method receives raw data from some external source, transforms it and stores it into the local database
+	 * It returns information about the results of the operation
+	 *
+	 * @param	string		$table: name of the table to import into
+     * @param	integer		$index: index of the synchronisation configuration to use
+     * @param	mixed		$rawData: data in the format provided by the external source (XML string, PHP array, etc.)
+	 * @return	array		List of error or success messages
+	 */
+	public function importData($table, $index, $rawData) {
+		$this->initTCAData($table, $index);
+		$this->handleRawData($rawData);
+
+// Log results to devlog
+
+		if ($this->extConf['debug'] || TYPO3_DLOG) {
+			$this->logMessages();
+		}
+		return $this->messages;
+	}
+
+	/**
+	 * This method receives raw data from some external source, transforms it and stores it into the local database
+	 * It returns information about the results of the operation
+	 *
+     * @param	mixed		$rawData: data in the format provided by the external source (XML string, PHP array, etc.)
+	 * @return	void
+	 */
+	protected function handleRawData($rawData) {
+
+// Prepare the data, depending on result type
+
+		switch ($this->externalConfig['data']) {
+			case 'xml':
+				$records = $this->handleXML($rawData);
+				break;
+			case 'array':
+				$records = $this->handleArray($rawData);
+				break;
+			default:
+				$records = $rawData;
+				break;
+		}
+
+// Transform data
+
+		$records = $this->transformData($records);
+
+// Apply any existing preprocessing hook
+
+		$records = $this->preprocessData($records);
+
+// Store data
+
+		$this->storeData($records);
+
+// Apply postprocessing
+
+//		$this->postProcessing($records);
 	}
 
 	/**
@@ -616,6 +649,27 @@ class tx_externalimport_importer {
 			$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
 		}
 		return $localMapping;
+	}
+
+	/**
+	 * This method stores the error or success messages into the devLog
+	 *
+	 * @return	void
+	 */
+	protected function logMessages() {
+
+// Define severity based on types of messages
+
+		if (count($this->messages['error']) > 0) {
+			$severity = 3;
+		}
+		elseif (count($this->messages['warning']) > 0) {
+			$severity = 2;
+		}
+		else {
+			$severity = -1;
+		}
+		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity, $this->messages);
 	}
 }
 ?>
