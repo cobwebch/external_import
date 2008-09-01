@@ -6,6 +6,7 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
+			<label index="no_connector">No connector defined. Cannot synchronise.</label>
 			<label index="no_service">No service available</label>
 			<label index="data_not_fetched">Data could not be fetched</label>
 			<label index="records_inserted">%s new record(s) inserted</label>
@@ -20,6 +21,7 @@
 			<label index="delete_failed">Delete failed:</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
+			<label index="no_connector">Aucun connecteur défini. Impossible de synchroniser.</label>
 			<label index="no_service">Aucun service disponible</label>
 			<label index="data_not_fetched">Impossible d'obtenir les données</label>
 			<label index="records_inserted">%s nouveaux enregistrement(s) inséré(s)</label>

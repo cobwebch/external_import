@@ -92,22 +92,25 @@ class tx_externalimport_importer {
 	 */
 	public function synchronizeAllTables() {
 
-// Look in the TCA for tables with an "external" control section
+// Look in the TCA for tables with an "external" control section and a "connector"
+// Tables without connectors cannot be synchronised
 
 		$externalTables = array();
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
 			foreach ($sections as $sectionKey => $sectionData) {
 				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
 					foreach ($sectionData['external'] as $index => $externalConfig) {
-						if (isset($externalConfig['priority'])) {
-							$priority = $externalConfig['priority'];
-						}
-						else {
-							$priority = 1000; // If priority is not defined, set to very low
+						if (!empty($externalConfig['connector'])) {
+							if (isset($externalConfig['priority'])) {
+								$priority = $externalConfig['priority'];
+							}
+							else {
+								$priority = 1000; // If priority is not defined, set to very low
+							}
+							if (!isset($externalTables[$priority])) $externalTables[$priority] = array();
+							$externalTables[$priority][] = array('table' => $tableName, 'index' => $index);
 						}
 					}
-					if (!isset($externalTables[$priority])) $externalTables[$priority] = array();
-					$externalTables[$priority][] = array('table' => $tableName, 'index' => $index);
 				}
 			}
 		}
@@ -162,29 +165,34 @@ class tx_externalimport_importer {
 	public function synchronizeData($table, $index) {
 		$this->initTCAData($table, $index);
 
-// Instatiate specific connector service
+// Instantiate specific connector service
 
-		$services = t3lib_extMgm::findService('connector', $this->externalConfig['connector']);
+		if (empty($this->externalConfig['connector'])) {
+			$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_connector');
+		}
+		else {
+			$services = t3lib_extMgm::findService('connector', $this->externalConfig['connector']);
 
 // The service is not available
 
-		if ($services === false) {
-			$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
-		}
-		else {
-			$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
+			if ($services === false) {
+				$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
+			}
+			else {
+				$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
 
 // The service was instatiated, but an error occurred while initiating the connection
 
-			if (is_array($connector)) { // If the returned value is an array, an error has occurred
-				$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_not_fetched');
-			}
-			else {
+				if (is_array($connector)) { // If the returned value is an array, an error has occurred
+					$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_not_fetched');
+				}
+				else {
 
 // The connection is established, get the data
 
-				$rawData = $connector->fetchRaw($this->externalConfig['parameters']);
-				$this->handleRawData($rawData);
+					$rawData = $connector->fetchRaw($this->externalConfig['parameters']);
+					$this->handleRawData($rawData);
+				}
 			}
 		}
 

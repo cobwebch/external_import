@@ -60,7 +60,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	function menuConfig()	{
 		$this->MOD_MENU = array(
 			'function' => array(
-				'import' => $GLOBALS['LANG']->getLL('function_import'),
+				'sync' => $GLOBALS['LANG']->getLL('function_sync'),
+				'nosync' => $GLOBALS['LANG']->getLL('function_nosync'),
 //				'2' => $GLOBALS['LANG']->getLL('function2'),
 //				'3' => $GLOBALS['LANG']->getLL('function3'),
 			)
@@ -256,103 +257,224 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @return	void
 	 */
 	function moduleContent() {
-		global $BACK_PATH;
-
 		switch((string)$this->MOD_SETTINGS['function'])	{
 
-// Default view is the list of all external tables
+// List tables that receive external data from the outside
+// (i.e. cannot be synchronised from the BE)
+
+			case 'nosync':
+				$this->listOtherTables();
+				break;
+
+// Default view is the list of all external tables that can be synchronised
 
 			default:
+				$this->listSynchronizedTables();
+				break;
+		}
+	}
 
-// Get list of external tables from the TCA
-// That's the tables that have a "external" part in their ctrl section
+	/**
+	 * This method lists all the tables that can be synchronised from the BE
+	 * These are the tables that have a "external" part defined in the "ctrl" section of their TCA
+	 * and a "connector" defined in this "external" part
+	 *
+	 * @return	void
+	 */
+	function listSynchronizedTables() {
+		global $BACK_PATH;
 
-				$externalTables = array();
-				foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-					foreach ($sections as $sectionKey => $sectionData) {
-						if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
-							foreach ($sectionData['external'] as $index => $externalConfig) {
-								if (isset($externalConfig['priority'])) {
-									$priority = $externalConfig['priority'];
-								}
-								else {
-									$priority = 1000; // If priority is not defined, set to very low
-                                }
-								if (isset($externalConfig['description'])) {
-									$description = $GLOBALS['LANG']->sL($externalConfig['description']);
-								}
-								else {
-									$description = '';
-                                }
-								$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority, 'description' => $description);
-                            }
+// Get list of all synchronisable tables and extract general information about them
+
+		$externalTables = array();
+		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+			foreach ($sections as $sectionKey => $sectionData) {
+				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
+					foreach ($sectionData['external'] as $index => $externalConfig) {
+						if (!empty($externalConfig['connector'])) {
+							if (isset($externalConfig['priority'])) {
+								$priority = $externalConfig['priority'];
+							}
+							else {
+								$priority = 1000; // If priority is not defined, set to very low
+	                        }
+							if (isset($externalConfig['description'])) {
+								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
+							}
+							else {
+								$description = '';
+	                        }
+							$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority, 'description' => $description);
 						}
-					}
+                    }
 				}
-//t3lib_div::debug($externalTables);
+			}
+		}
 
 // Sort tables by priority (lower number is highest priority)
 
-				usort($externalTables, array('tx_externalimport_module1','prioritySort'));
+		usort($externalTables, array('tx_externalimport_module1','prioritySort'));
+
 
 // Prepare table to display list of external tables
+
+		if (count($externalTables) == 0) {
+			$tableList = '<p>'.$GLOBALS['LANG']->getLL('external_tables_none').'</p>';
+		}
+		else {
+
 // First initialise the table layout
 
-				$tableLayout = array (
-									'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
-									'0' => array (
-										'tr' => array('<tr class="bgColor2">','</tr>'),
-									),
-									'defRow' => array (
-										'tr' => array('<tr class="bgColor-20">','</tr>'),
-										'defCol' => array('<td>','</td>'),
-									)
-								);
+			$tableLayout = array (
+								'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
+								'0' => array (
+									'tr' => array('<tr class="bgColor2">','</tr>'),
+								),
+								'defRow' => array (
+									'tr' => array('<tr class="bgColor-20">','</tr>'),
+									'defCol' => array('<td>','</td>'),
+								)
+							);
 
-				$table = array();
+			$table = array();
 
 // First row is header row
 
-				$tr = 0;
-				$table[$tr] = array();
-				$table[$tr][] = '&nbsp;'; // Table icon
-				$table[$tr][] = $GLOBALS['LANG']->getLL('table'); // Table name
-				$table[$tr][] = $GLOBALS['LANG']->getLL('description'); // Sync description
-				$table[$tr][] = $GLOBALS['LANG']->getLL('priority'); // Priority
-				$table[$tr][] = '&nbsp;'; // Action icons
-				$table[$tr][] = '&nbsp;'; // Action result
+			$tr = 0;
+			$table[$tr] = array();
+			$table[$tr][] = '&nbsp;'; // Table icon
+			$table[$tr][] = $GLOBALS['LANG']->getLL('table'); // Table name
+			$table[$tr][] = $GLOBALS['LANG']->getLL('description'); // Sync description
+			$table[$tr][] = $GLOBALS['LANG']->getLL('priority'); // Priority
+			$table[$tr][] = '&nbsp;'; // Action icons
+			$table[$tr][] = '&nbsp;'; // Action result
 
 // Generate table row for each table
 
-				foreach ($externalTables as $tableData) {
-					$tr++;
-					$tableName = $tableData['tablename'];
-					$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
-					$tableIndex = $tableData['index'];
-					$table[$tr] = array();
-					$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
-					$table[$tr][] = isset($ctrlData['iconfile']) ? '<img src="'.$BACK_PATH.$ctrlData['iconfile'].'" width="18" height="16" alt="'.$tableTitle.'" />' : '&nbsp;';
-					$table[$tr][] = $tableTitle.' ('.$tableName.')';
-					$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
-					$table[$tr][] = $tableData['priority'];
-					$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\', \''.$tableIndex.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
-					$table[$tr][] = '<div id="result'.$tr.'"></div>'; // Action result
-				}
+			foreach ($externalTables as $tableData) {
+				$tr++;
+				$tableName = $tableData['tablename'];
+				$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
+				$tableIndex = $tableData['index'];
+				$table[$tr] = array();
+				$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
+				$table[$tr][] = isset($ctrlData['iconfile']) ? '<img src="'.$BACK_PATH.$ctrlData['iconfile'].'" width="18" height="16" alt="'.$tableTitle.'" />' : '&nbsp;';
+				$table[$tr][] = $tableTitle.' ('.$tableName.')';
+				$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
+				$table[$tr][] = $tableData['priority'];
+				$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\', \''.$tableIndex.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
+				$table[$tr][] = '<div id="result'.$tr.'"></div>'; // Action result
+			}
+
+// Render the table
+
+			$tableList = $this->doc->table($table, $tableLayout);
+		}
 
 // Assemble content
 
-				$content = '<p>'.$GLOBALS['LANG']->getLL('external_tables_intro').'</p>';
-				$content .= $this->doc->spacer(10);
-				$content .= $this->doc->table($table, $tableLayout);
-				$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('external_tables'),$content,0,1);
-				$this->content .= $this->doc->divider(5);
+		$content = '<p>'.$GLOBALS['LANG']->getLL('external_tables_intro').'</p>';
+		$content .= $this->doc->spacer(10);
+		$content .= $tableList;
+		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('external_tables'),$content,0,1);
+		$this->content .= $this->doc->divider(5);
 
 // Display form for automatic synchronisation
 
-				$this->displayAutoSyncSection();
+		$this->displayAutoSyncSection();
+	}
 
-				break;
+	/**
+	 * This method lists tables that have an external section, but that do not rely on a connector.
+	 * In such cases data is not fetched by external_import and stored into those tables. On the contrary,
+	 * data is pushed towards those tables using the external_import API
+	 *
+	 * @return	void
+	 */
+	function listOtherTables() {
+		global $BACK_PATH;
+
+// Get list of all non-synchronisable tables and extract general information about them
+
+		$externalTables = array();
+		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+			foreach ($sections as $sectionKey => $sectionData) {
+				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
+					foreach ($sectionData['external'] as $index => $externalConfig) {
+						if (empty($externalConfig['connector'])) {
+
+// Table's full name and index will be used as key for sorting the tables
+
+							$tableTitle = $GLOBALS['LANG']->sL($sectionData['title']).':'.$index;
+							if (isset($externalConfig['description'])) {
+								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
+							}
+							else {
+								$description = '';
+	                        }
+							$externalTables[$tableTitle] = array('tablename' => $tableName, 'description' => $description);
+						}
+                    }
+				}
+			}
 		}
+		ksort($externalTables);
+
+// Prepare the list of tables
+
+		if (count($externalTables) == 0) {
+			$tableList = '<p>'.$GLOBALS['LANG']->getLL('nosync_tables_none').'</p>';
+		}
+		else {
+
+// Initialise the table layout
+
+			$tableLayout = array (
+								'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
+								'0' => array (
+									'tr' => array('<tr class="bgColor2">','</tr>'),
+								),
+								'defRow' => array (
+									'tr' => array('<tr class="bgColor-20">','</tr>'),
+									'defCol' => array('<td>','</td>'),
+								)
+							);
+
+			$table = array();
+
+// First row is header row
+
+			$tr = 0;
+			$table[$tr] = array();
+			$table[$tr][] = '&nbsp;'; // Table icon
+			$table[$tr][] = $GLOBALS['LANG']->getLL('table'); // Table name
+			$table[$tr][] = $GLOBALS['LANG']->getLL('description'); // Sync description
+
+// Generate table row for each table
+
+			foreach ($externalTables as $key => $tableData) {
+				$tr++;
+				list($tableTitle, $tableIndex) = t3lib_div::trimExplode(':', $key, 1);
+				$tableName = $tableData['tablename'];
+				$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
+				$table[$tr] = array();
+				$table[$tr][] = isset($ctrlData['iconfile']) ? '<img src="'.$BACK_PATH.$ctrlData['iconfile'].'" width="18" height="16" alt="'.$tableTitle.'" />' : '&nbsp;';
+				$table[$tr][] = $tableTitle.' ('.$tableName.')';
+				$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
+			}
+
+// Render the table
+
+			$tableList = $this->doc->table($table, $tableLayout);
+		}
+
+// Assemble content
+
+		$content = '<p>'.$GLOBALS['LANG']->getLL('nosync_tables_intro').'</p>';
+		$content .= $this->doc->spacer(10);
+		$content .= $tableList;
+		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('nosync_tables'),$content,0,1);
+		$this->content .= $this->doc->divider(5);
 	}
 
 	/**
