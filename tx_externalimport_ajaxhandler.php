@@ -21,7 +21,7 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 *
-* $Id: tx_externalimport_ajaxhandler.php 3977 2008-07-20 17:28:23Z fsuter $
+* $Id$
 ***************************************************************/
 
 require_once('conf.php');

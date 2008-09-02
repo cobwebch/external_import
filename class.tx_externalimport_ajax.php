@@ -21,7 +21,7 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 *
-* $Id: class.tx_externalimport_ajax.php 3977 2008-07-20 17:28:23Z fsuter $
+* $Id$
 ***************************************************************/
 
 require_once(t3lib_extMgm::extPath('external_import').'class.tx_externalimport_importer.php');

@@ -21,7 +21,7 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 *
-* $Id: class.tx_externalimport_importer.php 3996 2008-08-03 18:53:33Z fsuter $
+* $Id$
 ***************************************************************/
 
 /**

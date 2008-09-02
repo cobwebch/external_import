@@ -21,7 +21,7 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 *
-* $Id: class.tx_externalimport_ajax.php 3684 2008-01-30 14:48:54Z fsuter $
+* $Id$
 ***************************************************************/
 
 require_once(t3lib_extMgm::extPath('gabriel','class.tx_gabriel_event.php'));

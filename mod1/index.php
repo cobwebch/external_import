@@ -21,7 +21,7 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 *
-* $Id: index.php 3977 2008-07-20 17:28:23Z fsuter $
+* $Id$
 ***************************************************************/
 
 unset($MCONF);
