@@ -1,3 +1,9 @@
+08-09-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added API for calling external_import directly with data
+	* Modified BE module to separate synchronisable from non-synchronisable tables
+	* Updated manual
+
 08-08-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Introduced possibility to synchronise a table with multiple external sources
