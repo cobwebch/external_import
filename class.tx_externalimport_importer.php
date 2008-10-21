@@ -337,16 +337,39 @@ class tx_externalimport_importer {
 	protected function transformData($records) {
 		$numRecords = count($records);
 
-// Loop on all tables to find any defined mapping
-// Get those mappings and apply them to records
+// Loop on all tables to find any defined transformations. This might be mappings and/or user functions
 
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
+
+// Get existing mappings and apply them to records
+
 			if (isset($columnData['external'][$this->index]['mapping'])) {
 				$mappings = $this->getMapping($columnData['external'][$this->index]['mapping']);
 				for ($i = 0; $i < $numRecords; $i++) {
 					$externalValue = $records[$i][$columnData['external'][$this->index]['field']];
 					if (isset($mappings[$externalValue])) {
 						$records[$i][$columnName] = $mappings[$externalValue];
+					}
+				}
+			}
+
+// Apply defined user function
+
+			if (isset($columnData['external'][$this->index]['userFunc'])) {
+				// Try to get the referenced class
+				$userObject = t3lib_div::getUserObj($columnData['external'][$this->index]['userFunc']['class']);
+				// Could not instantiate the class, log error and do nothing
+				if ($userObject === false) {
+					if ($this->extConf['debug'] || TYPO3_DLOG) {
+						t3lib_div::devLog($GLOBALS['LANG']->getLL('invalid_userfunc'), $this->extKey, 2, $columnData['external'][$this->index]['userFunc']);
+					}
+				}
+				// Otherwise call referenced class on all records
+				else {
+					$methodName = $columnData['external'][$this->index]['userFunc']['method'];
+					$parameters = isset($columnData['external'][$this->index]['userFunc']['params']) ? $columnData['external'][$this->index]['userFunc']['params'] : array();
+					for ($i = 0; $i < $numRecords; $i++) {
+						$records[$i][$columnName] = $userObject->$methodName($records[$i], $columnName, $parameters);
 					}
 				}
 			}
