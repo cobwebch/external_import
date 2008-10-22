@@ -1,3 +1,12 @@
+08-10-22 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added sample userFunc
+	* Updated manual
+
+08-10-21 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added feature for calling userFuncs on every external field
+
 08-09-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added API for calling external_import directly with data
@@ -13,18 +22,21 @@
 08-08-04 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Updated manual with missing notes about array data format
+	* Released version 0.6.2
 
 08-08-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added array data format handling
 	* Added user rights setup instructions in the manual
+	* Released version 0.6.1
 
 08-07-20 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Introduced use of TCEmain for proper data manipulation
 	* Cleaned up extended TCA syntax
 	* Added hook for pre-processing data before storage
+	* Released version 0.6.0
 
 08-04-29 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
-	* Initial release
+	* Initial release (version 0.5.0)
