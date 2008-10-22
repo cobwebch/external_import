@@ -55,7 +55,7 @@ class tx_externalimport_transformations {
 		// Format value only if a function was defined
 		if (isset($params['function'])) {
 			// Use strtotime for formatting
-			if ($params['function'] == 'strtotime') {
+			if ($params['function'] == 'strftime') {
 				$value = strftime($params['format'], $value);
 			}
 			// Otherwise use date
