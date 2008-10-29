@@ -385,8 +385,8 @@ class tx_externalimport_importer {
 	 * @return	array		the pre-processed records
 	 */
 	protected function preprocessData($records) {
-		if (is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['preprocessRecordset'])) {
-			foreach($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS'][$this->extKey]['preprocessRecordset'] as $className) {
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRecordset'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRecordset'] as $className) {
 				$preProcessor = &t3lib_div::getUserObj($className);
 				$records = $preProcessor->preprocessRecordset($records, $this);
 			}
