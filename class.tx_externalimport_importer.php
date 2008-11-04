@@ -702,5 +702,49 @@ class tx_externalimport_importer {
 		}
 		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity, $this->messages);
 	}
+
+// Getters and setters
+
+	/**
+	 * This method returns the name of the table being synchronised
+	 * 
+	 * @return	string	Name of the table
+	 */
+	public function getTableName() {
+		return $this->table;
+	}
+
+	/**
+	 * This method returns the index of the configuration used in the current synchronisation
+	 *
+	 * @return	integer		The index
+	 */
+	public function getIndex() {
+		return $this->index;
+	}
+
+	/**
+	 * This method returns the external configuration found in the ctrl section of the TCA
+	 * of the table being synchronised
+	 * 
+	 * @return	array	External configuration from the TCA ctrl section
+	 */
+	public function getExternalConfig() {
+		return $this->externalConfig;
+	}
+
+	/**
+	 * This method is used to add a message to the message queue that will be returned
+	 * when the synchronisation is complete
+	 *
+	 * @param	string	$text: the message itself
+	 * @param	string	$status: status of the message. Expected is "success", "warning" or "error"
+	 *								Optional, will default to "error"
+	 */
+	public function addMessage($text, $status = 'error') {
+		if (!empty($text)) {
+			$this->messages[$status][] = $text;
+		}
+	}
 }
 ?>

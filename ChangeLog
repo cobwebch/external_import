@@ -1,3 +1,7 @@
+08-11-04 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added several setter and getter methods
+
 08-10-22 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added sample userFunc
