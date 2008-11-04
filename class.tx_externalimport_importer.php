@@ -36,18 +36,27 @@
  *
  *
  *
- *   54: class tx_externalimport_importer
- *   70:     public function __construct()
- *   91:     public function synchronizeAllTables()
- *  130:     public function synchronizeData($table)
- *  221:     protected function handleXML($rawData)
- *  270:     protected function transformData($records)
- *  303:     protected function preprocessData($records)
- *  320:     protected function storeData($records)
- *  562:     protected function getExistingUids()
- *  577:     protected function getMapping($mappingData)
+ *   63: class tx_externalimport_importer
+ *   81:     public function __construct()
+ *  102:     public function synchronizeAllTables()
+ *  149:     protected function initTCAData($table, $index)
+ *  174:     public function synchronizeData($table, $index)
+ *  225:     public function importData($table, $index, $rawData)
+ *  244:     protected function handleRawData($rawData)
+ *  286:     protected function handleArray($rawData)
+ *  297:     protected function handleXML($rawData)
+ *  346:     protected function transformData($records)
+ *  396:     protected function preprocessData($records)
+ *  413:     protected function storeData($records)
+ *  657:     protected function getExistingUids()
+ *  672:     protected function getMapping($mappingData)
+ *  699:     protected function logMessages()
+ *  722:     public function getTableName()
+ *  731:     public function getIndex()
+ *  741:     public function getExternalConfig()
+ *  755:     public function addMessage($text, $status = 'error')
  *
- * TOTAL FUNCTIONS: 9
+ * TOTAL FUNCTIONS: 18
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -134,7 +143,7 @@ class tx_externalimport_importer {
 	 * This method stores information about the synchronised table into member variables
 	 *
 	 * @param	string		$table: name of the table to synchronise
-     * @param	integer		$index: index of the synchronisation configuration to use
+	 * @param	integer		$index: index of the synchronisation configuration to use
 	 * @return	void
 	 */
 	protected function initTCAData($table, $index) {
@@ -159,7 +168,7 @@ class tx_externalimport_importer {
 	 * It returns information about the results of the operation
 	 *
 	 * @param	string		$table: name of the table to synchronise
-     * @param	integer		$index: index of the synchronisation configuration to use
+	 * @param	integer		$index: index of the synchronisation configuration to use
 	 * @return	array		List of error or success messages
 	 */
 	public function synchronizeData($table, $index) {
@@ -209,8 +218,8 @@ class tx_externalimport_importer {
 	 * It returns information about the results of the operation
 	 *
 	 * @param	string		$table: name of the table to import into
-     * @param	integer		$index: index of the synchronisation configuration to use
-     * @param	mixed		$rawData: data in the format provided by the external source (XML string, PHP array, etc.)
+	 * @param	integer		$index: index of the synchronisation configuration to use
+	 * @param	mixed		$rawData: data in the format provided by the external source (XML string, PHP array, etc.)
 	 * @return	array		List of error or success messages
 	 */
 	public function importData($table, $index, $rawData) {
@@ -229,7 +238,7 @@ class tx_externalimport_importer {
 	 * This method receives raw data from some external source, transforms it and stores it into the local database
 	 * It returns information about the results of the operation
 	 *
-     * @param	mixed		$rawData: data in the format provided by the external source (XML string, PHP array, etc.)
+	 * @param	mixed		$rawData: data in the format provided by the external source (XML string, PHP array, etc.)
 	 * @return	void
 	 */
 	protected function handleRawData($rawData) {
@@ -268,8 +277,8 @@ class tx_externalimport_importer {
 	/**
 	 * This method takes the data returned by the distant source as array and prepares it
 	 * for update/insertion/deletion in the database
-     * NOTE: the current implementation assumes that the array is already ok and just returns it,
-     * but it was convenient to have a wrapper for potentially better features in the future.
+	 * NOTE: the current implementation assumes that the array is already ok and just returns it,
+	 * but it was convenient to have a wrapper for potentially better features in the future.
 	 *
 	 * @param	array		$rawData: response array
 	 * @return	array		response stored as an indexed array of records (associative array of fields)
@@ -707,8 +716,8 @@ class tx_externalimport_importer {
 
 	/**
 	 * This method returns the name of the table being synchronised
-	 * 
-	 * @return	string	Name of the table
+	 *
+	 * @return	string		Name of the table
 	 */
 	public function getTableName() {
 		return $this->table;
@@ -726,8 +735,8 @@ class tx_externalimport_importer {
 	/**
 	 * This method returns the external configuration found in the ctrl section of the TCA
 	 * of the table being synchronised
-	 * 
-	 * @return	array	External configuration from the TCA ctrl section
+	 *
+	 * @return	array		External configuration from the TCA ctrl section
 	 */
 	public function getExternalConfig() {
 		return $this->externalConfig;
@@ -737,9 +746,9 @@ class tx_externalimport_importer {
 	 * This method is used to add a message to the message queue that will be returned
 	 * when the synchronisation is complete
 	 *
-	 * @param	string	$text: the message itself
-	 * @param	string	$status: status of the message. Expected is "success", "warning" or "error"
-	 *								Optional, will default to "error"
+	 * @param	string		$text: the message itself
+	 * @param	string		$status: status of the message. Expected is "success", "warning" or "error"
+	 * @return	void
 	 */
 	public function addMessage($text, $status = 'error') {
 		if (!empty($text)) {
