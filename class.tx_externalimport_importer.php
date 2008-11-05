@@ -535,7 +535,7 @@ class tx_externalimport_importer {
 		$tceData = array($this->table => array());
 		foreach ($records as $theRecord) {
 			$externalUid = $theRecord[$this->externalConfig['reference_uid']];
-			if (in_array($externalUid, $handledUids)) continue; // Skip handling of already handled records (this can happend with denormalised structures)
+			if (in_array($externalUid, $handledUids)) continue; // Skip handling of already handled records (this can happen with denormalised structures)
 			$handledUids[] = $externalUid;
 
 // Remove additional fields data, if any. They must not be saved
