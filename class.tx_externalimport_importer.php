@@ -277,14 +277,41 @@ class tx_externalimport_importer {
 	/**
 	 * This method takes the data returned by the distant source as array and prepares it
 	 * for update/insertion/deletion in the database
-	 * NOTE: the current implementation assumes that the array is already ok and just returns it,
-	 * but it was convenient to have a wrapper for potentially better features in the future.
 	 *
 	 * @param	array		$rawData: response array
 	 * @return	array		response stored as an indexed array of records (associative array of fields)
 	 */
 	protected function handleArray($rawData) {
-		return $rawData;
+		$data = array();
+
+// Loop on all entries
+
+		foreach ($rawData as $theRecord) {
+			$theData = array();
+
+// Loop on the database columns and get the corresponding value from the import data
+
+			foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
+				if (isset($columnData['external'][$this->index]['field'])) {
+					if (isset($theRecord[$columnData['external'][$this->index]['field']])) {
+						$theData[$columnName] = $theRecord[$columnData['external'][$this->index]['field']];
+					}
+				}
+			}
+
+// Get additional fields data, if any
+
+			if ($this->numAdditionalFields > 0) {
+				foreach ($this->additionalFields as $fieldName) {
+					if (isset($theRecord[$fieldName])) {
+						$theData[$fieldName] = $theRecord[$fieldName];
+					}
+				}
+			}
+
+			$data[] = $theData;
+		}
+		return $data;
 	}
 
 	/**
@@ -355,7 +382,7 @@ class tx_externalimport_importer {
 			if (isset($columnData['external'][$this->index]['mapping'])) {
 				$mappings = $this->getMapping($columnData['external'][$this->index]['mapping']);
 				for ($i = 0; $i < $numRecords; $i++) {
-					$externalValue = $records[$i][$columnData['external'][$this->index]['field']];
+					$externalValue = $records[$i][$columnName];
 					if (isset($mappings[$externalValue])) {
 						$records[$i][$columnName] = $mappings[$externalValue];
 					}
@@ -447,27 +474,17 @@ class tx_externalimport_importer {
 
 				$foreignMappings = $this->getMapping($mmData['mappings']['uid_foreign']);
 
-// Get the name of the foreign reference field in the external data if it exists, otherwise keep name as is
-// NOTE: we have to assume that if such a field exists, it is defined in a configuration with the same index as the current configuration!!!
-
-				$foreignTable = $mmData['mappings']['uid_foreign']['table'];
-				$foreignColumn = $mmData['mappings']['uid_foreign']['reference_field'];
-				t3lib_div::loadTCA($foreignTable);
-				if (isset($GLOBALS['TCA'][$foreignTable]['columns'][$foreignColumn]['external'][$this->index]['field'])) {
-					$foreignReferenceField = $GLOBALS['TCA'][$foreignTable]['columns'][$foreignColumn]['external'][$this->index]['field'];
-				}
-				else {
-					$foreignReferenceField = $foreignColumn;
-				}
-
 // Go through each record and assemble pairs of primary and foreign keys
 
 				foreach ($records as $theRecord) {
 					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
-					if (isset($foreignMappings[$theRecord[$foreignReferenceField]])) {
+					if (isset($foreignMappings[$theRecord[$columnName]])) {
 						if (!isset($mappings[$columnName][$externalUid])) {
 							$mappings[$columnName][$externalUid] = array();
-							$fullMappings[$columnName][$externalUid] = array();
+							// Initialise only if necessary
+							if ($additionalFields || $mmData['multiple']) {
+								$fullMappings[$columnName][$externalUid] = array();
+							}
 						}
 
 // If additional fields are defined, store those values in an intermediate array
@@ -483,21 +500,21 @@ class tx_externalimport_importer {
 
 						if ($sortingField) {
 							$sortingValue = $theRecord[$sortingField];
-							$mappings[$columnName][$externalUid][$sortingValue] =  $foreignMappings[$theRecord[$foreignReferenceField]];
+							$mappings[$columnName][$externalUid][$sortingValue] =  $foreignMappings[$theRecord[$columnName]];
 							if ($additionalFields || $mmData['multiple']) {
 								$fullMappings[$columnName][$externalUid][$sortingValue] = array(
-																								'value' => $foreignMappings[$theRecord[$foreignReferenceField]],
-																								'additional_fields' => $fields
-																							);
+									'value' => $foreignMappings[$theRecord[$columnName]],
+									'additional_fields' => $fields
+								);
 							}
 						}
 						else {
-							$mappings[$columnName][$externalUid][] =  $foreignMappings[$theRecord[$foreignReferenceField]];
+							$mappings[$columnName][$externalUid][] =  $foreignMappings[$theRecord[$columnName]];
 							if ($additionalFields || $mmData['multiple']) {
 								$fullMappings[$columnName][$externalUid][] = array(
-																					'value' => $foreignMappings[$theRecord[$foreignReferenceField]],
-																					'additional_fields' => $fields
-																				);
+									'value' => $foreignMappings[$theRecord[$columnName]],
+									'additional_fields' => $fields
+								);
 							}
 						}
 					}

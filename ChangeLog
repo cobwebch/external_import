@@ -1,3 +1,8 @@
+08-11-19 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected behaviour of handleArray() to map field names properly
+	* Changed use of external foreign reference field in mapping transformtions and MM-relations
+
 08-11-04 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added several setter and getter methods
