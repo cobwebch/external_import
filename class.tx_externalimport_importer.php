@@ -573,17 +573,17 @@ class tx_externalimport_importer {
 				}
 			}
 
-// Reference uid is found, perform an update
+// Reference uid is found, perform an update (if not disabled)
 
-			if (isset($existingUids[$externalUid])) {
+			if (isset($existingUids[$externalUid]) && !t3lib_div::inList($this->externalConfig['disabledOperations'], 'update')) {
 				$tceData[$this->table][$existingUids[$externalUid]] = $theRecord;
 				$updatedUids[] = $existingUids[$externalUid];
 				$updates++;
 			}
 
-// Reference uid not found, perform an insert
+// Reference uid not found, perform an insert (if not disabled)
 
-			else {
+			else if (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
 				$inserts++;
 				if (isset($this->externalConfig['pid'])) { // Storage page (either specific for table or generic for extension)
 					$theRecord['pid'] = $this->externalConfig['pid'];
@@ -603,7 +603,7 @@ class tx_externalimport_importer {
 
 // Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
 
-		if (empty($this->externalConfig['deleteNonSynchedRecords'])) {
+		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || empty($this->externalConfig['deleteNonSynchedRecords'])) {
 			$deletes = 0;
 		}
 		else {
