@@ -153,13 +153,20 @@ class tx_externalimport_importer {
 		$this->tableTCA = $GLOBALS['TCA'][$this->table];
 		$this->externalConfig = $GLOBALS['TCA'][$this->table]['ctrl']['external'][$index];
 
-// Get the list of additional fields
-// Additional fields are fields that must be taken from the imported data,
-// but that will not be saved into the database
-
+		// Get the list of additional fields
+		// Additional fields are fields that must be taken from the imported data,
+		// but that will not be saved into the database
 		if (!empty($this->externalConfig['additional_fields'])) {
 			$this->additionalFields = explode(',', $this->externalConfig['additional_fields']);
 			$this->numAdditionalFields = count($this->additionalFields);
+		}
+
+		// Set the records storage page as the related page for the devLog entries
+		if (isset($this->externalConfig['pid'])) { // Storage page (either specific for table or generic for extension)
+			$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->externalConfig['pid'];
+		}
+		else {
+			$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->extConf['storagePID'];
 		}
 	}
 
