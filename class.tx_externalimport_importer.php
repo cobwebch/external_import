@@ -199,8 +199,21 @@ class tx_externalimport_importer {
 
 // The connection is established, get the data
 
-					$rawData = $connector->fetchRaw($this->externalConfig['parameters']);
-					$this->handleRawData($rawData);
+					switch ($this->externalConfig['data']) {
+						case 'xml':
+							$data = $connector->fetchXML($this->externalConfig['parameters']);
+							break;
+						case 'array':
+							$data = $connector->fetchArray($this->externalConfig['parameters']);
+							break;
+						default:
+							$data = $connector->fetchRaw($this->externalConfig['parameters']);
+							break;
+					}
+					$this->handleData($data);
+if ($this->extConf['debug'] || TYPO3_DLOG) {
+	t3lib_div::devLog('Data received', $this->extKey, -1, $data);
+}
 				}
 			}
 		}
@@ -224,7 +237,7 @@ class tx_externalimport_importer {
 	 */
 	public function importData($table, $index, $rawData) {
 		$this->initTCAData($table, $index);
-		$this->handleRawData($rawData);
+		$this->handleData($rawData);
 
 // Log results to devlog
 
@@ -241,7 +254,7 @@ class tx_externalimport_importer {
 	 * @param	mixed		$rawData: data in the format provided by the external source (XML string, PHP array, etc.)
 	 * @return	void
 	 */
-	protected function handleRawData($rawData) {
+	protected function handleData($rawData) {
 
 // Prepare the data, depending on result type
 
@@ -286,30 +299,32 @@ class tx_externalimport_importer {
 
 // Loop on all entries
 
-		foreach ($rawData as $theRecord) {
-			$theData = array();
+		if (is_array($rawData) && count($rawData) > 0) {
+			foreach ($rawData as $theRecord) {
+				$theData = array();
 
 // Loop on the database columns and get the corresponding value from the import data
 
-			foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
-				if (isset($columnData['external'][$this->index]['field'])) {
-					if (isset($theRecord[$columnData['external'][$this->index]['field']])) {
-						$theData[$columnName] = $theRecord[$columnData['external'][$this->index]['field']];
+				foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
+					if (isset($columnData['external'][$this->index]['field'])) {
+						if (isset($theRecord[$columnData['external'][$this->index]['field']])) {
+							$theData[$columnName] = $theRecord[$columnData['external'][$this->index]['field']];
+						}
 					}
 				}
-			}
 
 // Get additional fields data, if any
 
-			if ($this->numAdditionalFields > 0) {
-				foreach ($this->additionalFields as $fieldName) {
-					if (isset($theRecord[$fieldName])) {
-						$theData[$fieldName] = $theRecord[$fieldName];
+				if ($this->numAdditionalFields > 0) {
+					foreach ($this->additionalFields as $fieldName) {
+						if (isset($theRecord[$fieldName])) {
+							$theData[$fieldName] = $theRecord[$fieldName];
+						}
 					}
 				}
-			}
 
-			$data[] = $theData;
+				$data[] = $theData;
+			}
 		}
 		return $data;
 	}
@@ -397,7 +412,7 @@ class tx_externalimport_importer {
 				// Could not instantiate the class, log error and do nothing
 				if ($userObject === false) {
 					if ($this->extConf['debug'] || TYPO3_DLOG) {
-						t3lib_div::devLog($GLOBALS['LANG']->getLL('invalid_userfunc'), $this->extKey, 2, $columnData['external'][$this->index]['userFunc']);
+						t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('invalid_userfunc'), $columnData['external'][$this->index]['userFunc']['class']), $this->extKey, 2, $columnData['external'][$this->index]['userFunc']);
 					}
 				}
 				// Otherwise call referenced class on all records
@@ -576,6 +591,13 @@ class tx_externalimport_importer {
 // Reference uid is found, perform an update (if not disabled)
 
 			if (isset($existingUids[$externalUid]) && !t3lib_div::inList($this->externalConfig['disabledOperations'], 'update')) {
+					// First call a preprocessing hook
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'])) {
+					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'] as $className) {
+						$preProcessor = &t3lib_div::getUserObj($className);
+						$theRecord = $preProcessor->processBeforeUpdate($theRecord, $this);
+					}
+				}
 				$tceData[$this->table][$existingUids[$externalUid]] = $theRecord;
 				$updatedUids[] = $existingUids[$externalUid];
 				$updates++;
@@ -584,13 +606,20 @@ class tx_externalimport_importer {
 // Reference uid not found, perform an insert (if not disabled)
 
 			else if (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
-				$inserts++;
+					// First call a preprocessing hook
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'])) {
+					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'] as $className) {
+						$preProcessor = &t3lib_div::getUserObj($className);
+						$theRecord = $preProcessor->processBeforeInsert($theRecord, $this);
+					}
+				}
 				if (isset($this->externalConfig['pid'])) { // Storage page (either specific for table or generic for extension)
 					$theRecord['pid'] = $this->externalConfig['pid'];
 				}
 				else {
 					$theRecord['pid'] = $this->extConf['storagePID'];
 				}
+				$inserts++;
 				$tceData[$this->table]['NEW_'.$inserts] = $theRecord;
 			}
 		}

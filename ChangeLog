@@ -1,3 +1,10 @@
+08-12-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added hooks for preprocessing records before insert and update
+	* Changed logic to call different fetch* method from connector depending on external data type
+	* Changed use of reference_uid property in external configuration
+	* Caught some unitialized variables
+
 08-11-19 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected behaviour of handleArray() to map field names properly
