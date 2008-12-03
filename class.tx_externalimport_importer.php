@@ -157,7 +157,7 @@ class tx_externalimport_importer {
 		// Additional fields are fields that must be taken from the imported data,
 		// but that will not be saved into the database
 		if (!empty($this->externalConfig['additional_fields'])) {
-			$this->additionalFields = explode(',', $this->externalConfig['additional_fields']);
+			$this->additionalFields = t3lib_div::trimExplode(',', $this->externalConfig['additional_fields'], 1);
 			$this->numAdditionalFields = count($this->additionalFields);
 		}
 
@@ -217,10 +217,10 @@ class tx_externalimport_importer {
 							$data = $connector->fetchRaw($this->externalConfig['parameters']);
 							break;
 					}
+					if ($this->extConf['debug'] || TYPO3_DLOG) {
+						t3lib_div::devLog('Data received', $this->extKey, -1, $data);
+					}
 					$this->handleData($data);
-if ($this->extConf['debug'] || TYPO3_DLOG) {
-	t3lib_div::devLog('Data received', $this->extKey, -1, $data);
-}
 				}
 			}
 		}
