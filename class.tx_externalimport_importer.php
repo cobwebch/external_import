@@ -69,6 +69,7 @@ class tx_externalimport_importer {
 	protected $index; // Index of the synchronisation configuration in use
 	protected $tableTCA; // TCA of the table being synchronised
 	protected $externalConfig; // Ctrl-section external config being used for synchronisation
+	protected $pid = 0; // uid of the page where the records will be stored
 	protected $additionalFields = array(); // List of fields to import, but not to save
 	protected $numAdditionalFields = 0; // Number of such fields
 
@@ -152,21 +153,23 @@ class tx_externalimport_importer {
 		t3lib_div::loadTCA($this->table);
 		$this->tableTCA = $GLOBALS['TCA'][$this->table];
 		$this->externalConfig = $GLOBALS['TCA'][$this->table]['ctrl']['external'][$index];
+			// Set the pid where the recors will be stored
+			// This is either specific for the given table or generic from the extension configuration
+		if (isset($this->externalConfig['pid'])) {
+			$this->pid = $this->externalConfig['pid'];
+		}
+		else {
+			$this->pid = $this->extConf['storagePID'];
+		}
+			// Set this storage page as the related page for the devLog entries
+		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->pid;
 
-		// Get the list of additional fields
-		// Additional fields are fields that must be taken from the imported data,
-		// but that will not be saved into the database
+			// Get the list of additional fields
+			// Additional fields are fields that must be taken from the imported data,
+			// but that will not be saved into the database
 		if (!empty($this->externalConfig['additional_fields'])) {
 			$this->additionalFields = t3lib_div::trimExplode(',', $this->externalConfig['additional_fields'], 1);
 			$this->numAdditionalFields = count($this->additionalFields);
-		}
-
-		// Set the records storage page as the related page for the devLog entries
-		if (isset($this->externalConfig['pid'])) { // Storage page (either specific for table or generic for extension)
-			$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->externalConfig['pid'];
-		}
-		else {
-			$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->extConf['storagePID'];
 		}
 	}
 
@@ -620,12 +623,7 @@ class tx_externalimport_importer {
 						$theRecord = $preProcessor->processBeforeInsert($theRecord, $this);
 					}
 				}
-				if (isset($this->externalConfig['pid'])) { // Storage page (either specific for table or generic for extension)
-					$theRecord['pid'] = $this->externalConfig['pid'];
-				}
-				else {
-					$theRecord['pid'] = $this->extConf['storagePID'];
-				}
+				$theRecord['pid'] = $this->pid;
 				$inserts++;
 				$tceData[$this->table]['NEW_'.$inserts] = $theRecord;
 			}
@@ -644,6 +642,13 @@ class tx_externalimport_importer {
 		}
 		else {
 			$absentUids = array_diff($existingUids, $updatedUids);
+				// Call a preprocessing hook
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'])) {
+				foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'] as $className) {
+					$preProcessor = &t3lib_div::getUserObj($className);
+					$absentUids = $preProcessor->processBeforeDelete($absentUids, $this);
+				}
+			}
 			$deletes = count($absentUids);
 			if ($deletes > 0) {
 				$tceCommands = array($this->table => array());
@@ -709,7 +714,14 @@ class tx_externalimport_importer {
 	 */
 	protected function getExistingUids() {
 		$existingUids = array();
-		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'].',uid', $this->table, '1 = 1'.t3lib_BEfunc::deleteClause($this->table));
+		if ($this->externalConfig['enforcePid']) {
+			$where = "pid = '".$this->pid."'";
+		}
+		else {
+			$where = '1 = 1';
+		}
+		$where .= t3lib_BEfunc::deleteClause($this->table);
+		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'].',uid', $this->table, $where);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
 			$existingUids[$row[$this->externalConfig['reference_uid']]] = $row['uid'];
 		}
