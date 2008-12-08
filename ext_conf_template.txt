@@ -1,5 +1,5 @@
 # cat=basic//; type=int; label=Storage PID: Enter default page uid for storing imported records
 storagePID = 0
 
-# cat=basic/enable/; type=boolean; label=Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension
+# cat=basic/enable/; type=boolean; label=Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.
 debug = 0
