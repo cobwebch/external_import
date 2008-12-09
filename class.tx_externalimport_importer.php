@@ -637,7 +637,7 @@ class tx_externalimport_importer {
 
 // Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
 
-		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || !empty($this->externalConfig['deleteNonSynchedRecords'])) {
+		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || (isset($this->externalConfig['deleteNonSynchedRecords']) && $this->externalConfig['deleteNonSynchedRecords'] === false)) {
 			$deletes = 0;
 		}
 		else {
