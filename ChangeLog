@@ -1,3 +1,13 @@
+xx-xx-xx Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Raised status to beta
+	* Released version 0.8.0
+
+08-12-12 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Cleaned up MM-relations configuration
+	* Updated manual accordingly
+
 08-12-06 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added enforcePid property

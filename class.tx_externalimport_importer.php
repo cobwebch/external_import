@@ -497,7 +497,8 @@ class tx_externalimport_importer {
 
 // Get foreign mapping for column
 
-				$foreignMappings = $this->getMapping($mmData['mappings']['uid_foreign']);
+				$mappingInformation = isset($mmData['mappings']['uid_foreign']) ? $mmData['mappings']['uid_foreign'] : $mmData['mapping'];
+				$foreignMappings = $this->getMapping($mappingInformation);
 
 // Go through each record and assemble pairs of primary and foreign keys
 
