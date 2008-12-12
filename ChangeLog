@@ -5,6 +5,7 @@ xx-xx-xx Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 08-12-12 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
+	* Corrected path to table icons
 	* Cleaned up MM-relations configuration
 	* Updated manual accordingly
 

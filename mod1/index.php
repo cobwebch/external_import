@@ -358,7 +358,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$tableIndex = $tableData['index'];
 				$table[$tr] = array();
 				$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
-				$table[$tr][] = isset($ctrlData['iconfile']) ? '<img src="'.$BACK_PATH.$ctrlData['iconfile'].'" width="18" height="16" alt="'.$tableTitle.'" />' : '&nbsp;';
+				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
 				$table[$tr][] = $tableTitle.' ('.$tableName.')';
 				$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 				$table[$tr][] = $tableData['priority'];
@@ -458,7 +458,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$tableName = $tableData['tablename'];
 				$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
 				$table[$tr] = array();
-				$table[$tr][] = isset($ctrlData['iconfile']) ? '<img src="'.$BACK_PATH.$ctrlData['iconfile'].'" width="18" height="16" alt="'.$tableTitle.'" />' : '&nbsp;';
+				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
 				$table[$tr][] = $tableTitle.' ('.$tableName.')';
 				$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 			}
