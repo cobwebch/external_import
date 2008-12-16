@@ -93,6 +93,14 @@ class tx_externalimport_importer {
 			$GLOBALS['LANG']->init($BE_USER->uc['lang']);
 		}
 		$GLOBALS['LANG']->includeLLFile('EXT:external_import/locallang.xml');
+
+// Force php limit execution time if set
+    if (isset($this->extConf['timelimit']) && ($this->extConf['timelimit'] > -1) ) {
+
+      set_time_limit($this->extConf['timelimit']);
+      if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog($GLOBALS['LANG']->getLL('timelimit'), $this->extKey, 0, $this->extConf['timelimit']);
+    }
+
 	}
 
 	/**
@@ -463,7 +471,7 @@ class tx_externalimport_importer {
 	 * @return	void
 	 */
 	protected function storeData($records) {
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Data received for storage', $this->extKey, 0, $records);
+//		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Data received for storage', $this->extKey, 0, $records);
 		$errors = 0;
 
 // Get the list of existing uids for the table
@@ -629,7 +637,7 @@ class tx_externalimport_importer {
 				$tceData[$this->table]['NEW_'.$inserts] = $theRecord;
 			}
 		}
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
+//		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
 		$tce->start($tceData, array());

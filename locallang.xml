@@ -20,6 +20,7 @@
 			<label index="insert_failed">Insert failed:</label>
 			<label index="delete_failed">Delete failed:</label>
 			<label index="invalid_userfunc">Invalid user function %s</label>
+			<label index="timelimit">PHP limit maximum execution time forced</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="no_connector">Aucun connecteur défini. Impossible de synchroniser.</label>
@@ -36,6 +37,7 @@
 			<label index="insert_failed">L'insertion a échoué:</label>
 			<label index="delete_failed">La suppression a échoué:</label>
 			<label index="invalid_userfunc">Fonction utilisateur non valable %s</label>
+			<label index="timelimit">PHP limit maximum execution time changé</label>
 		</languageKey>
 	</data>
 </T3locallang>
