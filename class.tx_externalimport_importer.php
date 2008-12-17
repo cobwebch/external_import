@@ -229,7 +229,7 @@ class tx_externalimport_importer {
 							break;
 					}
 					if ($this->extConf['debug'] || TYPO3_DLOG) {
-						t3lib_div::devLog('Data received', $this->extKey, -1, $data);
+						t3lib_div::devLog('Data received (example)', $this->extKey, -1, $data);
 					}
 					$this->handleData($data);
 				}
