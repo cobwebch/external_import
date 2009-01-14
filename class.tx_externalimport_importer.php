@@ -419,6 +419,9 @@ class tx_externalimport_importer {
 					if (isset($mappings[$externalValue])) {
 						$records[$i][$columnName] = $mappings[$externalValue];
 					}
+					else {
+						unset($records[$i][$columnName]);
+					}
 				}
 			}
 

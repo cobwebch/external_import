@@ -3,8 +3,13 @@ xx-xx-xx Francois Suter (Cobweb)  <typo3@cobweb.ch>
 	* Raised status to beta
 	* Released version 0.8.0
 
+09-01-14 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added unsetting of values that cannot be mapped during the transform step
+
 08-12-16 Stephane Garchery (Cobweb) <typo3@cobweb.ch>
-  * Add set_time_limit option 
+
+	* Add set_time_limit option
 
 08-12-12 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
