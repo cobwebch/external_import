@@ -1,3 +1,7 @@
+09-01-20 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added preprocessRawRecordset hook
+
 09-01-18 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Raised status to beta

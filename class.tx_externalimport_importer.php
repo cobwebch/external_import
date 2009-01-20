@@ -288,11 +288,15 @@ class tx_externalimport_importer {
 				break;
 		}
 
+// Apply any existing preprocessing hook to the raw data
+
+		$records = $this->preprocessRawData($records);
+
 // Transform data
 
 		$records = $this->transformData($records);
 
-// Apply any existing preprocessing hook
+// Apply any existing preprocessing hook to the transformed data
 
 		$records = $this->preprocessData($records);
 
@@ -444,6 +448,23 @@ class tx_externalimport_importer {
 						$records[$i][$columnName] = $userObject->$methodName($records[$i], $columnName, $parameters);
 					}
 				}
+			}
+		}
+		return $records;
+	}
+
+	/**
+	 * This method applies any existing pre-processing to the data just as it was fetched, before any transformation
+	 * Note that this method does not do anything by itself. It just calls on a pre-processing hook
+	 *
+	 * @param	array		$records: records containing the data
+	 * @return	array		the pre-processed records
+	 */
+	protected function preprocessRawData($records) {
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRawRecordset'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRawRecordset'] as $className) {
+				$preProcessor = &t3lib_div::getUserObj($className);
+				$records = $preProcessor->preprocessRawRecordset($records, $this);
 			}
 		}
 		return $records;
