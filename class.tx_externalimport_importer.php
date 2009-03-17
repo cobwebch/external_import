@@ -661,7 +661,7 @@ class tx_externalimport_importer {
 				$tceData[$this->table]['NEW_'.$inserts] = $theRecord;
 			}
 		}
-//		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
+		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
 		$tce->start($tceData, array());
