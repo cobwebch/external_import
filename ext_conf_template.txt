@@ -6,3 +6,6 @@ timelimit = -1
 
 # cat=basic/enable/; type=boolean; label=Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.
 debug = 0
+
+# cat=basic/enable/; type=boolean; label=Clean AJAX output: When using the BE module, AJAX calls are made to the external import script. If it issues warnings, the AJAX response will be corrupted. This cleans up the AJAX response by flushing any output procuded by the external import script.
+flushOutput = 1
