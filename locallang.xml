@@ -12,7 +12,6 @@
 			<label index="records_inserted">%s new record(s) inserted</label>
 			<label index="records_updated">%s existing record(s) updated</label>
 			<label index="records_deleted">%s existing record(s) deleted</label>
-			<label index="records_errors">%s data import error(s) occurred</label>
 			<label index="records_relationships">%s mm-relationships created</label>
 			<label index="sync_all">Synchronising all tables</label>
 			<label index="sync_table">Synchronisation of table %s</label>
@@ -21,6 +20,7 @@
 			<label index="delete_failed">Delete failed:</label>
 			<label index="invalid_userfunc">Invalid user function %s</label>
 			<label index="timelimit">PHP limit maximum execution time forced</label>
+			<label index="things_happened">One or more errors were reported. The count of operations performed may not be correct.</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="no_connector">Aucun connecteur défini. Impossible de synchroniser.</label>
@@ -29,7 +29,6 @@
 			<label index="records_inserted">%s nouveaux enregistrement(s) inséré(s)</label>
 			<label index="records_updated">%s enregistrement(s) existant(s) mis à jour</label>
 			<label index="records_deleted">%s enregistrement(s) existant(s) supprimé(s)</label>
-			<label index="records_errors">%s erreur(s) d'importation de données sont survenues</label>
 			<label index="records_relationships">%s relation(s) mm créée(s)</label>
 			<label index="sync_all">Synchronisation de toutes les tables</label>
 			<label index="sync_table">Synchronisation de la table %s</label>
@@ -38,6 +37,7 @@
 			<label index="delete_failed">La suppression a échoué:</label>
 			<label index="invalid_userfunc">Fonction utilisateur non valable %s</label>
 			<label index="timelimit">PHP limit maximum execution time changé</label>
+			<label index="things_happened">Une ou plusieurs erreurs sont survenues. Le nombre d'opérations effectué n'est peut-être pas correct.</label>
 		</languageKey>
 	</data>
 </T3locallang>

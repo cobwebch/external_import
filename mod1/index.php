@@ -128,17 +128,17 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 										var messages = "";
 										if (response["error"]) {
 											for (i = 0; i < response["error"].length; i++) {
-												messages = messages + "'.$GLOBALS['LANG']->getLL('error').': " + response["error"][i] + "<br />";
+												messages = messages + "<p style=\"padding: 4px; background-color: #f00; color: #fff;\">'.$GLOBALS['LANG']->getLL('error').': " + response["error"][i] + "</p>";
 											}
 										}
 										if (response["warning"]) {
 											for (i = 0; i < response["warning"].length; i++) {
-												messages = messages + "'.$GLOBALS['LANG']->getLL('warning').': " + response["warning"][i] + "<br />";
+												messages = messages + "<p style=\"padding: 4px; background-color: #f60; color: #fff;\">'.$GLOBALS['LANG']->getLL('warning').': " + response["warning"][i] + "</p>";
 											}
 										}
 										if (response["success"]) {
 											for (i = 0; i < response["success"].length; i++) {
-												messages = messages + response["success"][i] + "<br />";
+												messages = messages + "<p style=\"padding: 4px; background-color: #0f0; color: #000;\">" + response["success"][i] + "</p>";
 											}
 										}
 										$("result" + theID).update(messages);
@@ -178,17 +178,17 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 										var messages = "";
 										if (response["error"]) {
 											for (i = 0; i < response["error"].length; i++) {
-												messages = messages + "'.$GLOBALS['LANG']->getLL('error').': " + response["error"][i] + "<br />";
+												messages = messages + "<p style=\"padding: 4px; background-color: #f00; color: #fff;\">'.$GLOBALS['LANG']->getLL('error').': " + response["error"][i] + "</p>";
 											}
 										}
 										if (response["warning"]) {
 											for (i = 0; i < response["warning"].length; i++) {
-												messages = messages + "'.$GLOBALS['LANG']->getLL('warning').': " + response["warning"][i] + "<br />";
+												messages = messages + "<p style=\"padding: 4px; background-color: #f60; color: #fff;\">'.$GLOBALS['LANG']->getLL('warning').': " + response["warning"][i] + "</p>";
 											}
 										}
 										if (response["success"]) {
 											for (i = 0; i < response["success"].length; i++) {
-												messages = messages + response["success"][i] + "<br />";
+												messages = messages + "<p style=\"padding: 4px; background-color: #0f0; color: #000;\">" + response["success"][i] + "</p>";
 											}
 										}
 										$("result" + theID).update(messages);
@@ -331,7 +331,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 									'tr' => array('<tr class="bgColor2">','</tr>'),
 								),
 								'defRow' => array (
-									'tr' => array('<tr class="bgColor-20">','</tr>'),
+									'tr' => array('<tr class="bgColor-20" valign="top">','</tr>'),
 									'defCol' => array('<td>','</td>'),
 								)
 							);

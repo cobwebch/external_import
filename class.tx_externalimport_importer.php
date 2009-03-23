@@ -241,6 +241,7 @@ class tx_externalimport_importer {
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
 			$this->logMessages();
 		}
+		ob_end_clean();
 		return $this->messages;
 	}
 
@@ -667,9 +668,10 @@ class tx_externalimport_importer {
 		$tce->start($tceData, array());
 		$tce->process_datamap();
 		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('New IDs', 'external_import', 0, $tce->substNEWwithIDs);
+			// Store the number of new IDs created. This is used in error reporting later
+		$numberOfNewIDs = count($tce->substNEWwithIDs);
 
-// Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
-
+			// Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
 		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || (isset($this->externalConfig['deleteNonSynchedRecords']) && $this->externalConfig['deleteNonSynchedRecords'] === false)) {
 			$deletes = 0;
 		}
@@ -729,15 +731,44 @@ class tx_externalimport_importer {
 			}
 		}
 
-// Set informational messages
+			// Check if there were any errors reported by TCEmain
+		if (count($tce->errorLog) > 0) {
+				// If yes, get these messages from the sys_log table
+			$where = "tablename = '" . $this->table . "' AND error > '0'";
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_log', $where, '', 'tstamp DESC', count($tce->errorLog));
+			if ($res) {
+				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+						// Check if there's a label for the message
+					$labelCode = 'msg_'. $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
+					$label = $GLOBALS['LANG']->sL('LLL:EXT:belog/mod/locallang.xml:' . $labelCode);
+						// If not, use details field
+					if (empty($label)) {
+						$label = $row['details'];
+					}
+						// Substitute the first 5 items of extra data into the error message
+					if (!empty($row['log_data'])) {
+						$data = unserialize($row['log_data']);
+						$message = sprintf($label, htmlspecialchars($data[0]), htmlspecialchars($data[1]), htmlspecialchars($data[2]), htmlspecialchars($data[3]), htmlspecialchars($data[4]));
+					}
+					else {
+						$message = $label;
+					}
+					$this->messages['error'][] = $message;
+					if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog($message, $this->extKey, 3);
+				}
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
+			}
+				// Substract the number of new IDs from the number of inserts,
+				// to get a realistic number of new records
+			$inserts = $inserts + ($numberOfNewIDs - $inserts);
+				// Add a warning that numbers reported (below) may not be accurate
+			$this->messages['warning'][] = $GLOBALS['LANG']->getLL('things_happened');
+		}
 
+			// Set informational messages
 		$this->messages['success'][] = sprintf($GLOBALS['LANG']->getLL('records_inserted'), $inserts);
 		$this->messages['success'][] = sprintf($GLOBALS['LANG']->getLL('records_updated'), $updates);
 		$this->messages['success'][] = sprintf($GLOBALS['LANG']->getLL('records_deleted'), $deletes);
-		if (count($tce->errorLog) > 0) {
-			$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('records_errors'), count($tce->errorLog));
-			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain errors', $this->extKey, 3, $tce->errorLog);
-		}
 	}
 
 	/**
