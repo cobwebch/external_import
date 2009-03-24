@@ -236,12 +236,15 @@ class tx_externalimport_importer {
 			}
 		}
 
-// Log results to devlog
-
+			// Log results to devlog
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
 			$this->logMessages();
 		}
-		ob_end_clean();
+			// Flush all existing output (PHP errors, debug output, etc.)
+			// so that it doesn't corrupt module response (in particular when called via AJAX)
+		if ($this->extConf['flushOutput']) {
+			ob_end_clean();
+		}
 		return $this->messages;
 	}
 
