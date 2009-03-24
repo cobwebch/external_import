@@ -36,27 +36,28 @@
  *
  *
  *
- *   63: class tx_externalimport_importer
- *   81:     public function __construct()
- *  102:     public function synchronizeAllTables()
- *  149:     protected function initTCAData($table, $index)
- *  174:     public function synchronizeData($table, $index)
- *  225:     public function importData($table, $index, $rawData)
- *  244:     protected function handleRawData($rawData)
- *  286:     protected function handleArray($rawData)
- *  297:     protected function handleXML($rawData)
- *  346:     protected function transformData($records)
- *  396:     protected function preprocessData($records)
- *  413:     protected function storeData($records)
- *  657:     protected function getExistingUids()
- *  672:     protected function getMapping($mappingData)
- *  699:     protected function logMessages()
- *  722:     public function getTableName()
- *  731:     public function getIndex()
- *  741:     public function getExternalConfig()
- *  755:     public function addMessage($text, $status = 'error')
+ *   64: class tx_externalimport_importer
+ *   83:     public function __construct()
+ *  112:     public function synchronizeAllTables()
+ *  159:     protected function initTCAData($table, $index)
+ *  193:     public function synchronizeData($table, $index)
+ *  261:     public function importData($table, $index, $rawData)
+ *  280:     protected function handleData($rawData)
+ *  324:     protected function handleArray($rawData)
+ *  366:     protected function handleXML($rawData)
+ *  415:     protected function transformData($records)
+ *  468:     protected function preprocessRawData($records)
+ *  485:     protected function preprocessData($records)
+ *  502:     protected function storeData($records)
+ *  783:     protected function getExistingUids()
+ *  805:     protected function getMapping($mappingData)
+ *  832:     protected function logMessages()
+ *  855:     public function getTableName()
+ *  864:     public function getIndex()
+ *  874:     public function getExternalConfig()
+ *  886:     public function addMessage($text, $status = 'error')
  *
- * TOTAL FUNCTIONS: 18
+ * TOTAL FUNCTIONS: 19
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
