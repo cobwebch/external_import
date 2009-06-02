@@ -419,8 +419,7 @@ class tx_externalimport_importer {
 
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 
-// Get existing mappings and apply them to records
-
+				// Get existing mappings and apply them to records
 			if (isset($columnData['external'][$this->index]['mapping'])) {
 				$mappings = $this->getMapping($columnData['external'][$this->index]['mapping']);
 				for ($i = 0; $i < $numRecords; $i++) {
@@ -431,6 +430,12 @@ class tx_externalimport_importer {
 					else {
 						unset($records[$i][$columnName]);
 					}
+				}
+			}
+				// Otherwise apply constant value, if defined
+			elseif (isset($columnData['external'][$this->index]['value'])) {
+				for ($i = 0; $i < $numRecords; $i++) {
+					$records[$i][$columnName] = $columnData['external'][$this->index]['value'];
 				}
 			}
 
@@ -534,14 +539,22 @@ class tx_externalimport_importer {
 
 // Get foreign mapping for column
 
-				$mappingInformation = isset($mmData['mappings']['uid_foreign']) ? $mmData['mappings']['uid_foreign'] : $mmData['mapping'];
-				$foreignMappings = $this->getMapping($mappingInformation);
+				if (!isset($mmData['mapping']['value'])) {
+					$mappingInformation = isset($mmData['mappings']['uid_foreign']) ? $mmData['mappings']['uid_foreign'] : $mmData['mapping'];
+					$foreignMappings = $this->getMapping($mappingInformation);
+				}
 
 // Go through each record and assemble pairs of primary and foreign keys
 
 				foreach ($records as $theRecord) {
 					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
-					if (isset($foreignMappings[$theRecord[$columnName]])) {
+					if (isset($mmData['mapping']['value'])) {
+						$foreignValue = $mmData['mapping']['value'];
+					}
+					elseif (isset($foreignMappings[$theRecord[$columnName]])) {
+						$foreignValue = $foreignMappings[$theRecord[$columnName]];
+					}
+					if (isset($foreignValue)) {
 						if (!isset($mappings[$columnName][$externalUid])) {
 							$mappings[$columnName][$externalUid] = array();
 							// Initialise only if necessary
@@ -563,19 +576,19 @@ class tx_externalimport_importer {
 
 						if ($sortingField) {
 							$sortingValue = $theRecord[$sortingField];
-							$mappings[$columnName][$externalUid][$sortingValue] =  $foreignMappings[$theRecord[$columnName]];
+							$mappings[$columnName][$externalUid][$sortingValue] =  $foreignValue;
 							if ($additionalFields || $mmData['multiple']) {
 								$fullMappings[$columnName][$externalUid][$sortingValue] = array(
-									'value' => $foreignMappings[$theRecord[$columnName]],
+									'value' => $foreignValue,
 									'additional_fields' => $fields
 								);
 							}
 						}
 						else {
-							$mappings[$columnName][$externalUid][] =  $foreignMappings[$theRecord[$columnName]];
+							$mappings[$columnName][$externalUid][] =  $foreignValue;
 							if ($additionalFields || $mmData['multiple']) {
 								$fullMappings[$columnName][$externalUid][] = array(
-									'value' => $foreignMappings[$theRecord[$columnName]],
+									'value' => $foreignValue,
 									'additional_fields' => $fields
 								);
 							}
@@ -789,7 +802,7 @@ class tx_externalimport_importer {
 			$where = '1 = 1';
 		}
 		$where .= t3lib_BEfunc::deleteClause($this->table);
-		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'].',uid', $this->table, $where);
+		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'] . ',uid', $this->table, $where);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
 			$existingUids[$row[$this->externalConfig['reference_uid']]] = $row['uid'];
 		}
@@ -805,8 +818,7 @@ class tx_externalimport_importer {
 	protected function getMapping($mappingData) {
 		$localMapping = array();
 
-// Assemble query and get data
-
+			// Assemble query and get data
 		if (isset($mappingData['value_field'])) {
 			$valueField = $mappingData['value_field'];
         }
@@ -814,10 +826,9 @@ class tx_externalimport_importer {
 			$valueField = 'uid';
         }
 		$fields = $mappingData['reference_field'].', '.$valueField;
-		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1'.t3lib_BEfunc::deleteClause($mappingData['table']));
+		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1' . t3lib_BEfunc::deleteClause($mappingData['table']));
 
-// Fill hash table
-
+			// Fill hash table
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
 			$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
 		}
