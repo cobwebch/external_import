@@ -1,3 +1,8 @@
+09-06-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added configuration option for setting fixed values
+	* Added configuration option for setting fixed value mappings
+
 09-03-24 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added option for clearing output
