@@ -818,19 +818,26 @@ class tx_externalimport_importer {
 	protected function getMapping($mappingData) {
 		$localMapping = array();
 
-			// Assemble query and get data
-		if (isset($mappingData['value_field'])) {
-			$valueField = $mappingData['value_field'];
-        }
+			// Check if there's a fixed value map
+		if (isset($mappingData['valueMap'])) {
+				// Use value map directly
+			$localMapping = $mappingData['valueMap'];
+		}
 		else {
-			$valueField = 'uid';
-        }
-		$fields = $mappingData['reference_field'] . ', ' . $valueField;
-		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1' . t3lib_BEfunc::deleteClause($mappingData['table']));
+				// Assemble query and get data
+			if (isset($mappingData['value_field'])) {
+				$valueField = $mappingData['value_field'];
+			}
+			else {
+				$valueField = 'uid';
+			}
+			$fields = $mappingData['reference_field'] . ', ' . $valueField;
+			$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1' . t3lib_BEfunc::deleteClause($mappingData['table']));
 
-			// Fill hash table
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
-			$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
+				// Fill hash table
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
+				$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
+			}
 		}
 		return $localMapping;
 	}
