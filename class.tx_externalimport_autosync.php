@@ -24,14 +24,14 @@
 * $Id$
 ***************************************************************/
 
-require_once(t3lib_extMgm::extPath('gabriel','class.tx_gabriel_event.php'));
-require_once(t3lib_extMgm::extPath('external_import').'class.tx_externalimport_importer.php');
+require_once(t3lib_extMgm::extPath('gabriel', 'class.tx_gabriel_event.php'));
+require_once(t3lib_extMgm::extPath('external_import', 'class.tx_externalimport_importer.php'));
 
 /**
  * This class executes Gabriel events for automatic synchronisations of external data
  *
- * @author	Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package	TYPO3
+ * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
+ * @package		TYPO3
  * @subpackage	tx_externalimport
  */
 class tx_externalimport_autosync extends tx_gabriel_event {
@@ -43,14 +43,10 @@ class tx_externalimport_autosync extends tx_gabriel_event {
 	 */
 	public function execute() {
 
-// Get the crid for the event and extract the part after the colon (:)
-// This part indicates which table to synchronise, or "all" for full synchronisation
-
+			// Get the crid for the event
 		$crid = $this->gabriel->getEventCrid($this->eventUid);
-//		list($ext, $command) = t3lib_div::trimExplode('::', $crid, 1);
 
-// Instatiate the import object and call appropriate method depending on command
-
+			// Instantiate the import object and call appropriate method depending on command
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
 		if ($this->commands['sync'] == 'all') {
 			$importer->synchronizeAllTables();
