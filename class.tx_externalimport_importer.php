@@ -666,7 +666,7 @@ class tx_externalimport_importer {
 
 // Reference uid not found, perform an insert (if not disabled)
 
-			else if (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
+			elseif (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
 					// First call a preprocessing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'])) {
 					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'] as $className) {
@@ -676,7 +676,7 @@ class tx_externalimport_importer {
 				}
 				$theRecord['pid'] = $this->pid;
 				$inserts++;
-				$tceData[$this->table]['NEW_'.$inserts] = $theRecord;
+				$tceData[$this->table]['NEW_' . $inserts] = $theRecord;
 			}
 		}
 		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
@@ -796,7 +796,7 @@ class tx_externalimport_importer {
 	protected function getExistingUids() {
 		$existingUids = array();
 		if ($this->externalConfig['enforcePid']) {
-			$where = "pid = '".$this->pid."'";
+			$where = "pid = '" . $this->pid . "'";
 		}
 		else {
 			$where = '1 = 1';
@@ -825,7 +825,7 @@ class tx_externalimport_importer {
 		else {
 			$valueField = 'uid';
         }
-		$fields = $mappingData['reference_field'].', '.$valueField;
+		$fields = $mappingData['reference_field'] . ', ' . $valueField;
 		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1' . t3lib_BEfunc::deleteClause($mappingData['table']));
 
 			// Fill hash table
