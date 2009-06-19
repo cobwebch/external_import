@@ -487,9 +487,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 			if (t3lib_extMgm::isLoaded('gabriel', false)) {
 				$scheduler = t3lib_div::getUserObj('EXT:gabriel/class.tx_gabriel.php:&tx_gabriel');
+				$autoSyncClass = 'tx_externalimport_autosync_gabriel';
 			}
 			else {
 				$scheduler = t3lib_div::makeInstance('tx_scheduler');
+				$autoSyncClass = 'tx_externalimport_autosync_scheduler';
 			}
 
 // If there was an input, set gabriel event
@@ -575,12 +577,12 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 					else {
 						if (t3lib_extMgm::isLoaded('gabriel', false)) {
-							$event = t3lib_div::getUserObj('EXT:external_import/class.tx_externalimport_autosync_gabriel.php:tx_externalimport_autosync_gabriel');
+							$event = t3lib_div::getUserObj('EXT:external_import/class.tx_externalimport_autosync_gabriel.php:' . $autoSyncClass);
 						} else {
-							$event = t3lib_div::makeInstance('tx_externalimport_autosync_scheduler');
+							$event = t3lib_div::makeInstance($autoSyncClass);
 						}
 						$event->registerRecurringExecution($startdate, $interval, 0);
-						$scheduler->addEvent($event, 'tx_externalimport::sync=all');
+						$scheduler->addEvent($event, $autoSyncClass . '::sync=all');
 						$successMessage = $GLOBALS['LANG']->getLL('autosync_activated');
 					}
 					$content .= '<p style="padding: 4px; background-color: #0f0;">'.$successMessage.'</p>';
@@ -590,7 +592,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 // Check for existing event
 
-			$existingEvents = $scheduler->fetchEventsByCRID('tx_externalimport::sync=all');
+			$existingEvents = $scheduler->fetchEventsByCRID($autoSyncClass . '::sync=all');
 			if (count($existingEvents) == 0) { // No existing event, display a message to that effect
 				$content .= '<p><strong>'.$GLOBALS['LANG']->getLL('no_autosync').'</strong></p>';
 			}
