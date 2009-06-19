@@ -481,7 +481,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	function displayAutoSyncSection() {
 		$content = '';
-		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('gabriel', false)) {
+		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('scheduler', false)) {
 
 // Instantiate a Gabriel or Scheduler object
 
