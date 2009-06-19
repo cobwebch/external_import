@@ -328,7 +328,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 									'tr' => array('<tr class="bgColor2">','</tr>'),
 								),
 								'defRow' => array (
-									'tr' => array('<tr class="bgColor-20" valign="top">','</tr>'),
+									'tr' => array('<tr class="bgColor3-20" valign="top">','</tr>'),
 									'defCol' => array('<td>','</td>'),
 								)
 							);
