@@ -21,7 +21,7 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 *
-* $Id: class.tx_externalimport_autosync.php 18238 2009-03-24 08:01:10Z francois $
+* $Id$
 ***************************************************************/
 
 require_once(t3lib_extMgm::extPath('external_import', 'class.tx_externalimport_importer.php'));

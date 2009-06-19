@@ -6,7 +6,7 @@ $GLOBALS['TYPO3_CONF_VARS']['BE']['AJAX']['externalimport::synchronizeExternalTa
 
 // Register handler class for Gabriel
 if (t3lib_extMgm::isLoaded('gabriel')) {
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['gabriel']['include'][$_EXTKEY] = 'class.tx_externalimport_autosync.php';
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['gabriel']['include'][$_EXTKEY] = 'class.tx_externalimport_autosync_gabriel.php';
 }
 
 // Register handler calls for Scheduler

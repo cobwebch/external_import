@@ -26,12 +26,12 @@
 
 unset($MCONF);
 require_once('conf.php');
-require_once($BACK_PATH.'init.php');
-require_once($BACK_PATH.'template.php');
+require_once($BACK_PATH . 'init.php');
+require_once($BACK_PATH . 'template.php');
 
 $LANG->includeLLFile('EXT:external_import/mod1/locallang.xml');
-require_once(PATH_t3lib.'class.t3lib_scbase.php');
-$BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
+require_once(PATH_t3lib . 'class.t3lib_scbase.php');
+$BE_USER->modAccess($MCONF, 1);	// This checks permissions and exits if the users has no permission for entry.
 
 /**
  * Module 'External Data Import' for the 'external_import' extension.
@@ -62,8 +62,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			'function' => array(
 				'sync' => $GLOBALS['LANG']->getLL('function_sync'),
 				'nosync' => $GLOBALS['LANG']->getLL('function_nosync'),
-//				'2' => $GLOBALS['LANG']->getLL('function2'),
-//				'3' => $GLOBALS['LANG']->getLL('function3'),
 			)
 		);
 		parent::menuConfig();
@@ -88,7 +86,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				// Draw the header.
 			$this->doc = t3lib_div::makeInstance('template');
 			$this->doc->backPath = $BACK_PATH;
-//			$this->doc->form='<form action="" method="POST">';
 
 				// JavaScript
 			$this->doc->JScode = '
@@ -484,11 +481,16 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	function displayAutoSyncSection() {
 		$content = '';
-		if (t3lib_extMgm::isLoaded('gabriel', false)) {
+		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('gabriel', false)) {
 
-// Instantiate a Gabriel object
+// Instantiate a Gabriel or Scheduler object
 
-			$gabriel = t3lib_div::getUserObj('EXT:gabriel/class.tx_gabriel.php:&tx_gabriel');
+			if (t3lib_extMgm::isLoaded('gabriel', false)) {
+				$scheduler = t3lib_div::getUserObj('EXT:gabriel/class.tx_gabriel.php:&tx_gabriel');
+			}
+			else {
+				$scheduler = t3lib_div::makeInstance('tx_scheduler');
+			}
 
 // If there was an input, set gabriel event
 
@@ -557,7 +559,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 					$event = null;
 					if (!empty($syncInput['uid'])) {
-						$event = $gabriel->fetchEvent($syncInput['uid']);
+						$event = $scheduler->fetchEvent($syncInput['uid']);
 					}
 
 // If there's an event, update it
@@ -565,17 +567,20 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					if (is_object($event)) {
 						$event->stop(); // Stop any existing execution(s)
 						$event->registerRecurringExecution($startdate, $interval, 0);
-						$gabriel->saveEvent($event);
+						$scheduler->saveEvent($event);
 						$successMessage = $GLOBALS['LANG']->getLL('autosync_updated');
 					}
 
 // If there was no event, create a new one
 
 					else {
-						$event = t3lib_div::getUserObj('EXT:external_import/class.tx_externalimport_autosync.php:tx_externalimport_autosync');
+						if (t3lib_extMgm::isLoaded('gabriel', false)) {
+							$event = t3lib_div::getUserObj('EXT:external_import/class.tx_externalimport_autosync_gabriel.php:tx_externalimport_autosync_gabriel');
+						} else {
+							$event = t3lib_div::makeInstance('tx_externalimport_autosync_scheduler');
+						}
 						$event->registerRecurringExecution($startdate, $interval, 0);
-//						$event->registerCronEvent(time(), 0, $crontab, false);
-						$gabriel->addEvent($event, 'tx_externalimport::sync=all');
+						$scheduler->addEvent($event, 'tx_externalimport::sync=all');
 						$successMessage = $GLOBALS['LANG']->getLL('autosync_activated');
 					}
 					$content .= '<p style="padding: 4px; background-color: #0f0;">'.$successMessage.'</p>';
@@ -585,16 +590,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 // Check for existing event
 
-//			else {
-				$existingEvents = $gabriel->fetchEventsByCRID('tx_externalimport::sync=all');
-				if (count($existingEvents) == 0) { // No existing event, display a message to that effect
-					$content .= '<p><strong>'.$GLOBALS['LANG']->getLL('no_autosync').'</strong></p>';
-				}
-				else { // An event exists (and there should be only one), display next execution time
-					$content .= '<p><strong>'.sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $existingEvents[0]->executionTime)).'</strong></p>';
-				}
-				$content .= $this->doc->spacer(10);
-//			}
+			$existingEvents = $scheduler->fetchEventsByCRID('tx_externalimport::sync=all');
+			if (count($existingEvents) == 0) { // No existing event, display a message to that effect
+				$content .= '<p><strong>'.$GLOBALS['LANG']->getLL('no_autosync').'</strong></p>';
+			}
+			else { // An event exists (and there should be only one), display next execution time
+				$content .= '<p><strong>'.sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $existingEvents[0]->executionTime)).'</strong></p>';
+			}
+			$content .= $this->doc->spacer(10);
 
 // Display auto sync set up form
 
