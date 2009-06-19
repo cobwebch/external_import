@@ -1,3 +1,8 @@
+09-06-19 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added capacity to use either gabriel or scheduler (TYPO3 4.3+)
+	* Added usage of autoloader (TYPO3 4.3+)
+
 09-06-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added configuration option for setting fixed value maps
