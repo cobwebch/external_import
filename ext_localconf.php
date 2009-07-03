@@ -11,7 +11,7 @@ if (t3lib_extMgm::isLoaded('gabriel')) {
 
 // Register handler calls for Scheduler
 if (t3lib_extMgm::isLoaded('scheduler')) {
-	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['scheduler']['include'][$_EXTKEY] = array(
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['events'][$_EXTKEY] = array(
 		0 => array(
 				'class' => 'EXT:scheduler/class.tx_externalimport_autosync_scheduler.php:tx_externalimport_autosync_scheduler',
 				'title' => 'LLL:EXT:' . $_EXTKEY . '/locallang.xml:scheduler.title',
