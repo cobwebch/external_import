@@ -631,14 +631,6 @@ class tx_externalimport_importer {
 			if (in_array($externalUid, $handledUids)) continue; // Skip handling of already handled records (this can happen with denormalised structures)
 			$handledUids[] = $externalUid;
 
-// Remove additional fields data, if any. They must not be saved
-
-			if ($this->numAdditionalFields > 0) {
-				foreach ($this->additionalFields as $fieldName) {
-					unset($theRecord[$fieldName]);
-				}
-			}
-
 // Prepare MM-fields, if any
 
 			if ($hasMMRelations) {
@@ -651,32 +643,52 @@ class tx_externalimport_importer {
 
 // Reference uid is found, perform an update (if not disabled)
 
+			$additionalFields = array();
 			if (isset($existingUids[$externalUid]) && !t3lib_div::inList($this->externalConfig['disabledOperations'], 'update')) {
 					// First call a preprocessing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'])) {
-					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'] as $className) {
+					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'] as $className) {
 						$preProcessor = &t3lib_div::getUserObj($className);
 						$theRecord = $preProcessor->processBeforeUpdate($theRecord, $this);
 					}
 				}
-				$tceData[$this->table][$existingUids[$externalUid]] = $theRecord;
-				$updatedUids[] = $existingUids[$externalUid];
+				$theID = $existingUids[$externalUid];
+
+// Remove additional fields data, if any. They must not be saved
+
+				if ($this->numAdditionalFields > 0) {
+					foreach ($this->additionalFields as $fieldName) {
+						$additionalFields[$theID][$fieldName] = $theRecord[$fieldName];
+						unset($theRecord[$fieldName]);
+					}
+				}
+				$tceData[$this->table][$theID] = $theRecord;
+				$updatedUids[] = $theID;
 				$updates++;
 			}
 
-// Reference uid not found, perform an insert (if not disabled)
-
+				// Reference uid not found, perform an insert (if not disabled)
 			elseif (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
 					// First call a preprocessing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'])) {
-					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'] as $className) {
+					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'] as $className) {
 						$preProcessor = &t3lib_div::getUserObj($className);
 						$theRecord = $preProcessor->processBeforeInsert($theRecord, $this);
 					}
 				}
 				$theRecord['pid'] = $this->pid;
 				$inserts++;
-				$tceData[$this->table]['NEW_' . $inserts] = $theRecord;
+				$theID = 'NEW_' . $inserts;
+
+// Remove additional fields data, if any. They must not be saved
+
+				if ($this->numAdditionalFields > 0) {
+					foreach ($this->additionalFields as $fieldName) {
+						$additionalFields[$theID][$fieldName] = $theRecord[$fieldName];
+						unset($theRecord[$fieldName]);
+					}
+				}
+				$tceData[$this->table][$theID] = $theRecord;
 			}
 		}
 		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
@@ -688,6 +700,38 @@ class tx_externalimport_importer {
 			// Store the number of new IDs created. This is used in error reporting later
 		$numberOfNewIDs = count($tce->substNEWwithIDs);
 
+			// Post-processing hook after data was saved
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['datamapPostProcess'])) {
+			$savedData = array();
+			foreach ($tceData as $table => $tableRecords) {
+				foreach ($tableRecords as $id => $record) {
+						// Added status to record
+						// If operation was insert, match placeholder to actual id
+					if (isset($tce->substNEWwithIDs[$id])) {
+						$uid = $tce->substNEWwithIDs[$id];
+						$record['tx_externalimport:status'] = 'insert';
+					} else {
+						$uid = $id;
+						$record['tx_externalimport:status'] = 'update';
+					}
+						// Restore additional fields, if any
+					if ($this->numAdditionalFields > 0) {
+						foreach ($additionalFields[$id] as $fieldName => $fieldValue) {
+							$record[$fieldName] = $fieldValue;
+						}
+					}
+					$savedData[$uid] = $record;
+				}
+			}
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['datamapPostProcess'] as $className) {
+				$postProcessor = &t3lib_div::getUserObj($className);
+				$postProcessor->datamapPostProcess($this->table, $savedData, $this);
+			}
+		}
+			// Clean up
+		unset($tceData);
+		unset($saveData);
+
 			// Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
 		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || (isset($this->externalConfig['deleteNonSynchedRecords']) && $this->externalConfig['deleteNonSynchedRecords'] === false)) {
 			$deletes = 0;
@@ -696,7 +740,7 @@ class tx_externalimport_importer {
 			$absentUids = array_diff($existingUids, $updatedUids);
 				// Call a preprocessing hook
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'])) {
-				foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'] as $className) {
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'] as $className) {
 					$preProcessor = &t3lib_div::getUserObj($className);
 					$absentUids = $preProcessor->processBeforeDelete($absentUids, $this);
 				}
@@ -710,6 +754,13 @@ class tx_externalimport_importer {
 				if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain commands', $this->extKey, 0, $tceCommands);
 				$tce->start(array(), $tceCommands);
 				$tce->process_cmdmap();
+					// Call a postprocessing hook
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['cmdmapPostProcess'])) {
+					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['cmdmapPostProcess'] as $className) {
+						$postProcessor = &t3lib_div::getUserObj($className);
+						$absentUids = $postProcessor->cmdmapPostProcess($this->table, $absentUids, $this);
+					}
+				}
 			}
 		}
 
