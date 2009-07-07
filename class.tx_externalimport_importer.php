@@ -626,13 +626,14 @@ class tx_externalimport_importer {
 		$updatedUids = array();
 		$handledUids = array();
 		$tceData = array($this->table => array());
+		$savedAdditionalFields = array();
 		foreach ($records as $theRecord) {
+			$localAdditionalFields = array();
 			$externalUid = $theRecord[$this->externalConfig['reference_uid']];
 			if (in_array($externalUid, $handledUids)) continue; // Skip handling of already handled records (this can happen with denormalised structures)
 			$handledUids[] = $externalUid;
 
-// Prepare MM-fields, if any
-
+				// Prepare MM-fields, if any
 			if ($hasMMRelations) {
 				foreach ($mappings as $columnName => $columnMappings) {
 					if (isset($columnMappings[$externalUid])) {
@@ -641,9 +642,17 @@ class tx_externalimport_importer {
 				}
 			}
 
-// Reference uid is found, perform an update (if not disabled)
+				// Remove additional fields data, if any. They must not be saved to database
+				// They are saved locally however, for later use
+			if ($this->numAdditionalFields > 0) {
+				foreach ($this->additionalFields as $fieldName) {
+					$localAdditionalFields[$fieldName] = $theRecord[$fieldName];
+					unset($theRecord[$fieldName]);
+				}
+			}
 
-			$additionalFields = array();
+			$theID = '';
+				// Reference uid is found, perform an update (if not disabled)
 			if (isset($existingUids[$externalUid]) && !t3lib_div::inList($this->externalConfig['disabledOperations'], 'update')) {
 					// First call a preprocessing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'])) {
@@ -654,14 +663,6 @@ class tx_externalimport_importer {
 				}
 				$theID = $existingUids[$externalUid];
 
-// Remove additional fields data, if any. They must not be saved
-
-				if ($this->numAdditionalFields > 0) {
-					foreach ($this->additionalFields as $fieldName) {
-						$additionalFields[$theID][$fieldName] = $theRecord[$fieldName];
-						unset($theRecord[$fieldName]);
-					}
-				}
 				$tceData[$this->table][$theID] = $theRecord;
 				$updatedUids[] = $theID;
 				$updates++;
@@ -679,16 +680,12 @@ class tx_externalimport_importer {
 				$theRecord['pid'] = $this->pid;
 				$inserts++;
 				$theID = 'NEW_' . $inserts;
-
-// Remove additional fields data, if any. They must not be saved
-
-				if ($this->numAdditionalFields > 0) {
-					foreach ($this->additionalFields as $fieldName) {
-						$additionalFields[$theID][$fieldName] = $theRecord[$fieldName];
-						unset($theRecord[$fieldName]);
-					}
-				}
 				$tceData[$this->table][$theID] = $theRecord;
+			}
+				// Store local additional fields into general additional fields array
+				// keyed to proper id's (if the record was processed)
+			if (!empty($theID) {
+				$savedAdditionalFields[$theID] = $localAdditionalFields;
 			}
 		}
 		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
@@ -716,7 +713,7 @@ class tx_externalimport_importer {
 					}
 						// Restore additional fields, if any
 					if ($this->numAdditionalFields > 0) {
-						foreach ($additionalFields[$id] as $fieldName => $fieldValue) {
+						foreach ($savedAdditionalFields[$id] as $fieldName => $fieldValue) {
 							$record[$fieldName] = $fieldValue;
 						}
 					}
@@ -730,7 +727,7 @@ class tx_externalimport_importer {
 		}
 			// Clean up
 		unset($tceData);
-		unset($saveData);
+		unset($savedData);
 
 			// Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
 		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || (isset($this->externalConfig['deleteNonSynchedRecords']) && $this->externalConfig['deleteNonSynchedRecords'] === false)) {
