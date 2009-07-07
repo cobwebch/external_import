@@ -742,7 +742,7 @@ class tx_externalimport_importer {
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'] as $className) {
 					$preProcessor = &t3lib_div::getUserObj($className);
-					$absentUids = $preProcessor->processBeforeDelete($absentUids, $this);
+					$absentUids = $preProcessor->processBeforeDelete($this->table, $absentUids, $this);
 				}
 			}
 			$deletes = count($absentUids);
