@@ -684,7 +684,7 @@ class tx_externalimport_importer {
 			}
 				// Store local additional fields into general additional fields array
 				// keyed to proper id's (if the record was processed)
-			if (!empty($theID) {
+			if (!empty($theID)) {
 				$savedAdditionalFields[$theID] = $localAdditionalFields;
 			}
 		}
