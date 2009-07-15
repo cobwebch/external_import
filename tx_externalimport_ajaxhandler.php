@@ -24,24 +24,18 @@
 * $Id$
 ***************************************************************/
 
-require_once('conf.php');
-require_once($BACK_PATH.'init.php');
+define('TYPO3_MOD_PATH', '../typo3conf/ext/external_import/');
+require_once('../../../typo3/init.php');
 
-//$LANG->includeLLFile('EXT:external_import/mod1/locallang.xml');
-//$BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
-
-// Make instance
-
-require_once(t3lib_extMgm::extPath('external_import').'mod1/class.tx_externalimport_ajax.php');
+	// Make instance
+require_once(t3lib_extMgm::extPath('external_import') . 'class.tx_externalimport_ajax.php');
 $ajaxHandler = t3lib_div::makeInstance('tx_externalimport_ajax');
 
-// Execute called for function
-
+	// Execute called for function
 $result = $ajaxHandler->execute();
 
-// Encode result as JSON and return it
-
-require_once(PATH_typo3.'contrib/json.php');
+	// Encode result as JSON and return it
+require_once(PATH_typo3 . 'contrib/json.php');
 $jsonObject = t3lib_div::makeInstance('Services_JSON');
 
 echo $jsonObject->encode($result);
