@@ -32,7 +32,7 @@ require_once(t3lib_extMgm::extPath('external_import', 'autosync/class.tx_externa
  * @package		TYPO3
  * @subpackage	tx_externalimport
  *
- * $Id: class.tx_externalimport_ajax.php 18238 2009-03-24 08:01:10Z francois $
+ * $Id$
  */
 class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autosync_wrapper {
 	static public $eventClassName = 'tx_externalimport_autosync_gabriel_event';

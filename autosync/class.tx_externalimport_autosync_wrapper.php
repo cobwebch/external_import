@@ -30,7 +30,7 @@
  * @package		TYPO3
  * @subpackage	tx_externalimport
  *
- * $Id: class.tx_externalimport_ajax.php 18238 2009-03-24 08:01:10Z francois $
+ * $Id$
  */
 abstract class tx_externalimport_autosync_wrapper {
 	/**
