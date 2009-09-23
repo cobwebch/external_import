@@ -348,6 +348,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table[$tr][] = $GLOBALS['LANG']->getLL('priority'); // Priority
 			$table[$tr][] = '&nbsp;'; // Action icons
 			$table[$tr][] = '&nbsp;'; // Action result
+			$table[$tr][] = '&nbsp;'; // Sync form
 
 // Generate table row for each table
 
@@ -363,7 +364,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 				$table[$tr][] = $tableData['priority'];
 				$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\', \''.$tableIndex.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
-				$table[$tr][] = '<div id="result'.$tr.'"></div>'; // Action result
+				$table[$tr][] = '<div id="result' . $tr . '"></div>'; // Action result
+				$table[$tr][] = '<div id="result' . $tr . '">' . $this->displaySyncForm(array(), $tableName, $tableIndex) . '</div>'; // Sync form
 			}
 
 // Render the table
@@ -565,17 +567,13 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 				// An event exists, display next execution time
 			} else {
-				$message = sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $existingEvents['all']['nextexecution']));
+				$message = sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $existingEvents['all']['nextexecution']), $existingEvents['all']['interval']);
 				$content .= $this->displayMessage($message, 0);
 			}
 			$content .= $this->doc->spacer(10);
 
 				// Display auto sync set up form
-			if (isset($existingEvents['all'])) {
-				$content .= '<p>' . sprintf($GLOBALS['LANG']->getLL('autosync_update_intro'), $existingEvents['all']['interval']) . '</p>';
-			} else {
-				$content .= '<p>' . $GLOBALS['LANG']->getLL('autosync_nosync_intro') . '</p>';
-			}
+			$content .= '<p>' . $GLOBALS['LANG']->getLL('autosync_intro') . '</p>';
 			$content .= $this->doc->spacer(5);
 			$content .= $this->displaySyncForm($existingEvents['all'], 'all');
 		}
@@ -616,7 +614,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @return	string		HTML of the form to display
 	 */
 	protected function displaySyncForm($data, $table, $index = 0) {
-		$form = '<form name="syncForm" method="POST" action="">';
+		$form = '<form name="syncForm" id="syncForm_' . $table . '_' . $index . '" method="POST" action="">';
 		$form .= '<input type="hidden" name="tx_externalimport[sync]" value="' . $table . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['all']['uid'])) ? $data['all']['uid'] : 0) . '" />';

@@ -26,8 +26,7 @@
 			<label index="warning">Warning</label>
 			<label index="manual_sync">Automatic synchronisation</label>
 			<label index="autosync">Automatic synchronisation</label>
-			<label index="autosync_nosync_intro">Using the form below you can define a frequency for the automatic synchronisation of all external tables.</label>
-			<label index="autosync_update_intro">Using the form below you can change the frequency of the automatic synchronisation of all external tables. Current frequency is %d seconds.</label>
+			<label index="autosync_intro">Using the form below you can define a frequency for the automatic synchronisation of all external tables.</label>
 			<label index="autosync_error">Automatic synchronisation of all external tables is not possible, because neither extension "gabriel", nor system extension "scheduler" (TYPO3 4.3+) are installed.</label>
 			<label index="start_date">Start date:</label>
 			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
@@ -42,10 +41,8 @@
 			<label index="set_sync">Set synchronisation</label>
 			<label index="autosync_saved">The automatic synchronisation information has been saved.</label>
 			<label index="autosync_save_failed">The automatic synchronisation information could not be saved.</label>
-			<label index="autosync_activated">Automatic synchronisation has been activated.</label>
-			<label index="autosync_updated">Automatic synchronisation has been updated.</label>
 			<label index="no_autosync">The automatic synchronisation is not yet enabled.</label>
-			<label index="next_autosync">Automatic synchronisation is activated. The next run will take place on %s.</label>
+			<label index="next_autosync">Automatic synchronisation is activated. The next run will take place on %1$s. Frequency is %2$d seconds.</label>
 			<label index="error_value_below_0">Please enter a value larger than 0.</label>
 			<label index="error_invalid_start_date">The given start date is not valid.</label>
 		</languageKey>
