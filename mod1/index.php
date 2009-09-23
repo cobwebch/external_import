@@ -36,8 +36,8 @@ require_once(t3lib_extMgm::extPath('external_import', 'autosync/class.tx_externa
 /**
  * Module 'External Data Import' for the 'external_import' extension.
  *
- * @author	Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package	TYPO3
+ * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
+ * @package		TYPO3
  * @subpackage	tx_externalimport
  *
  * $Id$
@@ -211,7 +211,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
 			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
 			$this->content .= $this->doc->spacer(5);
-			$this->content .= '<form name="menuForm" action="" method="POST">'.$this->doc->section('',$this->doc->funcMenu('', t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']))).'</form>';
+			$this->content .= '<form name="menuForm" action="" method="POST">' . $this->doc->section('', $this->doc->funcMenu('', t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']))) . '</form>';
+			$this->content .= '</form>';
 			$this->content .= $this->doc->divider(5);
 
 
@@ -571,24 +572,12 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 				// Display auto sync set up form
 			if (isset($existingEvents['all'])) {
-				$content .= '<p>' . sprintf($GLOBALS['LANG']->getLL('autosync_update_intro'), $existingEvents['all']->interval) . '</p>';
+				$content .= '<p>' . sprintf($GLOBALS['LANG']->getLL('autosync_update_intro'), $existingEvents['all']['interval']) . '</p>';
 			} else {
 				$content .= '<p>' . $GLOBALS['LANG']->getLL('autosync_nosync_intro') . '</p>';
 			}
 			$content .= $this->doc->spacer(5);
-			$content .= '</form><form name="syncForm" method="POST" action="">';
-			$content .= '<input type="hidden" name="tx_externalimport[sync]" value="all" />';
-			$content .= '<input type="hidden" name="tx_externalimport[index]" value="0" />';
-			$content .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($existingEvents['all']['uid'])) ? $existingEvents['all']['uid'] : 0) . '" />';
-			$content .= '<p>' . $GLOBALS['LANG']->getLL('start_date') . '&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
-			$content .= '<p>' . $GLOBALS['LANG']->getLL('period') . '&nbsp;<input type="text" name="tx_externalimport[period_value]" size="4" value="" />&nbsp;';
-			$content .= '<select name="tx_externalimport[period_type]">';
-			foreach ($this->periods as $aPeriod) {
-				$content .= '<option value="'.$aPeriod.'">' . $GLOBALS['LANG']->getLL($aPeriod) . '</option>';
-			}
-			$content .= '</select></p>';
-			$content .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
-			$content .= '</form>';
+			$content .= $this->displaySyncForm($existingEvents['all'], 'all');
 		}
 
 			// Neither Gabriel nor the Scheduler were installed, issue error
@@ -616,6 +605,31 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		else {
 			return ($a['priority'] < $b['priority']) ? -1 : 1;
 		}
+	}
+
+	/**
+	 * This method displays the synchronisation input form, for a given table and index
+	 *
+	 * @param	array		$data: array of information for the related registered event, if it exists. Pass an empty array otherwise.
+	 * @param	string		$table: name of the table to synchronize
+	 * @param	string		$index: key of the synchronization configuration
+	 * @return	string		HTML of the form to display
+	 */
+	protected function displaySyncForm($data, $table, $index = 0) {
+		$form = '<form name="syncForm" method="POST" action="">';
+		$form .= '<input type="hidden" name="tx_externalimport[sync]" value="' . $table . '" />';
+		$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
+		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['all']['uid'])) ? $data['all']['uid'] : 0) . '" />';
+		$form .= '<p>' . $GLOBALS['LANG']->getLL('start_date') . '&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
+		$form .= '<p>' . $GLOBALS['LANG']->getLL('period') . '&nbsp;<input type="text" name="tx_externalimport[period_value]" size="4" value="" />&nbsp;';
+		$form .= '<select name="tx_externalimport[period_type]">';
+		foreach ($this->periods as $aPeriod) {
+			$form .= '<option value="'.$aPeriod.'">' . $GLOBALS['LANG']->getLL($aPeriod) . '</option>';
+		}
+		$form .= '</select></p>';
+		$form .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
+		$form .= '</form>';
+		return $form;
 	}
 
 	/**
