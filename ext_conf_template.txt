@@ -1,8 +1,14 @@
-# cat=basic//; type=int; label=Storage PID: Enter default page uid for storing imported records
+# cat=basic//; type=int; label=Storage PID: Enter default page uid for storing imported records.
 storagePID = 0
 
-# cat=basic//; type=int; label=Force php time limit (sec): Change the limit maximun execution time for import process. Defaut timelimit is used if value = -1
+# cat=basic//; type=int; label=Force php time limit (sec): Change the limit maximun execution time for import process. Defaut timelimit is used if value = -1.
 timelimit = -1
+
+# cat=basic/enable/; type=string; label=Email for reporting: When the import is executed automatically, you may receive a report about the execution if you set an email address (leave blank for no report).
+reportEmail =
+
+# cat=basic/enable/; type=string; label=Subject of email report: Set a subject for the email report. Additional information will be appended to that subject (i.e. "Full synchronization" ou "Synchronization of table x, index y").
+reportSubject =
 
 # cat=basic/enable/; type=boolean; label=Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.
 debug = 0
