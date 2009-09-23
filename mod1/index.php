@@ -50,7 +50,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * Initialise the module
 	 * @return	void
 	 */
-	function init()	{
+	public function init()	{
 		parent::init();
 	}
 
@@ -59,7 +59,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function menuConfig()	{
+	public function menuConfig()	{
 		$this->MOD_MENU = array(
 			'function' => array(
 				'sync' => $GLOBALS['LANG']->getLL('function_sync'),
@@ -75,7 +75,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function main()	{
+	public function main()	{
 		global $BE_USER,$BACK_PATH;
 
 		// Access check!
@@ -244,7 +244,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function printContent()	{
+	public function printContent()	{
 
 		$this->content .= $this->doc->endPage();
 		echo $this->content;
@@ -255,7 +255,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function moduleContent() {
+	public function moduleContent() {
 		switch((string)$this->MOD_SETTINGS['function'])	{
 
 // List tables that receive external data from the outside
@@ -280,7 +280,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function listSynchronizedTables() {
+	protected function listSynchronizedTables() {
 		global $BACK_PATH;
 
 // Get list of all synchronisable tables and extract general information about them
@@ -390,7 +390,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function listOtherTables() {
+	protected function listOtherTables() {
 		global $BACK_PATH;
 
 // Get list of all non-synchronisable tables and extract general information about them
@@ -481,7 +481,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	function displayAutoSyncSection() {
+	protected function displayAutoSyncSection() {
 		$content = '';
 		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('scheduler', false)) {
 
