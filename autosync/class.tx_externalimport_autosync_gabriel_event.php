@@ -34,7 +34,7 @@ require_once(t3lib_extMgm::extPath('external_import', 'class.tx_externalimport_i
  * @package		TYPO3
  * @subpackage	tx_externalimport
  */
-class tx_externalimport_autosync_gabriel extends tx_gabriel_event {
+class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 	public $extKey = 'external_import';
 	protected $extConf = array(); // Extension configuration
 
