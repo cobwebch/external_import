@@ -42,6 +42,7 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 	 * Constructor
 	 */
 	public function __construct() {
+		parent::__construct();
 			// Load language file
 		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/autosync/locallang.xml');
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);

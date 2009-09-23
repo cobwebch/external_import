@@ -20,8 +20,6 @@
 *  GNU General Public License for more details.
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
-*
-* $Id$
 ***************************************************************/
 
 unset($MCONF);
@@ -33,12 +31,16 @@ $LANG->includeLLFile('EXT:external_import/mod1/locallang.xml');
 require_once(PATH_t3lib . 'class.t3lib_scbase.php');
 $BE_USER->modAccess($MCONF, 1);	// This checks permissions and exits if the users has no permission for entry.
 
+require_once(t3lib_extMgm::extPath('external_import', 'autosync/class.tx_externalimport_autosync_factory.php'));
+
 /**
  * Module 'External Data Import' for the 'external_import' extension.
  *
  * @author	Francois Suter (Cobweb) <typo3@cobweb.ch>
  * @package	TYPO3
  * @subpackage	tx_externalimport
+ *
+ * $Id$
  */
 class tx_externalimport_module1 extends t3lib_SCbase {
 	var $pageinfo;
@@ -483,155 +485,119 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$content = '';
 		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('scheduler', false)) {
 
-// Instantiate a Gabriel or Scheduler object
-
+				// Get a Gabriel/Scheduler wrapper depending on extension installed
+				/**
+				 * @var	tx_externalimport_autosync_wrapper
+				 */
+			$schedulingObject = null;
 			if (t3lib_extMgm::isLoaded('gabriel', false)) {
-				$scheduler = t3lib_div::getUserObj('EXT:gabriel/class.tx_gabriel.php:&tx_gabriel');
-				$autoSyncClass = 'tx_externalimport_autosync_gabriel';
-			}
-			else {
-				$scheduler = t3lib_div::makeInstance('tx_scheduler');
-				$autoSyncClass = 'tx_externalimport_autosync_scheduler';
+				$schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('gabriel');
+			} else {
+				$schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('scheduler');
 			}
 
-// If there was an input, set gabriel event
-
-			$syncInput = t3lib_div::_GP('sync');
-			if (isset($syncInput) && is_array($syncInput)) {
+				// If there was an input, register the event/task
+			$inputParameters = t3lib_div::GParrayMerged('tx_externalimport');
+			if (count($inputParameters) > 0) {
 				$hasError = false;
+				$errorMessages = '';
 
-// Check validity of input
-
-				$period = intval($syncInput['period_value']);
-				$startdate = (empty($syncInput['start'])) ? time() : strtotime($syncInput['start']);
+					// Check validity of input
+				$startdate = (empty($inputParameters['start'])) ? time() : strtotime($inputParameters['start']);
 				if ($startdate === false || $startdate === -1) {
-					$errorMessage = $GLOBALS['LANG']->getLL('error_invalid_start_date');
+					$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_invalid_start_date'), 3);
 					$hasError = true;
 				}
-				elseif ($period < 1) {
-					$errorMessage = $GLOBALS['LANG']->getLL('error_value_below_0');
+				$period = intval($inputParameters['period_value']);
+				if ($period < 1) {
+					$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_value_below_0'), 3);
 					$hasError = true;
 				}
 
-// If input was invalid, issue error and do nothing more
-
+					// If input was invalid, issue error and do nothing more
 				if ($hasError) {
-					$content .= '<p style="padding: 4px; background-color: #f00; color: #fff;">'.$errorMessage.'</p>';
+					$content .= $errorMessages;
 					$content .= $this->doc->spacer(10);
-				}
-				else { // Input is valid
 
-// Get interval and assemble as crontab frequency syntax
+					// Input is valid
+				} else {
 
-					$minutes = '*';
-					$hours = '*';
-					$day = '*';
-					$month = '*';
-					switch ($syncInput['period_type']) {
+						// Get interval and assemble as crontab frequency syntax
+					switch ($inputParameters['period_type']) {
 						case 'minutes':
-							$minutes = '*/'.$period;
 							$interval = 60 * $period;
 							break;
 						case 'hours':
-							$hours = '*/'.$period;
 							$interval = 3600 * $period;
 							break;
 						case 'days':
-							$day = '*/'.$period;
 							$interval = 24 * 3600 * $period;
 							break;
 						case 'weeks':
-							$day = '*/'.(7 * $period);
 							$interval = 7 * 24 * 3600 * $period;
 							break;
 						case 'months':
-							$month = '*/'.$period;
 							$interval = 30 * 7 * 24 * 3600 * $period;
 							break;
 						case 'years':
-							$day = '*/'.(12 * $period);
 							$interval = 12 * 30 * 7 * 24 * 3600 * $period;
 							break;
 					}
-					$crontab = "$minutes $hours $day $month *";
+					$inputParameters['interval'] = $interval;
 
-// If uid is given, get the corresponding event
-// The point is to ensure that there's ever only a single tx_externalimport:all event registered
-// (unless someone has manually introduced such an event in the Gabriel BE module)
+					$result = $schedulingObject->saveTask($inputParameters);
 
-					$event = null;
-					if (!empty($syncInput['uid'])) {
-						$event = $scheduler->fetchEvent($syncInput['uid']);
+					if ($result) {
+						$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_saved'), -1);
+					} else {
+						$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_save_failed'), 3);
 					}
-
-// If there's an event, update it
-
-					if (is_object($event)) {
-						$event->stop(); // Stop any existing execution(s)
-						$event->registerRecurringExecution($startdate, $interval, 0);
-						$scheduler->saveEvent($event);
-						$successMessage = $GLOBALS['LANG']->getLL('autosync_updated');
-					}
-
-// If there was no event, create a new one
-
-					else {
-						if (t3lib_extMgm::isLoaded('gabriel', false)) {
-							$event = t3lib_div::getUserObj('EXT:external_import/class.tx_externalimport_autosync_gabriel.php:' . $autoSyncClass);
-						} else {
-							$event = t3lib_div::makeInstance($autoSyncClass);
-						}
-						$event->registerRecurringExecution($startdate, $interval, 0);
-						$scheduler->addEvent($event, $autoSyncClass . '::sync=all');
-						$successMessage = $GLOBALS['LANG']->getLL('autosync_activated');
-					}
-					$content .= '<p style="padding: 4px; background-color: #0f0;">'.$successMessage.'</p>';
 					$content .= $this->doc->spacer(10);
 				}
 			}
 
-// Check for existing event
+				// Check for existing event/task
+			$existingEvents = $schedulingObject->getAllTasks();
+				 // No events at all or no event for global synchronisation, display a message to that effect
+			if (count($existingEvents) == 0 || !isset($existingEvents['all'])) {
+				$content .= $this->displayMessage($GLOBALS['LANG']->getLL('no_autosync'), 2);
 
-			$existingEvents = $scheduler->fetchEventsByCRID($autoSyncClass . '::sync=all');
-			if (count($existingEvents) == 0) { // No existing event, display a message to that effect
-				$content .= '<p><strong>'.$GLOBALS['LANG']->getLL('no_autosync').'</strong></p>';
-			}
-			else { // An event exists (and there should be only one), display next execution time
-				$content .= '<p><strong>'.sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $existingEvents[0]->executionTime)).'</strong></p>';
+				// An event exists, display next execution time
+			} else {
+				$message = sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $existingEvents['all']['nextexecution']));
+				$content .= $this->displayMessage($message, 0);
 			}
 			$content .= $this->doc->spacer(10);
 
-// Display auto sync set up form
-
-			if (count($existingEvents) == 0) {
-				$content .= '<p>'.$GLOBALS['LANG']->getLL('autosync_nosync_intro').'</p>';
-			}
-			else {
-				$content .= '<p>'.sprintf($GLOBALS['LANG']->getLL('autosync_update_intro'), $existingEvents[0]->executionPool[0]->interval).'</p>';
+				// Display auto sync set up form
+			if (isset($existingEvents['all'])) {
+				$content .= '<p>' . sprintf($GLOBALS['LANG']->getLL('autosync_update_intro'), $existingEvents['all']->interval) . '</p>';
+			} else {
+				$content .= '<p>' . $GLOBALS['LANG']->getLL('autosync_nosync_intro') . '</p>';
 			}
 			$content .= $this->doc->spacer(5);
 			$content .= '</form><form name="syncForm" method="POST" action="">';
-			if (count($existingEvents) > 0) $content .= '<input type="hidden" name="sync[uid]" value="'.$existingEvents[0]->eventUid.'" />';
-			$content .= '<p>'.$GLOBALS['LANG']->getLL('start_date').'&nbsp;<input type="text" name="sync[start]" size="20" value="" />&nbsp;'.$GLOBALS['LANG']->getLL('start_date_help').'</p>';
-			$content .= '<p>'.$GLOBALS['LANG']->getLL('period').'&nbsp;<input type="text" name="sync[period_value]" size="4" value="" />&nbsp;';
-			$content .= '<select name="sync[period_type]">';
+			$content .= '<input type="hidden" name="tx_externalimport[sync]" value="all" />';
+			$content .= '<input type="hidden" name="tx_externalimport[index]" value="0" />';
+			$content .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($existingEvents['all']['uid'])) ? $existingEvents['all']['uid'] : 0) . '" />';
+			$content .= '<p>' . $GLOBALS['LANG']->getLL('start_date') . '&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
+			$content .= '<p>' . $GLOBALS['LANG']->getLL('period') . '&nbsp;<input type="text" name="tx_externalimport[period_value]" size="4" value="" />&nbsp;';
+			$content .= '<select name="tx_externalimport[period_type]">';
 			foreach ($this->periods as $aPeriod) {
-				$content .= '<option value="'.$aPeriod.'">'.$GLOBALS['LANG']->getLL($aPeriod).'</option>';
+				$content .= '<option value="'.$aPeriod.'">' . $GLOBALS['LANG']->getLL($aPeriod) . '</option>';
 			}
 			$content .= '</select></p>';
-			$content .= '<p><input type="submit" name="sync[submit]" value="'.$GLOBALS['LANG']->getLL('set_sync').'" /></p>';
+			$content .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
 			$content .= '</form>';
 		}
 
-// Gabriel was not installed, issue error
-
+			// Neither Gabriel nor the Scheduler were installed, issue error
 		else {
-			$content .= '<p style="padding: 4px; background-color: #f00; color: #fff;">'.$GLOBALS['LANG']->getLL('autosync_error').'</p>';
+			$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_error'), 3);
 		}
 		$content .= $this->doc->spacer(10);
 
-// Add to module's output
-
+			// Add to module's output
 		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('autosync'),$content,0,1);
 	}
 
@@ -643,13 +609,43 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	int		1, 0 or -1 if a is smaller, equal or greater than b, respectively
 	 */
-	function prioritySort($a, $b) {
+	public function prioritySort($a, $b) {
 		if ($a['priority'] == $b['priority']) {
 			return 0;
 		}
 		else {
 			return ($a['priority'] < $b['priority']) ? -1 : 1;
 		}
+	}
+
+	/**
+	 * This method takes a message and a severity level and returns an appropriate box
+	 * ready for display
+	 * 
+	 * @param	string		$message: the message to display
+	 * @param	integer		$severity: severity of the message (-1 = ok, 0 = info, 1 = notice, 2 = warning, 3 = error)
+	 * @return	string		HTML to display
+	 */
+	protected function displayMessage($message, $severity = 0) {
+		$style = 'padding: 4px;';
+		switch ($severity) {
+			case -1:
+				$style .= ' background-color: #0f0; color: #000;';
+				break;
+			case 1:
+				$style .= ' background-color: #fff; color: #000;';
+				break;
+			case 2:
+				$style .= ' background-color: #f90; color: #000;';
+				break;
+			case 3:
+				$style .= ' background-color: #f00; color: #fff;';
+				break;
+			default:
+				$style .= ' background-color: #00f; color: #fff;';
+		}
+		$messageDisplay .= '<p style="' . $style . '">' . $message . '</p>';
+		return $messageDisplay;
 	}
 }
 

@@ -28,7 +28,7 @@
 			<label index="autosync">Automatic synchronisation</label>
 			<label index="autosync_nosync_intro">Using the form below you can define a frequency for the automatic synchronisation of all external tables.</label>
 			<label index="autosync_update_intro">Using the form below you can change the frequency of the automatic synchronisation of all external tables. Current frequency is %d seconds.</label>
-			<label index="autosync_error">Automatic synchronisation of all external tables is not possible, because neither extension "gabriel", nor system extension "scheduler" are installed.</label>
+			<label index="autosync_error">Automatic synchronisation of all external tables is not possible, because neither extension "gabriel", nor system extension "scheduler" (TYPO3 4.3+) are installed.</label>
 			<label index="start_date">Start date:</label>
 			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
 			<label index="period">Period:</label>
@@ -40,6 +40,8 @@
 			<label index="months">months</label>
 			<label index="years">years</label>
 			<label index="set_sync">Set synchronisation</label>
+			<label index="autosync_saved">The automatic synchronisation information has been saved.</label>
+			<label index="autosync_save_failed">The automatic synchronisation information could not be saved.</label>
 			<label index="autosync_activated">Automatic synchronisation has been activated.</label>
 			<label index="autosync_updated">Automatic synchronisation has been updated.</label>
 			<label index="no_autosync">The automatic synchronisation is not yet enabled.</label>
@@ -82,6 +84,8 @@
 			<label index="months">mois</label>
 			<label index="years">années</label>
 			<label index="set_sync">Définir la synchronisation</label>
+			<label index="autosync_saved">Les informations de synchronisation automatiques ont été sauvegardées.</label>
+			<label index="autosync_save_failed">Les informations de synchronisation automatiques n'ont pas pu être sauvegardées.</label>
 			<label index="autosync_activated">La synchronisation automatique a été activée.</label>
 			<label index="autosync_updated">La synchronisation automatique a été mise à jour.</label>
 			<label index="no_autosync">La synchronisation automatique n'a pas encore été activée.</label>

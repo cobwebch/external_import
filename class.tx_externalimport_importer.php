@@ -93,7 +93,7 @@ class tx_externalimport_importer {
 			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
 			$GLOBALS['LANG']->init($BE_USER->uc['lang']);
 		}
-		$GLOBALS['LANG']->includeLLFile('EXT:external_import/locallang.xml');
+		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/locallang.xml');
 
 // Force php limit execution time if set
     if (isset($this->extConf['timelimit']) && ($this->extConf['timelimit'] > -1) ) {
@@ -111,42 +111,45 @@ class tx_externalimport_importer {
 	 */
 	public function synchronizeAllTables() {
 
-// Look in the TCA for tables with an "external" control section and a "connector"
-// Tables without connectors cannot be synchronised
-
+			// Look in the TCA for tables with an "external" control section and a "connector"
+			// Tables without connectors cannot be synchronised
 		$externalTables = array();
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-			foreach ($sections as $sectionKey => $sectionData) {
-				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
-					foreach ($sectionData['external'] as $index => $externalConfig) {
+//			foreach ($sections as $sectionKey => $sectionData) {
+//				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
+				if (isset($sections['ctrl']['external'])) {
+					foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
 						if (!empty($externalConfig['connector'])) {
+								// Default priority if not defined, set to very low
+							$priority = 1000;
 							if (isset($externalConfig['priority'])) {
 								$priority = $externalConfig['priority'];
-							}
-							else {
-								$priority = 1000; // If priority is not defined, set to very low
 							}
 							if (!isset($externalTables[$priority])) $externalTables[$priority] = array();
 							$externalTables[$priority][] = array('table' => $tableName, 'index' => $index);
 						}
 					}
 				}
-			}
+//			}
 		}
 
-// Sort tables by priority (lower number is highest priority)
-
+			// Sort tables by priority (lower number is highest priority)
 		ksort($externalTables);
 		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog($GLOBALS['LANG']->getLL('sync_all'), $this->extKey, 0, $externalTables);
 
-// Synchronise all tables
-
-		foreach ($externalTables as $priority => $tables) {
+			// Synchronise all tables
+		$allMessages = array();
+		foreach ($externalTables as $tables) {
 			foreach ($tables as $tableData) {
 				$this->messages = array('error' => array(), 'warning' => array(), 'success' => array()); // Reset error messages array
-				$this->synchronizeData($tableData['table'], $tableData['index']);
+				$messages = $this->synchronizeData($tableData['table'], $tableData['index']);
+				$key = $tableData['table'] . '/' .$tableData['index'];
+				$allMessages[$key] = $messages;
 			}
 		}
+
+			// Return compiled array of messages for all imports
+		return $allMessages;
 	}
 
 	/**

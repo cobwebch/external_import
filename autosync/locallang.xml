@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for autosync classes of &quot;external_import&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="synchronizeTableX">Synchronization of table %1$s, index %2$d</label>
+			<label index="label.warning">Warnings</label>
+			<label index="label.error">Errors</label>
+			<label index="label.success">Success messages</label>
+			<label index="no.warning">No warnings</label>
+			<label index="no.error">No errors</label>
+			<label index="no.success">No success messages</label>
+		</languageKey>
+	</data>
+</T3locallang>
