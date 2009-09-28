@@ -617,7 +617,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$form = '<form name="syncForm" id="syncForm_' . $table . '_' . $index . '" method="POST" action="">';
 		$form .= '<input type="hidden" name="tx_externalimport[sync]" value="' . $table . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
-		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['all']['uid'])) ? $data['all']['uid'] : 0) . '" />';
+		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['uid'])) ? $data['uid'] : 0) . '" />';
 		$form .= '<p>' . $GLOBALS['LANG']->getLL('start_date') . '&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
 		$form .= '<p>' . $GLOBALS['LANG']->getLL('period') . '&nbsp;<input type="text" name="tx_externalimport[period_value]" size="4" value="" />&nbsp;';
 		$form .= '<select name="tx_externalimport[period_type]">';
