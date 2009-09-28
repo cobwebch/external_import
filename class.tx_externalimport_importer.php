@@ -85,9 +85,8 @@ class tx_externalimport_importer {
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 		$this->messages = array('error' => array(), 'warning' => array(), 'success' => array());
 
-// Make sure we have a language object
-// If initialised, use existing, if not, initialise it
-
+			// Make sure we have a language object
+			// If initialised, use existing, if not, initialise it
 		if (!isset($GLOBALS['LANG'])) {
 			require_once(PATH_typo3.'sysext/lang/lang.php');
 			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');

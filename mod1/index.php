@@ -654,7 +654,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$style .= ' background-color: #f00; color: #fff;';
 				break;
 			default:
-				$style .= ' background-color: #00f; color: #fff;';
+				$style .= ' background-color: #6cf; color: #000;';
 		}
 		$messageDisplay .= '<p style="' . $style . '">' . $message . '</p>';
 		return $messageDisplay;

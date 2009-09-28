@@ -43,8 +43,6 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 	 */
 	public function __construct() {
 		parent::__construct();
-			// Load language file
-		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/autosync/locallang.xml');
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 	}
 
@@ -55,6 +53,16 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 	 */
 	public function execute() {
 		$reportContent = '';
+			// Make sure we have a language object
+			// If initialised, use existing, if not, initialise it
+		if (!isset($GLOBALS['LANG'])) {
+			require_once(PATH_typo3 . 'sysext/lang/lang.php');
+			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
+			$GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
+		}
+		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/locallang.xml');
+			// Load language file
+		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/autosync/locallang.xml');
 
 			// Instantiate the import object and call appropriate method depending on command
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
@@ -85,7 +93,7 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 		$report = sprintf($GLOBALS['LANG']->getLL('synchronizeTableX'), $table, $index) . "\n\n";
 		foreach ($messages as $type => $messageList) {
 			$report .= $GLOBALS['LANG']->getLL('label.' . $type) . "\n";
-			if (count($messageList) > 0) {
+			if (count($messageList) == 0) {
 				$report .= "\t" . $GLOBALS['LANG']->getLL('no.' . $type) . "\n";
 			} else {
 				foreach ($messageList as $aMessage) {
