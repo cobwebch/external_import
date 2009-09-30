@@ -32,7 +32,7 @@
  * $Id$
  */
 class tx_externalimport_importer {
-	public $extKey = 'external_import';
+	public    $extKey = 'external_import';
 	protected $vars = array(); // Variables from the query string
 	protected $extConf = array(); // Extension configuration
 	protected $messages = array(); // List of result messages
@@ -51,7 +51,6 @@ class tx_externalimport_importer {
 	 * @return	object		tx_externalimport_importer object
 	 */
 	public function __construct() {
-		global $BE_USER;
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 		$this->messages = array('error' => array(), 'warning' => array(), 'success' => array());
 
@@ -60,11 +59,11 @@ class tx_externalimport_importer {
 		if (!isset($GLOBALS['LANG'])) {
 			require_once(PATH_typo3 . 'sysext/lang/lang.php');
 			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
-			$GLOBALS['LANG']->init($BE_USER->uc['lang']);
+			$GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
 		}
 		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/locallang.xml');
 
-// Force php limit execution time if set
+		// Force php limit execution time if set
     if (isset($this->extConf['timelimit']) && ($this->extConf['timelimit'] > -1) ) {
 
       set_time_limit($this->extConf['timelimit']);
@@ -84,22 +83,19 @@ class tx_externalimport_importer {
 			// Tables without connectors cannot be synchronised
 		$externalTables = array();
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-//			foreach ($sections as $sectionKey => $sectionData) {
-//				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
-				if (isset($sections['ctrl']['external'])) {
-					foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
-						if (!empty($externalConfig['connector'])) {
-								// Default priority if not defined, set to very low
-							$priority = 1000;
-							if (isset($externalConfig['priority'])) {
-								$priority = $externalConfig['priority'];
-							}
-							if (!isset($externalTables[$priority])) $externalTables[$priority] = array();
-							$externalTables[$priority][] = array('table' => $tableName, 'index' => $index);
+			if (isset($sections['ctrl']['external'])) {
+				foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
+					if (!empty($externalConfig['connector'])) {
+							// Default priority if not defined, set to very low
+						$priority = 1000;
+						if (isset($externalConfig['priority'])) {
+							$priority = $externalConfig['priority'];
 						}
+						if (!isset($externalTables[$priority])) $externalTables[$priority] = array();
+						$externalTables[$priority][] = array('table' => $tableName, 'index' => $index);
 					}
 				}
-//			}
+			}
 		}
 
 			// Sort tables by priority (lower number is highest priority)
@@ -165,30 +161,27 @@ class tx_externalimport_importer {
 	public function synchronizeData($table, $index) {
 		$this->initTCAData($table, $index);
 
-// Instantiate specific connector service
-
+			// Instantiate specific connector service
 		if (empty($this->externalConfig['connector'])) {
 			$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_connector');
 		}
 		else {
 			$services = t3lib_extMgm::findService('connector', $this->externalConfig['connector']);
 
-// The service is not available
-
+				// The service is not available
 			if ($services === false) {
 				$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
 			}
 			else {
 				$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
 
-// The service was instatiated, but an error occurred while initiating the connection
-
-				if (is_array($connector)) { // If the returned value is an array, an error has occurred
+					// The service was instatiated, but an error occurred while initiating the connection
+					// If the returned value is an array, an error has occurred
+				if (is_array($connector)) {
 					$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_not_fetched');
-				}
-				else {
 
-// The connection is established, get the data
+					// The connection is established, get the data
+				} else {
 
 					switch ($this->externalConfig['data']) {
 						case 'xml':
@@ -234,8 +227,7 @@ class tx_externalimport_importer {
 		$this->initTCAData($table, $index);
 		$this->handleData($rawData);
 
-// Log results to devlog
-
+			// Log results to devlog
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
 			$this->logMessages();
 		}
@@ -251,8 +243,7 @@ class tx_externalimport_importer {
 	 */
 	protected function handleData($rawData) {
 
-// Prepare the data, depending on result type
-
+			// Prepare the data, depending on result type
 		switch ($this->externalConfig['data']) {
 			case 'xml':
 				$records = $this->handleXML($rawData);
@@ -265,25 +256,17 @@ class tx_externalimport_importer {
 				break;
 		}
 
-// Apply any existing preprocessing hook to the raw data
-
+			// Apply any existing preprocessing hook to the raw data
 		$records = $this->preprocessRawData($records);
 
-// Transform data
-
+			// Transform data
 		$records = $this->transformData($records);
 
-// Apply any existing preprocessing hook to the transformed data
-
+			// Apply any existing preprocessing hook to the transformed data
 		$records = $this->preprocessData($records);
 
-// Store data
-
+			// Store data
 		$this->storeData($records);
-
-// Apply postprocessing
-
-//		$this->postProcessing($records);
 	}
 
 	/**
@@ -296,14 +279,12 @@ class tx_externalimport_importer {
 	protected function handleArray($rawData) {
 		$data = array();
 
-// Loop on all entries
-
+			// Loop on all entries
 		if (is_array($rawData) && count($rawData) > 0) {
 			foreach ($rawData as $theRecord) {
 				$theData = array();
 
-// Loop on the database columns and get the corresponding value from the import data
-
+					// Loop on the database columns and get the corresponding value from the import data
 				foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 					if (isset($columnData['external'][$this->index]['field'])) {
 						if (isset($theRecord[$columnData['external'][$this->index]['field']])) {
@@ -312,8 +293,7 @@ class tx_externalimport_importer {
 					}
 				}
 
-// Get additional fields data, if any
-
+					// Get additional fields data, if any
 				if ($this->numAdditionalFields > 0) {
 					foreach ($this->additionalFields as $fieldName) {
 						if (isset($theRecord[$fieldName])) {
@@ -338,20 +318,17 @@ class tx_externalimport_importer {
 	protected function handleXML($rawData) {
 		$data = array();
 
-// Load the XML into a DOM object
-
+			// Load the XML into a DOM object
 		$dom = new DOMDocument();
 		$dom->loadXML($rawData);
 
-// Get the nodes that represent the root of each data record
-
+			// Get the nodes that represent the root of each data record
 		$records = $dom->getElementsByTagName($this->externalConfig['nodetype']);
 		for ($i = 0; $i < $records->length; $i++) {
 			$theRecord = $records->item($i);
 			$theData = array();
 
-// Loop on the database columns and get the corresponding value from the import data
-
+				// Loop on the database columns and get the corresponding value from the import data
 			foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 				if (isset($columnData['external'][$this->index]['field'])) {
 					$node = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
@@ -361,8 +338,7 @@ class tx_externalimport_importer {
 				}
 			}
 
-// Get additional fields data, if any
-
+				// Get additional fields data, if any
 			if ($this->numAdditionalFields > 0) {
 				foreach ($this->additionalFields as $fieldName) {
 					$node = $theRecord->getElementsByTagName($fieldName);
@@ -387,8 +363,7 @@ class tx_externalimport_importer {
 	protected function transformData($records) {
 		$numRecords = count($records);
 
-// Loop on all tables to find any defined transformations. This might be mappings and/or user functions
-
+			// Loop on all tables to find any defined transformations. This might be mappings and/or user functions
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 
 				// Get existing mappings and apply them to records
@@ -398,8 +373,7 @@ class tx_externalimport_importer {
 					$externalValue = $records[$i][$columnName];
 					if (isset($mappings[$externalValue])) {
 						$records[$i][$columnName] = $mappings[$externalValue];
-					}
-					else {
+					} else {
 						unset($records[$i][$columnName]);
 					}
 				}
@@ -411,19 +385,18 @@ class tx_externalimport_importer {
 				}
 			}
 
-// Apply defined user function
-
+				// Apply defined user function
 			if (isset($columnData['external'][$this->index]['userFunc'])) {
-				// Try to get the referenced class
+					// Try to get the referenced class
 				$userObject = t3lib_div::getUserObj($columnData['external'][$this->index]['userFunc']['class']);
-				// Could not instantiate the class, log error and do nothing
+					// Could not instantiate the class, log error and do nothing
 				if ($userObject === false) {
 					if ($this->extConf['debug'] || TYPO3_DLOG) {
 						t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('invalid_userfunc'), $columnData['external'][$this->index]['userFunc']['class']), $this->extKey, 2, $columnData['external'][$this->index]['userFunc']);
 					}
-				}
-				// Otherwise call referenced class on all records
-				else {
+
+					// Otherwise call referenced class on all records
+				} else {
 					$methodName = $columnData['external'][$this->index]['userFunc']['method'];
 					$parameters = isset($columnData['external'][$this->index]['userFunc']['params']) ? $columnData['external'][$this->index]['userFunc']['params'] : array();
 					for ($i = 0; $i < $numRecords; $i++) {
@@ -477,25 +450,22 @@ class tx_externalimport_importer {
 	 * @return	void
 	 */
 	protected function storeData($records) {
-//		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Data received for storage', $this->extKey, 0, $records);
-		$errors = 0;
+		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Data received for storage', $this->extKey, 0, $records);
 
-// Get the list of existing uids for the table
-
+			// Get the list of existing uids for the table
 		$existingUids = $this->getExistingUids();
 
-// Check which columns are MM-relations and get mappings to foreign tables for each
-// NOTE: as it is now, it is assumed that the imported data is denormalised
-
-// There's more to do than that:
-//
-// 1.	a sorting field may have been defined, but TCEmain assumes the MM-relations are in the right order
-//		and inserts its own number for the table's sorting field. So MM-relations must be sorted before executing TCEmain.
-// 2.a	it is possible to store additional fields in the MM-relations. This is not TYPO3-standard, so TCEmain will
-//		not be able to handle it. We thus need to store all that data now and rework the MM-relations when TCEmain is done.
-// 2.b	if a pair of records is related to each other several times (because the additional fields vary), this will be filtered out
-//		by TCEmain. So we must preserve also these additional relations.
-
+			// Check which columns are MM-relations and get mappings to foreign tables for each
+			// NOTE: as it is now, it is assumed that the imported data is denormalised
+			//
+			// There's more to do than that:
+			//
+			// 1.	a sorting field may have been defined, but TCEmain assumes the MM-relations are in the right order
+			//		and inserts its own number for the table's sorting field. So MM-relations must be sorted before executing TCEmain.
+			// 2.a	it is possible to store additional fields in the MM-relations. This is not TYPO3-standard, so TCEmain will
+			//		not be able to handle it. We thus need to store all that data now and rework the MM-relations when TCEmain is done.
+			// 2.b	if a pair of records is related to each other several times (because the additional fields vary), this will be filtered out
+			//		by TCEmain. So we must preserve also these additional relations.
 		$mappings = array();
 		$fullMappings = array();
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
@@ -509,15 +479,13 @@ class tx_externalimport_importer {
 					$fullMappings[$columnName] = array();
 				}
 
-// Get foreign mapping for column
-
+					// Get foreign mapping for column
 				if (!isset($mmData['mapping']['value'])) {
 					$mappingInformation = isset($mmData['mappings']['uid_foreign']) ? $mmData['mappings']['uid_foreign'] : $mmData['mapping'];
 					$foreignMappings = $this->getMapping($mappingInformation);
 				}
 
-// Go through each record and assemble pairs of primary and foreign keys
-
+					// Go through each record and assemble pairs of primary and foreign keys
 				foreach ($records as $theRecord) {
 					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
 					if (isset($mmData['mapping']['value'])) {
@@ -535,8 +503,7 @@ class tx_externalimport_importer {
 							}
 						}
 
-// If additional fields are defined, store those values in an intermediate array
-
+							// If additional fields are defined, store those values in an intermediate array
 						if ($additionalFields) {
 							$fields = array();
 							foreach ($mmData['additional_fields'] as $localFieldName => $externalFieldName) {
@@ -544,8 +511,7 @@ class tx_externalimport_importer {
 							}
 						}
 
-// If a sorting field is defined, use that value for indexing, otherwise just add the element at the end of the array
-
+							// If a sorting field is defined, use that value for indexing, otherwise just add the element at the end of the array
 						if ($sortingField) {
 							$sortingValue = $theRecord[$sortingField];
 							$mappings[$columnName][$externalUid][$sortingValue] =  $foreignValue;
@@ -568,16 +534,14 @@ class tx_externalimport_importer {
 					}
 				}
 
-// If there was some special sorting to do, do it now
-
+					// If there was some special sorting to do, do it now
 				if ($sortingField) {
 					foreach ($mappings as $columnName => $columnMappings) {
 						foreach ($columnMappings as $uid => $values) {
 							ksort($values);
 							$mappings[$columnName][$uid] = $values;
 
-// Do the same for extended MM-relations, if necessary
-
+								// Do the same for extended MM-relations, if necessary
 							if ($additionalFields || $mmData['multiple']) {
 								$fullValues = $fullMappings[$columnName][$uid];
 								ksort($fullValues);
@@ -590,8 +554,7 @@ class tx_externalimport_importer {
 		}
 		$hasMMRelations = count($mappings);
 
-// Insert or update records depending on existing uids
-
+			// Insert or update records depending on existing uids
 		$updates = 0;
 		$inserts = 0;
 		$deletes = 0;
@@ -733,28 +696,23 @@ class tx_externalimport_importer {
 			}
 		}
 
-// Perform post-processing of MM-relations if necessary
-
+			// Perform post-processing of MM-relations if necessary
 		if (count($fullMappings) > 0) {
 			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Handling full mappings', $this->extKey, 0, $fullMappings);
 
-// Refresh list of existing primary keys now that new records have been inserted
-
+				// Refresh list of existing primary keys now that new records have been inserted
 			$existingUids = $this->getExistingUids();
 
-// Loop on all columns that require a remapping
-
+				// Loop on all columns that require a remapping
 			foreach ($fullMappings as $columnName => $mappingData) {
 				$mmTable = $this->tableTCA['columns'][$columnName]['config']['MM'];
 				foreach ($mappingData as $externalUid => $sortedData) {
 					$uid = $existingUids[$externalUid];
 
-// Delete existing MM-relations for current uid
-
+						// Delete existing MM-relations for current uid
 					$GLOBALS['TYPO3_DB']->exec_DELETEquery($mmTable, "uid_local = '$uid'");
 
-// Recreate all MM-relations with additional fields, if any
-
+						// Recreate all MM-relations with additional fields, if any
 					$counter = 0;
 					foreach ($sortedData as $mmData) {
 						$counter++;
@@ -811,7 +769,7 @@ class tx_externalimport_importer {
 	/**
 	 * Utility method to get a list of all existing primary keys in the table being synchronised
 	 *
-	 * @return	array		Hash table of all external primary keys matched to internal primary keys
+	 * @return	array	Hash table of all external primary keys matched to internal primary keys
 	 */
 	protected function getExistingUids() {
 		$existingUids = array();
@@ -869,8 +827,7 @@ class tx_externalimport_importer {
 	 */
 	protected function logMessages() {
 
-// Define severity based on types of messages
-
+			// Define severity based on types of messages
 		if (count($this->messages['error']) > 0) {
 			$severity = 3;
 		}
@@ -883,7 +840,9 @@ class tx_externalimport_importer {
 		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity, $this->messages);
 	}
 
+
 // Getters and setters
+
 
 	/**
 	 * This method returns the name of the table being synchronised
@@ -927,7 +886,9 @@ class tx_externalimport_importer {
 		}
 	}
 
+
 // Reporting utilities
+
 
 	/**
 	 * This method assembles a report for a given table/index
