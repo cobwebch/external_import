@@ -20,8 +20,6 @@
 *  GNU General Public License for more details.
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
-*
-* $Id$
 ***************************************************************/
 
 require_once(t3lib_extMgm::extPath('external_import').'class.tx_externalimport_importer.php');
@@ -32,6 +30,8 @@ require_once(t3lib_extMgm::extPath('external_import').'class.tx_externalimport_i
  * @author	Francois Suter (Cobweb) <typo3@cobweb.ch>
  * @package	TYPO3
  * @subpackage	tx_externalimport
+ *
+ * $Id$
  */
 class tx_externalimport_ajax {
 

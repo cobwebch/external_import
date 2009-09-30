@@ -20,8 +20,6 @@
 *  GNU General Public License for more details.
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
-*
-* $Id$
 ***************************************************************/
 
 /**
@@ -30,6 +28,8 @@
  * @author	Francois Suter (Cobweb) <typo3@cobweb.ch>
  * @package	TYPO3
  * @subpackage	tx_externalimport
+ *
+ * $Id$
  */
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
