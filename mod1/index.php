@@ -43,8 +43,10 @@ require_once(t3lib_extMgm::extPath('external_import', 'autosync/class.tx_externa
  * $Id$
  */
 class tx_externalimport_module1 extends t3lib_SCbase {
-	var $pageinfo;
-	var $periods = array('minutes', 'hours', 'days', 'weeks', 'months', 'years'); // List of possible periods for auto sync
+	public $pageinfo;
+	protected $periods = array('minutes', 'hours', 'days', 'weeks', 'months', 'years'); // List of possible periods for auto sync
+	protected $schedulingObject; // Instance of either tx_gabriel or tx_scheduler
+	protected $hasSchedulingTool = false;
 
 	/**
 	 * Initialise the module
@@ -52,6 +54,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	public function init()	{
 		parent::init();
+			// Check if either gabriel or scheduler are available
+		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('scheduler', false)) {
+			$this->hasSchedulingTool = true;
+		}
 	}
 
 	/**
@@ -284,8 +290,20 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	protected function listSynchronizedTables() {
 		global $BACK_PATH;
 
-// Get list of all synchronisable tables and extract general information about them
+			// Get a Gabriel/Scheduler wrapper depending on extension installed, if any is available
+		if ($this->hasSchedulingTool) {
+				/**
+				 * @var	tx_externalimport_autosync_wrapper
+				 */
+			$this->schedulingObject = null;
+			if (t3lib_extMgm::isLoaded('gabriel', false)) {
+				$this->schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('gabriel');
+			} else {
+				$this->schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('scheduler');
+			}
+		}
 
+			// Get list of all synchronisable tables and extract general information about them
 		$externalTables = array();
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
 			foreach ($sections as $sectionKey => $sectionData) {
@@ -348,7 +366,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table[$tr][] = $GLOBALS['LANG']->getLL('priority'); // Priority
 			$table[$tr][] = '&nbsp;'; // Action icons
 			$table[$tr][] = '&nbsp;'; // Action result
-			$table[$tr][] = '&nbsp;'; // Sync form
+			$table[$tr][] = $GLOBALS['LANG']->getLL('autosync'); // Sync form
 
 // Generate table row for each table
 
@@ -373,13 +391,17 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$tableList = $this->doc->table($table, $tableLayout);
 		}
 
-// Assemble content
-
-		$content = '<p>'.$GLOBALS['LANG']->getLL('external_tables_intro').'</p>';
+			// Assemble content
+		$content = '';
+			// First of all display error message if no scheduling tool is available
+		if (!$this->hasSchedulingTool) {
+			$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_error'), 2);
+			$content .= $this->doc->spacer(10);
+		}
+		$content .= '<p>'.$GLOBALS['LANG']->getLL('external_tables_intro').'</p>';
 		$content .= $this->doc->spacer(10);
 		$content .= $tableList;
 		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('external_tables'),$content,0,1);
-		$this->content .= $this->doc->divider(5);
 
 // Display form for automatic synchronisation
 
@@ -475,8 +497,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$content = '<p>'.$GLOBALS['LANG']->getLL('nosync_tables_intro').'</p>';
 		$content .= $this->doc->spacer(10);
 		$content .= $tableList;
-		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('nosync_tables'),$content,0,1);
-		$this->content .= $this->doc->divider(5);
+		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('nosync_tables'), $content, 0, 1);
 	}
 
 	/**
@@ -486,18 +507,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	protected function displayAutoSyncSection() {
 		$content = '';
-		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('scheduler', false)) {
-
-				// Get a Gabriel/Scheduler wrapper depending on extension installed
-				/**
-				 * @var	tx_externalimport_autosync_wrapper
-				 */
-			$schedulingObject = null;
-			if (t3lib_extMgm::isLoaded('gabriel', false)) {
-				$schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('gabriel');
-			} else {
-				$schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('scheduler');
-			}
+		if ($this->hasSchedulingTool) {
 
 				// If there was an input, register the event/task
 			$inputParameters = t3lib_div::GParrayMerged('tx_externalimport');
@@ -548,7 +558,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					}
 					$inputParameters['interval'] = $interval;
 
-					$result = $schedulingObject->saveTask($inputParameters);
+					$result = $this->schedulingObject->saveTask($inputParameters);
 
 					if ($result) {
 						$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_saved'), -1);
@@ -560,7 +570,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			}
 
 				// Check for existing event/task
-			$existingEvents = $schedulingObject->getAllTasks();
+			$existingEvents = $this->schedulingObject->getAllTasks();
 				 // No events at all or no event for global synchronisation, display a message to that effect
 			if (count($existingEvents) == 0 || !isset($existingEvents['all'])) {
 				$content .= $this->displayMessage($GLOBALS['LANG']->getLL('no_autosync'), 2);
@@ -576,16 +586,12 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$content .= '<p>' . $GLOBALS['LANG']->getLL('autosync_intro') . '</p>';
 			$content .= $this->doc->spacer(5);
 			$content .= $this->displaySyncForm($existingEvents['all'], 'all');
-		}
+			$content .= $this->doc->spacer(10);
 
-			// Neither Gabriel nor the Scheduler were installed, issue error
-		else {
-			$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_error'), 3);
+				// Add to module's output
+			$this->content .= $this->doc->divider(5);
+			$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('full_autosync'),$content,0,1);
 		}
-		$content .= $this->doc->spacer(10);
-
-			// Add to module's output
-		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('autosync'),$content,0,1);
 	}
 
 	/**
