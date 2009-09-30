@@ -53,14 +53,6 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 	 */
 	public function execute() {
 		$reportContent = '';
-			// Make sure we have a language object
-			// If initialised, use existing, if not, initialise it
-		if (!isset($GLOBALS['LANG'])) {
-			require_once(PATH_typo3 . 'sysext/lang/lang.php');
-			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
-			$GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
-		}
-		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/autosync/locallang.xml');
 
 			// Instantiate the import object and call appropriate method depending on command
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
@@ -71,36 +63,15 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 			if (!empty($this->extConf['reportEmail'])) {
 				foreach ($allMessages as $key => $messages) {
 					list($table, $index) = explode('/', $key);
-					$reportContent .= $this->reportForTable($table, $index, $messages);
+					$reportContent .= $importer->reportForTable($table, $index, $messages);
 					$reportContent .= "\n\n";
 				}
+					// Assemble the subject and send the mail
+				$subject = (empty($this->extConf['reportSubject'])) ? '' : $this->extConf['reportSubject'];
+				$subject .= ' ' . 'Full synchronization';
+				$importer->sendMail($subject, $reportContent);
 			}
 		}
-		echo $reportContent;
-	}
-
-	/**
-	 * This method writes the report for a given table
-	 *
-	 * @param	string		$table: name of the table
-	 * @param	interger	$index: number of the synchronisation configuration
-	 * @param	array		$messages: list of messages for the given table
-	 * @return	string		Formatted text of the report
-	 */
-	protected function reportForTable($table, $index, $messages) {
-		$report = sprintf($GLOBALS['LANG']->getLL('synchronizeTableX'), $table, $index) . "\n\n";
-		foreach ($messages as $type => $messageList) {
-			$report .= $GLOBALS['LANG']->getLL('label.' . $type) . "\n";
-			if (count($messageList) == 0) {
-				$report .= "\t" . $GLOBALS['LANG']->getLL('no.' . $type) . "\n";
-			} else {
-				foreach ($messageList as $aMessage) {
-					$report .= "\t- " . $aMessage . "\n";
-				}
-			}
-		}
-		$report .= "\n";
-		return $report;
 	}
 }
 ?>

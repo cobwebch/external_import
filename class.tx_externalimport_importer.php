@@ -88,7 +88,7 @@ class tx_externalimport_importer {
 			// Make sure we have a language object
 			// If initialised, use existing, if not, initialise it
 		if (!isset($GLOBALS['LANG'])) {
-			require_once(PATH_typo3.'sysext/lang/lang.php');
+			require_once(PATH_typo3 . 'sysext/lang/lang.php');
 			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
 			$GLOBALS['LANG']->init($BE_USER->uc['lang']);
 		}
@@ -956,5 +956,71 @@ class tx_externalimport_importer {
 			$this->messages[$status][] = $text;
 		}
 	}
+
+// Reporting utilities
+
+	/**
+	 * This method assembles a report for a given table/index
+	 *
+	 * @param	string		$table: name of the table
+	 * @param	interger	$index: number of the synchronisation configuration
+	 * @param	array		$messages: list of messages for the given table
+	 * @return	string		Formatted text of the report
+	 */
+	public function reportForTable($table, $index, $messages) {
+		$report = sprintf($GLOBALS['LANG']->getLL('synchronizeTableX'), $table, $index) . "\n\n";
+		foreach ($messages as $type => $messageList) {
+			$report .= $GLOBALS['LANG']->getLL('label.' . $type) . "\n";
+			if (count($messageList) == 0) {
+				$report .= "\t" . $GLOBALS['LANG']->getLL('no.' . $type) . "\n";
+			} else {
+				foreach ($messageList as $aMessage) {
+					$report .= "\t- " . $aMessage . "\n";
+				}
+			}
+		}
+		$report .= "\n";
+		return $report;
+	}
+
+	/**
+	 * This method sends a reporting mail to the configured e-mail address
+	 *
+	 * @param	string	$subject: subject of the mail
+	 * @param	string	$body: text body of the mail
+	 * @return	void
+	 */
+	public function sendMail($subject, $body) {
+			// Instantiate and initialize the mail object
+		require_once(PATH_t3lib . 'class.t3lib_htmlmail.php');
+		$mailObject = t3lib_div::makeInstance('t3lib_htmlmail');
+		$mailObject->start();
+		$mailObject->subject = $subject;
+		$mailObject->from_email = $GLOBALS['BE_USER']->user['email'];
+		$mailObject->from_name = $GLOBALS['BE_USER']->user['realName'];
+		$mailObject->replyto_email = $GLOBALS['BE_USER']->user['email'];
+		$mailObject->replyto_name = $GLOBALS['BE_USER']->user['realName'];
+		$mailObject->returnPath = $GLOBALS['BE_USER']->user['email'];
+		$mailObject->setPlain($body);
+			// Send mail
+			// Report error in log, if any
+		$result = $mailObject->send($this->extConf['reportEmail']);
+		if (!$result) {
+			$GLOBALS['BE_USER']->writelog(
+				4,
+				0,
+				1,
+				$this->extKey,
+				'Reporting mail could not be sent',
+				array()
+			);
+		}
+	}
+}
+
+
+
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/external_impport/class.tx_externalimport_importer.php'])	{
+	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/external_impport/class.tx_externalimport_importer.php']);
 }
 ?>
