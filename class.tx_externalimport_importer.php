@@ -31,36 +31,6 @@
  *
  * $Id$
  */
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- *
- *
- *   64: class tx_externalimport_importer
- *   83:     public function __construct()
- *  112:     public function synchronizeAllTables()
- *  159:     protected function initTCAData($table, $index)
- *  193:     public function synchronizeData($table, $index)
- *  261:     public function importData($table, $index, $rawData)
- *  280:     protected function handleData($rawData)
- *  324:     protected function handleArray($rawData)
- *  366:     protected function handleXML($rawData)
- *  415:     protected function transformData($records)
- *  468:     protected function preprocessRawData($records)
- *  485:     protected function preprocessData($records)
- *  502:     protected function storeData($records)
- *  783:     protected function getExistingUids()
- *  805:     protected function getMapping($mappingData)
- *  832:     protected function logMessages()
- *  855:     public function getTableName()
- *  864:     public function getIndex()
- *  874:     public function getExternalConfig()
- *  886:     public function addMessage($text, $status = 'error')
- *
- * TOTAL FUNCTIONS: 19
- * (This index is automatically created/updated by the extension "extdeveval")
- *
- */
 class tx_externalimport_importer {
 	public $extKey = 'external_import';
 	protected $vars = array(); // Variables from the query string
