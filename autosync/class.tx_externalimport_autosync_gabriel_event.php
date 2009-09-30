@@ -60,8 +60,6 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 			$GLOBALS['LANG'] = t3lib_div::makeInstance('language');
 			$GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
 		}
-		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/locallang.xml');
-			// Load language file
 		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/autosync/locallang.xml');
 
 			// Instantiate the import object and call appropriate method depending on command
