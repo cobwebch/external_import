@@ -206,6 +206,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					</script>
 				';
 			}
+			$this->doc->JScodeArray[] .= '
+					var LOCALAPP = {
+						imageExpand : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/plusbullet_list.gif', 'width="18" height="12"') . ' alt="+" />\',
+						imageCollapse : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/minusbullet_list.gif', 'width="18" height="12"') . ' alt="-" />\',
+						showSyncForm : \'' . $GLOBALS['LANG']->getLL('show_sync_form') . '\',
+						hideSyncForm : \'' . $GLOBALS['LANG']->getLL('hide_sync_form') . '\'
+					};';
+			$this->doc->JScode .= '<script type="text/javascript" src="' . $BACK_PATH . t3lib_extMgm::extRelPath($GLOBALS['MCONF']['extKey']) . 'res/tx_externalimport.js"></script>'."\n";
 
 			$this->doc->postCode='
 				<script language="javascript" type="text/javascript">
@@ -289,6 +297,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	protected function listSynchronizedTables() {
 		global $BACK_PATH;
+		$saveResult = '';
+		$existingTasks = array();
 
 			// Get a Gabriel/Scheduler wrapper depending on extension installed, if any is available
 		if ($this->hasSchedulingTool) {
@@ -301,48 +311,59 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			} else {
 				$this->schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('scheduler');
 			}
+
+				// Save a task registration, if any
+			$saveResult = $this->saveTask();
+
+				// Get all the registred tasks
+			$existingTasks = $this->schedulingObject->getAllTasks();
+
+				// Initialise some JavaScript
+//			$this->doc->JScodeArray[] .= 'var imageExpand = \'<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/plusbullet_list.gif','width="18" height="12"').' alt="+" />\';';
+//			$this->doc->JScodeArray[] .= 'var imageCollapse = \'<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/minusbullet_list.gif','width="18" height="12"').' alt="-" />\';';
+			$this->doc->JScodeArray[] .= '
+					var LOCALAPP = {
+						imageExpand : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/plusbullet_list.gif', 'width="18" height="12"') . ' alt="+" />\',
+						imageCollapse : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/minusbullet_list.gif', 'width="18" height="12"') . ' alt="-" />\'
+						showExtraDate : \'' . $GLOBALS['LANG']->getLL('show_extra_data') . '\',
+						hideExtraDate : \'' . $GLOBALS['LANG']->getLL('hide_extra_data') . '\'
+					}';
+			$this->doc->JScode .= '<script type="text/javascript" src="' . t3lib_extMgm::extRelPath($GLOBALS['MCONF']['extKey']) . 'res/tx_externalimport.js"></script>'."\n";
 		}
 
 			// Get list of all synchronisable tables and extract general information about them
 		$externalTables = array();
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-			foreach ($sections as $sectionKey => $sectionData) {
-				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
-					foreach ($sectionData['external'] as $index => $externalConfig) {
-						if (!empty($externalConfig['connector'])) {
-							if (isset($externalConfig['priority'])) {
-								$priority = $externalConfig['priority'];
-							}
-							else {
-								$priority = 1000; // If priority is not defined, set to very low
-	                        }
-							if (isset($externalConfig['description'])) {
-								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
-							}
-							else {
-								$description = '';
-	                        }
-							$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority, 'description' => $description);
+			if (isset($sections['ctrl']['external'])) {
+				$externalData = $sections['ctrl']['external'];
+				foreach ($externalData as $index => $externalConfig) {
+					if (!empty($externalConfig['connector'])) {
+							// If priority is not defined, set to very low
+						$priority = 1000;
+						$description = '';
+						if (isset($externalConfig['priority'])) {
+							$priority = $externalConfig['priority'];
 						}
-                    }
+						if (isset($externalConfig['description'])) {
+							$description = $GLOBALS['LANG']->sL($externalConfig['description']);
+						}
+						$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority, 'description' => $description);
+					}
 				}
 			}
 		}
 
-// Sort tables by priority (lower number is highest priority)
-
+			// Sort tables by priority (lower number is highest priority)
 		usort($externalTables, array('tx_externalimport_module1','prioritySort'));
 
 
-// Prepare table to display list of external tables
-
+			// Prepare table to display list of external tables
 		if (count($externalTables) == 0) {
 			$tableList = '<p>'.$GLOBALS['LANG']->getLL('external_tables_none').'</p>';
 		}
 		else {
 
-// First initialise the table layout
-
+				// First initialise the table layout
 			$tableLayout = array (
 								'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
 								'0' => array (
@@ -356,8 +377,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 			$table = array();
 
-// First row is header row
-
+				// First row is header row
 			$tr = 0;
 			$table[$tr] = array();
 			$table[$tr][] = '&nbsp;'; // Table icon
@@ -368,13 +388,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table[$tr][] = '&nbsp;'; // Action result
 			$table[$tr][] = $GLOBALS['LANG']->getLL('autosync'); // Sync form
 
-// Generate table row for each table
-
+				// Generate table row for each table
 			foreach ($externalTables as $tableData) {
 				$tr++;
 				$tableName = $tableData['tablename'];
 				$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
 				$tableIndex = $tableData['index'];
+				$taskDataKey = $tableName . '/' . $tableIndex;
+				$taskData = isset($existingTasks[$taskDataKey]) ? $existingTasks[$taskDataKey] : array();
 				$table[$tr] = array();
 				$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
 				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
@@ -383,11 +404,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$table[$tr][] = $tableData['priority'];
 				$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\', \''.$tableIndex.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
 				$table[$tr][] = '<div id="result' . $tr . '"></div>'; // Action result
-				$table[$tr][] = '<div id="result' . $tr . '">' . $this->displaySyncForm(array(), $tableName, $tableIndex) . '</div>'; // Sync form
+				$table[$tr][] = '<div id="result' . $tr . '">' . $this->displaySyncForm($taskData, $tableName, $tableIndex) . '</div>'; // Sync form
 			}
 
-// Render the table
-
+				// Render the table
 			$tableList = $this->doc->table($table, $tableLayout);
 		}
 
@@ -398,14 +418,17 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_error'), 2);
 			$content .= $this->doc->spacer(10);
 		}
+			// Display the result of task registration, if any
+		if (!empty($saveResult)) {
+			$content .= $saveResult;
+		}
 		$content .= '<p>'.$GLOBALS['LANG']->getLL('external_tables_intro').'</p>';
 		$content .= $this->doc->spacer(10);
 		$content .= $tableList;
 		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('external_tables'),$content,0,1);
 
-// Display form for automatic synchronisation
-
-		$this->displayAutoSyncSection();
+			// Display form for automatic synchronisation
+		$this->displayAutoSyncSection(isset($existingTasks['all']) ? $existingTasks['all'] : array());
 	}
 
 	/**
@@ -418,8 +441,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	protected function listOtherTables() {
 		global $BACK_PATH;
 
-// Get list of all non-synchronisable tables and extract general information about them
-
+			// Get list of all non-synchronisable tables and extract general information about them
 		$externalTables = array();
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
 			foreach ($sections as $sectionKey => $sectionData) {
@@ -427,8 +449,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					foreach ($sectionData['external'] as $index => $externalConfig) {
 						if (empty($externalConfig['connector'])) {
 
-// Table's full name and index will be used as key for sorting the tables
-
+								// Table's full name and index will be used as key for sorting the tables
 							$tableTitle = $GLOBALS['LANG']->sL($sectionData['title']).':'.$index;
 							if (isset($externalConfig['description'])) {
 								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
@@ -444,15 +465,13 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		}
 		ksort($externalTables);
 
-// Prepare the list of tables
-
+			// Prepare the list of tables
 		if (count($externalTables) == 0) {
 			$tableList = '<p>'.$GLOBALS['LANG']->getLL('nosync_tables_none').'</p>';
 		}
 		else {
 
-// Initialise the table layout
-
+				// Initialise the table layout
 			$tableLayout = array (
 								'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
 								'0' => array (
@@ -466,16 +485,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 			$table = array();
 
-// First row is header row
-
+				// First row is header row
 			$tr = 0;
 			$table[$tr] = array();
 			$table[$tr][] = '&nbsp;'; // Table icon
 			$table[$tr][] = $GLOBALS['LANG']->getLL('table'); // Table name
 			$table[$tr][] = $GLOBALS['LANG']->getLL('description'); // Sync description
 
-// Generate table row for each table
-
+				// Generate table row for each table
 			foreach ($externalTables as $key => $tableData) {
 				$tr++;
 				list($tableTitle, $tableIndex) = t3lib_div::trimExplode(':', $key, 1);
@@ -483,17 +500,15 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
 				$table[$tr] = array();
 				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
-				$table[$tr][] = $tableTitle.' ('.$tableName.')';
-				$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
+				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
+				$table[$tr][] = '[' . $tableIndex . ']' . ((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 			}
 
-// Render the table
-
+				// Render the table
 			$tableList = $this->doc->table($table, $tableLayout);
 		}
 
-// Assemble content
-
+			// Assemble content
 		$content = '<p>'.$GLOBALS['LANG']->getLL('nosync_tables_intro').'</p>';
 		$content .= $this->doc->spacer(10);
 		$content .= $tableList;
@@ -505,93 +520,89 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	protected function displayAutoSyncSection() {
+	protected function displayAutoSyncSection($taskData) {
 		$content = '';
 		if ($this->hasSchedulingTool) {
-
-				// If there was an input, register the event/task
-			$inputParameters = t3lib_div::GParrayMerged('tx_externalimport');
-			if (count($inputParameters) > 0) {
-				$hasError = false;
-				$errorMessages = '';
-
-					// Check validity of input
-				$startdate = (empty($inputParameters['start'])) ? time() : strtotime($inputParameters['start']);
-				if ($startdate === false || $startdate === -1) {
-					$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_invalid_start_date'), 3);
-					$hasError = true;
-				}
-				$period = intval($inputParameters['period_value']);
-				if ($period < 1) {
-					$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_value_below_0'), 3);
-					$hasError = true;
-				}
-
-					// If input was invalid, issue error and do nothing more
-				if ($hasError) {
-					$content .= $errorMessages;
-					$content .= $this->doc->spacer(10);
-
-					// Input is valid
-				} else {
-
-						// Get interval and assemble as crontab frequency syntax
-					switch ($inputParameters['period_type']) {
-						case 'minutes':
-							$interval = 60 * $period;
-							break;
-						case 'hours':
-							$interval = 3600 * $period;
-							break;
-						case 'days':
-							$interval = 24 * 3600 * $period;
-							break;
-						case 'weeks':
-							$interval = 7 * 24 * 3600 * $period;
-							break;
-						case 'months':
-							$interval = 30 * 7 * 24 * 3600 * $period;
-							break;
-						case 'years':
-							$interval = 12 * 30 * 7 * 24 * 3600 * $period;
-							break;
-					}
-					$inputParameters['interval'] = $interval;
-
-					$result = $this->schedulingObject->saveTask($inputParameters);
-
-					if ($result) {
-						$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_saved'), -1);
-					} else {
-						$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_save_failed'), 3);
-					}
-					$content .= $this->doc->spacer(10);
-				}
-			}
-
-				// Check for existing event/task
-			$existingEvents = $this->schedulingObject->getAllTasks();
-				 // No events at all or no event for global synchronisation, display a message to that effect
-			if (count($existingEvents) == 0 || !isset($existingEvents['all'])) {
-				$content .= $this->displayMessage($GLOBALS['LANG']->getLL('no_autosync'), 2);
-
-				// An event exists, display next execution time
-			} else {
-				$message = sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $existingEvents['all']['nextexecution']), $existingEvents['all']['interval']);
-				$content .= $this->displayMessage($message, 0);
-			}
-			$content .= $this->doc->spacer(10);
 
 				// Display auto sync set up form
 			$content .= '<p>' . $GLOBALS['LANG']->getLL('autosync_intro') . '</p>';
 			$content .= $this->doc->spacer(5);
-			$content .= $this->displaySyncForm($existingEvents['all'], 'all');
+			$content .= $this->displaySyncForm($taskData, 'all');
 			$content .= $this->doc->spacer(10);
 
 				// Add to module's output
 			$this->content .= $this->doc->divider(5);
-			$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('full_autosync'),$content,0,1);
+			$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('full_autosync'), $content, 0, 1);
 		}
+	}
+
+	/**
+	 * This method checks input data and stores a task registration if applicable
+	 *
+	 * @return	string	HTML to display with feedback about save process
+	 */
+	protected function saveTask() {
+		$content = '';
+			// If there was an input, register the event/task
+		$inputParameters = t3lib_div::GParrayMerged('tx_externalimport');
+		if (count($inputParameters) > 0) {
+			$hasError = false;
+			$errorMessages = '';
+
+				// Check validity of input
+			$startdate = (empty($inputParameters['start'])) ? time() : strtotime($inputParameters['start']);
+			if ($startdate === false || $startdate === -1) {
+				$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_invalid_start_date'), 3);
+				$hasError = true;
+			}
+			$period = intval($inputParameters['period_value']);
+			if ($period < 1) {
+				$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_value_below_0'), 3);
+				$hasError = true;
+			}
+
+				// If input was invalid, issue error and do nothing more
+			if ($hasError) {
+				$content .= $errorMessages;
+				$content .= $this->doc->spacer(10);
+
+				// Input is valid
+			} else {
+
+					// Get interval and assemble as crontab frequency syntax
+				switch ($inputParameters['period_type']) {
+					case 'minutes':
+						$interval = 60 * $period;
+						break;
+					case 'hours':
+						$interval = 3600 * $period;
+						break;
+					case 'days':
+						$interval = 24 * 3600 * $period;
+						break;
+					case 'weeks':
+						$interval = 7 * 24 * 3600 * $period;
+						break;
+					case 'months':
+						$interval = 30 * 7 * 24 * 3600 * $period;
+						break;
+					case 'years':
+						$interval = 12 * 30 * 7 * 24 * 3600 * $period;
+						break;
+				}
+				$inputParameters['interval'] = $interval;
+
+				$result = $this->schedulingObject->saveTask($inputParameters);
+
+				if ($result) {
+					$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_saved'), -1);
+				} else {
+					$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_save_failed'), 3);
+				}
+				$content .= $this->doc->spacer(10);
+			}
+		}
+		return $content;
 	}
 
 	/**
@@ -620,7 +631,29 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @return	string		HTML of the form to display
 	 */
 	protected function displaySyncForm($data, $table, $index = 0) {
-		$form = '<form name="syncForm" id="syncForm_' . $table . '_' . $index . '" method="POST" action="">';
+		$form = '';
+			 // No events at all or no event for global synchronisation, display a message to that effect
+		if (count($data) == 0) {
+			$form .= '<p>' . $GLOBALS['LANG']->getLL('no_autosync') . '</p>';
+
+			// An event exists, display next execution time
+		} else {
+			$message = sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $data['nextexecution']), $data['interval']);
+			$form .= '<p>' . $message . '</p>';
+		}
+		$idAttribute = 'syncForm_' . $table . '_' . $index;
+		$form .= $this->doc->spacer(10);
+			// Add an icon for toggling hide/show status
+		$label = $GLOBALS['LANG']->getLL('show_sync_form');
+		$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/plusbullet_list.gif', 'width="18" height="12"') . ' alt="+" />';
+		$visibilityIcon = '<a href="javascript:toggleSyncForm(\'' . $idAttribute . '\')" id="' . $idAttribute . '_link" title="' . $label . '">';
+		$visibilityIcon .= $icon;
+		$visibilityIcon .= '</a>';
+		$form .= $visibilityIcon;
+			// Wrap the whole form inside a div to be able to hide it easily
+		$form .= '<div id="' . $idAttribute . '_wrapper" style="display:none">';
+			// Assemble the form itself
+		$form .= '<form name="syncForm" id="' . $idAttribute . '" method="POST" action="">';
 		$form .= '<input type="hidden" name="tx_externalimport[sync]" value="' . $table . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['uid'])) ? $data['uid'] : 0) . '" />';
@@ -633,6 +666,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$form .= '</select></p>';
 		$form .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
 		$form .= '</form>';
+		$form .= '</div>';
 		return $form;
 	}
 

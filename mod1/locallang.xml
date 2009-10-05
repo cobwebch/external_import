@@ -46,6 +46,8 @@
 			<label index="next_autosync">Activated. The next run will take place on %1$s. Frequency is %2$d seconds.</label>
 			<label index="error_value_below_0">Please enter a value larger than 0.</label>
 			<label index="error_invalid_start_date">The given start date is not valid.</label>
+			<label index="show_sync_form">Show the synchronisation form</label>
+			<label index="hide_sync_form">Hide the synchronisation form</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="title">Import de données externes</label>
@@ -90,6 +92,8 @@
 			<label index="next_autosync">Activée. La prochaine exécution aura lieu le %1$s. La fréquence est de %2$d secondes.</label>
 			<label index="error_value_below_0">Veuillez saisir une valeur plus grande que 0.</label>
 			<label index="error_invalid_start_date">La date de début n'est pas valable.</label>
+			<label index="show_sync_form">Afficher le formulaire de synchronisation</label>
+			<label index="hide_sync_form">Masquer le formulaire de synchronisation</label>
 		</languageKey>
 	</data>
 </T3locallang>
