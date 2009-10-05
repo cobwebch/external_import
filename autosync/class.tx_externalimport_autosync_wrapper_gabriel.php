@@ -55,7 +55,7 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 				$additionalParameters = t3lib_div::explodeUrl2Array($additionaParametersString);
 					// Assemble array key from crid parts
 				$key = $additionalParameters['sync'];
-				if (!empty($additionalParameters['index'])) {
+				if (isset($additionalParameters['index'])) {
 					$key .= '/' . $additionalParameters['index'];
 				}
 					/**

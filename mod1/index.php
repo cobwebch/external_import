@@ -679,6 +679,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$form .= '<div id="' . $idAttribute . '_wrapper" style="display:none">';
 			// Assemble the form itself
 		$form .= '<form name="syncForm" id="' . $idAttribute . '" method="POST" action="">';
+		$form .= '<input type="hidden" name="CMD" value="save" />';
 		$form .= '<input type="hidden" name="tx_externalimport[sync]" value="' . $table . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['uid'])) ? $data['uid'] : 0) . '" />';
