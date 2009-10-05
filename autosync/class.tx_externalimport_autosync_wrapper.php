@@ -49,5 +49,13 @@ abstract class tx_externalimport_autosync_wrapper {
 	 * @return	boolean		True or false depending on success or failure of action
 	 */
 	abstract public function saveTask($taskData);
+
+	/**
+	 * This method removes the registration of a given event/task
+	 * 
+	 * @param	integer		$uid: primary key of the event/task to remove
+	 * @return	boolean		True or false depending on success or failure of action
+	 */
+	abstract public function deleteTask($uid);
 }
 ?>

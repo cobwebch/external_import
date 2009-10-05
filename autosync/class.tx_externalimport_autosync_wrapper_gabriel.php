@@ -110,5 +110,27 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 		}
 		return $result;
 	}
+
+	/**
+	 * This method removes the registration of a given event/task
+	 * 
+	 * @param	integer		$uid: primary key of the event/task to remove
+	 * @return	boolean		True or false depending on success or failure of action
+	 */
+	public function deleteTask($uid) {
+		$result = false;
+			// Get an instance of Gabriel
+		require_once(t3lib_extMgm::extPath('gabriel', 'class.tx_gabriel.php'));
+			/**
+			 * @var	tx_gabriel
+			 */
+		$gabriel = t3lib_div::makeInstance('tx_gabriel');
+		if (!empty($uid)) {
+			$event = $gabriel->fetchEvent($uid);
+				// Stop any existing execution(s) and save
+			$result = $gabriel->removeEvent($event);
+		}
+		return $result;
+	}
 }
 ?>

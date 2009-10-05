@@ -50,6 +50,8 @@
 			<label index="cancel_edit_sync">Cancel edition</label>
 			<label index="delete_sync">Remove the synchronisation</label>
 			<label index="delete_sync_confirm">Are you sure you want to remove this automatic synchronisation?</label>
+			<label index="delete_done">The synchronisation settings were removed successfully.</label>
+			<label index="delete_failed">The synchronisation settings could not be removed.</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="title">Import de données externes</label>
@@ -98,6 +100,8 @@
 			<label index="cancel_edit_sync">Annuler la modification</label>
 			<label index="delete_sync">Supprimer la synchronisation</label>
 			<label index="delete_sync_confirm">Voulez-vous vraiment supprimer cette synchronisation automatique?</label>
+			<label index="delete_done">Les réglages de synchronisation ont été supprimés avec succès.</label>
+			<label index="delete_failed">Les réglages de synchronisation n'ont pas pu être supprimés.</label>
 		</languageKey>
 	</data>
 </T3locallang>

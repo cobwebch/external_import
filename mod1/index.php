@@ -296,6 +296,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	protected function listSynchronizedTables() {
 		global $BACK_PATH;
 		$saveResult = '';
+		$deleteResult = '';
 		$existingTasks = array();
 
 			// Get a Gabriel/Scheduler wrapper depending on extension installed, if any is available
@@ -308,6 +309,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$this->schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('gabriel');
 			} else {
 				$this->schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('scheduler');
+			}
+
+			if ($this->CMD == 'delete') {
+				$deleteResult = $this->deleteTask();
 			}
 
 				// Save a task registration, if any
@@ -390,7 +395,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$table[$tr][] = $tableData['priority'];
 				$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\', \''.$tableIndex.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
 				$table[$tr][] = '<div id="result' . $tr . '"></div>'; // Action result
-				$table[$tr][] = '<div id="result' . $tr . '">' . $this->displaySyncForm($taskData, $tableName, $tableIndex) . '</div>'; // Sync form
+				$cellContent = '&nbsp;';
+				if ($this->hasSchedulingTool) {
+					$cellContent = $this->displaySyncForm($taskData, $tableName, $tableIndex);
+				}
+				$table[$tr][] = '<div id="result' . $tr . '">' . $cellContent . '</div>'; // Sync form
 			}
 
 				// Render the table
@@ -403,6 +412,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		if (!$this->hasSchedulingTool) {
 			$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_error'), 2);
 			$content .= $this->doc->spacer(10);
+		}
+			// Display the result of task deletion, if any
+		if (!empty($deleteResult)) {
+			$content .= $deleteResult;
 		}
 			// Display the result of task registration, if any
 		if (!empty($saveResult)) {
@@ -592,6 +605,23 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	}
 
 	/**
+	 * This method deletes a given task and returns information about action completion
+	 * 
+	 * @return	string	Result message to display
+	 */
+	protected function deleteTask() {
+		$message = '';
+		$uid = t3lib_div::_GP('uid');
+		$result = $this->schedulingObject->deleteTask($uid);
+		if ($result) {
+			$message = $this->displayMessage($GLOBALS['LANG']->getLL('delete_done'), -1);
+		} else {
+			$message = $this->displayMessage($GLOBALS['LANG']->getLL('delete_failed'), 3);
+		}
+		return $message;
+	}
+
+	/**
 	 * Utility method used to sort ctrl sections according to the priority value in the external information block
 	 *
 	 * @param	array	$a: first ctrl section to compare
@@ -629,13 +659,22 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		}
 		$idAttribute = 'syncForm_' . $table . '_' . $index;
 		$form .= $this->doc->spacer(5);
-			// Add an icon for toggling hide/show status
+			// Add an icon for toggling edit form
 		$label = $GLOBALS['LANG']->getLL('edit_sync');
 		$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />';
-		$visibilityIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\')" id="' . $idAttribute . '_link" title="' . $label . '">';
-		$visibilityIcon .= $icon;
-		$visibilityIcon .= '</a>';
-		$form .= $visibilityIcon;
+		$editIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\')" id="' . $idAttribute . '_link" title="' . $label . '">';
+		$editIcon .= $icon;
+		$editIcon .= '</a>';
+		$form .= $editIcon;
+			// Add an icon for toggling edit form
+		if (isset($data['uid'])) {
+			$label = $GLOBALS['LANG']->getLL('delete_sync');
+			$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/garbage.gif', 'width="18" height="12"') . ' alt="+" />';
+			$deleteIcon = '<a href="?CMD=delete&uid=' . $data['uid'] . '" onclick="return confirm(\'' . $GLOBALS['LANG']->getLL('delete_sync_confirm') . '\')" title="' . $label . '">';
+			$deleteIcon .= $icon;
+			$deleteIcon .= '</a>';
+			$form .= $deleteIcon;
+		}
 			// Wrap the whole form inside a div to be able to hide it easily
 		$form .= '<div id="' . $idAttribute . '_wrapper" style="display:none">';
 			// Assemble the form itself
@@ -647,7 +686,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$form .= '<p>' . $GLOBALS['LANG']->getLL('period') . '&nbsp;<input type="text" name="tx_externalimport[period_value]" size="4" value="" />&nbsp;';
 		$form .= '<select name="tx_externalimport[period_type]">';
 		foreach ($this->periods as $aPeriod) {
-			$form .= '<option value="'.$aPeriod.'">' . $GLOBALS['LANG']->getLL($aPeriod) . '</option>';
+			$form .= '<option value="' . $aPeriod . '">' . $GLOBALS['LANG']->getLL($aPeriod) . '</option>';
 		}
 		$form .= '</select></p>';
 		$form .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
