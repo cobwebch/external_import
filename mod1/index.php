@@ -105,12 +105,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				</script>
 			';
 
-// Add JavaScript for AJAX call to synchronise method
-// When the call returns, the code also handles the display of the response messages
-// Additionnally an animated icon and a message are displayed with the sync is running to provide visual feedback
+				// Add JavaScript for AJAX call to synchronise method
+				// When the call returns, the code also handles the display of the response messages
+				// Additionnally an animated icon and a message are displayed with the sync is running to provide visual feedback
 
-// Code for TYPO3 4.2
-
+				// Code for TYPO3 4.2
 			if (t3lib_div::compat_version('4.2')) {
 				$this->doc->loadJavascriptLib('contrib/prototype/prototype.js');
 				$this->doc->loadJavascriptLib('js/common.js');
@@ -156,11 +155,9 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 						}
 					</script>
 				';
-			}
+			} else {
+				// Code for TYPO3 4.1
 
-// Code for TYPO3 4.1
-
-			else {
 				$ajaxURL = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . t3lib_div::getThisUrl() . '../tx_externalimport_ajaxhandler.php';
 				$this->doc->JScode .= '<script type="text/javascript" src="../res/prototype.js"></script>'."\n";
 				$this->doc->JScode .= '
@@ -206,12 +203,13 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					</script>
 				';
 			}
+				// Additional JavaScript for showing/hiding the synchronisation form
 			$this->doc->JScodeArray[] .= '
 					var LOCALAPP = {
-						imageExpand : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/plusbullet_list.gif', 'width="18" height="12"') . ' alt="+" />\',
-						imageCollapse : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/minusbullet_list.gif', 'width="18" height="12"') . ' alt="-" />\',
-						showSyncForm : \'' . $GLOBALS['LANG']->getLL('show_sync_form') . '\',
-						hideSyncForm : \'' . $GLOBALS['LANG']->getLL('hide_sync_form') . '\'
+						imageExpand : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />\',
+						imageCollapse : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" />\',
+						showSyncForm : \'' . $GLOBALS['LANG']->getLL('edit_sync') . '\',
+						hideSyncForm : \'' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '\'
 					};';
 			$this->doc->JScode .= '<script type="text/javascript" src="' . $BACK_PATH . t3lib_extMgm::extRelPath($GLOBALS['MCONF']['extKey']) . 'res/tx_externalimport.js"></script>'."\n";
 
@@ -317,18 +315,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 				// Get all the registred tasks
 			$existingTasks = $this->schedulingObject->getAllTasks();
-
-				// Initialise some JavaScript
-//			$this->doc->JScodeArray[] .= 'var imageExpand = \'<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/plusbullet_list.gif','width="18" height="12"').' alt="+" />\';';
-//			$this->doc->JScodeArray[] .= 'var imageCollapse = \'<img'.t3lib_iconWorks::skinImg($BACK_PATH,'gfx/minusbullet_list.gif','width="18" height="12"').' alt="-" />\';';
-			$this->doc->JScodeArray[] .= '
-					var LOCALAPP = {
-						imageExpand : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/plusbullet_list.gif', 'width="18" height="12"') . ' alt="+" />\',
-						imageCollapse : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/minusbullet_list.gif', 'width="18" height="12"') . ' alt="-" />\'
-						showExtraDate : \'' . $GLOBALS['LANG']->getLL('show_extra_data') . '\',
-						hideExtraDate : \'' . $GLOBALS['LANG']->getLL('hide_extra_data') . '\'
-					}';
-			$this->doc->JScode .= '<script type="text/javascript" src="' . t3lib_extMgm::extRelPath($GLOBALS['MCONF']['extKey']) . 'res/tx_externalimport.js"></script>'."\n";
 		}
 
 			// Get list of all synchronisable tables and extract general information about them
@@ -642,11 +628,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$form .= '<p>' . $message . '</p>';
 		}
 		$idAttribute = 'syncForm_' . $table . '_' . $index;
-		$form .= $this->doc->spacer(10);
+		$form .= $this->doc->spacer(5);
 			// Add an icon for toggling hide/show status
-		$label = $GLOBALS['LANG']->getLL('show_sync_form');
-		$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/plusbullet_list.gif', 'width="18" height="12"') . ' alt="+" />';
-		$visibilityIcon = '<a href="javascript:toggleSyncForm(\'' . $idAttribute . '\')" id="' . $idAttribute . '_link" title="' . $label . '">';
+		$label = $GLOBALS['LANG']->getLL('edit_sync');
+		$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />';
+		$visibilityIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\')" id="' . $idAttribute . '_link" title="' . $label . '">';
 		$visibilityIcon .= $icon;
 		$visibilityIcon .= '</a>';
 		$form .= $visibilityIcon;
