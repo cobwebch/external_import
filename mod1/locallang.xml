@@ -46,8 +46,9 @@
 			<label index="next_autosync">Activated. The next run will take place on %1$s. Frequency is %2$d seconds.</label>
 			<label index="error_value_below_0">Please enter a value larger than 0.</label>
 			<label index="error_invalid_start_date">The given start date is not valid.</label>
+			<label index="add_sync">Define the synchronisation settings</label>
 			<label index="edit_sync">Edit the synchronisation settings</label>
-			<label index="cancel_edit_sync">Cancel edition</label>
+			<label index="cancel_edit_sync">Cancel modifications</label>
 			<label index="delete_sync">Remove the synchronisation</label>
 			<label index="delete_sync_confirm">Are you sure you want to remove this automatic synchronisation?</label>
 			<label index="delete_done">The synchronisation settings were removed successfully.</label>
@@ -96,7 +97,8 @@
 			<label index="next_autosync">Activée. La prochaine exécution aura lieu le %1$s. La fréquence est de %2$d secondes.</label>
 			<label index="error_value_below_0">Veuillez saisir une valeur plus grande que 0.</label>
 			<label index="error_invalid_start_date">La date de début n'est pas valable.</label>
-			<label index="edit_sync">Mdofier les réglages de synchronisation</label>
+			<label index="add_sync">Définir les réglages de synchronisation</label>
+			<label index="edit_sync">Modifier les réglages de synchronisation</label>
 			<label index="cancel_edit_sync">Annuler la modification</label>
 			<label index="delete_sync">Supprimer la synchronisation</label>
 			<label index="delete_sync_confirm">Voulez-vous vraiment supprimer cette synchronisation automatique?</label>

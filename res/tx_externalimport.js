@@ -3,17 +3,31 @@
  *
  * $Id$
  */
-function toggleSyncForm(theID) {
+function toggleSyncForm(theID, action) {
 	var theLink = $(theID + '_link');
 	var theElement = $(theID + '_wrapper');
+	var theIcon;
+	var theLabel;
 	if (theElement.visible()) {
 		theElement.hide();
-		theLink.update(LOCALAPP.imageExpand);
-		theLink.title = LOCALAPP.showSyncForm;
+		if (action === 'add') {
+			theIcon = LOCALAPP.imageExpand_add;
+			theLabel  = LOCALAPP.showSyncForm_add;
+		} else {
+			theIcon = LOCALAPP.imageExpand_edit;
+			theLabel  = LOCALAPP.showSyncForm_edit;
+		}
+		theLink.update(theIcon);
+		theLink.title = theLabel;
 	}
 	else {
 		theElement.show();
-		theLink.update(LOCALAPP.imageCollapse);
+		if (action === 'add') {
+			theIcon = LOCALAPP.imageCollapse_add;
+		} else {
+			theIcon = LOCALAPP.imageCollapse_edit;
+		}
+		theLink.update(theIcon);
 		theLink.title = LOCALAPP.hideSyncForm;
 	}
 }

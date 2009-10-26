@@ -206,9 +206,12 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				// Additional JavaScript for showing/hiding the synchronisation form
 			$this->doc->JScodeArray[] .= '
 					var LOCALAPP = {
-						imageExpand : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />\',
-						imageCollapse : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" />\',
-						showSyncForm : \'' . $GLOBALS['LANG']->getLL('edit_sync') . '\',
+						imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />\',
+						imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" />\',
+						imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />\',
+						imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" />\',
+						showSyncForm_add : \'' . $GLOBALS['LANG']->getLL('add_sync') . '\',
+						showSyncForm_edit : \'' . $GLOBALS['LANG']->getLL('edit_sync') . '\',
 						hideSyncForm : \'' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '\'
 					};';
 			$this->doc->JScode .= '<script type="text/javascript" src="' . $BACK_PATH . t3lib_extMgm::extRelPath($GLOBALS['MCONF']['extKey']) . 'res/tx_externalimport.js"></script>'."\n";
@@ -659,10 +662,20 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		}
 		$idAttribute = 'syncForm_' . $table . '_' . $index;
 		$form .= $this->doc->spacer(5);
-			// Add an icon for toggling edit form
-		$label = $GLOBALS['LANG']->getLL('edit_sync');
-		$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />';
-		$editIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\')" id="' . $idAttribute . '_link" title="' . $label . '">';
+			// Add an icon for toggling the add or edit form
+		$label = '';
+		$icon = '';
+		$action = '';
+		if (isset($data['uid'])) {
+			$label = $GLOBALS['LANG']->getLL('edit_sync');
+			$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />';
+			$action = 'edit';
+		} else {
+			$label = $GLOBALS['LANG']->getLL('add_sync');
+			$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />';
+			$action = 'add';
+		}
+		$editIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\', \'' . $action . '\')" id="' . $idAttribute . '_link" title="' . $label . '">';
 		$editIcon .= $icon;
 		$editIcon .= '</a>';
 		$form .= $editIcon;
