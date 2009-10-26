@@ -71,6 +71,17 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 				$subject .= ' ' . 'Full synchronization';
 				$importer->sendMail($subject, $reportContent);
 			}
+		} else {
+			$messages = $importer->synchronizeData($this->commands['sync'], $this->commands['index']);
+				// If necessary, prepare a report with all messages
+			if (!empty($this->extConf['reportEmail'])) {
+				$reportContent .= $importer->reportForTable($this->commands['sync'], $this->commands['index'], $messages);
+				$reportContent .= "\n\n";
+					// Assemble the subject and send the mail
+				$subject = (empty($this->extConf['reportSubject'])) ? '' : $this->extConf['reportSubject'];
+				$subject .= ' ' . 'Synchronization of table ' . $this->commands['sync'] . ', index ' . $this->commands['index'];
+				$importer->sendMail($subject, $reportContent);
+			}
 		}
 	}
 }
