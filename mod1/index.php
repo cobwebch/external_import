@@ -675,7 +675,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />';
 			$action = 'add';
 		}
-		$editIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\', \'' . $action . '\')" id="' . $idAttribute . '_link" title="' . $label . '">';
+		$editIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\', \'' . $action . '\'); return false;" id="' . $idAttribute . '_link" title="' . $label . '">';
 		$editIcon .= $icon;
 		$editIcon .= '</a>';
 		$form .= $editIcon;
