@@ -68,7 +68,7 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 									'uid' => $row['uid'],
 									'nextexecution' => $row['nextexecution'],
 									'interval' => $eventObject->executionPool[0]->interval,
-									'croncmd' => $eventObject->executionPool[0]->croncmd,
+									'croncmd' => $eventObject->executionPool[0]->cronCmd,
 									'start' => $eventObject->executionPool[0]->start,
 								);
 			}
@@ -84,6 +84,7 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 	 * @return	boolean		True or false depending on success or failure of action
 	 */
 	public function saveTask($taskData) {
+		$result = FALSE;
 			// Get an instance of Gabriel
 		require_once(t3lib_extMgm::extPath('gabriel', 'class.tx_gabriel.php'));
 			/**
@@ -93,7 +94,7 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 		if (empty($taskData['uid'])) {
 				// Create a new event instance and register the execution
 			$event = t3lib_div::makeInstance('tx_externalimport_autosync_gabriel_event');
-			$event->registerRecurringExecution($taskData['start'], $taskData['interval'], 0);
+			$event->registerRecurringExecution($taskData['start'], $taskData['interval'], 0, FALSE, $taskData['croncmd']);
 				// Assemble the identifier and save the event
 			$crid = 'tx_externalimport_autosync_gabriel_event::sync=' . $taskData['sync'];
 			if (isset($taskData['index'])) {
@@ -105,7 +106,7 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 				// Stop any existing execution(s)...
 			$event->stop();
 				/// ...and replace it(them) by a new one
-			$event->registerRecurringExecution($taskData['start'], $taskData['interval'], 0);
+			$event->registerRecurringExecution($taskData['start'], $taskData['interval'], 0, FALSE, $taskData['croncmd']);
 			$result = $event->save();
 		}
 		return $result;
@@ -118,7 +119,7 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 	 * @return	boolean		True or false depending on success or failure of action
 	 */
 	public function deleteTask($uid) {
-		$result = false;
+		$result = FALSE;
 			// Get an instance of Gabriel
 		require_once(t3lib_extMgm::extPath('gabriel', 'class.tx_gabriel.php'));
 			/**

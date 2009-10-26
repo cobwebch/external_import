@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<!-- $Id$ -->
 <T3locallang>
 	<meta type="array">
 		<type>module</type>
@@ -27,11 +28,11 @@
 			<label index="manual_sync">Manual synchronisation</label>
 			<label index="autosync">Automatic synchronisation</label>
 			<label index="full_autosync">Automatic complete synchronisation</label>
-			<label index="autosync_intro">Using the form below you can define a frequency for the automatic synchronisation of &lt;strong&gt;all external tables&lt;/strong&gt;.</label>
+			<label index="autosync_intro">It is possible to define a frequency for the automatic synchronisation of &lt;strong&gt;all external tables&lt;/strong&gt;.</label>
 			<label index="autosync_error">Automatic synchronisation of external tables is not possible, because neither extension "gabriel", nor system extension "scheduler" (TYPO3 4.3+) are installed.</label>
 			<label index="start_date">Start date:</label>
 			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
-			<label index="period">Period:</label>
+			<label index="frequency">Frequency:</label>
 			<label index="seconds">seconds</label>
 			<label index="minutes">minutes</label>
 			<label index="hours">hours</label>
@@ -43,8 +44,8 @@
 			<label index="autosync_saved">The automatic synchronisation information has been saved.</label>
 			<label index="autosync_save_failed">The automatic synchronisation information could not be saved.</label>
 			<label index="no_autosync">The automatic synchronisation is not yet enabled.</label>
-			<label index="next_autosync">Activated. The next run will take place on %1$s. Frequency is %2$d seconds.</label>
-			<label index="error_value_below_0">Please enter a value larger than 0.</label>
+			<label index="next_autosync">Activated. The next run will take place on %s.</label>
+			<label index="error_invalid_frequency">The frequency should either be a cron command or a number of seconds larger than 0.</label>
 			<label index="error_invalid_start_date">The given start date is not valid.</label>
 			<label index="add_sync">Define the synchronisation settings</label>
 			<label index="edit_sync">Edit the synchronisation settings</label>
@@ -53,6 +54,8 @@
 			<label index="delete_sync_confirm">Are you sure you want to remove this automatic synchronisation?</label>
 			<label index="delete_done">The synchronisation settings were removed successfully.</label>
 			<label index="delete_failed">The synchronisation settings could not be removed.</label>
+			<label index="frequency_seconds">The frequency is %d seconds.</label>
+			<label index="frequency_cron">The frequency is &quot;%s&quot;.</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="title">Import de données externes</label>
@@ -76,11 +79,11 @@
 			<label index="manual_sync">Synchronisation manuelle</label>
 			<label index="autosync">Synchronisation automatique</label>
 			<label index="full_autosync">Synchronisation automatique complète</label>
-			<label index="autosync_intro">Au moyen du formulaire ci-dessous vous pouvez définir une fréquence pour la synchronisation automatique de &lt;strong&gt;toutes tables externes&lt;/strong&gt;.</label>
+			<label index="autosync_intro">Il est possible de définir une fréquence pour la synchronisation automatique de &lt;strong&gt;toutes tables externes&lt;/strong&gt;.</label>
 			<label index="autosync_error">La synchronisation automatique des tables externes n'est pas possible, car ni l'extension "gabriel", ni l'extension système "scheduler" ne sont installées.</label>
 			<label index="start_date">Date de début:</label>
 			<label index="start_date_help">(laissez vide pour une activation immédiate; format: aaaa-mm-jj hh:mm:ss)</label>
-			<label index="period">Période:</label>
+			<label index="frequency">Fréquence:</label>
 			<label index="seconds">secondes</label>
 			<label index="minutes">minutes</label>
 			<label index="hours">heures</label>
@@ -94,8 +97,8 @@
 			<label index="autosync_activated">La synchronisation automatique a été activée.</label>
 			<label index="autosync_updated">La synchronisation automatique a été mise à jour.</label>
 			<label index="no_autosync">La synchronisation automatique n'a pas encore été activée.</label>
-			<label index="next_autosync">Activée. La prochaine exécution aura lieu le %1$s. La fréquence est de %2$d secondes.</label>
-			<label index="error_value_below_0">Veuillez saisir une valeur plus grande que 0.</label>
+			<label index="next_autosync">Activée. La prochaine exécution aura lieu le %s.</label>
+			<label index="error_invalid_frequency">La fréquence devrait soit être une commande de type cron ou un nombre de secondes plus grand que 0.</label>
 			<label index="error_invalid_start_date">La date de début n'est pas valable.</label>
 			<label index="add_sync">Définir les réglages de synchronisation</label>
 			<label index="edit_sync">Modifier les réglages de synchronisation</label>
@@ -104,6 +107,8 @@
 			<label index="delete_sync_confirm">Voulez-vous vraiment supprimer cette synchronisation automatique?</label>
 			<label index="delete_done">Les réglages de synchronisation ont été supprimés avec succès.</label>
 			<label index="delete_failed">Les réglages de synchronisation n'ont pas pu être supprimés.</label>
+			<label index="frequency_seconds">La fréquence est %d secondes.</label>
+			<label index="frequency_cron">La fréquence est &quot;%s&quot;.</label>
 		</languageKey>
 	</data>
 </T3locallang>

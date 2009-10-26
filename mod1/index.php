@@ -557,10 +557,19 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_invalid_start_date'), 3);
 				$hasError = true;
 			}
-			$period = intval($inputParameters['period_value']);
-			if ($period < 1) {
-				$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_value_below_0'), 3);
-				$hasError = true;
+				// Check if a cron command was used
+				// If the period does not contain five parts, assume it is a number of seconds
+			$periodParts = t3lib_div::trimExplode(' ', $inputParameters['period_value'], TRUE);
+			$interval = 0;
+			$croncmd = '';
+			if (count($periodParts) == 5) {
+				$croncmd = $inputParameters['period_value'];
+			} else {
+				$interval = intval($inputParameters['period_value']);
+				if ($interval < 1) {
+					$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_invalid_frequency'), 3);
+					$hasError = true;
+				}
 			}
 
 				// If input was invalid, issue error and do nothing more
@@ -570,29 +579,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 				// Input is valid
 			} else {
-
-					// Get interval and assemble as crontab frequency syntax
-				switch ($inputParameters['period_type']) {
-					case 'minutes':
-						$interval = 60 * $period;
-						break;
-					case 'hours':
-						$interval = 3600 * $period;
-						break;
-					case 'days':
-						$interval = 24 * 3600 * $period;
-						break;
-					case 'weeks':
-						$interval = 7 * 24 * 3600 * $period;
-						break;
-					case 'months':
-						$interval = 30 * 7 * 24 * 3600 * $period;
-						break;
-					case 'years':
-						$interval = 12 * 30 * 7 * 24 * 3600 * $period;
-						break;
-				}
 				$inputParameters['interval'] = $interval;
+				$inputParameters['croncmd'] = $croncmd;
 
 				$result = $this->schedulingObject->saveTask($inputParameters);
 
@@ -651,13 +639,18 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	protected function displaySyncForm($data, $table, $index = 0) {
 		$form = '';
-			 // No events at all or no event for global synchronisation, display a message to that effect
+			 // No event registration, display a message to that effect
 		if (count($data) == 0) {
 			$form .= '<p>' . $GLOBALS['LANG']->getLL('no_autosync') . '</p>';
 
 			// An event exists, display next execution time
 		} else {
-			$message = sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $data['nextexecution']), $data['interval']);
+			$message = sprintf($GLOBALS['LANG']->getLL('next_autosync'), date('d.m.Y H:i:s', $data['nextexecution']));
+			if (empty($data['croncmd'])) {
+				$message .= ' ' . sprintf($GLOBALS['LANG']->getLL('frequency_seconds'), $data['interval']);
+			} else {
+				$message .= ' ' . sprintf($GLOBALS['LANG']->getLL('frequency_cron'), $data['croncmd']);
+			}
 			$form .= '<p>' . $message . '</p>';
 		}
 		$idAttribute = 'syncForm_' . $table . '_' . $index;
@@ -697,12 +690,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['uid'])) ? $data['uid'] : 0) . '" />';
 		$form .= '<p>' . $GLOBALS['LANG']->getLL('start_date') . '&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
-		$form .= '<p>' . $GLOBALS['LANG']->getLL('period') . '&nbsp;<input type="text" name="tx_externalimport[period_value]" size="4" value="" />&nbsp;';
-		$form .= '<select name="tx_externalimport[period_type]">';
-		foreach ($this->periods as $aPeriod) {
-			$form .= '<option value="' . $aPeriod . '">' . $GLOBALS['LANG']->getLL($aPeriod) . '</option>';
-		}
-		$form .= '</select></p>';
+		$form .= '<p>' . $GLOBALS['LANG']->getLL('frequency') . '&nbsp;<input type="text" name="tx_externalimport[period_value]" size="10" value="" /></p>';
 		$form .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
 		$form .= '</form>';
 		$form .= '</div>';
