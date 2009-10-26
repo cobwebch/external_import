@@ -1,118 +1,126 @@
-09-09-30  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-10-26  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added possibility to use cron-like syntax in automatic sync configuration
+
+2009-10-05  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added possibility of auto-syncing each import configuration separately
+
+2009-09-30  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added reporting by email
 
-09-07-07  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-07-07  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added hooks for post-processing after tcemain operations
 
-09-06-19  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-06-19  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added capacity to use either gabriel or scheduler (TYPO3 4.3+)
 	* Added usage of autoloader (TYPO3 4.3+)
 
-09-06-16  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-06-16  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added configuration option for setting fixed value maps
 	* Released version 0.10.0
 
-09-06-02  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-06-02  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added configuration option for setting fixed values
 
-09-03-24  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-03-24  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added option for clearing output
 	* Updated the manual
 	* Released version 0.9.0
 
-09-03-23  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-03-23  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Improved error reporting for TCEmain errors
 
-09-01-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-01-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added preprocessRawRecordset hook
 
-09-01-18  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-01-18  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Raised status to beta
 	* Released version 0.8.0
 
-09-01-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2009-01-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added unsetting of values that cannot be mapped during the transform step
 
-08-12-16 Stephane Garchery (Cobweb) <typo3@cobweb.ch>
+2008-12-16 Stephane Garchery (Cobweb) <typo3@cobweb.ch>
 
 	* Add set_time_limit option
 
-08-12-12  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-12-12  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected path to table icons
 	* Cleaned up MM-relations configuration
 	* Updated manual accordingly
 
-08-12-06  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-12-06  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added enforcePid property
 	* Added hook for preprocessing uid list before delete
 
-08-12-01  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-12-01  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added hooks for preprocessing records before insert and update
 	* Changed logic to call different fetch* method from connector depending on external data type
 	* Changed use of reference_uid property in external configuration
 	* Caught some unitialized variables
 
-08-11-19  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-11-19  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected behaviour of handleArray() to map field names properly
 	* Changed use of external foreign reference field in mapping transformtions and MM-relations
 
-08-11-04  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-11-04  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added several setter and getter methods
 
-08-10-22  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-10-22  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added sample userFunc
 	* Updated manual
 
-08-10-21  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-10-21  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added feature for calling userFuncs on every external field
 
-08-09-02  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-09-02  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added API for calling external_import directly with data
 	* Modified BE module to separate synchronisable from non-synchronisable tables
 	* Updated manual
 
-08-08-10  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-08-10  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Introduced possibility to synchronise a table with multiple external sources
 	* Corrected bug in mapping feature
 	* Updated manual with instructions for setting up automatic synchronisation and some troubleshooting help
 
-08-08-04  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-08-04  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Updated manual with missing notes about array data format
 	* Released version 0.6.2
 
-08-08-03  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-08-03  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added array data format handling
 	* Added user rights setup instructions in the manual
 	* Released version 0.6.1
 
-08-07-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-07-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Introduced use of TCEmain for proper data manipulation
 	* Cleaned up extended TCA syntax
 	* Added hook for pre-processing data before storage
 	* Released version 0.6.0
 
-08-04-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2008-04-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Initial release (version 0.5.0)
