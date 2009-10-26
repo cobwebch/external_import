@@ -33,6 +33,7 @@
 			<label index="start_date">Start date:</label>
 			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
 			<label index="frequency">Frequency:</label>
+			<label index="frequency_help">(use cron-like syntax or simply enter a number of seconds)</label>
 			<label index="seconds">seconds</label>
 			<label index="minutes">minutes</label>
 			<label index="hours">hours</label>

@@ -689,8 +689,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$form .= '<input type="hidden" name="tx_externalimport[sync]" value="' . $table . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
 		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['uid'])) ? $data['uid'] : 0) . '" />';
-		$form .= '<p>' . $GLOBALS['LANG']->getLL('start_date') . '&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
-		$form .= '<p>' . $GLOBALS['LANG']->getLL('frequency') . '&nbsp;<input type="text" name="tx_externalimport[period_value]" size="10" value="" /></p>';
+		$form .= '<p><label>' . $GLOBALS['LANG']->getLL('start_date') . '</label>&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
+		$form .= '<p><label>' . $GLOBALS['LANG']->getLL('frequency') . '</label>&nbsp;<input type="text" name="tx_externalimport[period_value]" size="10" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('frequency_help') . '</p>';
 		$form .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
 		$form .= '</form>';
 		$form .= '</div>';
