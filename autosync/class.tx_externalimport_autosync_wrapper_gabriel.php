@@ -72,6 +72,7 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 									'start' => $eventObject->executionPool[0]->start,
 								);
 			}
+			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
 		return $events;
 	}

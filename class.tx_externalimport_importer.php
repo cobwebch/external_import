@@ -773,16 +773,17 @@ class tx_externalimport_importer {
 	 */
 	protected function getExistingUids() {
 		$existingUids = array();
+		$where = '1 = 1';
 		if ($this->externalConfig['enforcePid']) {
 			$where = "pid = '" . $this->pid . "'";
 		}
-		else {
-			$where = '1 = 1';
-		}
 		$where .= t3lib_BEfunc::deleteClause($this->table);
-		$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'] . ',uid', $this->table, $where);
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
-			$existingUids[$row[$this->externalConfig['reference_uid']]] = $row['uid'];
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'] . ',uid', $this->table, $where);
+		if ($res) {
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				$existingUids[$row[$this->externalConfig['reference_uid']]] = $row['uid'];
+			}
+			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
 		return $existingUids;
 	}
@@ -800,21 +801,21 @@ class tx_externalimport_importer {
 		if (isset($mappingData['valueMap'])) {
 				// Use value map directly
 			$localMapping = $mappingData['valueMap'];
-		}
-		else {
+		} else {
 				// Assemble query and get data
+			$valueField = 'uid';
 			if (isset($mappingData['value_field'])) {
 				$valueField = $mappingData['value_field'];
 			}
-			else {
-				$valueField = 'uid';
-			}
 			$fields = $mappingData['reference_field'] . ', ' . $valueField;
-			$db = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1' . t3lib_BEfunc::deleteClause($mappingData['table']));
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1' . t3lib_BEfunc::deleteClause($mappingData['table']));
 
 				// Fill hash table
-			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($db)) {
-				$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
+			if ($res) {
+				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+					$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
+				}
+				$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			}
 		}
 		return $localMapping;
@@ -826,16 +827,13 @@ class tx_externalimport_importer {
 	 * @return	void
 	 */
 	protected function logMessages() {
+		$severity = -1;
 
 			// Define severity based on types of messages
 		if (count($this->messages['error']) > 0) {
 			$severity = 3;
-		}
-		elseif (count($this->messages['warning']) > 0) {
+		} elseif (count($this->messages['warning']) > 0) {
 			$severity = 2;
-		}
-		else {
-			$severity = -1;
 		}
 		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity, $this->messages);
 	}
