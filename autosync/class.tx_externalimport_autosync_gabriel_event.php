@@ -36,14 +36,12 @@ require_once(t3lib_extMgm::extPath('external_import', 'class.tx_externalimport_i
  */
 class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 	public $extKey = 'external_import';
-	protected $extConf = array(); // Extension configuration
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 	}
 
 	/**
@@ -55,30 +53,35 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 		$reportContent = '';
 
 			// Instantiate the import object and call appropriate method depending on command
+			/**
+			 * @var	tx_externalimport_importer
+			 */
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
+			// Get the extension's configuration from the importer object
+		$extensionConfiguration = $importer->getExtensionConfiguration();
 			// Synchronize all tables
 		if ($this->commands['sync'] == 'all') {
 			$allMessages = $importer->synchronizeAllTables();
 				// If necessary, prepare a report with all messages
-			if (!empty($this->extConf['reportEmail'])) {
+			if (!empty($extensionConfiguration['reportEmail'])) {
 				foreach ($allMessages as $key => $messages) {
 					list($table, $index) = explode('/', $key);
 					$reportContent .= $importer->reportForTable($table, $index, $messages);
 					$reportContent .= "\n\n";
 				}
 					// Assemble the subject and send the mail
-				$subject = (empty($this->extConf['reportSubject'])) ? '' : $this->extConf['reportSubject'];
+				$subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
 				$subject .= ' ' . 'Full synchronization';
 				$importer->sendMail($subject, $reportContent);
 			}
 		} else {
 			$messages = $importer->synchronizeData($this->commands['sync'], $this->commands['index']);
 				// If necessary, prepare a report with all messages
-			if (!empty($this->extConf['reportEmail'])) {
+			if (!empty($extensionConfiguration['reportEmail'])) {
 				$reportContent .= $importer->reportForTable($this->commands['sync'], $this->commands['index'], $messages);
 				$reportContent .= "\n\n";
 					// Assemble the subject and send the mail
-				$subject = (empty($this->extConf['reportSubject'])) ? '' : $this->extConf['reportSubject'];
+				$subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
 				$subject .= ' ' . 'Synchronization of table ' . $this->commands['sync'] . ', index ' . $this->commands['index'];
 				$importer->sendMail($subject, $reportContent);
 			}

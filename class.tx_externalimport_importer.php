@@ -871,6 +871,16 @@ class tx_externalimport_importer {
 	}
 
 	/**
+	 * This method returns the extension's configuration
+	 * It is used to avoid reading it multiple times from the various components of this extension
+	 * 
+	 * @return	array	The unserialized extension's configuration
+	 */
+	public function getExtensionConfiguration() {
+		return $this->extConf;
+	}
+
+	/**
 	 * This method is used to add a message to the message queue that will be returned
 	 * when the synchronisation is complete
 	 *
