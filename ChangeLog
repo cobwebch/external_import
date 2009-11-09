@@ -1,3 +1,7 @@
+2009-11-09  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added reporting of global result status in email subject
+
 2009-10-26  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added possibility to use cron-like syntax in automatic sync configuration

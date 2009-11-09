@@ -60,6 +60,7 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 			// Get the extension's configuration from the importer object
 		$extensionConfiguration = $importer->getExtensionConfiguration();
 			// Synchronize all tables
+		$globalStatus = 'OK';
 		if ($this->commands['sync'] == 'all') {
 			$allMessages = $importer->synchronizeAllTables();
 				// If necessary, prepare a report with all messages
@@ -68,10 +69,15 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 					list($table, $index) = explode('/', $key);
 					$reportContent .= $importer->reportForTable($table, $index, $messages);
 					$reportContent .= "\n\n";
+					if (count($messages['error']) > 0) {
+						$globalStatus = 'ERROR';
+					} elseif (count($messages['warning']) > 0) {
+						$globalStatus = 'WARNING';
+					}
 				}
 					// Assemble the subject and send the mail
 				$subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
-				$subject .= ' ' . 'Full synchronization';
+				$subject .= ' [' . $globalStatus . '] ' . 'Full synchronization';
 				$importer->sendMail($subject, $reportContent);
 			}
 		} else {
@@ -80,9 +86,14 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 			if (!empty($extensionConfiguration['reportEmail'])) {
 				$reportContent .= $importer->reportForTable($this->commands['sync'], $this->commands['index'], $messages);
 				$reportContent .= "\n\n";
+				if (count($messages['error']) > 0) {
+					$globalStatus = 'ERROR';
+				} elseif (count($messages['warning']) > 0) {
+					$globalStatus = 'WARNING';
+				}
 					// Assemble the subject and send the mail
 				$subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
-				$subject .= ' ' . 'Synchronization of table ' . $this->commands['sync'] . ', index ' . $this->commands['index'];
+				$subject .= ' [' . $globalStatus . '] ' . 'Synchronization of table ' . $this->commands['sync'] . ', index ' . $this->commands['index'];
 				$importer->sendMail($subject, $reportContent);
 			}
 		}
