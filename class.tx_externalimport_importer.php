@@ -164,15 +164,13 @@ class tx_externalimport_importer {
 			// Instantiate specific connector service
 		if (empty($this->externalConfig['connector'])) {
 			$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_connector');
-		}
-		else {
+		} else {
 			$services = t3lib_extMgm::findService('connector', $this->externalConfig['connector']);
 
 				// The service is not available
 			if ($services === false) {
 				$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
-			}
-			else {
+			} else {
 				$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
 
 					// The service was instatiated, but an error occurred while initiating the connection
@@ -355,7 +353,8 @@ class tx_externalimport_importer {
 
 	/**
 	 * This method applies any transformation necessary on the data
-	 * Transformations are defined by mappings applied to one or more columns
+	 * Transformations are defined by mappings or custom functions
+	 * applied to one or more columns
 	 *
 	 * @param	array		$records: records containing the data
 	 * @return	array		the transformed records
