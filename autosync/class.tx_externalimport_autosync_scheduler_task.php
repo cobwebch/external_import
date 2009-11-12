@@ -22,7 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(t3lib_extMgm::extPath('external_import', 'class.tx_externalimport_importer.php'));
 
 /**
  * This class executes Scheduler events for automatic synchronisations of external data
@@ -33,7 +32,15 @@ require_once(t3lib_extMgm::extPath('external_import', 'class.tx_externalimport_i
  *
  * $Id$
  */
-class tx_externalimport_autosync_scheduler extends tx_scheduler_event {
+class tx_externalimport_autosync_scheduler_Task extends tx_scheduler_Task {
+	/**
+	 * @var	string	Name of the table to synchronize ("all" for all tables)
+	 */
+	public $table;
+	/**
+	 * @var	mixed	Index of the particular synchronization
+	 */
+	public $index;
 
 	/**
 	 * This method executes the task registered in the Scheduler event

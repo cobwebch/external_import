@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<!-- $Id$-->
+<T3locallang>
+	<meta type="array">
+		<description>Contents of external_import csh</description>
+		<type>CSH</type>
+		<csh_table>_MOD_user_txexternalimportM1</csh_table>
+		<fileId>EXT:external_import/mod1/locallang_csh_externalimport.xml</fileId>
+		<labelContext type="array">
+		</labelContext>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index=".alttitle">External Import</label>
+			<label index=".description">The External Import tool provides a way to get data from a variety of external sources into TYPO3 tables.</label>
+			<label index=".syntax">
+				Data is fetched by standardized services called connectors. Mapping of external data to local tables and fields is achieved by configuring the TCA using an extended syntax provided by the External Import too. Please refer to the manual for complete explanations.
+			</label>
+			<label index="task_syncItem.description">Choose which table and index to synchronize</label>
+			<label index="task_syncItem.details">
+				Setting up such a task allows you to automate the synchronization of the data provided by external imports. You can choose to automate the synchronization of all tables. In this case, tables will be synchronized in order of priority.
+				You can also choose to set up a separate task for each table and index, making possible to have different update frequencies for the various pieces of data.
+			</label>
+		</languageKey>
+	</data>
+</T3locallang>
