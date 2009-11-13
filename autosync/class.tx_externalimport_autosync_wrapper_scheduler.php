@@ -95,7 +95,7 @@ class tx_externalimport_autosync_wrapper_scheduler extends tx_externalimport_aut
 			$task->index = $taskData['index'];
 			$result = $this->scheduler->addTask($task);
 		} else {
-			$task = $this->scheduler->fetchEvent($taskData['uid']);
+			$task = $this->scheduler->fetchTask($taskData['uid']);
 				// Stop any existing execution(s)...
 			$task->stop();
 				/// ...and replace it(them) by a new one
