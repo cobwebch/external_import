@@ -552,11 +552,17 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$errorMessages = '';
 
 				// Check validity of input
-			$startdate = (empty($inputParameters['start'])) ? time() : strtotime($inputParameters['start']);
+				// Default value is time() - 1 so that the start date is set ever so slightly
+				// in the past. This will force the calculation of the next execution date
+				// otherwise the current time would be used
+			$startdate = (empty($inputParameters['start'])) ? time() - 1 : strtotime($inputParameters['start']);
 			if ($startdate === false || $startdate === -1) {
 				$errorMessages .= $this->displayMessage($GLOBALS['LANG']->getLL('error_invalid_start_date'), 3);
 				$hasError = true;
 			}
+				// Store back the calculated timestamp
+			$inputParameters['start'] = $startdate;
+
 				// Check if a cron command was used
 				// If the period does not contain five parts, assume it is a number of seconds
 			$periodParts = t3lib_div::trimExplode(' ', $inputParameters['period_value'], TRUE);
