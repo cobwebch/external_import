@@ -48,6 +48,7 @@ class tx_externalimport_autosync_scheduler_Task extends tx_scheduler_Task {
 	 * @return	void
 	 */
 	public function execute() {
+		$result = TRUE;
 		$reportContent = '';
 
 			// Instantiate the import object and call appropriate method depending on command
@@ -95,6 +96,11 @@ class tx_externalimport_autosync_scheduler_Task extends tx_scheduler_Task {
 				$importer->sendMail($subject, $reportContent);
 			}
 		}
+			// If any warning or error happened, throw an exception
+		if ($globalStatus != 'OK') {
+			throw new Exception('One or more errors or warnings happened. Please consult the log.', 1258116760);
+		}
+		return $result;
 	}
 
 	/**
