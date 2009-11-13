@@ -96,5 +96,20 @@ class tx_externalimport_autosync_scheduler_Task extends tx_scheduler_Task {
 			}
 		}
 	}
+
+	/**
+	 * This method returns the synchronized table and index as additional information
+	 *
+	 * @return	string	Information to display
+	 */
+	public function getAdditionalInformation() {
+		$info = '';
+		if ($this->table == 'all') {
+			$info = $GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:allTables');
+		} else {
+			$info = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:tableAndIndex'), $this->table, $this->index);
+		}
+		return $info;
+	}
 }
 ?>
