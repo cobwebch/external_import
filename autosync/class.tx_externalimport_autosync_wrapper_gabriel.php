@@ -94,10 +94,10 @@ class tx_externalimport_autosync_wrapper_gabriel extends tx_externalimport_autos
 		$gabriel = t3lib_div::makeInstance('tx_gabriel');
 		if (empty($taskData['uid'])) {
 				// Create a new event instance and register the execution
-			$event = t3lib_div::makeInstance('tx_externalimport_autosync_gabriel_event');
+			$event = t3lib_div::makeInstance(self::$eventClassName);
 			$event->registerRecurringExecution($taskData['start'], $taskData['interval'], 0, FALSE, $taskData['croncmd']);
 				// Assemble the identifier and save the event
-			$crid = 'tx_externalimport_autosync_gabriel_event::sync=' . $taskData['sync'];
+			$crid = self::$eventClassName . '::sync=' . $taskData['sync'];
 			if (isset($taskData['index'])) {
 				$crid .= '&index=' . $taskData['index'];
 			}

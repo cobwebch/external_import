@@ -1,3 +1,7 @@
+2009-11-13  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Provided full scheduler support (earlier support was broken due to API changes in the scheduler)
+
 2009-11-09  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added reporting of global result status in email subject
