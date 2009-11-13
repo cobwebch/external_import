@@ -43,19 +43,57 @@ class tx_externalimport_autosync_scheduler_Task extends tx_scheduler_Task {
 	public $index;
 
 	/**
-	 * This method executes the task registered in the Scheduler event
+	 * This method executes the job registered in the Scheduler task
 	 *
 	 * @return	void
 	 */
 	public function execute() {
-
-			// Get the crid for the event
-		$crid = $this->scheduler->getEventCrid($this->eventUid);
+		$reportContent = '';
 
 			// Instantiate the import object and call appropriate method depending on command
+			/**
+			 * @var	tx_externalimport_importer
+			 */
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
-		if ($this->commands['sync'] == 'all') {
-			$importer->synchronizeAllTables();
+			// Get the extension's configuration from the importer object
+		$extensionConfiguration = $importer->getExtensionConfiguration();
+			// Synchronize all tables
+		$globalStatus = 'OK';
+		if ($this->table == 'all') {
+			$allMessages = $importer->synchronizeAllTables();
+				// If necessary, prepare a report with all messages
+			if (!empty($extensionConfiguration['reportEmail'])) {
+				foreach ($allMessages as $key => $messages) {
+					list($table, $index) = explode('/', $key);
+					$reportContent .= $importer->reportForTable($table, $index, $messages);
+					$reportContent .= "\n\n";
+					if (count($messages['error']) > 0) {
+						$globalStatus = 'ERROR';
+					} elseif (count($messages['warning']) > 0) {
+						$globalStatus = 'WARNING';
+					}
+				}
+					// Assemble the subject and send the mail
+				$subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
+				$subject .= ' [' . $globalStatus . '] ' . 'Full synchronization';
+				$importer->sendMail($subject, $reportContent);
+			}
+		} else {
+			$messages = $importer->synchronizeData($this->table, $this->index);
+				// If necessary, prepare a report with all messages
+			if (!empty($extensionConfiguration['reportEmail'])) {
+				$reportContent .= $importer->reportForTable($this->table, $this->index, $messages);
+				$reportContent .= "\n\n";
+				if (count($messages['error']) > 0) {
+					$globalStatus = 'ERROR';
+				} elseif (count($messages['warning']) > 0) {
+					$globalStatus = 'WARNING';
+				}
+					// Assemble the subject and send the mail
+				$subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
+				$subject .= ' [' . $globalStatus . '] ' . 'Synchronization of table ' . $this->table . ', index ' . $this->index;
+				$importer->sendMail($subject, $reportContent);
+			}
 		}
 	}
 }

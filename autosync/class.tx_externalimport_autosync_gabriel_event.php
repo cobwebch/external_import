@@ -38,14 +38,7 @@ class tx_externalimport_autosync_gabriel_event extends tx_gabriel_event {
 	public $extKey = 'external_import';
 
 	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		parent::__construct();
-	}
-
-	/**
-	 * This method executes the task registered in the Gabriel event
+	 * This method executes the job registered in the Gabriel event
 	 *
 	 * @return	void
 	 */
