@@ -1,3 +1,8 @@
+2009-11-23  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added process for aborting import
+	* Updated the manual
+
 2009-11-13  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Provided full scheduler support (earlier support was broken due to API changes in the scheduler)
