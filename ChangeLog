@@ -2,6 +2,7 @@
 
 	* Added process for aborting import
 	* Updated the manual
+	* Released to TER as version 0.11.1
 
 2009-11-13  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
@@ -35,7 +36,7 @@
 2009-06-16  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added configuration option for setting fixed value maps
-	* Released version 0.10.0
+	* Released to TER as version 0.10.0
 
 2009-06-02  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
@@ -45,7 +46,7 @@
 
 	* Added option for clearing output
 	* Updated the manual
-	* Released version 0.9.0
+	* Released to TER as version 0.9.0
 
 2009-03-23  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
@@ -58,7 +59,7 @@
 2009-01-18  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Raised status to beta
-	* Released version 0.8.0
+	* Released to TER as version 0.8.0
 
 2009-01-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
@@ -119,20 +120,20 @@
 2008-08-04  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Updated manual with missing notes about array data format
-	* Released version 0.6.2
+	* Released to TER as version 0.6.2
 
 2008-08-03  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added array data format handling
 	* Added user rights setup instructions in the manual
-	* Released version 0.6.1
+	* Released to TER as version 0.6.1
 
 2008-07-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Introduced use of TCEmain for proper data manipulation
 	* Cleaned up extended TCA syntax
 	* Added hook for pre-processing data before storage
-	* Released version 0.6.0
+	* Released to TER as version 0.6.0
 
 2008-04-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
