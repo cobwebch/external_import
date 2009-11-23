@@ -24,7 +24,7 @@
 			<label index="delete_failed">Delete failed:</label>
 			<label index="invalid_userfunc">Invalid user function %s</label>
 			<label index="timelimit">PHP limit maximum execution time forced</label>
-			<label index="notEnoughRecords">The number of records (%$1d) is below the required limit (%$2d).</label>
+			<label index="notEnoughRecords">The number of records (%1$d) is below the required limit (%2$d).</label>
 			<label index="importAborted">The import was aborted. Please see the relevant messages.</label>
 			<label index="things_happened">One or more errors were reported. The count of operations performed may not be correct.</label>
 			<label index="scheduler.title">External import synchronisation</label>
