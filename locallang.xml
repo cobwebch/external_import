@@ -24,6 +24,8 @@
 			<label index="delete_failed">Delete failed:</label>
 			<label index="invalid_userfunc">Invalid user function %s</label>
 			<label index="timelimit">PHP limit maximum execution time forced</label>
+			<label index="notEnoughRecords">The number of records (%$1d) is below the required limit (%$2d).</label>
+			<label index="importAborted">The import was aborted. Please see the relevant messages.</label>
 			<label index="things_happened">One or more errors were reported. The count of operations performed may not be correct.</label>
 			<label index="scheduler.title">External import synchronisation</label>
 			<label index="scheduler.description">This event is used to launch scheduled synchronisations of external data. It can synchronise all tables with external data definition in one call, or be called for a single table.</label>
@@ -59,6 +61,8 @@
 			<label index="delete_failed">La suppression a échoué:</label>
 			<label index="invalid_userfunc">Fonction utilisateur non valable %s</label>
 			<label index="timelimit">PHP limit maximum execution time changé</label>
+			<label index="notEnoughRecords">Le nombre d'enregistrements (%$1d) est inférieur à la limite requise (%$2d).</label>
+			<label index="importAborted">L'import a été interrompu. Veuillez vous référer aux messages y relatifs pour plus d'information.</label>
 			<label index="things_happened">Une ou plusieurs erreurs sont survenues. Le nombre d'opérations effectué n'est peut-être pas correct.</label>
 			<label index="scheduler.title">Synchronisation d'un import externe</label>
 			<label index="scheduler.description">Cet événement est utilisé pour lancer des synchronisations automatiques des imports externes. Il est possible de synchroniser toutes les tables avec des définitions d'import externe d'un seul coup, ou de ne procéder que pour une seule table.</label>

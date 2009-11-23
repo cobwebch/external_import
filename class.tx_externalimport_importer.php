@@ -257,14 +257,24 @@ class tx_externalimport_importer {
 			// Apply any existing preprocessing hook to the raw data
 		$records = $this->preprocessRawData($records);
 
-			// Transform data
-		$records = $this->transformData($records);
+			// Check the raw data to see if import process should continue
+		$continueImport = $this->validateRawData($records);
 
-			// Apply any existing preprocessing hook to the transformed data
-		$records = $this->preprocessData($records);
+			// If raw data was judged valid, continue with import
+		if ($continueImport) {
+				// Transform data
+			$records = $this->transformData($records);
 
-			// Store data
-		$this->storeData($records);
+				// Apply any existing preprocessing hook to the transformed data
+			$records = $this->preprocessData($records);
+
+				// Store data
+			$this->storeData($records);
+
+			// Import was aborted, issue warning message
+		} else {
+			$this->addMessage($GLOBALS['LANG']->getLL('importAborted'), 'warning');
+		}
 	}
 
 	/**
@@ -411,7 +421,7 @@ class tx_externalimport_importer {
 	 * This method applies any existing pre-processing to the data just as it was fetched, before any transformation
 	 * Note that this method does not do anything by itself. It just calls on a pre-processing hook
 	 *
-	 * @param	array		$records: records containing the data
+	 * @param	array		$records: records containing the raw data
 	 * @return	array		the pre-processed records
 	 */
 	protected function preprocessRawData($records) {
@@ -422,6 +432,42 @@ class tx_externalimport_importer {
 			}
 		}
 		return $records;
+	}
+
+	/**
+	 * This method is used to check whether the data is ok and import should continue
+	 * It performs a basic check on the minimum number of records expected (if defined),
+	 * but provides a hook for more refined tests.
+	 * 
+	 * @param	array		$records: records containing the raw data (after preprocessRawData())
+	 * @return	boolean		True if data is valid and import should continue, false otherwise
+	 */
+	protected function validateRawData($records) {
+		$continueImport = TRUE;
+
+			// Check if number of records is larger than or equal to the minimum required number of records
+			// Note that if the minimum is not defined, this test is skipped
+		if (!empty($this->externalConfig['minimumRecords'])) {
+			$numRecords = count($records);
+			$continueImport = $numRecords >= $this->externalConfig['minimumRecords'];
+			$this->addMessage(sprintf($GLOBALS['LANG']->getLL('notEnoughRecords'), $numRecords, $this->externalConfig['minimumRecords']));
+		}
+
+			// Call hooks to perform additional checks,
+			// but only if previous check was passed
+		if ($continueImport) {
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['validateRawRecordset'])) {
+				foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['validateRawRecordset'] as $className) {
+					$validator = &t3lib_div::getUserObj($className);
+					$continueImport = $validator->validateRawRecordset($records, $this);
+						// If a single check fails, don't call further hooks
+					if (!$continueImport) {
+						break;
+					}
+				}
+			}
+		}
+		return $continueImport;
 	}
 
 	/**
