@@ -63,13 +63,13 @@ class tx_externalimport_importer {
 		}
 		$GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/locallang.xml');
 
-		// Force php limit execution time if set
-    if (isset($this->extConf['timelimit']) && ($this->extConf['timelimit'] > -1) ) {
-
-      set_time_limit($this->extConf['timelimit']);
-      if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog($GLOBALS['LANG']->getLL('timelimit'), $this->extKey, 0, $this->extConf['timelimit']);
-    }
-
+			// Force PHP limit execution time if set
+		if (isset($this->extConf['timelimit']) && ($this->extConf['timelimit'] > -1)) {
+			set_time_limit($this->extConf['timelimit']);
+			if ($this->extConf['debug'] || TYPO3_DLOG) {
+				t3lib_div::devLog($GLOBALS['LANG']->getLL('timelimit'), $this->extKey, 0, $this->extConf['timelimit']);
+			}
+		}
 	}
 
 	/**
