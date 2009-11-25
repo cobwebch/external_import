@@ -450,7 +450,9 @@ class tx_externalimport_importer {
 		if (!empty($this->externalConfig['minimumRecords'])) {
 			$numRecords = count($records);
 			$continueImport = $numRecords >= $this->externalConfig['minimumRecords'];
-			$this->addMessage(sprintf($GLOBALS['LANG']->getLL('notEnoughRecords'), $numRecords, $this->externalConfig['minimumRecords']));
+			if (!$continueImport) {
+				$this->addMessage(sprintf($GLOBALS['LANG']->getLL('notEnoughRecords'), $numRecords, $this->externalConfig['minimumRecords']));
+			}
 		}
 
 			// Call hooks to perform additional checks,
