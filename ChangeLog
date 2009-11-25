@@ -1,6 +1,7 @@
 2009-11-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected abusive display of minimumRecords error message
+	* Released to TER as version 0.11.2
 
 2009-11-23  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
