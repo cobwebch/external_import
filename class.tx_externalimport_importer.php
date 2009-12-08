@@ -25,8 +25,8 @@
 /**
  * This class performs the data update from the external sources
  *
- * @author	Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package	TYPO3
+ * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
+ * @package		TYPO3
  * @subpackage	tx_externalimport
  *
  * $Id$

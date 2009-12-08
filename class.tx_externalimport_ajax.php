@@ -27,8 +27,8 @@ require_once(t3lib_extMgm::extPath('external_import').'class.tx_externalimport_i
 /**
  * This class answers to AJAX calls from the 'external_import' extension
  *
- * @author	Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package	TYPO3
+ * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
+ * @package		TYPO3
  * @subpackage	tx_externalimport
  *
  * $Id$
