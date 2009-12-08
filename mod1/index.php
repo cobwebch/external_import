@@ -44,7 +44,6 @@ require_once(t3lib_extMgm::extPath('external_import', 'autosync/class.tx_externa
  */
 class tx_externalimport_module1 extends t3lib_SCbase {
 	public $pageinfo;
-	protected $periods = array('minutes', 'hours', 'days', 'weeks', 'months', 'years'); // List of possible periods for auto sync
 	protected $schedulingObject; // Instance of either tx_gabriel or tx_scheduler
 	protected $hasSchedulingTool = false;
 
@@ -348,12 +347,13 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		}
 
 			// Sort tables by priority (lower number is highest priority)
-		usort($externalTables, array('tx_externalimport_module1','prioritySort'));
+		usort($externalTables, array('tx_externalimport_module1', 'prioritySort'));
 
 
 			// Prepare table to display list of external tables
+		$tableList = '';
 		if (count($externalTables) == 0) {
-			$tableList = '<p>'.$GLOBALS['LANG']->getLL('external_tables_none').'</p>';
+			$tableList = '<p>' . $GLOBALS['LANG']->getLL('external_tables_none') . '</p>';
 		}
 		else {
 
@@ -361,11 +361,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$tableLayout = array (
 								'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
 								'0' => array (
-									'tr' => array('<tr class="bgColor2">','</tr>'),
+									'tr' => array('<tr class="bgColor2">', '</tr>'),
 								),
 								'defRow' => array (
-									'tr' => array('<tr class="bgColor3-20" valign="top">','</tr>'),
-									'defCol' => array('<td>','</td>'),
+									'tr' => array('<tr class="bgColor3-20" valign="top">', '</tr>'),
+									'defCol' => array('<td>', '</td>'),
 								)
 							);
 
@@ -380,7 +380,9 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table[$tr][] = $GLOBALS['LANG']->getLL('priority'); // Priority
 			$table[$tr][] = '&nbsp;'; // Action icons
 			$table[$tr][] = '&nbsp;'; // Action result
-			$table[$tr][] = $GLOBALS['LANG']->getLL('autosync'); // Sync form
+			if ($this->hasSchedulingTool) {
+				$table[$tr][] = $GLOBALS['LANG']->getLL('autosync'); // Sync form
+			}
 
 				// Generate table row for each table
 			foreach ($externalTables as $tableData) {
@@ -393,16 +395,18 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$table[$tr] = array();
 				$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
 				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
-				$table[$tr][] = $tableTitle.' ('.$tableName.')';
-				$table[$tr][] = '['.$tableIndex.']'.((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
+				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
+				$table[$tr][] = '[' . $tableIndex . ']' . ((empty($tableData['description'])) ? '' : ' ' . htmlspecialchars($tableData['description']));
 				$table[$tr][] = $tableData['priority'];
-				$table[$tr][] = '<a href="javascript:syncTable(\''.$tr.'\', \''.$tableName.'\', \''.$tableIndex.'\')" id="link'.$tr.'" title="'.$GLOBALS['LANG']->getLL('manual_sync').'"><img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" /></a>'; // Action icons
-				$table[$tr][] = '<div id="result' . $tr . '"></div>'; // Action result
-				$cellContent = '&nbsp;';
+					// Action icons
+				$table[$tr][] = '<a href="javascript:syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')" id="link' . $tr . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
+					// Action result
+				$table[$tr][] = '<div id="result' . $tr . '"></div>';
+					// Sync form
 				if ($this->hasSchedulingTool) {
 					$cellContent = $this->displaySyncForm($taskData, $tableName, $tableIndex);
+					$table[$tr][] = '<div id="result' . $tr . '">' . $cellContent . '</div>';
 				}
-				$table[$tr][] = '<div id="result' . $tr . '">' . $cellContent . '</div>'; // Sync form
 			}
 
 				// Render the table
@@ -424,10 +428,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		if (!empty($saveResult)) {
 			$content .= $saveResult;
 		}
-		$content .= '<p>'.$GLOBALS['LANG']->getLL('external_tables_intro').'</p>';
+		$content .= '<p>' . $GLOBALS['LANG']->getLL('external_tables_intro') . '</p>';
 		$content .= $this->doc->spacer(10);
 		$content .= $tableList;
-		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('external_tables'),$content,0,1);
+		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('external_tables'), $content, 0, 1);
 
 			// Display form for automatic synchronisation
 		$this->displayAutoSyncSection(isset($existingTasks['all']) ? $existingTasks['all'] : array());

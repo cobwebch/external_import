@@ -1,3 +1,7 @@
+2009-12-08  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Improved check to completely hide display of auto sync column when no sync tool is available
+
 2009-11-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected abusive display of minimumRecords error message
