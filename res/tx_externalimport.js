@@ -3,6 +3,11 @@
  *
  * $Id$
  */
+
+/**
+ * @param	theID	ID of the element to act on
+ * @param	action	Type of action
+ */
 function toggleSyncForm(theID, action) {
 	var theLink = $(theID + '_link');
 	var theElement = $(theID + '_wrapper');
@@ -19,8 +24,7 @@ function toggleSyncForm(theID, action) {
 		}
 		theLink.update(theIcon);
 		theLink.title = theLabel;
-	}
-	else {
+	} else {
 		theElement.show();
 		if (action === 'add') {
 			theIcon = LOCALAPP.imageCollapse_add;
@@ -32,3 +36,16 @@ function toggleSyncForm(theID, action) {
 	}
 }
 
+/**
+ * This function turns on or off the display of an element
+ *
+ * @param	theID	ID of the element to toggle
+ */
+function toggleElement(theID) {
+	var theElement = $(theID);
+	if (theElement.visible()) {
+		theElement.hide();
+	} else {
+		theElement.show();
+	}
+}

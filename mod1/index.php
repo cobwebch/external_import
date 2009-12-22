@@ -46,6 +46,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	public $pageinfo;
 	protected $schedulingObject; // Instance of either tx_gabriel or tx_scheduler
 	protected $hasSchedulingTool = false;
+	protected $extConf; // Extension configuration
 
 	/**
 	 * Initialise the module
@@ -57,6 +58,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('scheduler', false)) {
 			$this->hasSchedulingTool = true;
 		}
+		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
 	}
 
 	/**
@@ -386,12 +388,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 				// Generate table row for each table
 			foreach ($externalTables as $tableData) {
+					// Prepare the data for each cell
 				$tr++;
 				$tableName = $tableData['tablename'];
 				$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
 				$tableIndex = $tableData['index'];
 				$taskDataKey = $tableName . '/' . $tableIndex;
 				$taskData = isset($existingTasks[$taskDataKey]) ? $existingTasks[$taskDataKey] : array();
+					// Assemble the row
 				$table[$tr] = array();
 				$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
 				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
@@ -399,7 +403,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$table[$tr][] = '[' . $tableIndex . ']' . ((empty($tableData['description'])) ? '' : ' ' . htmlspecialchars($tableData['description']));
 				$table[$tr][] = $tableData['priority'];
 					// Action icons
-				$table[$tr][] = '<a href="javascript:syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')" id="link' . $tr . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
+				$syncIcon = '<a href="javascript:syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')" id="link' . $tr . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
+				$elementID = 'info' . $tr;
+				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
+				$infoIcon .= '<div id="' . $elementID . '" style="width: 410px; display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
+				$table[$tr][] = $syncIcon . $infoIcon;
 					// Action result
 				$table[$tr][] = '<div id="result' . $tr . '"></div>';
 					// Sync form
@@ -705,6 +713,92 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$form .= '</form>';
 		$form .= '</div>';
 		return $form;
+	}
+
+	/**
+	 * This method renders information about the parameters of a given synchronisation configuration
+	 *
+	 * @param	array	$tableData: information about the synchronisation (table, index)
+	 * @return	string	HTML to display
+	 */
+	protected function displayExternalInformation($tableData) {
+		$externalInformation = '';
+			// First initialise the table layout
+		$tableLayout = array (
+							'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width: 400px;">', '</table>'),
+							'defRow' => array (
+								'tr' => array('<tr class="bgColor4-20" valign="top">', '</tr>'),
+								'defCol' => array('<td>', '</td>'),
+							)
+						);
+			// Prepare ctrl information
+		$externalCtrlConfiguration = $GLOBALS['TCA'][$tableData['tablename']]['ctrl']['external'][$tableData['index']];
+		$table = array();
+		$tr = 0;
+			// Connector information
+		if (isset($externalCtrlConfiguration['connector'])) {
+			$table[$tr][] = $GLOBALS['LANG']->getLL('connector');
+			$table[$tr][] = $externalCtrlConfiguration['connector'];
+			$tr++;
+			$table[$tr][] = $GLOBALS['LANG']->getLL('connector.details');
+			$table[$tr][] = t3lib_div::view_array($externalCtrlConfiguration['parameters']);
+			$tr++;
+		}
+			// Data information
+		$table[$tr][] = $GLOBALS['LANG']->getLL('data_type');
+		$table[$tr][] = $externalCtrlConfiguration['data'];
+		$tr++;
+		if (isset($externalCtrlConfiguration['nodetype'])) {
+			$table[$tr][] = $GLOBALS['LANG']->getLL('reference_node');
+			$table[$tr][] = $externalCtrlConfiguration['nodetype'];
+			$tr++;
+		}
+		$table[$tr][] = $GLOBALS['LANG']->getLL('external_key');
+		$table[$tr][] = $externalCtrlConfiguration['reference_uid'];
+		$tr++;
+			// PID information
+		$pid = $this->extConf['storagePID'];
+		if (isset($externalCtrlConfiguration['pid'])) {
+			$pid = $externalCtrlConfiguration['pid'];
+		}
+		$table[$tr][] = $GLOBALS['LANG']->getLL('storage_pid');
+		$table[$tr][] = $pid;
+		$tr++;
+		$table[$tr][] = $GLOBALS['LANG']->getLL('enforce_pid');
+		$table[$tr][] = (empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->getLL('no') : $GLOBALS['LANG']->getLL('yes');
+		$tr++;
+			// Additional fields
+		$table[$tr][] = $GLOBALS['LANG']->getLL('additional_fields');
+		$table[$tr][] = (empty($externalCtrlConfiguration['additional_fields'])) ? '-' : $externalCtrlConfiguration['additional_fields'];
+		$tr++;
+			// Control options
+		$table[$tr][] = $GLOBALS['LANG']->getLL('disabled_operations');
+		$table[$tr][] = (empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->getLL('none') : $externalCtrlConfiguration['disabledOperations'];
+		$tr++;
+		$table[$tr][] = $GLOBALS['LANG']->getLL('minimum_records');
+		$table[$tr][] = (empty($externalCtrlConfiguration['minimumRecords'])) ? '0' : $externalCtrlConfiguration['minimumRecords'];
+		$tr++;
+
+			// Render general information
+		$externalInformation .= '<h4>' . $GLOBALS['LANG']->getLL('general_information') . '</h4>';
+		$externalInformation .= $this->doc->table($table, $tableLayout);
+
+			// Prepare columns mapping information
+		t3lib_div::loadTCA($tableData['tablename']);
+		$columnsConfiguration = $GLOBALS['TCA'][$tableData['tablename']]['columns'];
+		$table = array();
+		$tr = 0;
+		foreach ($columnsConfiguration as $column => $columnData) {
+			if (isset($columnData['external'][$tableData['index']])) {
+				$table[$tr][] = $column;
+				$table[$tr][] = t3lib_div::view_array($columnData['external'][$tableData['index']]);
+				$tr++;
+			}
+		}
+			// Render columns mapping information
+		$externalInformation .= '<h4>' . $GLOBALS['LANG']->getLL('columns_mapping') . '</h4>';
+		$externalInformation .= $this->doc->table($table, $tableLayout);
+		return $externalInformation;
 	}
 
 	/**

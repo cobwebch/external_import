@@ -1,3 +1,7 @@
+2009-12-22  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added display of external configuration inside BE module
+
 2009-12-08  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Improved check to completely hide display of auto sync column when no sync tool is available
