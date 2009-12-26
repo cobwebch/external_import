@@ -405,7 +405,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					// Action icons
 				$syncIcon = '<a href="javascript:syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')" id="link' . $tr . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
 				$elementID = 'info' . $tr;
-				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
+				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
 				$infoIcon .= '<div id="' . $elementID . '" style="width: 410px; display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
 				$table[$tr][] = $syncIcon . $infoIcon;
 					// Action result
@@ -490,7 +490,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 									'tr' => array('<tr class="bgColor2">', '</tr>'),
 								),
 								'defRow' => array (
-									'tr' => array('<tr class="bgColor-20">', '</tr>'),
+									'tr' => array('<tr class="bgColor3-20" valign="top">', '</tr>'),
 									'defCol' => array('<td>', '</td>'),
 								)
 							);
@@ -503,6 +503,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table[$tr][] = '&nbsp;'; // Table icon
 			$table[$tr][] = $GLOBALS['LANG']->getLL('table'); // Table name
 			$table[$tr][] = $GLOBALS['LANG']->getLL('description'); // Sync description
+			$table[$tr][] = '&nbsp;'; // Info icon column
 
 				// Generate table row for each table
 			foreach ($externalTables as $key => $tableData) {
@@ -513,6 +514,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
 				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
 				$table[$tr][] = '[' . $tableIndex . ']' . ((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
+					// Info icon
+				$elementID = 'info' . $tr;
+				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
+				$infoIcon .= '<div id="' . $elementID . '" style="width: 410px; display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
+				$table[$tr][] = $infoIcon;
 			}
 
 				// Render the table

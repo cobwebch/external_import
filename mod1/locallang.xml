@@ -16,6 +16,7 @@
 			<label index="nosync_tables">Non-synchronizable tables</label>
 			<label index="nosync_tables_intro">The tables listed here receive data from external sources, but do not fetch it directly. They cannot be synchronised from this BE module, but are listed here for information.</label>
 			<label index="nosync_tables_none">There are currently no non-synchronizable tables defined.</label>
+			<label index="view_details">View details</label>
 			<label index="table">Table</label>
 			<label index="description">Description</label>
 			<label index="priority">Priority</label>
@@ -84,6 +85,7 @@
 			<label index="nosync_tables">Tables sans synchronisation</label>
 			<label index="nosync_tables_intro">Voici la liste des tables qui reçoivent leurs données de l'extérieur, mais ne vont pas les chercher directement. Elles ne peuvent donc pas être synchronisées depuis ce module BE. Elles sont affichées ici à titre indicatif.</label>
 			<label index="nosync_tables_none">Il n'y a actuellement aucune table sans synchronisation définie.</label>
+			<label index="view_details">Voir les détails</label>
 			<label index="table">Table</label>
 			<label index="description">Description</label>
 			<label index="priority">Priorité</label>
