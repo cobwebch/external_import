@@ -464,12 +464,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 						if (empty($externalConfig['connector'])) {
 
 								// Table's full name and index will be used as key for sorting the tables
-							$tableTitle = $GLOBALS['LANG']->sL($sectionData['title']).':'.$index;
+							$tableTitle = $GLOBALS['LANG']->sL($sectionData['title']) . ':' . $index;
+							$description = '';
 							if (isset($externalConfig['description'])) {
 								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
-							}
-							else {
-								$description = '';
 	                        }
 							$externalTables[$tableTitle] = array('tablename' => $tableName, 'description' => $description);
 						}
@@ -480,20 +478,20 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		ksort($externalTables);
 
 			// Prepare the list of tables
+		$tableList = '';
 		if (count($externalTables) == 0) {
-			$tableList = '<p>'.$GLOBALS['LANG']->getLL('nosync_tables_none').'</p>';
-		}
-		else {
+			$tableList = '<p>' . $GLOBALS['LANG']->getLL('nosync_tables_none') . '</p>';
+		} else {
 
 				// Initialise the table layout
 			$tableLayout = array (
 								'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
 								'0' => array (
-									'tr' => array('<tr class="bgColor2">','</tr>'),
+									'tr' => array('<tr class="bgColor2">', '</tr>'),
 								),
 								'defRow' => array (
-									'tr' => array('<tr class="bgColor-20">','</tr>'),
-									'defCol' => array('<td>','</td>'),
+									'tr' => array('<tr class="bgColor-20">', '</tr>'),
+									'defCol' => array('<td>', '</td>'),
 								)
 							);
 
@@ -511,7 +509,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$tr++;
 				list($tableTitle, $tableIndex) = t3lib_div::trimExplode(':', $key, 1);
 				$tableName = $tableData['tablename'];
-				$ctrlData = $GLOBALS['TCA'][$tableName]['ctrl'];
 				$table[$tr] = array();
 				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
 				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
