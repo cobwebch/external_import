@@ -762,7 +762,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$pid = $externalCtrlConfiguration['pid'];
 		}
 		$table[$tr][] = $GLOBALS['LANG']->getLL('storage_pid');
-		$table[$tr][] = $pid;
+		$table[$tr][] = $this->getPageLink($pid);
 		$tr++;
 		$table[$tr][] = $GLOBALS['LANG']->getLL('enforce_pid');
 		$table[$tr][] = (empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->getLL('no') : $GLOBALS['LANG']->getLL('yes');
@@ -830,6 +830,30 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$messageDisplay .= '<p style="' . $style . '">' . $message . '</p>';
 		return $messageDisplay;
 	}
+
+    /**
+     * Returns a linked icon with title from a page
+     *
+     * @param   integer		ID of the page
+     * @return  string		HTML for icon, title and link
+     */
+    function getPageLink($uid) {
+        global $BACK_PATH;
+		$string = '';
+		if (!empty($uid)) {
+			$page = t3lib_BEfunc::getRecord('pages', $uid);
+			$pageTitle = t3lib_BEfunc::getRecordTitle('pages', $page, 1);
+			$iconAltText = t3lib_BEfunc::getRecordIconAltText($page, 'pages');
+
+				// Create icon for record
+			$elementIcon = t3lib_iconworks::getIconImage('pages', $page, $BACK_PATH, 'class="c-recicon" title="' . $iconAltText . '"');
+
+				// Return item with edit link
+			$editOnClick = 'top.loadEditId(' . $uid . ')';
+			$string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $GLOBALS['LANG']->getLL('jum_to_page') . '">' . $elementIcon . $pageTitle . '</a>';
+			return $string;
+		}
+    }
 }
 
 
