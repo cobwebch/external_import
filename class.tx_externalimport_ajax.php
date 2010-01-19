@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2009 Francois Suter (Cobweb) <typo3@cobweb.ch>
+*  (c) 2007-2010 Francois Suter (Cobweb) <typo3@cobweb.ch>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,7 +22,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(t3lib_extMgm::extPath('external_import').'class.tx_externalimport_importer.php');
+require_once(t3lib_extMgm::extPath('external_import') . 'class.tx_externalimport_importer.php');
 
 /**
  * This class answers to AJAX calls from the 'external_import' extension
@@ -47,12 +47,10 @@ class tx_externalimport_ajax {
 
 		if (!empty($method)) {
 
-// Call method with dummy parameters
-
+				// Call method with dummy parameters
 			$messages = $this->$method(array(), $this);
 
-// Encode messages in UTF-8 to prepare for JSON encoding
-
+				// Encode messages in UTF-8 to prepare for JSON encoding
 			foreach ($messages as $status => $messageList) {
 				$numMessages = count($messageList);
 				for ($i = 0; $i < $numMessages; $i++) {
@@ -66,8 +64,9 @@ class tx_externalimport_ajax {
 	/**
 	 * This method answers to the AJAX call and starts the synchronisation of a given table
 	 *
-	 * @return	array	list of messages ordered by status (error, warning, success)
-	 * @return	void	(with 4.2)
+	 * @param	array		$params: empty array passed by TYPO3's AJAX dispatcher
+	 * @param	TYPO3AJAX	$ajaxObj: back-reference to the calling oject
+	 * @return	void		(with 4.2)
 	 */
 	public function synchronizeExternalTable($params, &$ajaxObj) {
 		$theTable = t3lib_div::_GP('table');
@@ -75,21 +74,15 @@ class tx_externalimport_ajax {
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
 		$messages = $importer->synchronizeData($theTable, $theIndex);
 
-// Pre-4.2 calling method
-
+			// Pre-TYPO3 4.2 calling method
 		if (get_class($ajaxObj) == 'tx_externalimport_ajax') {
 			return $messages;
 		}
 
-// Post-4.2 calling method
-
+			// TYPO3 4.2 and later calling method
 		else {
 			$ajaxObj->setContentFormat('json');
-			foreach ($messages as $code => $messageList) {
-				if (count($messageList) > 0) {
-					$ajaxObj->addContent($code, $messageList);
-				}
-			}
+			$ajaxObj->setContent($messages);
 		}
 	}
 }
