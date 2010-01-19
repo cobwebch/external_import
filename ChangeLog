@@ -1,3 +1,8 @@
+2010-01-19  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected usage of TYPO3AJAX API
+	* Added possibility to exclude specific fields from insert or update
+
 2009-12-22  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added display of external configuration inside BE module

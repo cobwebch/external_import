@@ -497,13 +497,22 @@ class tx_externalimport_importer {
 	 * @return	void
 	 */
 	protected function storeData($records) {
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Data received for storage', $this->extKey, 0, $records);
+		if ($this->extConf['debug'] || TYPO3_DLOG) {
+			t3lib_div::devLog('Data received for storage', $this->extKey, 0, $records);
+		}
+
+			// Initialize some variables
+		$fieldsExcludedFromInserts = array();
+		$fieldsExcludedFromUpdates = array();
 
 			// Get the list of existing uids for the table
 		$existingUids = $this->getExistingUids();
 
 			// Check which columns are MM-relations and get mappings to foreign tables for each
 			// NOTE: as it is now, it is assumed that the imported data is denormalised
+			//
+			// NOTE2:	as long as we're looping on all columns, we assemble the list
+			//			of fields that are exclude from insert or update operations
 			//
 			// There's more to do than that:
 			//
@@ -516,6 +525,17 @@ class tx_externalimport_importer {
 		$mappings = array();
 		$fullMappings = array();
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
+				// Check if some fields are excluded from some operations
+				// and add them to the relevant list
+			if (isset($columnData['external'][$this->index]['excludedOperations'])) {
+				if (t3lib_div::inList($columnData['external'][$this->index]['excludedOperations'], 'insert')) {
+					$fieldsExcludedFromInserts[] = $columnName;
+				}
+				if (t3lib_div::inList($columnData['external'][$this->index]['excludedOperations'], 'update')) {
+					$fieldsExcludedFromUpdates[] = $columnName;
+				}
+			}
+				// Process MM-relations, if any
 			if (isset($columnData['external'][$this->index]['MM'])) {
 				$mmData = $columnData['external'][$this->index]['MM'];
 				$sortingField = (isset($mmData['sorting'])) ? $mmData['sorting'] : false;
@@ -643,15 +663,22 @@ class tx_externalimport_importer {
 						$theRecord = $preProcessor->processBeforeUpdate($theRecord, $this);
 					}
 				}
-				$theID = $existingUids[$externalUid];
 
+					// Remove the fields which must be excluded from updates
+				if (count($fieldsExcludedFromUpdates) > 0) {
+					foreach ($fieldsExcludedFromUpdates as $excludedField) {
+						unset($theRecord[$excludedField]);
+					}
+				}
+
+				$theID = $existingUids[$externalUid];
 				$tceData[$this->table][$theID] = $theRecord;
 				$updatedUids[] = $theID;
 				$updates++;
-			}
 
 				// Reference uid not found, perform an insert (if not disabled)
-			elseif (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
+			} elseif (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
+			
 					// First call a preprocessing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'])) {
 					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'] as $className) {
@@ -659,6 +686,14 @@ class tx_externalimport_importer {
 						$theRecord = $preProcessor->processBeforeInsert($theRecord, $this);
 					}
 				}
+
+					// Remove the fields which must be excluded from inserts
+				if (count($fieldsExcludedFromInserts) > 0) {
+					foreach ($fieldsExcludedFromInserts as $excludedField) {
+						unset($theRecord[$excludedField]);
+					}
+				}
+
 				$theRecord['pid'] = $this->pid;
 				$inserts++;
 				$theID = 'NEW_' . $inserts;
@@ -670,12 +705,16 @@ class tx_externalimport_importer {
 				$savedAdditionalFields[$theID] = $localAdditionalFields;
 			}
 		}
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
+		if ($this->extConf['debug'] || TYPO3_DLOG) {
+			t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
+		}
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
 		$tce->start($tceData, array());
 		$tce->process_datamap();
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('New IDs', 'external_import', 0, $tce->substNEWwithIDs);
+		if ($this->extConf['debug'] || TYPO3_DLOG) {
+			t3lib_div::devLog('New IDs', 'external_import', 0, $tce->substNEWwithIDs);
+		}
 			// Store the number of new IDs created. This is used in error reporting later
 		$numberOfNewIDs = count($tce->substNEWwithIDs);
 
@@ -712,10 +751,9 @@ class tx_externalimport_importer {
 		unset($savedData);
 
 			// Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
-		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || (isset($this->externalConfig['deleteNonSynchedRecords']) && $this->externalConfig['deleteNonSynchedRecords'] === false)) {
+		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || (isset($this->externalConfig['deleteNonSynchedRecords']) && $this->externalConfig['deleteNonSynchedRecords'] === FALSE)) {
 			$deletes = 0;
-		}
-		else {
+		} else {
 			$absentUids = array_diff($existingUids, $updatedUids);
 				// Call a preprocessing hook
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'])) {
@@ -745,7 +783,9 @@ class tx_externalimport_importer {
 
 			// Perform post-processing of MM-relations if necessary
 		if (count($fullMappings) > 0) {
-			if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('Handling full mappings', $this->extKey, 0, $fullMappings);
+			if ($this->extConf['debug'] || TYPO3_DLOG) {
+				t3lib_div::devLog('Handling full mappings', $this->extKey, 0, $fullMappings);
+			}
 
 				// Refresh list of existing primary keys now that new records have been inserted
 			$existingUids = $this->getExistingUids();
@@ -791,12 +831,13 @@ class tx_externalimport_importer {
 					if (!empty($row['log_data'])) {
 						$data = unserialize($row['log_data']);
 						$message = sprintf($label, htmlspecialchars($data[0]), htmlspecialchars($data[1]), htmlspecialchars($data[2]), htmlspecialchars($data[3]), htmlspecialchars($data[4]));
-					}
-					else {
+					} else {
 						$message = $label;
 					}
 					$this->messages['error'][] = $message;
-					if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog($message, $this->extKey, 3);
+					if ($this->extConf['debug'] || TYPO3_DLOG) {
+						t3lib_div::devLog($message, $this->extKey, 3);
+					}
 				}
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			}
