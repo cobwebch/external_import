@@ -744,7 +744,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table[$tr][] = $externalCtrlConfiguration['connector'];
 			$tr++;
 			$table[$tr][] = $GLOBALS['LANG']->getLL('connector.details');
-			$table[$tr][] = t3lib_div::view_array($externalCtrlConfiguration['parameters']);
+			$table[$tr][] = $this->dumpArray($externalCtrlConfiguration['parameters']);
 			$tr++;
 		}
 			// Data information
@@ -794,7 +794,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		foreach ($columnsConfiguration as $column => $columnData) {
 			if (isset($columnData['external'][$tableData['index']])) {
 				$table[$tr][] = $column;
-				$table[$tr][] = t3lib_div::view_array($columnData['external'][$tableData['index']]);
+				$table[$tr][] = $this->dumpArray($columnData['external'][$tableData['index']]);
 				$tr++;
 			}
 		}
@@ -802,6 +802,31 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$externalInformation .= '<h4>' . $GLOBALS['LANG']->getLL('columns_mapping') . '</h4>';
 		$externalInformation .= $this->doc->table($table, $tableLayout);
 		return $externalInformation;
+	}
+
+	/**
+	 * Dump a PHP array to a HTML table
+	 * (This is somewhat similar to t3lib_div::view_array() but with styling ;-)
+	 * 
+	 * @param	array	$array: Array to display
+	 * @return	string	HTML table assembled from array
+	 */
+	protected function dumpArray($array) {
+		$table = '<table border="0" cellpadding="1" cellspacing="1" bgcolor="#8a8a8a">';
+		foreach ($array as $key => $value) {
+			$table .= '<tr class="bgColor4-20" valign="top">';
+			$table .= '<td>' . $key . '</td>';
+			$table .= '<td>';
+			if (is_array($value)) {
+				$this->dumpArray($value);
+			} else {
+				$table .= $value;
+			}
+			$table .= '</td>';
+			$table .= '</tr>';
+		}
+		$table .= '</table>';
+		return $table;
 	}
 
 	/**
