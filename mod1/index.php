@@ -818,7 +818,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table .= '<td>' . $key . '</td>';
 			$table .= '<td>';
 			if (is_array($value)) {
-				$this->dumpArray($value);
+				$table .= $this->dumpArray($value);
 			} else {
 				$table .= $value;
 			}
