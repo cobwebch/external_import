@@ -206,7 +206,8 @@ class tx_externalimport_importer {
 		}
 			// Flush all existing output (PHP errors, debug output, etc.)
 			// so that it doesn't corrupt module response (in particular when called via AJAX)
-		if ($this->extConf['flushOutput']) {
+			// Skip this for TYPO3 4.3+ because output is already flushed
+		if (!t3lib_div::compat_version('4.3') && $this->extConf['flushOutput']) {
 			ob_end_clean();
 		}
 		return $this->messages;

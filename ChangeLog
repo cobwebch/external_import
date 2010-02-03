@@ -1,3 +1,7 @@
+2010-02-03  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Set compatibility limit for flushOutput option to TYPO3 4.2 or below
+
 2010-01-19  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected usage of TYPO3AJAX API
