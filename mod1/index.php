@@ -491,14 +491,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$externalData = $sections['ctrl']['external'];
 				foreach ($externalData as $index => $externalConfig) {
 					if (empty($externalConfig['connector'])) {
-
-							// Table's full name and index will be used as key for sorting the tables
-						$tableTitle = $GLOBALS['LANG']->sL($sections['ctrl']['title']) . ':' . $index;
 						$description = '';
 						if (isset($externalConfig['description'])) {
 							$description = $GLOBALS['LANG']->sL($externalConfig['description']);
 						}
-						$externalTables[$tableTitle] = array('tablename' => $tableName, 'description' => $description);
+						$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'description' => $description);
 					}
 				}
 			}
@@ -534,14 +531,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table[$tr][] = '&nbsp;'; // Info icon column
 
 				// Generate table row for each table
-			foreach ($externalTables as $key => $tableData) {
+			foreach ($externalTables as $tableData) {
 				$tr++;
-				list($tableTitle, $tableIndex) = t3lib_div::trimExplode(':', $key, 1);
 				$tableName = $tableData['tablename'];
+				$tableTitle = $GLOBALS['LANG']->sL($GLOBALS['TCA'][$tableName]['ctrl']['title']);
 				$table[$tr] = array();
 				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $GLOBALS['BACK_PATH']);
 				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
-				$table[$tr][] = '[' . $tableIndex . ']' . ((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
+				$table[$tr][] = '[' . $tableData['index'] . ']' . ((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 					// Info icon
 				$elementID = 'info' . $tr;
 				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
@@ -554,7 +551,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		}
 
 			// Assemble content
-		$content = '<p>'.$GLOBALS['LANG']->getLL('nosync_tables_intro').'</p>';
+		$content = '<p>' . $GLOBALS['LANG']->getLL('nosync_tables_intro') . '</p>';
 		$content .= $this->doc->spacer(10);
 		$content .= $tableList;
 		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('nosync_tables'), $content, 0, 1);
