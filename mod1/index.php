@@ -83,7 +83,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @return	void
 	 */
 	public function main()	{
-		global $BE_USER,$BACK_PATH;
+		global $BE_USER;
 
 		// Access check!
 		// The page will show only if there is a valid page and if this page may be viewed by the user
@@ -94,7 +94,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 				// Draw the header.
 			$this->doc = t3lib_div::makeInstance('template');
-			$this->doc->backPath = $BACK_PATH;
+			$this->doc->backPath = $GLOBALS['BACK_PATH'];
 
 				// JavaScript
 			$this->doc->JScode = '
@@ -116,12 +116,12 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$this->doc->loadJavascriptLib('js/common.js');
 				$this->doc->JScode .= '
 					<script language="javascript" type="text/javascript">
-						var syncRunningIcon = \'<img src="../res/icons/refresh_animated.gif" alt="'.$GLOBALS['LANG']->getLL('running_synchronisation').'" border="0" />\';
-						var syncStoppedIcon = \'<img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" />\';
+						var syncRunningIcon = \'<img src="../res/icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\';
+						var syncStoppedIcon = \'<img '.(t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif')) . ' alt="'.$GLOBALS['LANG']->getLL('synchronise') . '" border="0" />\';
 						function syncTable(theID, theTable, theIndex) {
 							$("result" + theID).update("'.$GLOBALS['LANG']->getLL('running').'");
 							$("link" + theID).update(syncRunningIcon);
-							new Ajax.Request("'.$BACK_PATH.'ajax.php", {
+							new Ajax.Request("' . $GLOBALS['BACK_PATH'] . 'ajax.php", {
 								method: "get",
 								parameters: {
 									"ajaxID": "externalimport::synchronizeExternalTable",
@@ -164,7 +164,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$this->doc->JScode .= '
 					<script language="javascript" type="text/javascript">
 						var syncRunningIcon = \'<img src="../res/icons/refresh_animated.gif" alt="'.$GLOBALS['LANG']->getLL('running_synchronisation').'" border="0" />\';
-						var syncStoppedIcon = \'<img '.(t3lib_iconWorks::skinImg($BACK_PATH,'gfx/refresh_n.gif')).' alt="'.$GLOBALS['LANG']->getLL('synchronise').'" border="0" />\';
+						var syncStoppedIcon = \'<img '.(t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="'.$GLOBALS['LANG']->getLL('synchronise') . '" border="0" />\';
 						function syncTable(theID, theTable, theIndex) {
 							$("result" + theID).update("'.$GLOBALS['LANG']->getLL('running').'");
 							$("link" + theID).update(syncRunningIcon);
@@ -207,15 +207,15 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				// Additional JavaScript for showing/hiding the synchronisation form
 			$this->doc->JScodeArray[] .= '
 					var LOCALAPP = {
-						imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />\',
-						imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" />\',
-						imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />\',
-						imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" />\',
+						imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />\',
+						imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" />\',
+						imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />\',
+						imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" />\',
 						showSyncForm_add : \'' . $GLOBALS['LANG']->getLL('add_sync') . '\',
 						showSyncForm_edit : \'' . $GLOBALS['LANG']->getLL('edit_sync') . '\',
 						hideSyncForm : \'' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '\'
 					};';
-			$this->doc->JScode .= '<script type="text/javascript" src="' . $BACK_PATH . t3lib_extMgm::extRelPath($GLOBALS['MCONF']['extKey']) . 'res/tx_externalimport.js"></script>'."\n";
+			$this->doc->JScode .= '<script type="text/javascript" src="' . $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath($GLOBALS['MCONF']['extKey']) . 'res/tx_externalimport.js"></script>'."\n";
 
 			$this->doc->postCode='
 				<script language="javascript" type="text/javascript">
@@ -247,7 +247,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				// If no access or if ID == zero
 
 			$this->doc = t3lib_div::makeInstance('mediumDoc');
-			$this->doc->backPath = $BACK_PATH;
+			$this->doc->backPath = $GLOBALS['BACK_PATH'];
 
 			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
 			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
@@ -298,7 +298,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @return	void
 	 */
 	protected function listSynchronizedTables() {
-		global $BACK_PATH;
 		$saveResult = '';
 		$deleteResult = '';
 		$existingTasks = array();
@@ -328,22 +327,39 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 			// Get list of all synchronisable tables and extract general information about them
 		$externalTables = array();
+		$hasSomeWriteAccess = FALSE;
+		$hasAllWriteAccess = TRUE;
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+				// Check if table has external info
 			if (isset($sections['ctrl']['external'])) {
-				$externalData = $sections['ctrl']['external'];
-				foreach ($externalData as $index => $externalConfig) {
-					if (!empty($externalConfig['connector'])) {
-							// If priority is not defined, set to very low
-						$priority = 1000;
-						$description = '';
-						if (isset($externalConfig['priority'])) {
-							$priority = $externalConfig['priority'];
+					// Check if user has read rights on it
+				if ($GLOBALS['BE_USER']->check('tables_select', $tableName)) {
+					$externalData = $sections['ctrl']['external'];
+					$hasWriteAccess = $GLOBALS['BE_USER']->check('tables_modify', $tableName);
+						// This general flag must be true if user has write access
+						// to at least one table
+					$hasSomeWriteAccess |= $hasWriteAccess;
+						// This general flag must be true only if user has write
+						// access to *all* tables
+					$hasAllWriteAccess &= $hasWriteAccess;
+					foreach ($externalData as $index => $externalConfig) {
+						if (!empty($externalConfig['connector'])) {
+								// If priority is not defined, set to very low
+							$priority = 1000;
+							$description = '';
+							if (isset($externalConfig['priority'])) {
+								$priority = $externalConfig['priority'];
+							}
+							if (isset($externalConfig['description'])) {
+								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
+							}
+							$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority, 'description' => $description, 'writeAccess' => $hasWriteAccess);
 						}
-						if (isset($externalConfig['description'])) {
-							$description = $GLOBALS['LANG']->sL($externalConfig['description']);
-						}
-						$externalTables[] = array('tablename' => $tableName, 'index' => $index, 'priority' => $priority, 'description' => $description);
 					}
+				} else {
+						// This general flag must be true only if user has write
+						// access to *all* tables
+					$hasAllWriteAccess &= FALSE;
 				}
 			}
 		}
@@ -381,10 +397,17 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$table[$tr][] = $GLOBALS['LANG']->getLL('description'); // Sync description
 			$table[$tr][] = $GLOBALS['LANG']->getLL('priority'); // Priority
 			$table[$tr][] = '&nbsp;'; // Action icons
-			$table[$tr][] = '&nbsp;'; // Action result
+			if ($hasSomeWriteAccess) {
+				$table[$tr][] = '&nbsp;'; // Action result
+			}
 			if ($this->hasSchedulingTool) {
 				$table[$tr][] = $GLOBALS['LANG']->getLL('autosync'); // Sync form
 			}
+
+				// Prepare space icon
+			$iconWidth  = $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['iconSizeWidth']  ? $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['iconSizeWidth']  : 12;
+			$iconHeight = $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['iconSizeHeight'] ? $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['iconSizeHeight'] : 12;
+			$spaceIcon = '<img src="' . $GLOBALS['BACK_PATH'] . 'clear.gif" width="' . $iconWidth . '" height="' . $iconHeight . '" title="" alt="" />';
 
 				// Generate table row for each table
 			foreach ($externalTables as $tableData) {
@@ -398,21 +421,27 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					// Assemble the row
 				$table[$tr] = array();
 				$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
-				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
+				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $GLOBALS['BACK_PATH']);
 				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
 				$table[$tr][] = '[' . $tableIndex . ']' . ((empty($tableData['description'])) ? '' : ' ' . htmlspecialchars($tableData['description']));
 				$table[$tr][] = $tableData['priority'];
 					// Action icons
-				$syncIcon = '<a href="javascript:syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')" id="link' . $tr . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
+				$syncIcon = $spaceIcon;
+				if ($tableData['writeAccess']) {
+					$syncIcon = '<a href="javascript:syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')" id="link' . $tr . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
+				}
 				$elementID = 'info' . $tr;
-				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
+				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
 				$infoIcon .= '<div id="' . $elementID . '" style="width: 410px; display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
 				$table[$tr][] = $syncIcon . $infoIcon;
 					// Action result
-				$table[$tr][] = '<div id="result' . $tr . '"></div>';
+					// Prepare only if at least one table may be synchronized
+				if ($hasSomeWriteAccess) {
+					$table[$tr][] = '<div id="result' . $tr . '"></div>';
+				}
 					// Sync form
 				if ($this->hasSchedulingTool) {
-					$cellContent = $this->displaySyncForm($taskData, $tableName, $tableIndex);
+					$cellContent = $this->displaySyncForm($taskData, $tableName, $tableIndex, $tableData['writeAccess']);
 					$table[$tr][] = '<div id="result' . $tr . '">' . $cellContent . '</div>';
 				}
 			}
@@ -442,7 +471,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('external_tables'), $content, 0, 1);
 
 			// Display form for automatic synchronisation
-		$this->displayAutoSyncSection(isset($existingTasks['all']) ? $existingTasks['all'] : array());
+		$this->displayAutoSyncSection(isset($existingTasks['all']) ? $existingTasks['all'] : array(), $hasAllWriteAccess);
 	}
 
 	/**
@@ -453,25 +482,24 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @return	void
 	 */
 	protected function listOtherTables() {
-		global $BACK_PATH;
 
 			// Get list of all non-synchronisable tables and extract general information about them
 		$externalTables = array();
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-			foreach ($sections as $sectionKey => $sectionData) {
-				if ($sectionKey == 'ctrl' && isset($sectionData['external'])) {
-					foreach ($sectionData['external'] as $index => $externalConfig) {
-						if (empty($externalConfig['connector'])) {
+				// Check if table has external info and user has read-rights on it
+			if (isset($sections['ctrl']['external']) && $GLOBALS['BE_USER']->check('tables_select', $tableName)) {
+				$externalData = $sections['ctrl']['external'];
+				foreach ($externalData as $index => $externalConfig) {
+					if (empty($externalConfig['connector'])) {
 
-								// Table's full name and index will be used as key for sorting the tables
-							$tableTitle = $GLOBALS['LANG']->sL($sectionData['title']) . ':' . $index;
-							$description = '';
-							if (isset($externalConfig['description'])) {
-								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
-	                        }
-							$externalTables[$tableTitle] = array('tablename' => $tableName, 'description' => $description);
+							// Table's full name and index will be used as key for sorting the tables
+						$tableTitle = $GLOBALS['LANG']->sL($sections['ctrl']['title']) . ':' . $index;
+						$description = '';
+						if (isset($externalConfig['description'])) {
+							$description = $GLOBALS['LANG']->sL($externalConfig['description']);
 						}
-                    }
+						$externalTables[$tableTitle] = array('tablename' => $tableName, 'description' => $description);
+					}
 				}
 			}
 		}
@@ -511,12 +539,12 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				list($tableTitle, $tableIndex) = t3lib_div::trimExplode(':', $key, 1);
 				$tableName = $tableData['tablename'];
 				$table[$tr] = array();
-				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $BACK_PATH);
+				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $GLOBALS['BACK_PATH']);
 				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
 				$table[$tr][] = '[' . $tableIndex . ']' . ((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 					// Info icon
 				$elementID = 'info' . $tr;
-				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($BACK_PATH, 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
+				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
 				$infoIcon .= '<div id="' . $elementID . '" style="width: 410px; display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
 				$table[$tr][] = $infoIcon;
 			}
@@ -535,16 +563,19 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	/**
 	 * This method displays information and input form for setting a schedule for automatic synchronisation
 	 *
+	 * @param	array		$taskData: array containing the registration information, if registered
+	 * @param	boolean		$hasAllWriteAccess: TRUE if user has write-access to *all* tables, FALSE otherwise
+	 *
 	 * @return	void
 	 */
-	protected function displayAutoSyncSection($taskData) {
+	protected function displayAutoSyncSection($taskData, $hasAllWriteAccess) {
 		$content = '';
 		if ($this->hasSchedulingTool) {
 
 				// Display auto sync set up form
 			$content .= '<p>' . $GLOBALS['LANG']->getLL('autosync_intro') . '</p>';
 			$content .= $this->doc->spacer(5);
-			$content .= $this->displaySyncForm($taskData, 'all');
+			$content .= $this->displaySyncForm($taskData, 'all', 0, $hasAllWriteAccess);
 			$content .= $this->doc->spacer(10);
 
 				// Add to module's output
@@ -656,9 +687,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @param	array		$data: array of information for the related registered event, if it exists. Pass an empty array otherwise.
 	 * @param	string		$table: name of the table to synchronize
 	 * @param	string		$index: key of the synchronization configuration
+	 * @param	boolean		$hasWriteAccess: TRUE if the user has write access to the table, FALSE otherwise
 	 * @return	string		HTML of the form to display
 	 */
-	protected function displaySyncForm($data, $table, $index = 0) {
+	protected function displaySyncForm($data, $table, $index = 0, $hasWriteAccess = FALSE) {
 		$form = '';
 			 // No event registration, display a message to that effect
 		if (count($data) == 0) {
@@ -674,47 +706,50 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			}
 			$form .= '<p>' . $message . '</p>';
 		}
-		$idAttribute = 'syncForm_' . $table . '_' . $index;
-		$form .= $this->doc->spacer(5);
-			// Add an icon for toggling the add or edit form
-		$label = '';
-		$icon = '';
-		$action = '';
-		if (isset($data['uid'])) {
-			$label = $GLOBALS['LANG']->getLL('edit_sync');
-			$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />';
-			$action = 'edit';
-		} else {
-			$label = $GLOBALS['LANG']->getLL('add_sync');
-			$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />';
-			$action = 'add';
+			// Display the rest of the form only if the user has write access
+		if ($hasWriteAccess) {
+			$idAttribute = 'syncForm_' . $table . '_' . $index;
+			$form .= $this->doc->spacer(5);
+				// Add an icon for toggling the add or edit form
+			$label = '';
+			$icon = '';
+			$action = '';
+			if (isset($data['uid'])) {
+				$label = $GLOBALS['LANG']->getLL('edit_sync');
+				$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />';
+				$action = 'edit';
+			} else {
+				$label = $GLOBALS['LANG']->getLL('add_sync');
+				$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />';
+				$action = 'add';
+			}
+			$editIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\', \'' . $action . '\'); return false;" id="' . $idAttribute . '_link" title="' . $label . '">';
+			$editIcon .= $icon;
+			$editIcon .= '</a>';
+			$form .= $editIcon;
+				// Add an icon for toggling edit form
+			if (isset($data['uid'])) {
+				$label = $GLOBALS['LANG']->getLL('delete_sync');
+				$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/garbage.gif', 'width="18" height="12"') . ' alt="+" />';
+				$deleteIcon = '<a href="?CMD=delete&uid=' . $data['uid'] . '" onclick="return confirm(\'' . $GLOBALS['LANG']->getLL('delete_sync_confirm') . '\')" title="' . $label . '">';
+				$deleteIcon .= $icon;
+				$deleteIcon .= '</a>';
+				$form .= $deleteIcon;
+			}
+				// Wrap the whole form inside a div to be able to hide it easily
+			$form .= '<div id="' . $idAttribute . '_wrapper" style="display:none">';
+				// Assemble the form itself
+			$form .= '<form name="syncForm" id="' . $idAttribute . '" method="POST" action="">';
+			$form .= '<input type="hidden" name="CMD" value="save" />';
+			$form .= '<input type="hidden" name="tx_externalimport[sync]" value="' . $table . '" />';
+			$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
+			$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['uid'])) ? $data['uid'] : 0) . '" />';
+			$form .= '<p><label>' . $GLOBALS['LANG']->getLL('start_date') . '</label>&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
+			$form .= '<p><label>' . $GLOBALS['LANG']->getLL('frequency') . '</label>&nbsp;<input type="text" name="tx_externalimport[period_value]" size="10" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('frequency_help') . '</p>';
+			$form .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
+			$form .= '</form>';
+			$form .= '</div>';
 		}
-		$editIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\', \'' . $action . '\'); return false;" id="' . $idAttribute . '_link" title="' . $label . '">';
-		$editIcon .= $icon;
-		$editIcon .= '</a>';
-		$form .= $editIcon;
-			// Add an icon for toggling edit form
-		if (isset($data['uid'])) {
-			$label = $GLOBALS['LANG']->getLL('delete_sync');
-			$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/garbage.gif', 'width="18" height="12"') . ' alt="+" />';
-			$deleteIcon = '<a href="?CMD=delete&uid=' . $data['uid'] . '" onclick="return confirm(\'' . $GLOBALS['LANG']->getLL('delete_sync_confirm') . '\')" title="' . $label . '">';
-			$deleteIcon .= $icon;
-			$deleteIcon .= '</a>';
-			$form .= $deleteIcon;
-		}
-			// Wrap the whole form inside a div to be able to hide it easily
-		$form .= '<div id="' . $idAttribute . '_wrapper" style="display:none">';
-			// Assemble the form itself
-		$form .= '<form name="syncForm" id="' . $idAttribute . '" method="POST" action="">';
-		$form .= '<input type="hidden" name="CMD" value="save" />';
-		$form .= '<input type="hidden" name="tx_externalimport[sync]" value="' . $table . '" />';
-		$form .= '<input type="hidden" name="tx_externalimport[index]" value="' . $index . '" />';
-		$form .= '<input type="hidden" name="tx_externalimport[uid]" value="' . ((isset($data['uid'])) ? $data['uid'] : 0) . '" />';
-		$form .= '<p><label>' . $GLOBALS['LANG']->getLL('start_date') . '</label>&nbsp;<input type="text" name="tx_externalimport[start]" size="20" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('start_date_help') . '</p>';
-		$form .= '<p><label>' . $GLOBALS['LANG']->getLL('frequency') . '</label>&nbsp;<input type="text" name="tx_externalimport[period_value]" size="10" value="" />&nbsp;' . $GLOBALS['LANG']->getLL('frequency_help') . '</p>';
-		$form .= '<p><input type="submit" name="tx_externalimport[submit]" value="' . $GLOBALS['LANG']->getLL('set_sync') . '" /></p>';
-		$form .= '</form>';
-		$form .= '</div>';
 		return $form;
 	}
 
@@ -866,7 +901,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
      * @return  string		HTML for icon, title and link
      */
     function getPageLink($uid) {
-        global $BACK_PATH;
 		$string = '';
 		if (!empty($uid)) {
 			$page = t3lib_BEfunc::getRecord('pages', $uid);
@@ -874,7 +908,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$iconAltText = t3lib_BEfunc::getRecordIconAltText($page, 'pages');
 
 				// Create icon for record
-			$elementIcon = t3lib_iconworks::getIconImage('pages', $page, $BACK_PATH, 'class="c-recicon" title="' . $iconAltText . '"');
+			$elementIcon = t3lib_iconworks::getIconImage('pages', $page, $GLOBALS['BACK_PATH'], 'class="c-recicon" title="' . $iconAltText . '"');
 
 				// Return item with edit link
 			$editOnClick = 'top.loadEditId(' . $uid . ')';
