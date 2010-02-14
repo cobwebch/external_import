@@ -159,45 +159,54 @@ class tx_externalimport_importer {
 	 * @return	array		List of error or success messages
 	 */
 	public function synchronizeData($table, $index) {
-		$this->initTCAData($table, $index);
+			// If the user has enough rights on the table, proceed with synchronization
+		if ($GLOBALS['BE_USER']->check('tables_modify', $table)) {
+			$this->initTCAData($table, $index);
 
-			// Instantiate specific connector service
-		if (empty($this->externalConfig['connector'])) {
-			$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_connector');
-		} else {
-			$services = t3lib_extMgm::findService('connector', $this->externalConfig['connector']);
-
-				// The service is not available
-			if ($services === false) {
-				$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
+				// Instantiate specific connector service
+			if (empty($this->externalConfig['connector'])) {
+				$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_connector');
 			} else {
-				$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
+				$services = t3lib_extMgm::findService('connector', $this->externalConfig['connector']);
 
-					// The service was instatiated, but an error occurred while initiating the connection
-					// If the returned value is an array, an error has occurred
-				if (is_array($connector)) {
-					$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_not_fetched');
-
-					// The connection is established, get the data
+					// The service is not available
+				if ($services === false) {
+					$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
 				} else {
+					$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
 
-					switch ($this->externalConfig['data']) {
-						case 'xml':
-							$data = $connector->fetchXML($this->externalConfig['parameters']);
-							break;
-						case 'array':
-							$data = $connector->fetchArray($this->externalConfig['parameters']);
-							break;
-						default:
-							$data = $connector->fetchRaw($this->externalConfig['parameters']);
-							break;
+						// The service was instatiated, but an error occurred while initiating the connection
+						// If the returned value is an array, an error has occurred
+					if (is_array($connector)) {
+						$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_not_fetched');
+
+						// The connection is established, get the data
+					} else {
+
+						switch ($this->externalConfig['data']) {
+							case 'xml':
+								$data = $connector->fetchXML($this->externalConfig['parameters']);
+								break;
+							case 'array':
+								$data = $connector->fetchArray($this->externalConfig['parameters']);
+								break;
+							default:
+								$data = $connector->fetchRaw($this->externalConfig['parameters']);
+								break;
+						}
+						if ($this->extConf['debug'] || TYPO3_DLOG) {
+							t3lib_div::devLog('Data received (example)', $this->extKey, -1, $data);
+						}
+						$this->handleData($data);
 					}
-					if ($this->extConf['debug'] || TYPO3_DLOG) {
-						t3lib_div::devLog('Data received (example)', $this->extKey, -1, $data);
-					}
-					$this->handleData($data);
 				}
 			}
+
+			// The user doesn't have enough rights on the table
+			// Log error
+		} else {
+			$userName = $GLOBALS['BE_USER']->user['username'];
+			$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('no_rights_for_sync'), $userName, $table);
 		}
 
 			// Log results to devlog
@@ -924,7 +933,9 @@ class tx_externalimport_importer {
 		} elseif (count($this->messages['warning']) > 0) {
 			$severity = 2;
 		}
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity, $this->messages);
+		if ($this->extConf['debug'] || TYPO3_DLOG) {
+			t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity, $this->messages);
+		}
 	}
 
 
