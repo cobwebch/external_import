@@ -729,17 +729,17 @@ class tx_externalimport_importer {
 		$numberOfNewIDs = count($tce->substNEWwithIDs);
 
 			// Post-processing hook after data was saved
+		$savedData = array();
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['datamapPostProcess'])) {
-			$savedData = array();
-			foreach ($tceData as $table => $tableRecords) {
+			foreach ($tceData as $tableRecords) {
 				foreach ($tableRecords as $id => $record) {
 						// Added status to record
 						// If operation was insert, match placeholder to actual id
+					$uid = $id;
 					if (isset($tce->substNEWwithIDs[$id])) {
 						$uid = $tce->substNEWwithIDs[$id];
 						$record['tx_externalimport:status'] = 'insert';
 					} else {
-						$uid = $id;
 						$record['tx_externalimport:status'] = 'update';
 					}
 						// Restore additional fields, if any
@@ -817,7 +817,7 @@ class tx_externalimport_importer {
 						$fields['uid_local'] = $uid;
 						$fields['uid_foreign'] = $mmData['value'];
 						$fields['sorting'] = $counter;
-						$result = $GLOBALS['TYPO3_DB']->exec_INSERTquery($mmTable, $fields);
+						$GLOBALS['TYPO3_DB']->exec_INSERTquery($mmTable, $fields);
 					}
 				}
 			}
@@ -838,11 +838,10 @@ class tx_externalimport_importer {
 						$label = $row['details'];
 					}
 						// Substitute the first 5 items of extra data into the error message
+					$message = $label;
 					if (!empty($row['log_data'])) {
 						$data = unserialize($row['log_data']);
 						$message = sprintf($label, htmlspecialchars($data[0]), htmlspecialchars($data[1]), htmlspecialchars($data[2]), htmlspecialchars($data[3]), htmlspecialchars($data[4]));
-					} else {
-						$message = $label;
 					}
 					$this->messages['error'][] = $message;
 					if ($this->extConf['debug'] || TYPO3_DLOG) {
