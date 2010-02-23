@@ -564,14 +564,18 @@ class tx_externalimport_importer {
 				}
 
 					// Go through each record and assemble pairs of primary and foreign keys
+				$foreignValue = '';
 				foreach ($records as $theRecord) {
 					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
-					$foreignValue = '';
+						// Make sure not to keep the value from the previous iteration
+					unset($foreignValue);
+						// Get foreign value
 					if (isset($mmData['mapping']['value'])) {
 						$foreignValue = $mmData['mapping']['value'];
 					} elseif (isset($foreignMappings[$theRecord[$columnName]])) {
 						$foreignValue = $foreignMappings[$theRecord[$columnName]];
 					}
+						// If a value was found, use it
 					if (isset($foreignValue)) {
 						if (!isset($mappings[$columnName][$externalUid])) {
 							$mappings[$columnName][$externalUid] = array();
