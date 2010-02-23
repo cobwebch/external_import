@@ -557,6 +557,7 @@ class tx_externalimport_importer {
 				}
 
 					// Get foreign mapping for column
+				$foreignMappings = array();
 				if (!isset($mmData['mapping']['value'])) {
 					$mappingInformation = isset($mmData['mappings']['uid_foreign']) ? $mmData['mappings']['uid_foreign'] : $mmData['mapping'];
 					$foreignMappings = $this->getMapping($mappingInformation);
@@ -565,24 +566,24 @@ class tx_externalimport_importer {
 					// Go through each record and assemble pairs of primary and foreign keys
 				foreach ($records as $theRecord) {
 					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
+					$foreignValue = '';
 					if (isset($mmData['mapping']['value'])) {
 						$foreignValue = $mmData['mapping']['value'];
-					}
-					elseif (isset($foreignMappings[$theRecord[$columnName]])) {
+					} elseif (isset($foreignMappings[$theRecord[$columnName]])) {
 						$foreignValue = $foreignMappings[$theRecord[$columnName]];
 					}
 					if (isset($foreignValue)) {
 						if (!isset($mappings[$columnName][$externalUid])) {
 							$mappings[$columnName][$externalUid] = array();
-							// Initialise only if necessary
+								// Initialise only if necessary
 							if ($additionalFields || $mmData['multiple']) {
 								$fullMappings[$columnName][$externalUid] = array();
 							}
 						}
 
 							// If additional fields are defined, store those values in an intermediate array
+						$fields = array();
 						if ($additionalFields) {
-							$fields = array();
 							foreach ($mmData['additional_fields'] as $localFieldName => $externalFieldName) {
 								$fields[$localFieldName] = $theRecord[$externalFieldName];
 							}
@@ -598,8 +599,7 @@ class tx_externalimport_importer {
 									'additional_fields' => $fields
 								);
 							}
-						}
-						else {
+						} else {
 							$mappings[$columnName][$externalUid][] =  $foreignValue;
 							if ($additionalFields || $mmData['multiple']) {
 								$fullMappings[$columnName][$externalUid][] = array(
