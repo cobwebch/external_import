@@ -195,7 +195,11 @@ class tx_externalimport_importer {
 								break;
 						}
 						if ($this->extConf['debug'] || TYPO3_DLOG) {
-							t3lib_div::devLog('Data received (example)', $this->extKey, -1, $data);
+							$debugData = $data;
+							if (!empty($this->extConf['previewLimit'])) {
+								$debugData = array_slice($data, 0, $this->extConf['previewLimit']);
+							}
+							t3lib_div::devLog('Data received (sample)', $this->extKey, -1, $debugData);
 						}
 						$this->handleData($data);
 					}

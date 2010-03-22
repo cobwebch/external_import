@@ -10,6 +10,9 @@ reportEmail =
 # cat=basic/enable/; type=string; label=Subject of email report: Set a subject for the email report. Additional information will be appended to that subject (i.e. "Full synchronization" ou "Synchronization of table x, index y").
 reportSubject =
 
+# cat=basic/enable/; type=int; label=Preview/Debug limit: The number of rows to show while doing a preview. Set to 0 for showing all. This also affects the debugging output.
+previewLimit = 10
+
 # cat=basic/enable/; type=boolean; label=Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.
 debug = 0
 

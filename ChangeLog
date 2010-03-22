@@ -1,7 +1,12 @@
+2010-03-22  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added option to configure number of records in debug ouput (to be also used in preview)
+
 2010-02-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added full handling of user rights in BE module
 	* Added preemptive handling of user rights in importer script
+	* Fixed a bug with a missing initialization in foreign mappings
 
 2010-02-03  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
