@@ -1,6 +1,7 @@
 2010-03-22  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added option to configure number of records in debug ouput (to be also used in preview)
+	* Updated the manual
 
 2010-02-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
