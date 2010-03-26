@@ -1,3 +1,8 @@
+2010-03-26  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Raised status to stable
+	* Released to TER as version 1.0.0
+
 2010-03-22  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added option to configure number of records in debug ouput (to be also used in preview)
