@@ -1,3 +1,8 @@
+2010-04-27  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added callback of connector for post-process operations
+	* Added dependency on svconnector version 1.1.0 or above
+
 2010-03-26  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Raised status to stable

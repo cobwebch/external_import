@@ -202,6 +202,12 @@ class tx_externalimport_importer {
 							t3lib_div::devLog('Data received (sample)', $this->extKey, -1, $debugData);
 						}
 						$this->handleData($data);
+							// Call connector's post-processing with a rough error status
+						$errorStatus = FALSE;
+						if (count($this->messages['error']) > 0) {
+							$errorStatus = TRUE;
+						}
+						$connector->postProcessOperations($this->externalConfig['parameters'], $errorStatus);
 					}
 				}
 			}
