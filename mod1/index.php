@@ -589,7 +589,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	protected function saveTask() {
 		$content = '';
 			// If there was an input, register the event/task
-		$inputParameters = t3lib_div::GParrayMerged('tx_externalimport');
+		$inputParameters = t3lib_div::_GPmerged('tx_externalimport');
 		if (count($inputParameters) > 0) {
 			$hasError = false;
 			$errorMessages = '';
