@@ -1,3 +1,7 @@
+2010-06-23  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected bug in records order when import table uses sortby field
+
 2010-04-27  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added callback of connector for post-process operations

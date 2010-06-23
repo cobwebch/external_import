@@ -729,6 +729,12 @@ class tx_externalimport_importer {
 				$savedAdditionalFields[$theID] = $localAdditionalFields;
 			}
 		}
+			// If the table has a sorting field, reverse the data array,
+			// otherwise the first record will come last (because TCEmain
+			// itself inverts the incoming order)
+		if (!empty($this->tableTCA['ctrl']['sortby'])) {
+			$tceData[$this->table] = array_reverse($tceData[$this->table], TRUE);
+		}
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
 			t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
 		}
