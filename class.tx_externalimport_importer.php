@@ -100,7 +100,9 @@ class tx_externalimport_importer {
 
 			// Sort tables by priority (lower number is highest priority)
 		ksort($externalTables);
-		if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog($GLOBALS['LANG']->getLL('sync_all'), $this->extKey, 0, $externalTables);
+		if ($this->extConf['debug'] || TYPO3_DLOG) {
+			t3lib_div::devLog($GLOBALS['LANG']->getLL('sync_all'), $this->extKey, 0, $externalTables);
+		}
 
 			// Synchronise all tables
 		$allMessages = array();
@@ -134,8 +136,7 @@ class tx_externalimport_importer {
 			// This is either specific for the given table or generic from the extension configuration
 		if (isset($this->externalConfig['pid'])) {
 			$this->pid = $this->externalConfig['pid'];
-		}
-		else {
+		} else {
 			$this->pid = $this->extConf['storagePID'];
 		}
 			// Set this storage page as the related page for the devLog entries
@@ -182,6 +183,7 @@ class tx_externalimport_importer {
 
 						// The connection is established, get the data
 					} else {
+						$data = array();
 
 						switch ($this->externalConfig['data']) {
 							case 'xml':
