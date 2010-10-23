@@ -460,7 +460,7 @@ class tx_externalimport_importer {
 	 * This method is used to check whether the data is ok and import should continue
 	 * It performs a basic check on the minimum number of records expected (if defined),
 	 * but provides a hook for more refined tests.
-	 * 
+	 *
 	 * @param	array		$records: records containing the raw data (after preprocessRawData())
 	 * @return	boolean		True if data is valid and import should continue, false otherwise
 	 */
@@ -534,7 +534,7 @@ class tx_externalimport_importer {
 			// NOTE: as it is now, it is assumed that the imported data is denormalised
 			//
 			// NOTE2:	as long as we're looping on all columns, we assemble the list
-			//			of fields that are exclude from insert or update operations
+			//			of fields that are excluded from insert or update operations
 			//
 			// There's more to do than that:
 			//
@@ -704,7 +704,7 @@ class tx_externalimport_importer {
 
 				// Reference uid not found, perform an insert (if not disabled)
 			} elseif (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
-			
+
 					// First call a preprocessing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'])) {
 					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'] as $className) {
@@ -927,7 +927,14 @@ class tx_externalimport_importer {
 				$valueField = $mappingData['value_field'];
 			}
 			$fields = $mappingData['reference_field'] . ', ' . $valueField;
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], '1 = 1' . t3lib_BEfunc::deleteClause($mappingData['table']));
+				// Define where clause
+			$whereClause = '1 = 1';
+			if (!empty($mappingData['where_clause'])) {
+				$whereClause = $mappingData['where_clause'];
+			}
+			$whereClause .= t3lib_BEfunc::deleteClause($mappingData['table']);
+				// Query the table
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($fields, $mappingData['table'], $whereClause);
 
 				// Fill hash table
 			if ($res) {
@@ -994,7 +1001,7 @@ class tx_externalimport_importer {
 	/**
 	 * This method returns the extension's configuration
 	 * It is used to avoid reading it multiple times from the various components of this extension
-	 * 
+	 *
 	 * @return	array	The unserialized extension's configuration
 	 */
 	public function getExtensionConfiguration() {
