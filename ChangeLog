@@ -1,3 +1,7 @@
+2010-10-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released to TER as version 1.1.0
+
 2010-10-23  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added support for additional where clause in foreign mappings, resolves #9277
