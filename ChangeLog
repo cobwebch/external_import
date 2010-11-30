@@ -1,6 +1,7 @@
 2010-11-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected wrong extension key in suggestion list (thanks to Fabien Udriot)
+	* Corrected some wrong initializations in external_import configuration display (BE module)
 
 2010-10-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

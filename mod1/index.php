@@ -646,7 +646,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 	/**
 	 * This method deletes a given task and returns information about action completion
-	 * 
+	 *
 	 * @return	string	Result message to display
 	 */
 	protected function deleteTask() {
@@ -792,12 +792,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$table[$tr][] = $externalCtrlConfiguration['reference_uid'];
 		$tr++;
 			// PID information
-		$pid = $this->extConf['storagePID'];
-		if (isset($externalCtrlConfiguration['pid'])) {
+		$pid = 0;
+		if (isset($this->extConf['storagePID'])) {
+			$pid = $this->extConf['storagePID'];
+		} elseif (isset($externalCtrlConfiguration['pid'])) {
 			$pid = $externalCtrlConfiguration['pid'];
 		}
 		$table[$tr][] = $GLOBALS['LANG']->getLL('storage_pid');
-		$table[$tr][] = $this->getPageLink($pid);
+		$table[$tr][] = ($pid == 0) ? 0 : $this->getPageLink($pid);
 		$tr++;
 		$table[$tr][] = $GLOBALS['LANG']->getLL('enforce_pid');
 		$table[$tr][] = (empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->getLL('no') : $GLOBALS['LANG']->getLL('yes');
@@ -811,7 +813,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$table[$tr][] = (empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->getLL('none') : $externalCtrlConfiguration['disabledOperations'];
 		$tr++;
 		$table[$tr][] = $GLOBALS['LANG']->getLL('minimum_records');
-		$table[$tr][] = (empty($externalCtrlConfiguration['minimumRecords'])) ? '0' : $externalCtrlConfiguration['minimumRecords'];
+		$table[$tr][] = (empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : $externalCtrlConfiguration['minimumRecords'];
 		$tr++;
 
 			// Render general information
@@ -839,7 +841,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	/**
 	 * Dump a PHP array to a HTML table
 	 * (This is somewhat similar to t3lib_div::view_array() but with styling ;-)
-	 * 
+	 *
 	 * @param	array	$array: Array to display
 	 * @return	string	HTML table assembled from array
 	 */
@@ -864,7 +866,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	/**
 	 * This method takes a message and a severity level and returns an appropriate box
 	 * ready for display
-	 * 
+	 *
 	 * @param	string		$message: the message to display
 	 * @param	integer		$severity: severity of the message (-1 = ok, 0 = info, 1 = notice, 2 = warning, 3 = error)
 	 * @return	string		HTML to display
