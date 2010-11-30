@@ -132,7 +132,7 @@ class tx_externalimport_importer {
 		t3lib_div::loadTCA($this->table);
 		$this->tableTCA = $GLOBALS['TCA'][$this->table];
 		$this->externalConfig = $GLOBALS['TCA'][$this->table]['ctrl']['external'][$index];
-			// Set the pid where the recors will be stored
+			// Set the pid where the records will be stored
 			// This is either specific for the given table or generic from the extension configuration
 		if (isset($this->externalConfig['pid'])) {
 			$this->pid = $this->externalConfig['pid'];
