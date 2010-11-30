@@ -1,3 +1,7 @@
+2010-11-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected wrong extension key in suggestion list (thanks to Fabien Udriot)
+
 2010-10-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released to TER as version 1.1.0
