@@ -793,10 +793,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$tr++;
 			// PID information
 		$pid = 0;
-		if (isset($this->extConf['storagePID'])) {
-			$pid = $this->extConf['storagePID'];
-		} elseif (isset($externalCtrlConfiguration['pid'])) {
+		if (isset($externalCtrlConfiguration['pid'])) {
 			$pid = $externalCtrlConfiguration['pid'];
+		} elseif (isset($this->extConf['storagePID'])) {
+			$pid = $this->extConf['storagePID'];
 		}
 		$table[$tr][] = $GLOBALS['LANG']->getLL('storage_pid');
 		$table[$tr][] = ($pid == 0) ? 0 : $this->getPageLink($pid);
