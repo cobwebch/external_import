@@ -1,6 +1,7 @@
 2010-12-13  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added support for rich-text fields, resolves #11344
+	* Added support for exceptions thrown by connectors, resolves #11159
 
 2010-11-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

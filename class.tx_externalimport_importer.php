@@ -174,9 +174,10 @@ class tx_externalimport_importer {
 				if ($services === false) {
 					$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
 				} else {
+						/** @var $connector tx_svconnector_base */
 					$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
 
-						// The service was instatiated, but an error occurred while initiating the connection
+						// The service was instantiated, but an error occurred while initiating the connection
 						// If the returned value is an array, an error has occurred
 					if (is_array($connector)) {
 						$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_not_fetched');
@@ -185,25 +186,49 @@ class tx_externalimport_importer {
 					} else {
 						$data = array();
 
+							// A problem may happen while fetching the data
+							// If so, the import process has to be aborted
+						$abortImportProcess = FALSE;
 						switch ($this->externalConfig['data']) {
 							case 'xml':
-								$data = $connector->fetchXML($this->externalConfig['parameters']);
+								try {
+									$data = $connector->fetchXML($this->externalConfig['parameters']);
+								}
+								catch (Exception $e) {
+									$abortImportProcess = TRUE;
+									$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage());
+								}
 								break;
 							case 'array':
-								$data = $connector->fetchArray($this->externalConfig['parameters']);
+								try {
+									$data = $connector->fetchArray($this->externalConfig['parameters']);
+								}
+								catch (Exception $e) {
+									$abortImportProcess = TRUE;
+									$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage());
+								}
 								break;
 							default:
-								$data = $connector->fetchRaw($this->externalConfig['parameters']);
+								try {
+									$data = $connector->fetchRaw($this->externalConfig['parameters']);
+								}
+								catch (Exception $e) {
+									$abortImportProcess = TRUE;
+									$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage());
+								}
 								break;
 						}
-						if ($this->extConf['debug'] || TYPO3_DLOG) {
-							$debugData = $data;
-							if (!empty($this->extConf['previewLimit'])) {
-								$debugData = array_slice($data, 0, $this->extConf['previewLimit']);
+							// Continue, if the process was not marked as aborted
+						if (!$abortImportProcess) {
+							if ($this->extConf['debug'] || TYPO3_DLOG) {
+								$debugData = $data;
+								if (!empty($this->extConf['previewLimit'])) {
+									$debugData = array_slice($data, 0, $this->extConf['previewLimit']);
+								}
+								t3lib_div::devLog('Data received (sample)', $this->extKey, -1, $debugData);
 							}
-							t3lib_div::devLog('Data received (sample)', $this->extKey, -1, $debugData);
+							$this->handleData($data);
 						}
-						$this->handleData($data);
 							// Call connector's post-processing with a rough error status
 						$errorStatus = FALSE;
 						if (count($this->messages['error']) > 0) {

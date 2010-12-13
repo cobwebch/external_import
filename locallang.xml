@@ -13,7 +13,8 @@
 			<label index="no_connector">No connector defined. Cannot synchronise.</label>
 			<label index="no_service">No service available</label>
 			<label index="no_rights_for_sync">User %1$s doesn't have enough rights for synchronising table %2$s.</label>
-			<label index="data_not_fetched">Data could not be fetched</label>
+			<label index="data_not_fetched">Data could not be fetched (connector service not available)</label>
+			<label index="data_not_fetched_connector_error">Data could not be fetched (connector error: %s)</label>
 			<label index="records_inserted">%s new record(s) inserted</label>
 			<label index="records_updated">%s existing record(s) updated</label>
 			<label index="records_deleted">%s existing record(s) deleted</label>
@@ -51,7 +52,8 @@
 			<label index="no_connector">Aucun connecteur défini. Impossible de synchroniser.</label>
 			<label index="no_service">Aucun service disponible</label>
 			<label index="no_rights_for_sync">L'utilisateur %1$s n'a pas les droits suffisants pour synchroniser la table %2$s.</label>
-			<label index="data_not_fetched">Impossible d'obtenir les données</label>
+			<label index="data_not_fetched">Impossible d'obtenir les données (service de connexion pas disponible)</label>
+			<label index="data_not_fetched_connector_error">Impossible d'obtenir les données (erreur du service de connexion: %s)</label>
 			<label index="records_inserted">%s nouveaux enregistrement(s) inséré(s)</label>
 			<label index="records_updated">%s enregistrement(s) existant(s) mis à jour</label>
 			<label index="records_deleted">%s enregistrement(s) existant(s) supprimé(s)</label>
