@@ -408,9 +408,9 @@ class tx_externalimport_importer {
 						unset($records[$i][$columnName]);
 					}
 				}
-			}
+
 				// Otherwise apply constant value, if defined
-			elseif (isset($columnData['external'][$this->index]['value'])) {
+			} elseif (isset($columnData['external'][$this->index]['value'])) {
 				for ($i = 0; $i < $numRecords; $i++) {
 					$records[$i][$columnName] = $columnData['external'][$this->index]['value'];
 				}
