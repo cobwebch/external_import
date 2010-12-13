@@ -1,3 +1,7 @@
+2010-12-13  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added support for rich-text fields, resolves #11344
+
 2010-11-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected wrong extension key in suggestion list (thanks to Fabien Udriot)

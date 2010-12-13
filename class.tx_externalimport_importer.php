@@ -416,6 +416,13 @@ class tx_externalimport_importer {
 				}
 			}
 
+				// Add field for RTE transformation to each record, if column has RTE enabled
+			if (!empty($columnData['external'][$this->index]['rteEnabled'])) {
+				for ($i = 0; $i < $numRecords; $i++) {
+					$records[$i]['_TRANSFORM_' . $columnName] = 'RTE';
+				}
+			}
+
 				// Apply defined user function
 			if (isset($columnData['external'][$this->index]['userFunc'])) {
 					// Try to get the referenced class
