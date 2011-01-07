@@ -199,6 +199,7 @@ class tx_externalimport_importer {
 									$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage());
 								}
 								break;
+
 							case 'array':
 								try {
 									$data = $connector->fetchArray($this->externalConfig['parameters']);
@@ -208,14 +209,11 @@ class tx_externalimport_importer {
 									$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage());
 								}
 								break;
+
+								// If the data type is not defined, issue error and abort process
 							default:
-								try {
-									$data = $connector->fetchRaw($this->externalConfig['parameters']);
-								}
-								catch (Exception $e) {
-									$abortImportProcess = TRUE;
-									$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage());
-								}
+								$abortImportProcess = TRUE;
+								$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_type_not_defined');
 								break;
 						}
 							// Continue, if the process was not marked as aborted

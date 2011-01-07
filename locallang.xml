@@ -13,6 +13,7 @@
 			<label index="no_connector">No connector defined. Cannot synchronise.</label>
 			<label index="no_service">No service available</label>
 			<label index="no_rights_for_sync">User %1$s doesn't have enough rights for synchronising table %2$s.</label>
+			<label index="data_type_not_defined">Type of import data (array or xml) was not defined.</label>
 			<label index="data_not_fetched">Data could not be fetched (connector service not available)</label>
 			<label index="data_not_fetched_connector_error">Data could not be fetched (connector error: %s)</label>
 			<label index="records_inserted">%s new record(s) inserted</label>
