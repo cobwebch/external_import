@@ -388,7 +388,11 @@ class tx_externalimport_importer {
 				if (isset($columnData['external'][$this->index]['field'])) {
 					$node = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
 					if ($node->length > 0) {
-						$theData[$columnName] = $node->item(0)->nodeValue;
+						if (!empty($columnData['external'][$this->index]['attribute'])) {
+							$theData[$columnName] = $node->item(0)->attributes->getNamedItem($columnData['external'][$this->index]['attribute'])->nodeValue;
+						} else {
+							$theData[$columnName] = $node->item(0)->nodeValue;
+						}
 					}
 				}
 			}
