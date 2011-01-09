@@ -34,6 +34,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'constraints' => array(
 		'depends' => array(
 			'svconnector' => '1.1.0-0.0.0',
+			'php' => '5.1.0-0.0.0'
 		),
 		'conflicts' => array(
 		),

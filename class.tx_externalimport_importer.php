@@ -374,6 +374,7 @@ class tx_externalimport_importer {
 			// Load the XML into a DOM object
 		$dom = new DOMDocument();
 		$dom->loadXML($rawData);
+		$xPathObject = new DOMXPath($dom);
 
 			// Get the nodes that represent the root of each data record
 		$records = $dom->getElementsByTagName($this->externalConfig['nodetype']);
@@ -384,12 +385,24 @@ class tx_externalimport_importer {
 				// Loop on the database columns and get the corresponding value from the import data
 			foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 				if (isset($columnData['external'][$this->index]['field'])) {
-					$node = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
-					if ($node->length > 0) {
+					$nodeList = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
+					if ($nodeList->length > 0) {
+						/** @var $selectedNode DOMNode */
+						$selectedNode = $nodeList->item(0);
+							// If an XPath expression is defined, apply it (relative to currently selected node)
+						if (!empty($columnData['external'][$this->index]['xpath'])) {
+							$resultNodes = $xPathObject->evaluate($columnData['external'][$this->index]['xpath'], $selectedNode);
+							if ($resultNodes->length > 0) {
+								$selectedNode = $resultNodes->item(0);
+							}
+						}
+							// Get the named attribute, if defined
 						if (!empty($columnData['external'][$this->index]['attribute'])) {
-							$theData[$columnName] = $node->item(0)->attributes->getNamedItem($columnData['external'][$this->index]['attribute'])->nodeValue;
+							$theData[$columnName] = $selectedNode->attributes->getNamedItem($columnData['external'][$this->index]['attribute'])->nodeValue;
+
+							// Otherwise directly take the node's value
 						} else {
-							$theData[$columnName] = $node->item(0)->nodeValue;
+							$theData[$columnName] = $selectedNode->nodeValue;
 						}
 					}
 				}
