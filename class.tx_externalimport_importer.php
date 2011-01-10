@@ -219,10 +219,7 @@ class tx_externalimport_importer {
 							// Continue, if the process was not marked as aborted
 						if (!$abortImportProcess) {
 							if ($this->extConf['debug'] || TYPO3_DLOG) {
-								$debugData = $data;
-								if (!empty($this->extConf['previewLimit'])) {
-									$debugData = array_slice($data, 0, $this->extConf['previewLimit']);
-								}
+								$debugData = $this->prepareDataSample($data);
 								t3lib_div::devLog('Data received (sample)', $this->extKey, -1, $debugData);
 							}
 							$this->handleData($data);
@@ -275,6 +272,47 @@ class tx_externalimport_importer {
 			$this->logMessages();
 		}
 		return $this->messages;
+	}
+
+	/**
+	 * This method prepares a sample from the data to import, based on the preview limit
+	 * The process applied for this depends on the data type (array or XML)
+	 * 
+	 * @param	mixed	$data: the input data as a XML string or a PHP array
+	 * @return	array	The data sample, in same format as input (but written inside an array in case of XML data)
+	 */
+	protected function prepareDataSample($data) {
+		$dataSample	= $data;
+		if (!empty($this->extConf['previewLimit'])) {
+			switch ($this->externalConfig['data']) {
+				case 'xml':
+
+						// Load the XML into a DOM object
+					$dom = new DOMDocument();
+					$dom->loadXML($data);
+						// Prepare an empty DOM object for the sample data
+					$domSample = new DOMDocument();
+						// Define a root node
+					$element = $domSample->createElement('sample');
+					$domSample->appendChild($element);
+						// Get the desired nodes
+					$selectedNodes = $dom->getElementsByTagName($this->externalConfig['nodetype']);
+						// Loop until the preview limit and import selected nodes into the sample XML object
+					$loopLimit = min($selectedNodes->length, $this->extConf['previewLimit']);
+					for ($i = 0; $i < $loopLimit; $i++) {
+						$newNode = $domSample->importNode($selectedNodes->item($i), TRUE);
+						$domSample->documentElement->appendChild($newNode);
+					}
+						// Store the XML sample in an arrray, to have a common return format
+					$dataSample = array();
+					$dataSample[] = $domSample->saveXML();
+					break;
+				case 'array':
+					$dataSample = array_slice($data, 0, $this->extConf['previewLimit']);
+					break;
+			}
+		}
+		return $dataSample;
 	}
 
 	/**

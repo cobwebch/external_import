@@ -1,8 +1,15 @@
+2011-01-10  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected data sample creation for XML format, resolves #12028
+
+2011-01-09  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added support for XPath queries relative to selected nodes in XML data, resolves #12027
+
 2011-01-07  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added possibility to retrieve values from node attributes in XML data, resolves #12004
 	* Corrected import process to abort it when import data type is not defined, resolves #12001
-	* Added support for XPath queries relative to selected nodes in XML data, resolves #12027
 
 2010-12-13  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
