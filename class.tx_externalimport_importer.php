@@ -477,15 +477,7 @@ class tx_externalimport_importer {
 
 				// Get existing mappings and apply them to records
 			if (isset($columnData['external'][$this->index]['mapping'])) {
-				$mappings = $this->getMapping($columnData['external'][$this->index]['mapping']);
-				for ($i = 0; $i < $numRecords; $i++) {
-					$externalValue = $records[$i][$columnName];
-					if (isset($mappings[$externalValue])) {
-						$records[$i][$columnName] = $mappings[$externalValue];
-					} else {
-						unset($records[$i][$columnName]);
-					}
-				}
+				$records = $this->mapData($records, $columnName, $columnData['external'][$this->index]['mapping']);
 
 				// Otherwise apply constant value, if defined
 			} elseif (isset($columnData['external'][$this->index]['value'])) {
@@ -506,7 +498,7 @@ class tx_externalimport_importer {
 					// Try to get the referenced class
 				$userObject = t3lib_div::getUserObj($columnData['external'][$this->index]['userFunc']['class']);
 					// Could not instantiate the class, log error and do nothing
-				if ($userObject === false) {
+				if ($userObject === FALSE) {
 					if ($this->extConf['debug'] || TYPO3_DLOG) {
 						t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('invalid_userfunc'), $columnData['external'][$this->index]['userFunc']['class']), $this->extKey, 2, $columnData['external'][$this->index]['userFunc']);
 					}
@@ -522,6 +514,79 @@ class tx_externalimport_importer {
 			}
 		}
 		return $records;
+	}
+
+	/**
+	 * This method takes the records and applies a mapping to a selected column
+	 *
+	 * @param	array	$records: original records to handle
+	 * @param	string	$columnName: name of the column whose values must be mapped
+	 * @param	array	$mappingInformation: mapping configuration
+	 * @return	array	The records with the mapped values
+	 */
+	protected function mapData($records, $columnName, $mappingInformation) {
+		$mappings = $this->getMapping($mappingInformation);
+		$numRecords = count($records);
+			// If no particular matching method is defined, match exactly on the keys of the mapping table
+		if (empty($mappingInformation['match_method'])) {
+			for ($i = 0; $i < $numRecords; $i++) {
+				$externalValue = $records[$i][$columnName];
+				if (isset($mappings[$externalValue])) {
+					$records[$i][$columnName] = $mappings[$externalValue];
+
+					// If unmatched, remove the value
+				} else {
+					unset($records[$i][$columnName]);
+				}
+			}
+
+			// If a particular mapping method is defined, use it on the keys of the mapping table
+		} else {
+			if ($mappingInformation['match_method'] == 'strpos' || $mappingInformation['match_method'] == 'stripos') {
+				for ($i = 0; $i < $numRecords; $i++) {
+					$externalValue = $records[$i][$columnName];
+						// Try matching the value. If matching fails, unset it.
+					try {
+						$records[$i][$columnName] = $this->matchSingleField($externalValue, $mappingInformation, $mappings);
+					}
+					catch (Exception $e) {
+						unset($records[$i][$columnName]);
+					}
+				}
+			}
+		}
+		return $records;
+	}
+
+	/**
+	 * This method tries to match a single value to a table of mappings
+	 *
+	 * @param	mixed	$externalValue: the value to match
+	 * @param	array	$mappingInformation: mapping configuration
+	 * @param	array	$mappingTable: value map
+	 * @return	mixex	The matched value
+	 */
+	protected function matchSingleField($externalValue, $mappingInformation, $mappingTable) {
+		$returnValue = '';
+		$function = $mappingInformation['match_method'];
+		if (!empty($externalValue)) {
+			$hasMatch = FALSE;
+			foreach ($mappingTable as $key => $value) {
+				$hasMatch = ($function($key, $externalValue) !== FALSE);
+				if (!empty($mappingInformation['match_symmetric'])) {
+					$hasMatch |= ($function($externalValue, $key) !== FALSE);
+				}
+				if ($hasMatch) {
+					$returnValue = $value;
+					break;
+				}
+			}
+				// If unmatched, throw exception
+			if (!$hasMatch) {
+				throw new Exception('Unmatched value ' . $externalValue, 1294739120);
+			}
+		}
+		return $returnValue;
 	}
 
 	/**
@@ -666,9 +731,25 @@ class tx_externalimport_importer {
 					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
 						// Make sure not to keep the value from the previous iteration
 					unset($foreignValue);
+
 						// Get foreign value
+						// First is a simple value
 					if (isset($mmData['mapping']['value'])) {
 						$foreignValue = $mmData['mapping']['value'];
+
+						// Next is "soft" matching method to mapping table
+					} elseif (!empty($mmData['mapping']['mapping_method'])) {
+						if ($mmData['mapping']['match_method'] == 'strpos' || $mmData['mapping']['match_method'] == 'stripos') {
+								// Try matching the value. If matching fails, unset it.
+							try {
+								$foreignValue = $this->matchSingleField($theRecord[$columnName], $mmData['mapping'], $foreignMappings);
+							}
+							catch (Exception $e) {
+								// Nothing to do, foreign value must stay "unset"
+							}
+						}
+
+						// Last is "strict" matching method to mapping table
 					} elseif (isset($foreignMappings[$theRecord[$columnName]])) {
 						$foreignValue = $foreignMappings[$theRecord[$columnName]];
 					}

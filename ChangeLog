@@ -1,3 +1,7 @@
+2011-01-11  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added softer matching methods to value mappings, resolves #12090
+
 2011-01-10  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected data sample creation for XML format, resolves #12028
