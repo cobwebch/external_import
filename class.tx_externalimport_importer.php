@@ -277,7 +277,7 @@ class tx_externalimport_importer {
 	/**
 	 * This method prepares a sample from the data to import, based on the preview limit
 	 * The process applied for this depends on the data type (array or XML)
-	 * 
+	 *
 	 * @param	mixed	$data: the input data as a XML string or a PHP array
 	 * @return	array	The data sample, in same format as input (but written inside an array in case of XML data)
 	 */
@@ -1061,6 +1061,9 @@ class tx_externalimport_importer {
 		$where = '1 = 1';
 		if ($this->externalConfig['enforcePid']) {
 			$where = "pid = '" . $this->pid . "'";
+		}
+		if (!empty($this->externalConfig['where_clause'])) {
+			$where .= ' AND ' . $this->externalConfig['where_clause'];
 		}
 		$where .= t3lib_BEfunc::deleteClause($this->table);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'] . ',uid', $this->table, $where);

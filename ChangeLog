@@ -1,3 +1,7 @@
+2011-01-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added SQL condition to restrict the set of records being acted upon during import, resolves #10676
+
 2011-01-11  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added softer matching methods to value mappings, resolves #12090

@@ -809,6 +809,9 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$table[$tr][] = (empty($externalCtrlConfiguration['additional_fields'])) ? '-' : $externalCtrlConfiguration['additional_fields'];
 		$tr++;
 			// Control options
+		$table[$tr][] = $GLOBALS['LANG']->getLL('where_clause');
+		$table[$tr][] = (empty($externalCtrlConfiguration['where_clause'])) ? $GLOBALS['LANG']->getLL('none') : $externalCtrlConfiguration['where_clause'];
+		$tr++;
 		$table[$tr][] = $GLOBALS['LANG']->getLL('disabled_operations');
 		$table[$tr][] = (empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->getLL('none') : $externalCtrlConfiguration['disabledOperations'];
 		$tr++;
