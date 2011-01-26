@@ -52,7 +52,7 @@ class tx_externalimport_importer {
 	 */
 	public function __construct() {
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
-		$this->messages = array('error' => array(), 'warning' => array(), 'success' => array());
+		$this->messages = array(t3lib_FlashMessage::ERROR => array(), t3lib_FlashMessage::WARNING => array(), t3lib_FlashMessage::OK => array());
 
 			// Make sure we have a language object
 			// If initialised, use existing, if not, initialise it
@@ -108,7 +108,7 @@ class tx_externalimport_importer {
 		$allMessages = array();
 		foreach ($externalTables as $tables) {
 			foreach ($tables as $tableData) {
-				$this->messages = array('error' => array(), 'warning' => array(), 'success' => array()); // Reset error messages array
+				$this->messages = array(t3lib_FlashMessage::ERROR => array(), t3lib_FlashMessage::WARNING => array(), t3lib_FlashMessage::OK => array()); // Reset error messages array
 				$messages = $this->synchronizeData($tableData['table'], $tableData['index']);
 				$key = $tableData['table'] . '/' .$tableData['index'];
 				$allMessages[$key] = $messages;
@@ -356,7 +356,7 @@ class tx_externalimport_importer {
 
 			// Import was aborted, issue warning message
 		} else {
-			$this->addMessage($GLOBALS['LANG']->getLL('importAborted'), 'warning');
+			$this->addMessage($GLOBALS['LANG']->getLL('importAborted'), t3lib_FlashMessage::WARNING);
 		}
 	}
 
@@ -1042,13 +1042,13 @@ class tx_externalimport_importer {
 				// to get a realistic number of new records
 			$inserts = $inserts + ($numberOfNewIDs - $inserts);
 				// Add a warning that numbers reported (below) may not be accurate
-			$this->messages['warning'][] = $GLOBALS['LANG']->getLL('things_happened');
+			$this->messages[t3lib_FlashMessage::WARNING][] = $GLOBALS['LANG']->getLL('things_happened');
 		}
 
 			// Set informational messages
-		$this->messages['success'][] = sprintf($GLOBALS['LANG']->getLL('records_inserted'), $inserts);
-		$this->messages['success'][] = sprintf($GLOBALS['LANG']->getLL('records_updated'), $updates);
-		$this->messages['success'][] = sprintf($GLOBALS['LANG']->getLL('records_deleted'), $deletes);
+		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_inserted'), $inserts);
+		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_updated'), $updates);
+		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_deleted'), $deletes);
 	}
 
 	/**
@@ -1125,9 +1125,9 @@ class tx_externalimport_importer {
 		$severity = -1;
 
 			// Define severity based on types of messages
-		if (count($this->messages['error']) > 0) {
+		if (count($this->messages[t3lib_FlashMessage::ERROR]) > 0) {
 			$severity = 3;
-		} elseif (count($this->messages['warning']) > 0) {
+		} elseif (count($this->messages[t3lib_FlashMessage::WARNING]) > 0) {
 			$severity = 2;
 		}
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
@@ -1185,7 +1185,7 @@ class tx_externalimport_importer {
 	 * @param	string		$status: status of the message. Expected is "success", "warning" or "error"
 	 * @return	void
 	 */
-	public function addMessage($text, $status = 'error') {
+	public function addMessage($text, $status = t3lib_FlashMessage::ERROR) {
 		if (!empty($text)) {
 			$this->messages[$status][] = $text;
 		}
