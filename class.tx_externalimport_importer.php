@@ -1031,7 +1031,7 @@ class tx_externalimport_importer {
 						$data = unserialize($row['log_data']);
 						$message = sprintf($label, htmlspecialchars($data[0]), htmlspecialchars($data[1]), htmlspecialchars($data[2]), htmlspecialchars($data[3]), htmlspecialchars($data[4]));
 					}
-					$this->messages['error'][] = $message;
+					$this->messages[t3lib_FlashMessage::ERROR][] = $message;
 					if ($this->extConf['debug'] || TYPO3_DLOG) {
 						t3lib_div::devLog($message, $this->extKey, 3);
 					}

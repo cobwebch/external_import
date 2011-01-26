@@ -45,6 +45,7 @@
 			<label index="scheduler.description">This task can be used to set up automated executions of external imports, be it for all tables in one go or for a single table.</label>
 			<label index="allTables">All tables</label>
 			<label index="tableAndIndex">Table: %1$s, index: %2$s</label>
+			<label index="moreMessages">There were actually %d messages, but only the first five are displayed here. Please check your logs for more information.</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="all">Tous</label>
@@ -84,6 +85,7 @@
 			<label index="scheduler.description">Cette tâche peut être utilisée pour automatiser l'exécution des imports externes, soit pour toutes les tables d'un coup, soit pour une table donnée.</label>
 			<label index="allTables">Toutes les tables</label>
 			<label index="tableAndIndex">Table: %1$s, index: %2$s</label>
+			<label index="moreMessages">Il y avait en tout %d messages, mais seuls les cinq premiers sont affichés ici. Veuillez consulter les journaux du système pour plus d'informations.</label>
 		</languageKey>
 	</data>
 </T3locallang>

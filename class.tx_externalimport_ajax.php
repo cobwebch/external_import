@@ -48,11 +48,33 @@ class tx_externalimport_ajax {
 			// Render messages and pass them as a response
 		$response = '';
 		foreach ($messages as $severity => $messageList) {
-			foreach ($messageList as $aMessage) {
+			$numMessages = count($messageList);
+			$originalNumMessages = $numMessages;
+				// Check if there are lots of errors or warnings (which is perfectly possible)
+				// We can't let too many messages through, because the AJAX response will be too large and the AJAX call will appear as having failed
+				// Limit to 5 and set flag to issue additional message
+			$hasTooManyMessages = FALSE;
+			if (($severity == t3lib_FlashMessage::ERROR || $severity == t3lib_FlashMessage::WARNING) && ($numMessages > 5)) {
+				$numMessages = 5;
+				$hasTooManyMessages = TRUE;
+			}
+			for ($i = 0; $i < $numMessages; $i++) {
 				/** @var $messageObject t3lib_FlashMessage */
 				$messageObject = t3lib_div::makeInstance(
 					't3lib_FlashMessage',
-					$aMessage,
+					$messageList[$i],
+					'',
+					$severity
+				);
+				$response .= $messageObject->render();
+			}
+				// If there were too many messages, issue a new message to that effect
+			if ($hasTooManyMessages) {
+				/** @var $messageObject t3lib_FlashMessage */
+				$message = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:moreMessages'), $originalNumMessages);
+				$messageObject = t3lib_div::makeInstance(
+					't3lib_FlashMessage',
+					$message,
 					'',
 					$severity
 				);
