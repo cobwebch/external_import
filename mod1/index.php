@@ -115,8 +115,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$this->doc->JScodeArray[] .= '
 				var LOCALAPP = {
 					ajaxUrl : \'' . $GLOBALS['BACK_PATH'] . 'ajax.php\',
-					syncRunningIcon : \'<img src="../res/icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
-					syncStoppedIcon : \'<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" />\',
+					syncRunningIcon : \'<img src="../res/icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" title="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
+					syncStoppedIcon : \'<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" />\',
 					running : \'' . $GLOBALS['LANG']->getLL('running') . '\',
 					imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('add_sync') . '" />\',
 					imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\',
@@ -329,7 +329,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					// Action icons
 				$syncIcon = $spaceIcon;
 				if ($tableData['writeAccess']) {
-					$syncIcon = '<span id="container' . $tr . '"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" onclick="syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')" /></span>';
+					$syncIcon = '<span id="container' . $tr . '" onclick="syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" /></span>';
 				}
 				$elementID = 'info' . $tr;
 				$infoIcon = '<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" title="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" onclick="toggleElement(\'' . $elementID . '\');" />';
