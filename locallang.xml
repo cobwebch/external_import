@@ -46,6 +46,7 @@
 			<label index="allTables">All tables</label>
 			<label index="tableAndIndex">Table: %1$s, index: %2$s</label>
 			<label index="moreMessages">There were actually %d messages, but only the first five are displayed here. Please check your logs for more information.</label>
+			<label index="exceptionOccurred">A problem occurred. The following error was returned: %1$s (Exception code: %2$d).</label>
 		</languageKey>
 		<languageKey index="fr" type="array">
 			<label index="all">Tous</label>
@@ -86,6 +87,7 @@
 			<label index="allTables">Toutes les tables</label>
 			<label index="tableAndIndex">Table: %1$s, index: %2$s</label>
 			<label index="moreMessages">Il y avait en tout %d messages, mais seuls les cinq premiers sont affichés ici. Veuillez consulter les journaux du système pour plus d'informations.</label>
+			<label index="exceptionOccurred">Un problème est survenu. Le message d'erreur est: %1$s (code d'exception: %2$d).</label>
 		</languageKey>
 	</data>
 </T3locallang>

@@ -44,7 +44,18 @@ class tx_externalimport_ajax {
 		$theTable = t3lib_div::_GP('table');
 		$theIndex = t3lib_div::_GP('index');
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
-		$messages = $importer->synchronizeData($theTable, $theIndex);
+		$messages = array();
+
+			// Try synchronizing the table
+			// Catch the exception, if any, and issue it as a proper error message
+		try {
+			$messages = $importer->synchronizeData($theTable, $theIndex);
+		}
+		catch (Exception $e) {
+			$messages[t3lib_FlashMessage::ERROR] = array();
+			$messages[t3lib_FlashMessage::ERROR][] = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:exceptionOccurred'), $e->getMessage(), $e->getCode());
+		}
+
 			// Render messages and pass them as a response
 		$response = '';
 		foreach ($messages as $severity => $messageList) {
