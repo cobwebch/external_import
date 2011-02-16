@@ -474,6 +474,12 @@ class tx_externalimport_importer {
 
 			// Loop on all tables to find any defined transformations. This might be mappings and/or user functions
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
+				// If the column's content must be trimmed, apply trim to all records
+			if (!empty($columnData['external'][$this->index]['trim'])) {
+				for ($i = 0; $i < $numRecords; $i++) {
+					$records[$i][$columnName] = trim($records[$i][$columnName]);
+				}
+			}
 
 				// Get existing mappings and apply them to records
 			if (isset($columnData['external'][$this->index]['mapping'])) {

@@ -1,3 +1,7 @@
+2011-02-16  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added property for trimming input data, resolves #12666
+
 2011-01-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added SQL condition to restrict the set of records being acted upon during import, resolves #10676
