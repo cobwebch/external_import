@@ -17,4 +17,4 @@ previewLimit = 10
 debug = 0
 
 # cat=basic/enable/; type=boolean; label=Clean AJAX output: When using the BE module, AJAX calls are made to the external import script. If it issues warnings, the AJAX response will be corrupted. This cleans up the AJAX response by flushing any output produced by the external import script. Not used in TYPO3 4.3 and above (output is always flushed).
-flushOutput = 1
+flushOutput = 0

@@ -1,3 +1,7 @@
+2011-02-17  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Changed value of flushOutput configuration option to off
+
 2011-02-16  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added property for trimming input data, resolves #12666
