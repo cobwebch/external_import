@@ -3,25 +3,29 @@
  *
  * $Id$
  */
-//Ext.namespace('ExternalImport');
+Ext.namespace('TYPO3.ExternalImport');
+
+/**
+ * This function reacts when a click event happens on an "external information" button
+ * It fetches some hidden HTML content and displays it in a MessageBox
+ *
+ * @param e EventObject
+ */
+TYPO3.ExternalImport.showExternalImportInformation = function(e) {
+	var content = Ext.get(e.getTarget().id + '-content');
+	Ext.MessageBox.show({
+		title: 'External configuration',
+		msg: content.dom.innerHTML,
+		buttons: Ext.MessageBox.OK
+	});
+}
+
+// TODO: change title to use centrally loaded localized labels (requires 4.5)
+// TODO: change MessageBox to use TYPO3-specific boxes, probably InformationDialog (no need for buttons then) (requires 4.5)
 
 Ext.onReady(function() {
 		// Add listener to "external information" icons
-	Ext.select('img.external-information').on('click', showExternalImportInformation);
-	/**
-	 * This function reacts when a click event happens on an "external information" button
-	 * It fetches some hidden HTML content and displays it in a MessageBox
-	 *
-	 * @param e EventObject
-	 */
-	function showExternalImportInformation(e) {
-		var content = Ext.get(e.getTarget().id + '-content');
-		Ext.MessageBox.show({
-			title: 'External configuration',
-			msg: content.dom.innerHTML,
-			buttons: Ext.MessageBox.OK
-		});
-	}
+	Ext.select('img.external-information').on('click', TYPO3.ExternalImport.showExternalImportInformation);
 });
 
 /**
