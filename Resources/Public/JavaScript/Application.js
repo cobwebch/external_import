@@ -3,7 +3,26 @@
  *
  * $Id$
  */
-//Ext.namespace('TYPO3.ExternalImport');
+//Ext.namespace('ExternalImport');
+
+Ext.onReady(function() {
+		// Add listener to "external information" icons
+	Ext.select('img.external-information').on('click', showExternalImportInformation);
+	/**
+	 * This function reacts when a click event happens on an "external information" button
+	 * It fetches some hidden HTML content and displays it in a MessageBox
+	 *
+	 * @param e EventObject
+	 */
+	function showExternalImportInformation(e) {
+		var content = Ext.get(e.getTarget().id + '-content');
+		Ext.MessageBox.show({
+			title: 'External configuration',
+			msg: content.dom.innerHTML,
+			buttons: Ext.MessageBox.OK
+		});
+	}
+});
 
 /**
  * This function responds to calls for launching the synchronisation of a table
@@ -30,20 +49,6 @@ function syncTable(theID, theTable, theIndex) {
 			Ext.fly('container' + theID).update(LOCALAPP.syncStoppedIcon);
 		}
 	});
-}
-
-/**
- * This function turns on or off the display of an element
- *
- * @param theID ID of the element to toggle
- */
-function toggleElement(theID) {
-	theElement = Ext.get(theID)
-	if (theElement.isDisplayed()) {
-		theElement.setDisplayed(false);
-	} else {
-		theElement.setDisplayed(true);
-	}
 }
 
 /**

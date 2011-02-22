@@ -332,8 +332,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					$syncIcon = '<span id="container' . $tr . '" onclick="syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" /></span>';
 				}
 				$elementID = 'info' . $tr;
-				$infoIcon = '<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" title="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" onclick="toggleElement(\'' . $elementID . '\');" />';
-				$infoIcon .= '<div id="' . $elementID . '" style="width: 410px; display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
+				$infoIcon = '<img class="external-information" id="' . $elementID . '" ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" title="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" />';
+					// Assemble the external import configuration information, but keep it hidden
+					// It is fetched via JavaScript upon clicking the above icon and displayed inside a MessageBox
+				$infoIcon .= '<div id="' . $elementID . '-content" style="display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
 				$table[$tr][] = $syncIcon . $infoIcon;
 					// Action result
 					// Prepare only if at least one table may be synchronized
