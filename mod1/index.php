@@ -335,7 +335,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$infoIcon = '<img class="external-information" id="' . $elementID . '" ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" title="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" />';
 					// Assemble the external import configuration information, but keep it hidden
 					// It is fetched via JavaScript upon clicking the above icon and displayed inside a MessageBox
-				$infoIcon .= '<div id="' . $elementID . '-content" style="display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
+				$infoIcon .= '<div id="' . $elementID . '-content" style="display: none;"><div stlye="overflow: scroll;">' . $this->displayExternalInformation($tableData) . '</div></div>';
 				$table[$tr][] = $syncIcon . $infoIcon;
 					// Action result
 					// Prepare only if at least one table may be synchronized
@@ -729,6 +729,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			// Prepare columns mapping information
 		t3lib_div::loadTCA($tableData['tablename']);
 		$columnsConfiguration = $GLOBALS['TCA'][$tableData['tablename']]['columns'];
+		ksort($columnsConfiguration);
 		$table = array();
 		$tr = 0;
 		foreach ($columnsConfiguration as $column => $columnData) {
