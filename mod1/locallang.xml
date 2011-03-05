@@ -28,9 +28,11 @@
 			<label index="storage_pid">Storage page</label>
 			<label index="jump_to_page">Jump to page</label>
 			<label index="enforce_pid">Enforce PID</label>
+			<label index="disableLog">Disable logging</label>
 			<label index="where_clause">SQL restriction</label>
 			<label index="yes">Yes</label>
 			<label index="no">No</label>
+			<label index="undefined">Not defined</label>
 			<label index="additional_fields">Additional fields</label>
 			<label index="disabled_operations">Disabled operations</label>
 			<label index="none">None</label>
@@ -98,9 +100,11 @@
 			<label index="storage_pid">Page de stockage</label>
 			<label index="jump_to_page">Aller à la page</label>
 			<label index="enforce_pid">Respecter le PID</label>
+			<label index="disableLog">Désactiver la journalisation</label>
 			<label index="where_clause">Restriction SQL</label>
 			<label index="yes">Oui</label>
 			<label index="no">Non</label>
+			<label index="undefined">Non défini</label>
 			<label index="additional_fields">Champs supplémentaires</label>
 			<label index="disabled_operations">Opérations désactivées</label>
 			<label index="none">Aucune</label>

@@ -16,5 +16,8 @@ previewLimit = 10
 # cat=basic/enable/; type=boolean; label=Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.
 debug = 0
 
+# cat=basic/enable/; type=boolean; label=Disable logging: Check to disable logging by TCEmain. Recommended if you don't need to keep close track of the import process.
+disableLog = 0
+
 # cat=basic/enable/; type=boolean; label=Clean AJAX output: When using the BE module, AJAX calls are made to the external import script. If it issues warnings, the AJAX response will be corrupted. This cleans up the AJAX response by flushing any output produced by the external import script. Not used in TYPO3 4.3 and above (output is always flushed).
 flushOutput = 0

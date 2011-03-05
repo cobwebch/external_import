@@ -912,8 +912,17 @@ class tx_externalimport_importer {
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
 			t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
 		}
+			// Create an instance of TCEmain and process the data
+			/** @var $tce t3lib_TCEmain */
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
+			// Check if TCEmain logging should be turned on or off
+		$disableLogging = (empty($this->extConf['debug']['disableLog'])) ? FALSE : TRUE;
+		if (isset($this->externalConfig['disableLog'])) {
+			$disableLogging = (empty($this->externalConfig['disableLog'])) ? FALSE : TRUE;
+		}
+		$tce->enableLogging = !$disableLogging;
+			// Load the data and process it
 		$tce->start($tceData, array());
 		$tce->process_datamap();
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
@@ -959,7 +968,7 @@ class tx_externalimport_importer {
 			$deletes = 0;
 		} else {
 			$absentUids = array_diff($existingUids, $updatedUids);
-				// Call a preprocessing hook
+				// Call a pre-processing hook
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'] as $className) {
 					$preProcessor = &t3lib_div::getUserObj($className);
@@ -975,7 +984,7 @@ class tx_externalimport_importer {
 				if ($this->extConf['debug'] || TYPO3_DLOG) t3lib_div::devLog('TCEmain commands', $this->extKey, 0, $tceCommands);
 				$tce->start(array(), $tceCommands);
 				$tce->process_cmdmap();
-					// Call a postprocessing hook
+					// Call a post-processing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['cmdmapPostProcess'])) {
 					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['cmdmapPostProcess'] as $className) {
 						$postProcessor = &t3lib_div::getUserObj($className);

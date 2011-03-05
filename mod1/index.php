@@ -804,6 +804,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$table[$tr][] = $GLOBALS['LANG']->getLL('enforce_pid');
 		$table[$tr][] = (empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->getLL('no') : $GLOBALS['LANG']->getLL('yes');
 		$tr++;
+		$table[$tr][] = $GLOBALS['LANG']->getLL('disableLog');
+		if (isset($externalCtrlConfiguration['disableLog'])) {
+			$value = (empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->getLL('no') : $GLOBALS['LANG']->getLL('yes');
+		} else {
+			$value = $GLOBALS['LANG']->getLL('undefined');
+		}
+		$table[$tr][] = $value;
+		$tr++;
 			// Additional fields
 		$table[$tr][] = $GLOBALS['LANG']->getLL('additional_fields');
 		$table[$tr][] = (empty($externalCtrlConfiguration['additional_fields'])) ? '-' : $externalCtrlConfiguration['additional_fields'];
