@@ -1,3 +1,7 @@
+2011-03-08  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released version 1.2.0
+
 2011-03-05  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added possibility to disable TCEmain logging, resolves #10663
