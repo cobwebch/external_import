@@ -49,6 +49,13 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	protected $extConf; // Extension configuration
 
 	/**
+	 * API of $this->pageRendererObject can be found at
+	 *
+	 * @var t3lib_PageRenderer
+	 */
+	protected $pageRendererObject;
+
+	/**
 	 * Initialise the module
 	 * @return	void
 	 */
@@ -87,7 +94,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 		// Access check!
 		// The page will show only if there is a valid page and if this page may be viewed by the user
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
+		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
 
 		if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id) || ($BE_USER->user['uid'] && !$this->id))	{
@@ -95,134 +102,28 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				// Draw the header.
 			$this->doc = t3lib_div::makeInstance('template');
 			$this->doc->backPath = $GLOBALS['BACK_PATH'];
-
-				// JavaScript
-			$this->doc->JScode = '
-				<script language="javascript" type="text/javascript">
-					script_ended = 0;
-					function jumpToUrl(URL)	{
-						document.location = URL;
-					}
-				</script>
-			';
+			$this->pageRendererObject = $this->doc->getPageRenderer();
 
 				// Add JavaScript for AJAX call to synchronise method
 				// When the call returns, the code also handles the display of the response messages
-				// Additionnally an animated icon and a message are displayed with the sync is running to provide visual feedback
+				// Additionally an animated icon and a message are displayed with the sync is running to provide visual feedback
+			$this->pageRendererObject->loadExtJS();
+//			$this->pageRendererObject->enableExtJsDebug();
 
-				// Code for TYPO3 4.2
-			if (t3lib_div::compat_version('4.2')) {
-				$this->doc->loadJavascriptLib('contrib/prototype/prototype.js');
-				$this->doc->loadJavascriptLib('js/common.js');
-				$this->doc->JScode .= '
-					<script language="javascript" type="text/javascript">
-						var syncRunningIcon = \'<img src="../res/icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\';
-						var syncStoppedIcon = \'<img '.(t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif')) . ' alt="'.$GLOBALS['LANG']->getLL('synchronise') . '" border="0" />\';
-						function syncTable(theID, theTable, theIndex) {
-							$("result" + theID).update("'.$GLOBALS['LANG']->getLL('running').'");
-							$("link" + theID).update(syncRunningIcon);
-							new Ajax.Request("' . $GLOBALS['BACK_PATH'] . 'ajax.php", {
-								method: "get",
-								parameters: {
-									"ajaxID": "externalimport::synchronizeExternalTable",
-									"table" : theTable,
-									"index": theIndex
-								},
-								onComplete: function(xhr) {
-										var response = xhr.responseText.evalJSON();
-										var messages = "";
-										if (response["error"]) {
-											for (i = 0; i < response["error"].length; i++) {
-												messages = messages + "<p style=\"padding: 4px; background-color: #f00; color: #fff;\">'.$GLOBALS['LANG']->getLL('error').': " + response["error"][i] + "</p>";
-											}
-										}
-										if (response["warning"]) {
-											for (i = 0; i < response["warning"].length; i++) {
-												messages = messages + "<p style=\"padding: 4px; background-color: #f60; color: #fff;\">'.$GLOBALS['LANG']->getLL('warning').': " + response["warning"][i] + "</p>";
-											}
-										}
-										if (response["success"]) {
-											for (i = 0; i < response["success"].length; i++) {
-												messages = messages + "<p style=\"padding: 4px; background-color: #0f0; color: #000;\">" + response["success"][i] + "</p>";
-											}
-										}
-										$("result" + theID).update(messages);
-										$("link" + theID).update(syncStoppedIcon);
-								}.bind(this),
-								onT3Error: function(xhr) {
-									$("result" + theID).update("'.$GLOBALS['LANG']->getLL('failed').'");
-								}.bind(this)
-							});
-						}
-					</script>
-				';
-			} else {
-				// Code for TYPO3 4.1
 
-				$ajaxURL = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://') . t3lib_div::getThisUrl() . '../tx_externalimport_ajaxhandler.php';
-				$this->doc->JScode .= '<script type="text/javascript" src="../res/prototype.js"></script>'."\n";
-				$this->doc->JScode .= '
-					<script language="javascript" type="text/javascript">
-						var syncRunningIcon = \'<img src="../res/icons/refresh_animated.gif" alt="'.$GLOBALS['LANG']->getLL('running_synchronisation').'" border="0" />\';
-						var syncStoppedIcon = \'<img '.(t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="'.$GLOBALS['LANG']->getLL('synchronise') . '" border="0" />\';
-						function syncTable(theID, theTable, theIndex) {
-							$("result" + theID).update("'.$GLOBALS['LANG']->getLL('running').'");
-							$("link" + theID).update(syncRunningIcon);
-							new Ajax.Request("'.$ajaxURL.'",
-								{
-									method: "get",
-									parameters: {
-										"function": "synchronizeExternalTable",
-										"table": theTable,
-										"index": theIndex
-									},
-									onSuccess: function(transport) {
-										var response = transport.responseText.evalJSON();
-										var messages = "";
-										if (response["error"]) {
-											for (i = 0; i < response["error"].length; i++) {
-												messages = messages + "<p style=\"padding: 4px; background-color: #f00; color: #fff;\">'.$GLOBALS['LANG']->getLL('error').': " + response["error"][i] + "</p>";
-											}
-										}
-										if (response["warning"]) {
-											for (i = 0; i < response["warning"].length; i++) {
-												messages = messages + "<p style=\"padding: 4px; background-color: #f60; color: #fff;\">'.$GLOBALS['LANG']->getLL('warning').': " + response["warning"][i] + "</p>";
-											}
-										}
-										if (response["success"]) {
-											for (i = 0; i < response["success"].length; i++) {
-												messages = messages + "<p style=\"padding: 4px; background-color: #0f0; color: #000;\">" + response["success"][i] + "</p>";
-											}
-										}
-										$("result" + theID).update(messages);
-									},
-									onFailure: function() {$("result" + theID).update("'.$GLOBALS['LANG']->getLL('failed').'");},
-									onComplete: function() {$("link" + theID).update(syncStoppedIcon);}
-								}
-							);
-						}
-					</script>
-				';
-			}
 				// Additional JavaScript for showing/hiding the synchronisation form
 			$this->doc->JScodeArray[] .= '
-					var LOCALAPP = {
-						imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />\',
-						imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" />\',
-						imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />\',
-						imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" />\',
-						showSyncForm_add : \'' . $GLOBALS['LANG']->getLL('add_sync') . '\',
-						showSyncForm_edit : \'' . $GLOBALS['LANG']->getLL('edit_sync') . '\',
-						hideSyncForm : \'' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '\'
-					};';
-			$this->doc->JScode .= '<script type="text/javascript" src="' . $GLOBALS['BACK_PATH'] . t3lib_extMgm::extRelPath($GLOBALS['MCONF']['extKey']) . 'res/tx_externalimport.js"></script>'."\n";
-
-			$this->doc->postCode='
-				<script language="javascript" type="text/javascript">
-					script_ended = 1;
-					if (top.fsMod) top.fsMod.recentIds["web"] = 0;
-				</script>
-			';
+				var LOCALAPP = {
+					ajaxUrl : \'' . $GLOBALS['BACK_PATH'] . 'ajax.php\',
+					syncRunningIcon : \'<img src="../res/icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" title="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
+					syncStoppedIcon : \'<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" />\',
+					running : \'' . $GLOBALS['LANG']->getLL('running') . '\',
+					imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('add_sync') . '" />\',
+					imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\',
+					imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('edit_sync') . '" />\',
+					imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\'
+				};';
+			$this->pageRendererObject->addJsFile('../Resources/Public/JavaScript/Application.js', 'text/javascript', FALSE);
 
 			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
 			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
@@ -238,7 +139,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 			// ShortCut
 			if ($BE_USER->mayMakeShortcut())	{
-				$this->content .= $this->doc->spacer(20).$this->doc->section('',$this->doc->makeShortcutIcon('id',implode(',',array_keys($this->MOD_MENU)),$this->MCONF['name']));
+				$this->content .= $this->doc->spacer(20) . $this->doc->section('', $this->doc->makeShortcutIcon('id', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name']));
 			}
 
 			$this->content .= $this->doc->spacer(10);
@@ -428,11 +329,13 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					// Action icons
 				$syncIcon = $spaceIcon;
 				if ($tableData['writeAccess']) {
-					$syncIcon = '<a href="javascript:syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')" id="link' . $tr . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" border="0" /></a>';
+					$syncIcon = '<span id="container' . $tr . '" onclick="syncTable(\'' . $tr . '\', \'' . $tableName . '\', \'' . $tableIndex . '\')"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" /></span>';
 				}
 				$elementID = 'info' . $tr;
-				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
-				$infoIcon .= '<div id="' . $elementID . '" style="width: 410px; display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
+				$infoIcon = '<img class="external-information" id="' . $elementID . '" ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" title="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" />';
+					// Assemble the external import configuration information, but keep it hidden
+					// It is fetched via JavaScript upon clicking the above icon and displayed inside a MessageBox
+				$infoIcon .= '<div id="' . $elementID . '-content" style="display: none;"><div stlye="overflow: scroll;">' . $this->displayExternalInformation($tableData) . '</div></div>';
 				$table[$tr][] = $syncIcon . $infoIcon;
 					// Action result
 					// Prepare only if at least one table may be synchronized
@@ -713,16 +616,16 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$action = '';
 			if (isset($data['uid'])) {
 				$label = $GLOBALS['LANG']->getLL('edit_sync');
-				$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" />';
+				$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" title="' . $label . '" />';
 				$action = 'edit';
 			} else {
 				$label = $GLOBALS['LANG']->getLL('add_sync');
-				$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" />';
+				$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" title="' . $label . '" />';
 				$action = 'add';
 			}
-			$editIcon = '<a href="#" onclick="toggleSyncForm(\'' . $idAttribute . '\', \'' . $action . '\'); return false;" id="' . $idAttribute . '_link" title="' . $label . '">';
+			$editIcon = '<span id="' . $idAttribute . '_container" onclick="toggleSyncForm(\'' . $idAttribute . '\', \'' . $action . '\');">';
 			$editIcon .= $icon;
-			$editIcon .= '</a>';
+			$editIcon .= '</span>';
 			$form .= $editIcon;
 				// Add an icon for toggling edit form
 			if (isset($data['uid'])) {
@@ -834,6 +737,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			// Prepare columns mapping information
 		t3lib_div::loadTCA($tableData['tablename']);
 		$columnsConfiguration = $GLOBALS['TCA'][$tableData['tablename']]['columns'];
+		ksort($columnsConfiguration);
 		$table = array();
 		$tr = 0;
 		foreach ($columnsConfiguration as $column => $columnData) {

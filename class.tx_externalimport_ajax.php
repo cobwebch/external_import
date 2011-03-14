@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2010 Francois Suter (Cobweb) <typo3@cobweb.ch>
+*  (c) 2007-2011 Francois Suter (Cobweb) <typo3@cobweb.ch>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -22,8 +22,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once(t3lib_extMgm::extPath('external_import') . 'class.tx_externalimport_importer.php');
-
 /**
  * This class answers to AJAX calls from the 'external_import' extension
  *
@@ -36,32 +34,6 @@ require_once(t3lib_extMgm::extPath('external_import') . 'class.tx_externalimport
 class tx_externalimport_ajax {
 
 	/**
-	 * This method executes the method requested by the AJAX call and returns the result
-	 * This method will not be needed anymore when switching to TYPO3 4.2
-	 *
-	 * @return	array	list of messages ordered by status (error, warning, success)
-	 */
-	public function execute() {
-		$method = t3lib_div::_GP('function');
-		$messages = array();
-
-		if (!empty($method)) {
-
-				// Call method with dummy parameters
-			$messages = $this->$method(array(), $this);
-
-				// Encode messages in UTF-8 to prepare for JSON encoding
-			foreach ($messages as $status => $messageList) {
-				$numMessages = count($messageList);
-				for ($i = 0; $i < $numMessages; $i++) {
-					$messages[$status][$i] = utf8_encode($messages[$status][$i]);
-				}
-			}
-		}
-		return $messages;
-	}
-
-	/**
 	 * This method answers to the AJAX call and starts the synchronisation of a given table
 	 *
 	 * @param	array		$params: empty array passed by TYPO3's AJAX dispatcher
@@ -72,18 +44,56 @@ class tx_externalimport_ajax {
 		$theTable = t3lib_div::_GP('table');
 		$theIndex = t3lib_div::_GP('index');
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
-		$messages = $importer->synchronizeData($theTable, $theIndex);
+		$messages = array();
 
-			// Pre-TYPO3 4.2 calling method
-		if (get_class($ajaxObj) == 'tx_externalimport_ajax') {
-			return $messages;
+			// Try synchronizing the table
+			// Catch the exception, if any, and issue it as a proper error message
+		try {
+			$messages = $importer->synchronizeData($theTable, $theIndex);
+		}
+		catch (Exception $e) {
+			$messages[t3lib_FlashMessage::ERROR] = array();
+			$messages[t3lib_FlashMessage::ERROR][] = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:exceptionOccurred'), $e->getMessage(), $e->getCode());
 		}
 
-			// TYPO3 4.2 and later calling method
-		else {
-			$ajaxObj->setContentFormat('json');
-			$ajaxObj->setContent($messages);
+			// Render messages and pass them as a response
+		$response = '';
+		foreach ($messages as $severity => $messageList) {
+			$numMessages = count($messageList);
+			$originalNumMessages = $numMessages;
+				// Check if there are lots of errors or warnings (which is perfectly possible)
+				// We can't let too many messages through, because the AJAX response will be too large and the AJAX call will appear as having failed
+				// Limit to 5 and set flag to issue additional message
+			$hasTooManyMessages = FALSE;
+			if (($severity == t3lib_FlashMessage::ERROR || $severity == t3lib_FlashMessage::WARNING) && ($numMessages > 5)) {
+				$numMessages = 5;
+				$hasTooManyMessages = TRUE;
+			}
+			for ($i = 0; $i < $numMessages; $i++) {
+				/** @var $messageObject t3lib_FlashMessage */
+				$messageObject = t3lib_div::makeInstance(
+					't3lib_FlashMessage',
+					$messageList[$i],
+					'',
+					$severity
+				);
+				$response .= $messageObject->render();
+			}
+				// If there were too many messages, issue a new message to that effect
+			if ($hasTooManyMessages) {
+				/** @var $messageObject t3lib_FlashMessage */
+				$message = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:moreMessages'), $originalNumMessages);
+				$messageObject = t3lib_div::makeInstance(
+					't3lib_FlashMessage',
+					$message,
+					'',
+					$severity
+				);
+				$response .= $messageObject->render();
+			}
 		}
+		$ajaxObj->setContentFormat('json');
+		$ajaxObj->setContent(array('content' => $response));
 	}
 }
 ?>
