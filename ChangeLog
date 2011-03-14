@@ -1,3 +1,7 @@
+2011-03-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Dropped Gabriel support, resolves #13834
+
 2011-03-08  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released version 1.2.0
