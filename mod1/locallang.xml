@@ -50,6 +50,7 @@
 			<label index="full_autosync">Automatic complete synchronisation</label>
 			<label index="autosync_intro">It is possible to define a frequency for the automatic synchronisation of &lt;strong&gt;all external tables&lt;/strong&gt;.</label>
 			<label index="autosync_error">Automatic synchronisation of external tables is not possible, because neither extension "gabriel", nor system extension "scheduler" (TYPO3 4.3+) are installed.</label>
+			<label index="autosync_noscheduler">Automatic synchronisation of external tables is not possible, because the system extension "scheduler" is not installed.</label>
 			<label index="start_date">Start date:</label>
 			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
 			<label index="frequency">Frequency:</label>
@@ -122,6 +123,7 @@
 			<label index="full_autosync">Synchronisation automatique complète</label>
 			<label index="autosync_intro">Il est possible de définir une fréquence pour la synchronisation automatique de &lt;strong&gt;toutes tables externes&lt;/strong&gt;.</label>
 			<label index="autosync_error">La synchronisation automatique des tables externes n'est pas possible, car ni l'extension "gabriel", ni l'extension système "scheduler" ne sont installées.</label>
+			<label index="autosync_noscheduler">La synchronisation automatique des tables externes n'est pas possible, car l'extension extension système "scheduler" n'est pas installée.</label>
 			<label index="start_date">Date de début:</label>
 			<label index="start_date_help">(laissez vide pour une activation immédiate; format: aaaa-mm-jj hh:mm:ss)</label>
 			<label index="frequency">Fréquence:</label>

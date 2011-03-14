@@ -32,7 +32,7 @@
  *
  * $Id$
  */
-class tx_externalimport_autosync_wrapper_scheduler extends tx_externalimport_autosync_wrapper {
+class tx_externalimport_autosync_wrapper_scheduler {
 	/**
 	 * @var	string	Name of the related task class
 	 */
@@ -107,7 +107,7 @@ class tx_externalimport_autosync_wrapper_scheduler extends tx_externalimport_aut
 
 	/**
 	 * This method removes the registration of a given task
-	 * 
+	 *
 	 * @param	integer		$uid: primary key of the task to remove
 	 * @return	boolean		True or false depending on success or failure of action
 	 */

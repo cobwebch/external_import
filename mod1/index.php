@@ -31,8 +31,6 @@ $LANG->includeLLFile('EXT:external_import/mod1/locallang.xml');
 require_once(PATH_t3lib . 'class.t3lib_scbase.php');
 $BE_USER->modAccess($MCONF, 1);	// This checks permissions and exits if the users has no permission for entry.
 
-require_once(t3lib_extMgm::extPath('external_import', 'autosync/class.tx_externalimport_autosync_factory.php'));
-
 /**
  * Module 'External Data Import' for the 'external_import' extension.
  *
@@ -44,9 +42,17 @@ require_once(t3lib_extMgm::extPath('external_import', 'autosync/class.tx_externa
  */
 class tx_externalimport_module1 extends t3lib_SCbase {
 	public $pageinfo;
-	protected $schedulingObject; // Instance of either tx_gabriel or tx_scheduler
-	protected $hasSchedulingTool = false;
-	protected $extConf; // Extension configuration
+	/** @var boolean $hasSchedulingTool */
+	protected $hasSchedulingTool = FALSE;
+	/** @var array $extConf */
+	protected $extConf;
+
+	/**
+	 * Reference to a Scheduler object
+	 *
+	 * @var tx_scheduler $schedulingObject
+	 */
+	protected $schedulingObject;
 
 	/**
 	 * API of $this->pageRendererObject can be found at
@@ -61,9 +67,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	public function init()	{
 		parent::init();
-			// Check if either gabriel or scheduler are available
-		if (t3lib_extMgm::isLoaded('gabriel', false) || t3lib_extMgm::isLoaded('scheduler', false)) {
-			$this->hasSchedulingTool = true;
+			// Check if the scheduler are available
+			// (stored to avoid running the same call several times)
+		if (t3lib_extMgm::isLoaded('scheduler', FALSE)) {
+			$this->hasSchedulingTool = TRUE;
 		}
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
 	}
@@ -92,8 +99,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	public function main()	{
 		global $BE_USER;
 
-		// Access check!
-		// The page will show only if there is a valid page and if this page may be viewed by the user
+			// Access check!
+			// The page will show only if there is a valid page and if this page may be viewed by the user
 		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
 
@@ -203,17 +210,12 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$deleteResult = '';
 		$existingTasks = array();
 
-			// Get a Gabriel/Scheduler wrapper depending on extension installed, if any is available
+			// Get an instance of the Scheduler wrapper class
 		if ($this->hasSchedulingTool) {
 				/**
-				 * @var	tx_externalimport_autosync_wrapper
+				 * @var	tx_externalimport_autosync_wrapper_scheduler
 				 */
-			$this->schedulingObject = null;
-			if (t3lib_extMgm::isLoaded('gabriel', false)) {
-				$this->schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('gabriel');
-			} else {
-				$this->schedulingObject = tx_externalimport_autosync_factory::getAutosyncWrapper('scheduler');
-			}
+			$this->schedulingObject = t3lib_div::makeInstance('tx_externalimport_autosync_wrapper_scheduler');
 
 			if ($this->CMD == 'delete') {
 				$deleteResult = $this->deleteTask();
