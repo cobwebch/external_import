@@ -1,4 +1,8 @@
-2011-03-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2011-03-15  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added support for self-referential mappings, resolves #13852
+
+ 2011-03-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Dropped Gabriel support, resolves #13834
 

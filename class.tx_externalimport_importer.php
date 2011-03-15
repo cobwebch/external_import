@@ -43,6 +43,14 @@ class tx_externalimport_importer {
 	protected $pid = 0; // uid of the page where the records will be stored
 	protected $additionalFields = array(); // List of fields to import, but not to save
 	protected $numAdditionalFields = 0; // Number of such fields
+	/**
+	 * @var array $temporaryKeys list of temporary keys created on the fly for new records. Used in TCEmain data map.
+	 */
+	protected $temporaryKeys = array();
+	/**
+	 * @var int $newKeysCounter simple counter for generating the temporary keys
+	 */
+	protected $newKeysCounter = 0;
 
 	/**
 	 * This is the constructor
@@ -535,18 +543,53 @@ class tx_externalimport_importer {
 		$numRecords = count($records);
 			// If no particular matching method is defined, match exactly on the keys of the mapping table
 		if (empty($mappingInformation['match_method'])) {
+				// Determine if mapping is self-referential
+				// Self-referential mappings cause a problem, because they may refer to a record that is not yet
+				// in the database, but is part of the import. In this case we need to create a temporary ID for that
+				// record and store it in order to reuse it when assembling the TCEmain data map (in storeData()).
+			$isSelfReferencing = FALSE;
+			if ($mappingInformation['table'] == $this->table) {
+				$isSelfReferencing = TRUE;
+			}
+
 			for ($i = 0; $i < $numRecords; $i++) {
 				$externalValue = $records[$i][$columnName];
-				if (isset($mappings[$externalValue])) {
-					$records[$i][$columnName] = $mappings[$externalValue];
-
-					// If unmatched, remove the value
-				} else {
+					// If the external value is empty, don't even try to map it. Otherwise, proceed.
+				if (empty($externalValue)) {
 					unset($records[$i][$columnName]);
+				} else {
+					if (isset($mappings[$externalValue])) {
+						$records[$i][$columnName] = $mappings[$externalValue];
+
+						// Value is not matched
+					} else {
+							// If the relation is self-referential, use a temporary key
+						if ($isSelfReferencing) {
+								// Check if a temporary key was already created for that external key
+							if (isset($this->temporaryKeys[$externalValue])) {
+								$temporaryKey = $this->temporaryKeys[$externalValue];
+
+								// If not, create a new temporary key
+							} else {
+								$this->newKeysCounter++;
+								$temporaryKey = 'NEW_' . $this->newKeysCounter;
+								$this->temporaryKeys[$externalValue] = $temporaryKey;
+							}
+								// Use temporary key
+							$records[$i][$columnName] = $temporaryKey;
+
+							// If the relation is not self-referential, the mapping does not point to an existing value,
+							// unset it
+						} else {
+							unset($records[$i][$columnName]);
+						}
+					}
 				}
 			}
 
 			// If a particular mapping method is defined, use it on the keys of the mapping table
+			// NOTE: self-referential relations are not checked in this case, as it does not seem to make sense
+			// to have weak-matching external keys
 		} else {
 			if ($mappingInformation['match_method'] == 'strpos' || $mappingInformation['match_method'] == 'stripos') {
 				for ($i = 0; $i < $numRecords; $i++) {
@@ -821,8 +864,6 @@ class tx_externalimport_importer {
 
 			// Insert or update records depending on existing uids
 		$updates = 0;
-		$inserts = 0;
-		$deletes = 0;
 		$updatedUids = array();
 		$handledUids = array();
 		$tceData = array($this->table => array());
@@ -830,7 +871,10 @@ class tx_externalimport_importer {
 		foreach ($records as $theRecord) {
 			$localAdditionalFields = array();
 			$externalUid = $theRecord[$this->externalConfig['reference_uid']];
-			if (in_array($externalUid, $handledUids)) continue; // Skip handling of already handled records (this can happen with denormalised structures)
+				// Skip handling of already handled records (this can happen with denormalized structures)
+			if (in_array($externalUid, $handledUids)) {
+				continue;
+			}
 			$handledUids[] = $externalUid;
 
 				// Prepare MM-fields, if any
@@ -854,7 +898,7 @@ class tx_externalimport_importer {
 			$theID = '';
 				// Reference uid is found, perform an update (if not disabled)
 			if (isset($existingUids[$externalUid]) && !t3lib_div::inList($this->externalConfig['disabledOperations'], 'update')) {
-					// First call a preprocessing hook
+					// First call a pre-processing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'])) {
 					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'] as $className) {
 						$preProcessor = &t3lib_div::getUserObj($className);
@@ -877,7 +921,7 @@ class tx_externalimport_importer {
 				// Reference uid not found, perform an insert (if not disabled)
 			} elseif (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {
 
-					// First call a preprocessing hook
+					// First call a pre-processing hook
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'])) {
 					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'] as $className) {
 						$preProcessor = &t3lib_div::getUserObj($className);
@@ -893,8 +937,14 @@ class tx_externalimport_importer {
 				}
 
 				$theRecord['pid'] = $this->pid;
-				$inserts++;
-				$theID = 'NEW_' . $inserts;
+					// If a temporary key was already defined, use it, otherwise create a new one.
+					// Temporary keys may exist if self-referential mapping was handled beforehand (see mapData())
+				if (isset($this->temporaryKeys[$externalUid])) {
+					$theID = $this->temporaryKeys[$externalUid];
+				} else {
+					$this->newKeysCounter++;
+					$theID = 'NEW_' . $this->newKeysCounter;
+				}
 				$tceData[$this->table][$theID] = $theRecord;
 			}
 				// Store local additional fields into general additional fields array
@@ -917,7 +967,7 @@ class tx_externalimport_importer {
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
 			// Check if TCEmain logging should be turned on or off
-		$disableLogging = (empty($this->extConf['debug']['disableLog'])) ? FALSE : TRUE;
+		$disableLogging = (empty($this->extConf['disableLog'])) ? FALSE : TRUE;
 		if (isset($this->externalConfig['disableLog'])) {
 			$disableLogging = (empty($this->externalConfig['disableLog'])) ? FALSE : TRUE;
 		}
@@ -1055,9 +1105,11 @@ class tx_externalimport_importer {
 			}
 				// Substract the number of new IDs from the number of inserts,
 				// to get a realistic number of new records
-			$inserts = $inserts + ($numberOfNewIDs - $inserts);
+			$inserts = $this->newKeysCounter + ($numberOfNewIDs - $this->newKeysCounter);
 				// Add a warning that numbers reported (below) may not be accurate
 			$this->messages[t3lib_FlashMessage::WARNING][] = $GLOBALS['LANG']->getLL('things_happened');
+		} else {
+			$inserts = $numberOfNewIDs;
 		}
 
 			// Set informational messages
