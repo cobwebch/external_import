@@ -22,13 +22,8 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-unset($MCONF);
-require_once('conf.php');
-require_once($BACK_PATH . 'init.php');
-require_once($BACK_PATH . 'template.php');
-
 $LANG->includeLLFile('EXT:external_import/mod1/locallang.xml');
-require_once(PATH_t3lib . 'class.t3lib_scbase.php');
+//require_once(PATH_t3lib . 'class.t3lib_scbase.php');
 $BE_USER->modAccess($MCONF, 1);	// This checks permissions and exits if the users has no permission for entry.
 
 /**
@@ -62,10 +57,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	protected $pageRendererObject;
 
 	/**
-	 * Initialise the module
+	 * Initializes the Module
 	 * @return	void
 	 */
-	public function init()	{
+	function init()	{
 		parent::init();
 			// Check if the scheduler are available
 			// (stored to avoid running the same call several times)
@@ -76,11 +71,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	}
 
 	/**
-	 * Add items to the ->MOD_MENU array. Used for the function menu selector.
+	 * Adds items to the ->MOD_MENU array. Used for the function menu selector.
 	 *
 	 * @return	void
 	 */
-	public function menuConfig()	{
+	function menuConfig()	{
 		$this->MOD_MENU = array(
 			'function' => array(
 				'sync' => $GLOBALS['LANG']->getLL('function_sync'),
@@ -94,9 +89,9 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * Main function of the module. Write the content to $this->content
 	 * If you chose "web" as main module, you will need to consider the $this->id parameter which will contain the uid-number of the page clicked in the page tree
 	 *
-	 * @return	void
+	 * @return	[type]		...
 	 */
-	public function main()	{
+	function main()	{
 		global $BE_USER;
 
 			// Access check!
@@ -104,25 +99,34 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
 
+			// initialize doc
+		$this->doc = t3lib_div::makeInstance('template');
+		$this->doc->setModuleTemplate(t3lib_extMgm::extPath('external_import') . 'Resources/Private/Templates/module.html');
+		$this->doc->backPath = $GLOBALS['BACK_PATH'];
+		$this->pageRendererObject = $this->doc->getPageRenderer();
+		$docHeaderButtons = $this->getButtons();
+
 		if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id) || ($BE_USER->user['uid'] && !$this->id))	{
+				// Draw the form
+			$this->doc->form = '<form action="" method="post" enctype="multipart/form-data">';
 
-				// Draw the header.
-			$this->doc = t3lib_div::makeInstance('template');
-			$this->doc->backPath = $GLOBALS['BACK_PATH'];
-			$this->pageRendererObject = $this->doc->getPageRenderer();
-
-				// Add JavaScript for AJAX call to synchronise method
-				// When the call returns, the code also handles the display of the response messages
-				// Additionally an animated icon and a message are displayed with the sync is running to provide visual feedback
+				// Base JavaScript
+			$this->doc->JScode = '
+				<script language="javascript" type="text/javascript">
+					function jumpToUrl(URL)	{
+						document.location = URL;
+					}
+				</script>
+			';
+				// Load ExtJS library
 			$this->pageRendererObject->loadExtJS();
 //			$this->pageRendererObject->enableExtJsDebug();
 
-
-				// Additional JavaScript for showing/hiding the synchronisation form
+				// Dynamically define some global JS values
 			$this->doc->JScodeArray[] .= '
 				var LOCALAPP = {
 					ajaxUrl : \'' . $GLOBALS['BACK_PATH'] . 'ajax.php\',
-					syncRunningIcon : \'<img src="../res/icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" title="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
+					syncRunningIcon : \'<img src="' . t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" title="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
 					syncStoppedIcon : \'<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" />\',
 					running : \'' . $GLOBALS['LANG']->getLL('running') . '\',
 					imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('add_sync') . '" />\',
@@ -130,38 +134,25 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('edit_sync') . '" />\',
 					imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\'
 				};';
-			$this->pageRendererObject->addJsFile('../Resources/Public/JavaScript/Application.js', 'text/javascript', FALSE);
-
-			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
-			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
-			$this->content .= $this->doc->spacer(5);
-			$this->content .= '<form name="menuForm" action="" method="POST">' . $this->doc->section('', $this->doc->funcMenu('', t3lib_BEfunc::getFuncMenu($this->id, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']))) . '</form>';
-			$this->content .= '</form>';
-			$this->content .= $this->doc->divider(5);
-
-
-			// Render content:
+				// Load application specific JS
+			$this->pageRendererObject->addJsFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/JavaScript/Application.js', 'text/javascript', FALSE);
+				// Render content:
 			$this->moduleContent();
-
-
-			// ShortCut
-			if ($BE_USER->mayMakeShortcut())	{
-				$this->content .= $this->doc->spacer(20) . $this->doc->section('', $this->doc->makeShortcutIcon('id', implode(',', array_keys($this->MOD_MENU)), $this->MCONF['name']));
-			}
-
-			$this->content .= $this->doc->spacer(10);
-		}
-		else {
+		} else {
 				// If no access or if ID == zero
-
-			$this->doc = t3lib_div::makeInstance('mediumDoc');
-			$this->doc->backPath = $GLOBALS['BACK_PATH'];
-
-			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
-			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL('title'));
-			$this->content .= $this->doc->spacer(5);
 			$this->content .= $this->doc->spacer(10);
 		}
+
+			// Compile document
+		$markers['FUNC_MENU'] = t3lib_BEfunc::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
+		$markers['CONTENT'] = $this->content;
+
+			// Build the <body> for the module
+		$this->content = $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
+		$this->content.= $this->doc->moduleBody($this->pageinfo, $docHeaderButtons, $markers);
+		$this->content.= $this->doc->endPage();
+		$this->content = $this->doc->insertStylesAndJS($this->content);
+
 	}
 
 	/**
@@ -169,33 +160,53 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 *
 	 * @return	void
 	 */
-	public function printContent()	{
-
+	function printContent()	{
 		$this->content .= $this->doc->endPage();
 		echo $this->content;
 	}
 
 	/**
-	 * Generate the module's content
+	 * Generates the module content
 	 *
 	 * @return	void
 	 */
-	public function moduleContent() {
+	function moduleContent()	{
 		switch((string)$this->MOD_SETTINGS['function'])	{
 
-// List tables that receive external data from the outside
-// (i.e. cannot be synchronised from the BE)
-
+				// List tables that receive external data from the outside
+				// (i.e. cannot be synchronised from the BE)
 			case 'nosync':
 				$this->listOtherTables();
 				break;
 
-// Default view is the list of all external tables that can be synchronised
-
+				// Default view is the list of all external tables that can be synchronised
 			default:
 				$this->listSynchronizedTables();
 				break;
 		}
+	}
+
+
+	/**
+	 * Create the panel of buttons for submitting the form or otherwise perform operations.
+	 *
+	 * @return	array	all available buttons as an assoc. array
+	 */
+	protected function getButtons()	{
+
+		$buttons = array(
+			'csh' => '',
+			'shortcut' => '',
+		);
+			// CSH
+		$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_func', '', $GLOBALS['BACK_PATH']);
+
+			// Shortcut
+		if ($GLOBALS['BE_USER']->mayMakeShortcut())	{
+			$buttons['shortcut'] = $this->doc->makeShortcutIcon('', 'function', $this->MCONF['name']);
+		}
+
+		return $buttons;
 	}
 
 	/**
@@ -224,7 +235,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				// Save a task registration, if any
 			$saveResult = $this->saveTask();
 
-				// Get all the registred tasks
+				// Get all the registered tasks
 			$existingTasks = $this->schedulingObject->getAllTasks();
 		}
 
@@ -270,9 +281,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			// Sort tables by priority (lower number is highest priority)
 		usort($externalTables, array('tx_externalimport_module1', 'prioritySort'));
 
-
 			// Prepare table to display list of external tables
-		$tableList = '';
 		if (count($externalTables) == 0) {
 			$tableList = '<p>' . $GLOBALS['LANG']->getLL('external_tables_none') . '</p>';
 		}
@@ -280,15 +289,15 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 				// First initialise the table layout
 			$tableLayout = array (
-								'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
-								'0' => array (
-									'tr' => array('<tr class="bgColor2">', '</tr>'),
-								),
-								'defRow' => array (
-									'tr' => array('<tr class="bgColor3-20" valign="top">', '</tr>'),
-									'defCol' => array('<td>', '</td>'),
-								)
-							);
+				'table' => array ('<table class="typo3-dblist">', '</table>'),
+				'0' => array (
+					'tr' => array('<tr class="t3-row-header">', '</tr>'),
+				),
+				'defRow' => array (
+					'tr' => array('<tr class="db_list_normal" valign="top">', '</tr>'),
+					'defCol' => array('<td>', '</td>'),
+				)
+			);
 
 			$table = array();
 
@@ -374,6 +383,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$content .= $this->doc->spacer(10);
 		$content .= $tableList;
 		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('external_tables'), $content, 0, 1);
+		$this->content .= $this->doc->spacer(10);
 
 			// Display form for automatic synchronisation
 		$this->displayAutoSyncSection(isset($existingTasks['all']) ? $existingTasks['all'] : array(), $hasAllWriteAccess);
@@ -388,7 +398,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	protected function listOtherTables() {
 
-			// Get list of all non-synchronisable tables and extract general information about them
+			// Get list of all non-synchronizable tables and extract general information about them
 		$externalTables = array();
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
 				// Check if table has external info and user has read-rights on it
@@ -408,22 +418,21 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		ksort($externalTables);
 
 			// Prepare the list of tables
-		$tableList = '';
 		if (count($externalTables) == 0) {
 			$tableList = '<p>' . $GLOBALS['LANG']->getLL('nosync_tables_none') . '</p>';
 		} else {
 
 				// Initialise the table layout
 			$tableLayout = array (
-								'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width:auto;">', '</table>'),
-								'0' => array (
-									'tr' => array('<tr class="bgColor2">', '</tr>'),
-								),
-								'defRow' => array (
-									'tr' => array('<tr class="bgColor3-20" valign="top">', '</tr>'),
-									'defCol' => array('<td>', '</td>'),
-								)
-							);
+				'table' => array ('<table class="typo3-dblist">', '</table>'),
+				'0' => array (
+					'tr' => array('<tr class="t3-row-header">', '</tr>'),
+				),
+				'defRow' => array (
+					'tr' => array('<tr class="db_list_normal" valign="top">', '</tr>'),
+					'defCol' => array('<td>', '</td>'),
+				)
+			);
 
 			$table = array();
 
