@@ -917,7 +917,7 @@ class tx_externalimport_importer {
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
 			// Check if TCEmain logging should be turned on or off
-		$disableLogging = (empty($this->extConf['debug']['disableLog'])) ? FALSE : TRUE;
+		$disableLogging = (empty($this->extConf['disableLog'])) ? FALSE : TRUE;
 		if (isset($this->externalConfig['disableLog'])) {
 			$disableLogging = (empty($this->externalConfig['disableLog'])) ? FALSE : TRUE;
 		}

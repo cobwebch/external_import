@@ -1,3 +1,8 @@
+2011-03-17  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected bug with disabling of TCEmain logging, resolves #13855
+	* Released version 1.2.1
+
 2011-03-08  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released version 1.2.0
