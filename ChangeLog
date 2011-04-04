@@ -1,6 +1,7 @@
 2011-03-15  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added support for self-referential mappings, resolves #13852
+	* Corrected bug with disabling of TCEmain logging, resolves #13855
 
  2011-03-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
