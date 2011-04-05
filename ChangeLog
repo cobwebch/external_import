@@ -1,3 +1,7 @@
+2011-04-05  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Removed French translations, resolves #25712
+
 2011-03-15  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added support for self-referential mappings, resolves #13852

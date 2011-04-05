@@ -10,10 +10,5 @@
 			<label index="mlang_labels_tabdescr">This backend module can be used to import data from external sources into TYPO3 tables extended with special definitions in the TCA.</label>
 			<label index="mlang_labels_tablabel">Import data from external sources into TYPO3 tables</label>
 		</languageKey>
-		<languageKey index="fr" type="array">
-			<label index="mlang_tabs_tab">Import de données externes</label>
-			<label index="mlang_labels_tabdescr">Ce module permet d'importer des données de sources externes dans des tables TYPO3 identifiées par des définitions spéciales dans le TCA.</label>
-			<label index="mlang_labels_tablabel">Importer des données externes dans des tables TYPO3</label>
-		</languageKey>
 	</data>
 </T3locallang>

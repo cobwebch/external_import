@@ -48,46 +48,5 @@
 			<label index="moreMessages">There were actually %d messages, but only the first five are displayed here. Please check your logs for more information.</label>
 			<label index="exceptionOccurred">A problem occurred. The following error was returned: %1$s (Exception code: %2$d).</label>
 		</languageKey>
-		<languageKey index="fr" type="array">
-			<label index="all">Tous</label>
-			<label index="table">Table</label>
-			<label index="index">Index</label>
-			<label index="no_connector">Aucun connecteur défini. Impossible de synchroniser.</label>
-			<label index="no_service">Aucun service disponible</label>
-			<label index="no_rights_for_sync">L'utilisateur %1$s n'a pas les droits suffisants pour synchroniser la table %2$s.</label>
-			<label index="data_not_fetched">Impossible d'obtenir les données (service de connexion pas disponible)</label>
-			<label index="data_not_fetched_connector_error">Impossible d'obtenir les données (erreur du service de connexion: %s)</label>
-			<label index="records_inserted">%s nouveaux enregistrement(s) inséré(s)</label>
-			<label index="records_updated">%s enregistrement(s) existant(s) mis à jour</label>
-			<label index="records_deleted">%s enregistrement(s) existant(s) supprimé(s)</label>
-			<label index="records_relationships">%s relation(s) mm créée(s)</label>
-			<label index="sync_all">Synchronisation de toutes les tables</label>
-			<label index="sync_table">Synchronisation de la table %s</label>
-			<label index="update_failed">La mise à jour a échoué:</label>
-			<label index="insert_failed">L'insertion a échoué:</label>
-			<label index="delete_failed">La suppression a échoué:</label>
-			<label index="invalid_userfunc">Fonction utilisateur non valable %s</label>
-			<label index="timelimit">PHP limit maximum execution time changé</label>
-			<label index="notEnoughRecords">Le nombre d'enregistrements (%$1d) est inférieur à la limite requise (%$2d).</label>
-			<label index="importAborted">L'import a été interrompu. Veuillez vous référer aux messages y relatifs pour plus d'information.</label>
-			<label index="things_happened">Une ou plusieurs erreurs sont survenues. Le nombre d'opérations effectué n'est peut-être pas correct.</label>
-			<label index="scheduler.title">Synchronisation d'un import externe</label>
-			<label index="scheduler.description">Cet événement est utilisé pour lancer des synchronisations automatiques des imports externes. Il est possible de synchroniser toutes les tables avec des définitions d'import externe d'un seul coup, ou de ne procéder que pour une seule table.</label>
-			<label index="scheduler.argumentsHelp">sync = [all | nom_de_table].&lt;br /&gt;Utilisez "all" pour synchroniser toutes les tables.&lt;br /&gt;Utilisez le nom d'une table pour ne synchroniser que celle-ci.</label>
-			<label index="synchronizeTableX">Synchronisation de la table %1$s, index %2$d</label>
-			<label index="field.syncItem">Elément à synchroniser</label>
-			<label index="label.warning">Avertissements</label>
-			<label index="label.error">Erreurs</label>
-			<label index="label.success">Réussites</label>
-			<label index="no.warning">Aucun avertissement</label>
-			<label index="no.error">Aucune erreur</label>
-			<label index="no.success">Aucun message de réussite</label>
-			<label index="scheduler.title">Import externe</label>
-			<label index="scheduler.description">Cette tâche peut être utilisée pour automatiser l'exécution des imports externes, soit pour toutes les tables d'un coup, soit pour une table donnée.</label>
-			<label index="allTables">Toutes les tables</label>
-			<label index="tableAndIndex">Table: %1$s, index: %2$s</label>
-			<label index="moreMessages">Il y avait en tout %d messages, mais seuls les cinq premiers sont affichés ici. Veuillez consulter les journaux du système pour plus d'informations.</label>
-			<label index="exceptionOccurred">Un problème est survenu. Le message d'erreur est: %1$s (code d'exception: %2$d).</label>
-		</languageKey>
 	</data>
 </T3locallang>
