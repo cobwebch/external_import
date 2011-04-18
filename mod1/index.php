@@ -23,8 +23,7 @@
 ***************************************************************/
 
 $LANG->includeLLFile('EXT:external_import/mod1/locallang.xml');
-//require_once(PATH_t3lib . 'class.t3lib_scbase.php');
-$BE_USER->modAccess($MCONF, 1);	// This checks permissions and exits if the users has no permission for entry.
+$BE_USER->modAccess($MCONF, 1);	// This checks permissions and exits if the user has no permission for entry.
 
 /**
  * Module 'External Data Import' for the 'external_import' extension.
@@ -86,13 +85,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	}
 
 	/**
-	 * Main function of the module. Write the content to $this->content
-	 * If you chose "web" as main module, you will need to consider the $this->id parameter which will contain the uid-number of the page clicked in the page tree
+	 * Main function of the module
 	 *
-	 * @return	[type]		...
+	 * @return void
 	 */
 	function main()	{
-		global $BE_USER;
 
 			// Access check!
 			// The page will show only if there is a valid page and if this page may be viewed by the user
@@ -106,7 +103,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$this->pageRendererObject = $this->doc->getPageRenderer();
 		$docHeaderButtons = $this->getButtons();
 
-		if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id) || ($BE_USER->user['uid'] && !$this->id))	{
+		if (($this->id && $access) || ($GLOBALS['BE_USER']->user['admin'] && !$this->id) || ($GLOBALS['BE_USER']->user['uid'] && !$this->id))	{
 				// Draw the form
 			$this->doc->form = '<form action="" method="post" enctype="multipart/form-data">';
 
@@ -152,7 +149,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$this->content.= $this->doc->moduleBody($this->pageinfo, $docHeaderButtons, $markers);
 		$this->content.= $this->doc->endPage();
 		$this->content = $this->doc->insertStylesAndJS($this->content);
-
 	}
 
 	/**
