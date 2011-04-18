@@ -329,7 +329,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 					// Assemble the row
 				$table[$tr] = array();
 				$tableTitle = $GLOBALS['LANG']->sL($ctrlData['title']);
-				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $GLOBALS['BACK_PATH']);
+				$table[$tr][] = t3lib_iconWorks::getSpriteIconForRecord($tableName, array());
 				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
 				$table[$tr][] = '[' . $tableIndex . ']' . ((empty($tableData['description'])) ? '' : ' ' . htmlspecialchars($tableData['description']));
 				$table[$tr][] = $tableData['priority'];
@@ -446,7 +446,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$tableName = $tableData['tablename'];
 				$tableTitle = $GLOBALS['LANG']->sL($GLOBALS['TCA'][$tableName]['ctrl']['title']);
 				$table[$tr] = array();
-				$table[$tr][] = t3lib_iconWorks::getIconImage($tableName, array(), $GLOBALS['BACK_PATH']);
+				$table[$tr][] = t3lib_iconWorks::getSpriteIconForRecord($tableName, array());
 				$table[$tr][] = $tableTitle . ' (' . $tableName . ')';
 				$table[$tr][] = '[' . $tableData['index'] . ']' . ((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 					// Info icon
