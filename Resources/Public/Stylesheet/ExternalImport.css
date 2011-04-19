@@ -1,0 +1,10 @@
+.informationBlock {
+	height: 500px;
+	overflow: scroll;
+}
+.informationTable {
+	width: 400px;
+}
+.informationTable td {
+	padding: 2px;
+}

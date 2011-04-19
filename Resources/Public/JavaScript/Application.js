@@ -13,15 +13,11 @@ Ext.namespace('TYPO3.ExternalImport');
  */
 TYPO3.ExternalImport.showExternalImportInformation = function(e) {
 	var content = Ext.get(e.getTarget().id + '-content');
-	Ext.MessageBox.show({
-		title: 'External configuration',
-		msg: content.dom.innerHTML,
-		buttons: Ext.MessageBox.OK
-	});
+	TYPO3.Windows.getWindow({
+		title: TYPO3.lang.external_information,
+		html: content.dom.innerHTML
+	}).show();
 }
-
-// TODO: change title to use centrally loaded localized labels (requires 4.5)
-// TODO: change MessageBox to use TYPO3-specific boxes, probably InformationDialog (no need for buttons then) (requires 4.5)
 
 Ext.onReady(function() {
 		// Add listener to "external information" icons

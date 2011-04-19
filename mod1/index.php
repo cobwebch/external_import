@@ -133,6 +133,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				};';
 				// Load application specific JS
 			$this->pageRendererObject->addJsFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/JavaScript/Application.js', 'text/javascript', FALSE);
+			$this->pageRendererObject->addJsFile($GLOBALS['BACK_PATH'] . '../t3lib/js/extjs/notifications.js', 'text/javascript', FALSE);
+				// Load the specific stylesheet
+			$this->pageRendererObject->addCssFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Stylesheet/ExternalImport.css');
+				// Load some localized labels
+			$labels = array(
+				'external_information' => $GLOBALS['LANG']->getLL('external_information')
+			);
+			$this->pageRendererObject->addInlineLanguageLabelArray($labels);
 				// Render content:
 			$this->moduleContent();
 		} else {
@@ -342,7 +350,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$infoIcon = '<img class="external-information" id="' . $elementID . '" ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" title="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" />';
 					// Assemble the external import configuration information, but keep it hidden
 					// It is fetched via JavaScript upon clicking the above icon and displayed inside a MessageBox
-				$infoIcon .= '<div id="' . $elementID . '-content" style="display: none;"><div stlye="overflow: scroll;">' . $this->displayExternalInformation($tableData) . '</div></div>';
+				$infoIcon .= '<div id="' . $elementID . '-content" style="display: none;"><div class="informationBlock">' . $this->displayExternalInformation($tableData) . '</div></div>';
 				$table[$tr][] = $syncIcon . $infoIcon;
 					// Action result
 					// Prepare only if at least one table may be synchronized
@@ -670,7 +678,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$externalInformation = '';
 			// First initialise the table layout
 		$tableLayout = array (
-							'table' => array ('<table border="0" cellspacing="1" cellpadding="2" style="width: 400px;">', '</table>'),
+							'table' => array ('<table border="0" cellspacing="1" cellpadding="0" class="informationTable">', '</table>'),
 							'defRow' => array (
 								'tr' => array('<tr class="bgColor4-20" valign="top">', '</tr>'),
 								'defCol' => array('<td>', '</td>'),
