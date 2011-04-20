@@ -205,6 +205,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			// CSH
 		$buttons['csh'] = t3lib_BEfunc::cshItem('_MOD_web_func', '', $GLOBALS['BACK_PATH']);
 
+			// Reload view
+		$buttons['reload'] = '<a href="' . $GLOBALS['MCONF']['_'] . '" title="' . $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_core.xml:labels.reload', TRUE) . '">' .
+			t3lib_iconWorks::getSpriteIcon('actions-system-refresh') .
+			'</a>';
+
 			// Shortcut
 		if ($GLOBALS['BE_USER']->mayMakeShortcut())	{
 			$buttons['shortcut'] = $this->doc->makeShortcutIcon('', 'function', $this->MCONF['name']);
