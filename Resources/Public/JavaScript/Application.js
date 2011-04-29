@@ -47,6 +47,10 @@ function syncTable(theID, theTable, theIndex) {
 			var responseObject = Ext.util.JSON.decode(result.responseText);
 			Ext.fly('result' + theID).update(responseObject.content);
 			Ext.fly('container' + theID).update(LOCALAPP.syncStoppedIcon);
+		},
+		failure: function(result) {
+			Ext.fly('result' + theID).update('Failed!');
+			Ext.fly('container' + theID).update(LOCALAPP.syncStoppedIcon);
 		}
 	});
 }
