@@ -838,6 +838,10 @@ class tx_externalimport_importer {
 				foreach ($mappings as $columnName => $columnMappings) {
 					if (isset($columnMappings[$externalUid])) {
 						$theRecord[$columnName] = implode(',', $columnMappings[$externalUid]);
+
+						// Make sure not to keep the original value if no mapping was found
+					} else {
+						unset($theRecord[$columnName]);
 					}
 				}
 			}

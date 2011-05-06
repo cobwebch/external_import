@@ -1,3 +1,8 @@
+2011-05-06  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected bug with wrongly preserved MM-relations when no mapping is available, resolves #26661
+	* Released version 1.2.2
+
 2011-03-17  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected bug with disabling of TCEmain logging, resolves #13855
