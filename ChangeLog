@@ -1,6 +1,7 @@
 2011-05-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected time zone handling in sample parse date method, resolves #26292
+	* Properly localized all strings in extension configuration, resolves #13647
 
 2011-05-06  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
