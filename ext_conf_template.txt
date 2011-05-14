@@ -1,23 +1,23 @@
-# cat=basic//; type=int; label=Storage PID: Enter default page uid for storing imported records.
+# customsubcategory=reporting=LLL:EXT:external_import/locallang.xml:config.reporting
+# customsubcategory=debugging=LLL:EXT:external_import/locallang.xml:config.debugging
+
+# cat=basic//; type=int; label=LLL:EXT:external_import/locallang.xml:config.storagePid
 storagePID = 0
 
-# cat=basic//; type=int; label=Force PHP time limit (sec): Change the limit maximun execution time for import process. Defaut timelimit is used if value = -1.
+# cat=basic//; type=int; label=LLL:EXT:external_import/locallang.xml:config.timeLimit
 timelimit = -1
 
-# cat=basic/enable/; type=string; label=Email for reporting: When the import is executed automatically, you may receive a report about the execution if you set an email address (leave blank for no report).
+# cat=basic/reporting/a; type=string; label=LLL:EXT:external_import/locallang.xml:config.reportEmail
 reportEmail =
 
-# cat=basic/enable/; type=string; label=Subject of email report: Set a subject for the email report. Additional information will be appended to that subject (i.e. "Full synchronization" ou "Synchronization of table x, index y").
+# cat=basic/reporting/b; type=string; label=LLL:EXT:external_import/locallang.xml:config.reportSubject
 reportSubject =
 
-# cat=basic/enable/; type=int; label=Preview/Debug limit: The number of rows to show while doing a preview. Set to 0 for showing all. This also affects the debugging output.
+# cat=basic/debugging/a; type=int; label=LLL:EXT:external_import/locallang.xml:config.previewLimit
 previewLimit = 10
 
-# cat=basic/enable/; type=boolean; label=Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.
+# cat=basic/debugging/b; type=boolean; label=LLL:EXT:external_import/locallang.xml:config.debug
 debug = 0
 
-# cat=basic/enable/; type=boolean; label=Disable logging: Check to disable logging by TCEmain. Recommended if you don't need to keep close track of the import process.
+# cat=basic/debugging/c; type=boolean; label=LLL:EXT:external_import/locallang.xml:config.disableLog
 disableLog = 0
-
-# cat=basic/enable/; type=boolean; label=Clean AJAX output: When using the BE module, AJAX calls are made to the external import script. If it issues warnings, the AJAX response will be corrupted. This cleans up the AJAX response by flushing any output produced by the external import script. Not used in TYPO3 4.3 and above (output is always flushed).
-flushOutput = 0
