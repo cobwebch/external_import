@@ -1,3 +1,7 @@
+2011-05-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected time zone handling in sample parse date method, resolves #26292
+
 2011-05-06  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected bug with wrongly preserved MM-relations when no mapping is available, resolves #26661
