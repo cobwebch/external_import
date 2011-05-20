@@ -35,11 +35,20 @@ $BE_USER->modAccess($MCONF, 1);	// This checks permissions and exits if the user
  * $Id$
  */
 class tx_externalimport_module1 extends t3lib_SCbase {
-	public $pageinfo;
-	/** @var boolean $hasSchedulingTool */
+
+	/**
+	 * Simple flag to store if scheduler extension is loaded or not
+	 *
+	 * @var boolean $hasSchedulingTool
+	 */
 	protected $hasSchedulingTool = FALSE;
-	/** @var array $extConf */
-	protected $extConf;
+
+	/**
+	 * Unserialized extension configuration options
+	 *
+	 * @var array $extensionConfiguration
+	 */
+	protected $extensionConfiguration;
 
 	/**
 	 * Reference to a Scheduler object
@@ -63,17 +72,15 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		parent::init();
 			// Check if the scheduler are available
 			// (stored to avoid running the same call several times)
-		if (t3lib_extMgm::isLoaded('scheduler', FALSE)) {
-			$this->hasSchedulingTool = TRUE;
-		}
+		$this->hasSchedulingTool = t3lib_extMgm::isLoaded('scheduler', FALSE);
 			// Read the extension's configuration
-		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
+		$this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extensionConfiguration']['external_import']);
 			// Make sure about some values
-		$this->extConf['timelimit'] = intval($this->extConf['timelimit']);
-		$this->extConf['storagePID'] = intval($this->extConf['storagePID']);
-		$this->extConf['previewLimit'] = intval($this->extConf['previewLimit']);
-		$this->extConf['debug'] = (boolean)$this->extConf['debug'];
-		$this->extConf['disableLog'] = (boolean)$this->extConf['disableLog'];
+		$this->extensionConfiguration['timelimit'] = intval($this->extensionConfiguration['timelimit']);
+		$this->extensionConfiguration['storagePID'] = intval($this->extensionConfiguration['storagePID']);
+		$this->extensionConfiguration['previewLimit'] = intval($this->extensionConfiguration['previewLimit']);
+		$this->extensionConfiguration['debug'] = (boolean)$this->extensionConfiguration['debug'];
+		$this->extensionConfiguration['disableLog'] = (boolean)$this->extensionConfiguration['disableLog'];
 	}
 
 	/**
@@ -98,63 +105,53 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 */
 	function main()	{
 
-			// Access check!
-			// The page will show only if there is a valid page and if this page may be viewed by the user
-		$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id, $this->perms_clause);
-		$access = is_array($this->pageinfo) ? 1 : 0;
-
-			// initialize doc
+			// Initialize document template
 		$this->doc = t3lib_div::makeInstance('template');
 		$this->doc->setModuleTemplate(t3lib_extMgm::extPath('external_import') . 'Resources/Private/Templates/module.html');
 		$this->doc->backPath = $GLOBALS['BACK_PATH'];
 		$this->pageRendererObject = $this->doc->getPageRenderer();
 		$docHeaderButtons = $this->getButtons();
 
-		if (($this->id && $access) || ($GLOBALS['BE_USER']->user['admin'] && !$this->id) || ($GLOBALS['BE_USER']->user['uid'] && !$this->id))	{
-				// Draw the form
-			$this->doc->form = '<form action="" method="post" enctype="multipart/form-data">';
+			// Draw the form
+		$this->doc->form = '<form action="" method="post" enctype="multipart/form-data">';
 
-				// Base JavaScript
-			$this->doc->JScode = '
-				<script language="javascript" type="text/javascript">
-					function jumpToUrl(URL)	{
-						document.location = URL;
-					}
-				</script>
-			';
-				// Load ExtJS library
-			$this->pageRendererObject->loadExtJS();
+			// Base JavaScript
+		$this->doc->JScode = '
+			<script language="javascript" type="text/javascript">
+				function jumpToUrl(URL)	{
+					document.location = URL;
+				}
+			</script>
+		';
+			// Load ExtJS library
+		$this->pageRendererObject->loadExtJS();
 //			$this->pageRendererObject->enableExtJsDebug();
 
-				// Dynamically define some global JS values
-			$this->doc->JScodeArray[] .= '
-				var LOCALAPP = {
-					ajaxUrl : \'' . $GLOBALS['BACK_PATH'] . 'ajax.php\',
-					ajaxTimeout : ' . (($this->extConf['timelimit'] <= 0) ? 30000 : ($this->extConf['timelimit'] * 1000)) . ',
-					syncRunningIcon : \'<img src="' . t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" title="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
-					syncStoppedIcon : \'<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" />\',
-					running : \'' . $GLOBALS['LANG']->getLL('running') . '\',
-					imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('add_sync') . '" />\',
-					imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\',
-					imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('edit_sync') . '" />\',
-					imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\'
-				};';
-				// Load application specific JS
-			$this->pageRendererObject->addJsFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/JavaScript/Application.js', 'text/javascript', FALSE);
-			$this->pageRendererObject->addJsFile($GLOBALS['BACK_PATH'] . '../t3lib/js/extjs/notifications.js', 'text/javascript', FALSE);
-				// Load the specific stylesheet
-			$this->pageRendererObject->addCssFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Stylesheet/ExternalImport.css');
-				// Load some localized labels
-			$labels = array(
-				'external_information' => $GLOBALS['LANG']->getLL('external_information')
-			);
-			$this->pageRendererObject->addInlineLanguageLabelArray($labels);
-				// Render content:
-			$this->moduleContent();
-		} else {
-				// If no access or if ID == zero
-			$this->content .= $this->doc->spacer(10);
-		}
+			// Dynamically define some global JS values
+		$this->doc->JScodeArray[] .= '
+			var LOCALAPP = {
+				ajaxUrl : \'' . $GLOBALS['BACK_PATH'] . 'ajax.php\',
+				ajaxTimeout : ' . (($this->extensionConfiguration['timelimit'] <= 0) ? 30000 : ($this->extensionConfiguration['timelimit'] * 1000)) . ',
+				syncRunningIcon : \'<img src="' . t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" title="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
+				syncStoppedIcon : \'<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" />\',
+				running : \'' . $GLOBALS['LANG']->getLL('running') . '\',
+				imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('add_sync') . '" />\',
+				imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\',
+				imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('edit_sync') . '" />\',
+				imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\'
+			};';
+			// Load application specific JS
+		$this->pageRendererObject->addJsFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/JavaScript/Application.js', 'text/javascript', FALSE);
+		$this->pageRendererObject->addJsFile($GLOBALS['BACK_PATH'] . '../t3lib/js/extjs/notifications.js', 'text/javascript', FALSE);
+			// Load the specific stylesheet
+		$this->pageRendererObject->addCssFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Stylesheet/ExternalImport.css');
+			// Load some localized labels
+		$labels = array(
+			'external_information' => $GLOBALS['LANG']->getLL('external_information')
+		);
+		$this->pageRendererObject->addInlineLanguageLabelArray($labels);
+			// Render content:
+		$this->moduleContent();
 
 			// Compile document
 		$markers['FUNC_MENU'] = t3lib_BEfunc::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
@@ -726,8 +723,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$pid = 0;
 		if (isset($externalCtrlConfiguration['pid'])) {
 			$pid = $externalCtrlConfiguration['pid'];
-		} elseif (isset($this->extConf['storagePID'])) {
-			$pid = $this->extConf['storagePID'];
+		} elseif (isset($this->extensionConfiguration['storagePID'])) {
+			$pid = $this->extensionConfiguration['storagePID'];
 		}
 		$table[$tr][] = $GLOBALS['LANG']->getLL('storage_pid');
 		$table[$tr][] = ($pid == 0) ? 0 : $this->getPageLink($pid);
