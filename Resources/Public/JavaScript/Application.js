@@ -38,7 +38,7 @@ function syncTable(theID, theTable, theIndex) {
 	Ext.Ajax.request({
 		url: LOCALAPP.ajaxUrl,
 		method: 'post',
-		timeout: 300000,
+		timeout: LOCALAPP.ajaxTimeout,
 		params: {
 			ajaxID: 'externalimport::synchronizeExternalTable',
 			table: theTable,

@@ -66,7 +66,14 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		if (t3lib_extMgm::isLoaded('scheduler', FALSE)) {
 			$this->hasSchedulingTool = TRUE;
 		}
+			// Read the extension's configuration
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
+			// Make sure about some values
+		$this->extConf['timelimit'] = intval($this->extConf['timelimit']);
+		$this->extConf['storagePID'] = intval($this->extConf['storagePID']);
+		$this->extConf['previewLimit'] = intval($this->extConf['previewLimit']);
+		$this->extConf['debug'] = (boolean)$this->extConf['debug'];
+		$this->extConf['disableLog'] = (boolean)$this->extConf['disableLog'];
 	}
 
 	/**
@@ -123,6 +130,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$this->doc->JScodeArray[] .= '
 				var LOCALAPP = {
 					ajaxUrl : \'' . $GLOBALS['BACK_PATH'] . 'ajax.php\',
+					ajaxTimeout : ' . (($this->extConf['timelimit'] <= 0) ? 30000 : ($this->extConf['timelimit'] * 1000)) . ',
 					syncRunningIcon : \'<img src="' . t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" title="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
 					syncStoppedIcon : \'<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" />\',
 					running : \'' . $GLOBALS['LANG']->getLL('running') . '\',

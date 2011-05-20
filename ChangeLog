@@ -1,3 +1,7 @@
+2011-05-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Used PHP time limit also for AJAX timeout, resolves #25893
+
 2011-05-14  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected time zone handling in sample parse date method, resolves #26292
