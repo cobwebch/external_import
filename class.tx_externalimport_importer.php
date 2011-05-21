@@ -608,9 +608,9 @@ class tx_externalimport_importer {
 	 * @param	mixed	$externalValue: the value to match
 	 * @param	array	$mappingInformation: mapping configuration
 	 * @param	array	$mappingTable: value map
-	 * @return	mixex	The matched value
+	 * @return	mixed	The matched value
 	 */
-	protected function matchSingleField($externalValue, $mappingInformation, $mappingTable) {
+	public function matchSingleField($externalValue, $mappingInformation, $mappingTable) {
 		$returnValue = '';
 		$function = $mappingInformation['match_method'];
 		if (!empty($externalValue)) {
@@ -627,7 +627,7 @@ class tx_externalimport_importer {
 			}
 				// If unmatched, throw exception
 			if (!$hasMatch) {
-				throw new Exception('Unmatched value ' . $externalValue, 1294739120);
+				throw new UnexpectedValueException('Unmatched value ' . $externalValue, 1294739120);
 			}
 		}
 		return $returnValue;
