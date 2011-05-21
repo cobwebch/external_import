@@ -29,7 +29,7 @@
  * @package		TYPO3
  * @subpackage	tx_externalimport
  *
- * $Id: tx_dataquery_sqlparser_Test.php 37182 2010-08-24 15:26:17Z francois $
+ * $Id$
  */
 class tx_externalimport_importer_Test extends tx_phpunit_testcase {
 	/**
