@@ -616,9 +616,9 @@ class tx_externalimport_importer {
 		if (!empty($externalValue)) {
 			$hasMatch = FALSE;
 			foreach ($mappingTable as $key => $value) {
-				$hasMatch = ($function($key, $externalValue) !== FALSE);
+				$hasMatch = (call_user_func($function, $key, $externalValue) !== FALSE);
 				if (!empty($mappingInformation['match_symmetric'])) {
-					$hasMatch |= ($function($externalValue, $key) !== FALSE);
+					$hasMatch |= (call_user_func($function, $externalValue, $key) !== FALSE);
 				}
 				if ($hasMatch) {
 					$returnValue = $value;
