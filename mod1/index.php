@@ -847,13 +847,13 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$iconAltText = t3lib_BEfunc::getRecordIconAltText($page, 'pages');
 
 				// Create icon for record
-			$elementIcon = t3lib_iconworks::getIconImage('pages', $page, $GLOBALS['BACK_PATH'], 'class="c-recicon" title="' . $iconAltText . '"');
+			$elementIcon = t3lib_iconWorks::getSpriteIconForRecord('pages', $page, array('title' => $iconAltText));
 
 				// Return item with edit link
-			$editOnClick = 'top.loadEditId(' . $uid . ')';
-			$string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $GLOBALS['LANG']->getLL('jum_to_page') . '">' . $elementIcon . $pageTitle . '</a>';
-			return $string;
+			$editOnClick = 'top.goToModule(\'web_list\', ' . $uid . ')';
+			$string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $GLOBALS['LANG']->getLL('jump_to_page') . '">' . $elementIcon . $pageTitle . '</a>';
 		}
+		return $string;
     }
 }
 
