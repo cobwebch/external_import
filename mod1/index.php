@@ -843,6 +843,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$string = '';
 		if (!empty($uid)) {
 			$page = t3lib_BEfunc::getRecord('pages', $uid);
+				// If the page doesn't exist, the result is null, but we need rather an empty array
+			if ($page === NULL) {
+				$page = array();
+			}
 			$pageTitle = t3lib_BEfunc::getRecordTitle('pages', $page, 1);
 			$iconAltText = t3lib_BEfunc::getRecordIconAltText($page, 'pages');
 
