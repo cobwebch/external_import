@@ -20,8 +20,9 @@ TYPO3.ExternalImport.showExternalImportInformation = function(e) {
 }
 
 Ext.onReady(function() {
-		// Add listener to "external information" icons
-	Ext.select('img.external-information').on('click', TYPO3.ExternalImport.showExternalImportInformation);
+	Ext.addBehaviors({
+		'img.external-information@click' : TYPO3.ExternalImport.showExternalImportInformation
+	});
 });
 
 /**
