@@ -464,8 +464,10 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				$table[$tr][] = '[' . $tableData['index'] . ']' . ((empty($tableData['description'])) ? '' : ' '.$tableData['description']);
 					// Info icon
 				$elementID = 'info' . $tr;
-				$infoIcon = '<a href="javascript:toggleElement(\'' . $elementID . '\')" title="' . $GLOBALS['LANG']->getLL('view_details') . '"><img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" /></a>';
-				$infoIcon .= '<div id="' . $elementID . '" style="width: 410px; display: none;">' . $this->displayExternalInformation($tableData) . '</div>';
+				$infoIcon = '<img class="external-information" id="' . $elementID . '" ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/zoom2.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('view_details') . '" title="' . $GLOBALS['LANG']->getLL('view_details') . '" border="0" />';
+					// Assemble the external import configuration information, but keep it hidden
+					// It is fetched via JavaScript upon clicking the above icon and displayed inside a MessageBox
+				$infoIcon .= '<div id="' . $elementID . '-content" style="display: none;"><div class="informationBlock">' . $this->displayExternalInformation($tableData) . '</div></div>';
 				$table[$tr][] = $infoIcon;
 			}
 
@@ -829,7 +831,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
      * @param integer $uid ID of the page
      * @return string HTML for icon, title and link
      */
-    function getPageLink($uid) {
+    protected function  getPageLink($uid) {
 		$string = '';
 		if (!empty($uid)) {
 			$page = t3lib_BEfunc::getRecord('pages', $uid);
@@ -843,8 +845,8 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				// Create icon for record
 			$elementIcon = t3lib_iconWorks::getSpriteIconForRecord('pages', $page, array('title' => $iconAltText));
 
-				// Return item with edit link
-			$editOnClick = 'top.goToModule(\'web_list\', ' . $uid . ')';
+				// Return item with link to Web > List
+			$editOnClick = "top.goToModule('web_list', '', '&id=" . $uid . "')";
 			$string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $GLOBALS['LANG']->getLL('jump_to_page') . '">' . $elementIcon . $pageTitle . '</a>';
 		}
 		return $string;
