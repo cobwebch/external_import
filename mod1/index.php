@@ -328,9 +328,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			}
 
 				// Prepare space icon
-			$iconWidth  = $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['iconSizeWidth']  ? $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['iconSizeWidth']  : 12;
-			$iconHeight = $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['iconSizeHeight'] ? $GLOBALS['TBE_STYLES']['skinImgAutoCfg']['iconSizeHeight'] : 12;
-			$spaceIcon = '<img src="' . $GLOBALS['BACK_PATH'] . 'clear.gif" width="' . $iconWidth . '" height="' . $iconHeight . '" title="" alt="" />';
+			$spaceIcon = t3lib_iconWorks::getSpriteIcon('empty-empty', array('style' => 'background-position: 0 10px;'));;
 
 				// Generate table row for each table
 			foreach ($externalTables as $tableData) {
