@@ -377,8 +377,15 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$content = '';
 			// First of all display error message if no scheduling tool is available
 		if (!$this->hasSchedulingTool) {
-			$content .= $this->displayMessage($GLOBALS['LANG']->getLL('autosync_error'), 2);
-			$content .= $this->doc->spacer(10);
+				/** @var $message t3lib_FlashMessage */
+			$message = t3lib_div::makeInstance(
+				't3lib_FlashMessage',
+				$GLOBALS['LANG']->getLL('autosync_noscheduler'),
+				'',
+				t3lib_FlashMessage::WARNING
+			);
+
+			t3lib_FlashMessageQueue::addMessage($message);
 		}
 			// Display the result of task deletion, if any
 		if (!empty($deleteResult)) {
