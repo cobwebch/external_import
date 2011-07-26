@@ -51,9 +51,9 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	protected $extensionConfiguration;
 
 	/**
-	 * Reference to a Scheduler object
+	 * Reference to a Scheduler object (wrapped)
 	 *
-	 * @var tx_scheduler $schedulingObject
+	 * @var tx_externalimport_autosync_wrapper_scheduler $schedulingObject
 	 */
 	protected $schedulingObject;
 
@@ -237,9 +237,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 
 			// Get an instance of the Scheduler wrapper class
 		if ($this->hasSchedulingTool) {
-				/**
-				 * @var	tx_externalimport_autosync_wrapper_scheduler
-				 */
 			$this->schedulingObject = t3lib_div::makeInstance('tx_externalimport_autosync_wrapper_scheduler');
 
 			if ($this->CMD == 'delete') {
@@ -578,7 +575,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * @return	string	Result message to display
 	 */
 	protected function deleteTask() {
-		$message = '';
 		$uid = t3lib_div::_GP('uid');
 		$result = $this->schedulingObject->deleteTask($uid);
 		if ($result) {
@@ -609,11 +605,11 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	/**
 	 * This method displays the synchronisation input form, for a given table and index
 	 *
-	 * @param	array		$data: array of information for the related registered event, if it exists. Pass an empty array otherwise.
-	 * @param	string		$table: name of the table to synchronize
-	 * @param	string		$index: key of the synchronization configuration
-	 * @param	boolean		$hasWriteAccess: TRUE if the user has write access to the table, FALSE otherwise
-	 * @return	string		HTML of the form to display
+	 * @param array $data Array of information for the related registered event, if it exists. Pass an empty array otherwise.
+	 * @param string $table Name of the table to synchronize
+	 * @param mixed $index Key of the synchronization configuration
+	 * @param boolean $hasWriteAccess TRUE if the user has write access to the table, FALSE otherwise
+	 * @return string HTML of the form to display
 	 */
 	protected function displaySyncForm($data, $table, $index = 0, $hasWriteAccess = FALSE) {
 		$form = '';
@@ -636,9 +632,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			$idAttribute = 'syncForm_' . $table . '_' . $index;
 			$form .= $this->doc->spacer(5);
 				// Add an icon for toggling the add or edit form
-			$label = '';
-			$icon = '';
-			$action = '';
 			if (isset($data['uid'])) {
 				$label = $GLOBALS['LANG']->getLL('edit_sync');
 				$icon = '<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" title="' . $label . '" />';
@@ -753,7 +746,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$tr++;
 		$table[$tr][] = $GLOBALS['LANG']->getLL('minimum_records');
 		$table[$tr][] = (empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : $externalCtrlConfiguration['minimumRecords'];
-		$tr++;
 
 			// Render general information
 		$externalInformation .= '<h4>' . $GLOBALS['LANG']->getLL('general_information') . '</h4>';
@@ -829,15 +821,15 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			default:
 				$style .= ' background-color: #6cf; color: #000;';
 		}
-		$messageDisplay .= '<p style="' . $style . '">' . $message . '</p>';
+		$messageDisplay = '<p style="' . $style . '">' . $message . '</p>';
 		return $messageDisplay;
 	}
 
     /**
      * Returns a linked icon with title from a page
      *
-     * @param   integer		ID of the page
-     * @return  string		HTML for icon, title and link
+     * @param integer $uid ID of the page
+     * @return string HTML for icon, title and link
      */
     function getPageLink($uid) {
 		$string = '';
@@ -870,12 +862,15 @@ if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/externa
 
 
 
-// Make instance:
+	// Make instance:
+	/** @var $SOBE tx_externalimport_module1 */
 $SOBE = t3lib_div::makeInstance('tx_externalimport_module1');
 $SOBE->init();
 
-// Include files?
-foreach($SOBE->include_once as $INC_FILE)	include_once($INC_FILE);
+	// Include files?
+foreach ($SOBE->include_once as $INC_FILE){
+	include_once($INC_FILE);
+}
 
 $SOBE->main();
 $SOBE->printContent();
