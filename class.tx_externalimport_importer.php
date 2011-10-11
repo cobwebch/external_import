@@ -426,7 +426,13 @@ class tx_externalimport_importer {
 				// Loop on the database columns and get the corresponding value from the import data
 			foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 				if (isset($columnData['external'][$this->index]['field'])) {
-					$nodeList = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
+						// Use namespace or not
+					if (empty($columnData['external'][$this->index]['fieldNS'])) {
+						$nodeList = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
+					} else {
+						$nodeList = $theRecord->getElementsByTagNameNS($columnData['external'][$this->index]['fieldNS'], $columnData['external'][$this->index]['field']);
+					}
+
 					if ($nodeList->length > 0) {
 						/** @var $selectedNode DOMNode */
 						$selectedNode = $nodeList->item(0);
@@ -439,7 +445,12 @@ class tx_externalimport_importer {
 						}
 							// Get the named attribute, if defined
 						if (!empty($columnData['external'][$this->index]['attribute'])) {
-							$theData[$columnName] = $selectedNode->attributes->getNamedItem($columnData['external'][$this->index]['attribute'])->nodeValue;
+								// Use namespace or not
+							if (empty($columnData['external'][$this->index]['attributeNS'])) {
+								$theData[$columnName] = $selectedNode->attributes->getNamedItem($columnData['external'][$this->index]['attribute'])->nodeValue;
+							} else {
+								$theData[$columnName] = $selectedNode->attributes->getNamedItemNS($columnData['external'][$this->index]['attributeNS'], $columnData['external'][$this->index]['attribute'])->nodeValue;
+							}
 
 							// Otherwise directly take the node's value
 						} else {
