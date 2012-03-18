@@ -40,7 +40,8 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			dataIndex: 'icon',
 			width: 30,
 			fixed: true,
-			sortable: false
+			sortable: false,
+			menuDisabled: true
 		},
 		{
 			id: 'table',
@@ -104,7 +105,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 							var cell = Ext.get(grid.getView().getCell(rowIndex, colIndex));
 								// Hide the action icon and replace it with a loading indicator
 							var image = cell.query('img');
-							image[0].hide();
+							Ext.fly(image[0]).hide();
 							cell.addClass('loading-indicator');
 								// Start the synchronization of the selected configuration
 							TYPO3.ExternalImport.ExtDirect.launchSynchronization(record.json.table, record.json.index, function(response) {
@@ -125,7 +126,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 								}
 									// Remove the loading indicator and restore the action icon
 								cell.removeClass('loading-indicator');
-								image[0].show();
+								Ext.fly(image[0]).show();
 							});
 						}
 					},

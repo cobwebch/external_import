@@ -119,27 +119,27 @@ class Tx_ExternalImport_ExtDirect_Server {
 			// Connector information
 		if (isset($externalCtrlConfiguration['connector'])) {
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:connector') . '</td>';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector') . '</td>';
 			$externalInformation .= '<td>' . $externalCtrlConfiguration['connector'] . '</td>';
 			$externalInformation .= '</tr>';
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:connector.details') . '</td>';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector.details') . '</td>';
 			$externalInformation .= '<td>' . $this->dumpArray($externalCtrlConfiguration['parameters']) . '</td>';
 			$externalInformation .= '</tr>';
 		}
 			// Data information
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:data_type') . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_type') . '</td>';
 		$externalInformation .= '<td>' . $externalCtrlConfiguration['data'] . '</td>';
 		$externalInformation .= '</tr>';
 		if (isset($externalCtrlConfiguration['nodetype'])) {
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:reference_node') . '</td>';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:reference_node') . '</td>';
 			$externalInformation .= '<td>' . $externalCtrlConfiguration['nodetype'] . '</td>';
 			$externalInformation .= '</tr>';
 		}
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:external_key') . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:external_key') . '</td>';
 		$externalInformation .= '<td>' . $externalCtrlConfiguration['reference_uid'] . '</td>';
 		$externalInformation .= '</tr>';
 			// PID information
@@ -150,38 +150,38 @@ class Tx_ExternalImport_ExtDirect_Server {
 			$pid = $this->extensionConfiguration['storagePID'];
 		}
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:storage_pid') . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:storage_pid') . '</td>';
 		$externalInformation .= '<td>' . (($pid == 0) ? 0 : $this->getPageLink($pid)) . '</td>';
 		$externalInformation .= '</tr>';
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:enforce_pid') . '</td>';
-		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:yes')) . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:enforce_pid') . '</td>';
+		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:yes')) . '</td>';
 		$externalInformation .= '</tr>';
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:disableLog') . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disableLog') . '</td>';
 		if (isset($externalCtrlConfiguration['disableLog'])) {
-			$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:yes')) . '</td>';
+			$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:yes')) . '</td>';
 		} else {
-			$value = $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:undefined') . '</td>';
+			$value = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:undefined') . '</td>';
 		}
 		$externalInformation .= '<td>' . $value . '</td>';
 		$externalInformation .= '</tr>';
 			// Additional fields
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:additional_fields') . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:additional_fields') . '</td>';
 		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['additional_fields'])) ? '-' : $externalCtrlConfiguration['additional_fields']) . '</td>';
 		$externalInformation .= '</tr>';
 			// Control options
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:where_clause') . '</td>';
-		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['where_clause'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:none') : $externalCtrlConfiguration['where_clause']) . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:where_clause') . '</td>';
+		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['where_clause'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : $externalCtrlConfiguration['where_clause']) . '</td>';
 		$externalInformation .= '</tr>';
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:disabled_operations') . '</td>';
-		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:none') : $externalCtrlConfiguration['disabledOperations']) . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disabled_operations') . '</td>';
+		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : $externalCtrlConfiguration['disabledOperations']) . '</td>';
 		$externalInformation .= '</tr>';
 		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:minimum_records') . '</td>';
+		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:minimum_records') . '</td>';
 		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : $externalCtrlConfiguration['minimumRecords']) . '</td>';
 		$externalInformation .= '</tr>';
 		$externalInformation .= '</table>';
@@ -241,7 +241,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 			$numMessages = count($messageList);
 			if ($numMessages > 5) {
 				array_splice($messageList, 5);
-				$messageList[] = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:moreMessages'), $numMessages);
+				$messageList[] = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:moreMessages'), $numMessages);
 				$messages[$severity] = $messageList;
 			}
 		}
@@ -312,7 +312,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 
 				// Return item with link to Web > List
 			$editOnClick = "top.goToModule('web_list', '', '&id=" . $uid . "')";
-			$string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/mod1/locallang.xml:jump_to_page') . '">' . $elementIcon . $pageTitle . '</a>';
+			$string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:jump_to_page') . '">' . $elementIcon . $pageTitle . '</a>';
 		}
 		return $string;
 	}
