@@ -125,37 +125,29 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		';
 			// Load ExtJS library
 		$this->pageRendererObject->loadExtJS();
-//			$this->pageRendererObject->enableExtJsDebug();
-
-			// Dynamically define some global JS values
-		$this->doc->JScodeArray[] .= '
-			var LOCALAPP = {
-				ajaxUrl : \'' . $GLOBALS['BACK_PATH'] . 'ajax.php\',
-				ajaxTimeout : ' . (($this->extensionConfiguration['timelimit'] <= 0) ? 30000 : ($this->extensionConfiguration['timelimit'] * 1000)) . ',
-				syncRunningIcon : \'<img src="' . t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Icons/refresh_animated.gif" alt="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" title="' . $GLOBALS['LANG']->getLL('running_synchronisation') . '" border="0" />\',
-				syncStoppedIcon : \'<img ' . (t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'],'gfx/refresh_n.gif')) . ' alt="' . $GLOBALS['LANG']->getLL('synchronise') . '" title="' . $GLOBALS['LANG']->getLL('manual_sync') . '" border="0" />\',
-				running : \'' . $GLOBALS['LANG']->getLL('running') . '\',
-				imageExpand_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/new_el.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('add_sync') . '" />\',
-				imageCollapse_add : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/icon_fatalerror.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\',
-				imageExpand_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2.gif', 'width="18" height="12"') . ' alt="+" title="' . $GLOBALS['LANG']->getLL('edit_sync') . '" />\',
-				imageCollapse_edit : \'<img' . t3lib_iconWorks::skinImg($GLOBALS['BACK_PATH'], 'gfx/edit2_d.gif', 'width="18" height="12"') . ' alt="-" title="' . $GLOBALS['LANG']->getLL('cancel_edit_sync') . '" />\'
-			};';
+		$this->pageRendererObject->addExtDirectCode(array('TYPO3.ExternalImport'));
+		$uxPath = $this->doc->backPath . '../t3lib/js/extjs/ux/';
+		$this->pageRendererObject->addJsFile($uxPath . 'Ext.ux.FitToParent.js');
+			// Pass some settings to the JavaScript application
+		$this->pageRendererObject->addInlineSettingArray(
+			'external_import',
+			array(
+				'ajaxTimeout' => (($this->extensionConfiguration['timelimit'] <= 0) ? 30000 : ($this->extensionConfiguration['timelimit'] * 1000)),
+				'hasScheduler' => t3lib_extMgm::isLoaded('scheduler', FALSE)
+			)
+		);
 			// Load application specific JS
 		$this->pageRendererObject->addJsFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/JavaScript/Application.js', 'text/javascript', FALSE);
 		$this->pageRendererObject->addJsFile($GLOBALS['BACK_PATH'] . '../t3lib/js/extjs/notifications.js', 'text/javascript', FALSE);
 			// Load the specific stylesheet
 		$this->pageRendererObject->addCssFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Stylesheet/ExternalImport.css');
-			// Load some localized labels
-		$labels = array(
-			'external_information' => $GLOBALS['LANG']->getLL('external_information')
-		);
-		$this->pageRendererObject->addInlineLanguageLabelArray($labels);
+		$this->pageRendererObject->addInlineLanguageLabelFile('EXT:external_import/mod1/locallang.xml');
 			// Render content:
-		$this->moduleContent();
+//		$this->moduleContent();
 
 			// Compile document
 		$markers['FUNC_MENU'] = t3lib_BEfunc::getFuncMenu(0, 'SET[function]', $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']);
-		$markers['CONTENT'] = $this->content;
+//		$markers['CONTENT'] = $this->content;
 
 			// Build the <body> for the module
 		$this->content = $this->doc->startPage($GLOBALS['LANG']->getLL('title'));
@@ -178,7 +170,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * Generates the module content
 	 *
 	 * @return	void
-	 */
 	function moduleContent()	{
 		switch((string)$this->MOD_SETTINGS['function'])	{
 
@@ -194,6 +185,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 				break;
 		}
 	}
+*/
 
 
 	/**
@@ -229,7 +221,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * and a "connector" defined in this "external" part
 	 *
 	 * @return	void
-	 */
 	protected function listSynchronizedTables() {
 		$saveResult = '';
 		$deleteResult = '';
@@ -377,7 +368,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$content = '';
 			// First of all display error message if no scheduling tool is available
 		if (!$this->hasSchedulingTool) {
-				/** @var $message t3lib_FlashMessage */
 			$message = t3lib_div::makeInstance(
 				't3lib_FlashMessage',
 				$GLOBALS['LANG']->getLL('autosync_noscheduler'),
@@ -404,6 +394,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 			// Display form for automatic synchronisation
 		$this->displayAutoSyncSection(isset($existingTasks['all']) ? $existingTasks['all'] : array(), $hasAllWriteAccess);
 	}
+*/
 
 	/**
 	 * This method lists tables that have an external section, but that do not rely on a connector.
@@ -411,7 +402,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	 * data is pushed towards those tables using the external_import API
 	 *
 	 * @return	void
-	 */
 	protected function listOtherTables() {
 
 			// Get list of all non-synchronizable tables and extract general information about them
@@ -488,6 +478,7 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$content .= $tableList;
 		$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('nosync_tables'), $content, 0, 1);
 	}
+*/
 
 	/**
 	 * This method displays information and input form for setting a schedule for automatic synchronisation
@@ -593,23 +584,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	}
 
 	/**
-	 * Utility method used to sort ctrl sections according to the priority value in the external information block
-	 *
-	 * @param	array	$a: first ctrl section to compare
-	 * @param	array	$b: second ctrl section to compare
-	 *
-	 * @return	int		1, 0 or -1 if a is smaller, equal or greater than b, respectively
-	 */
-	public function prioritySort($a, $b) {
-		if ($a['priority'] == $b['priority']) {
-			return 0;
-		}
-		else {
-			return ($a['priority'] < $b['priority']) ? -1 : 1;
-		}
-	}
-
-	/**
 	 * This method displays the synchronisation input form, for a given table and index
 	 *
 	 * @param array $data Array of information for the related registered event, if it exists. Pass an empty array otherwise.
@@ -679,130 +653,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 	}
 
 	/**
-	 * This method renders information about the parameters of a given synchronisation configuration
-	 *
-	 * @param	array	$tableData: information about the synchronisation (table, index)
-	 * @return	string	HTML to display
-	 */
-	protected function displayExternalInformation($tableData) {
-		$externalInformation = '';
-			// First initialise the table layout
-		$tableLayout = array (
-							'table' => array ('<table border="0" cellspacing="1" cellpadding="0" class="informationTable">', '</table>'),
-							'defRow' => array (
-								'tr' => array('<tr class="bgColor4-20" valign="top">', '</tr>'),
-								'defCol' => array('<td>', '</td>'),
-							)
-						);
-			// Prepare ctrl information
-		$externalCtrlConfiguration = $GLOBALS['TCA'][$tableData['tablename']]['ctrl']['external'][$tableData['index']];
-		$table = array();
-		$tr = 0;
-			// Connector information
-		if (isset($externalCtrlConfiguration['connector'])) {
-			$table[$tr][] = $GLOBALS['LANG']->getLL('connector');
-			$table[$tr][] = $externalCtrlConfiguration['connector'];
-			$tr++;
-			$table[$tr][] = $GLOBALS['LANG']->getLL('connector.details');
-			$table[$tr][] = $this->dumpArray($externalCtrlConfiguration['parameters']);
-			$tr++;
-		}
-			// Data information
-		$table[$tr][] = $GLOBALS['LANG']->getLL('data_type');
-		$table[$tr][] = $externalCtrlConfiguration['data'];
-		$tr++;
-		if (isset($externalCtrlConfiguration['nodetype'])) {
-			$table[$tr][] = $GLOBALS['LANG']->getLL('reference_node');
-			$table[$tr][] = $externalCtrlConfiguration['nodetype'];
-			$tr++;
-		}
-		$table[$tr][] = $GLOBALS['LANG']->getLL('external_key');
-		$table[$tr][] = $externalCtrlConfiguration['reference_uid'];
-		$tr++;
-			// PID information
-		$pid = 0;
-		if (isset($externalCtrlConfiguration['pid'])) {
-			$pid = $externalCtrlConfiguration['pid'];
-		} elseif (isset($this->extensionConfiguration['storagePID'])) {
-			$pid = $this->extensionConfiguration['storagePID'];
-		}
-		$table[$tr][] = $GLOBALS['LANG']->getLL('storage_pid');
-		$table[$tr][] = ($pid == 0) ? 0 : $this->getPageLink($pid);
-		$tr++;
-		$table[$tr][] = $GLOBALS['LANG']->getLL('enforce_pid');
-		$table[$tr][] = (empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->getLL('no') : $GLOBALS['LANG']->getLL('yes');
-		$tr++;
-		$table[$tr][] = $GLOBALS['LANG']->getLL('disableLog');
-		if (isset($externalCtrlConfiguration['disableLog'])) {
-			$value = (empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->getLL('no') : $GLOBALS['LANG']->getLL('yes');
-		} else {
-			$value = $GLOBALS['LANG']->getLL('undefined');
-		}
-		$table[$tr][] = $value;
-		$tr++;
-			// Additional fields
-		$table[$tr][] = $GLOBALS['LANG']->getLL('additional_fields');
-		$table[$tr][] = (empty($externalCtrlConfiguration['additional_fields'])) ? '-' : $externalCtrlConfiguration['additional_fields'];
-		$tr++;
-			// Control options
-		$table[$tr][] = $GLOBALS['LANG']->getLL('where_clause');
-		$table[$tr][] = (empty($externalCtrlConfiguration['where_clause'])) ? $GLOBALS['LANG']->getLL('none') : $externalCtrlConfiguration['where_clause'];
-		$tr++;
-		$table[$tr][] = $GLOBALS['LANG']->getLL('disabled_operations');
-		$table[$tr][] = (empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->getLL('none') : $externalCtrlConfiguration['disabledOperations'];
-		$tr++;
-		$table[$tr][] = $GLOBALS['LANG']->getLL('minimum_records');
-		$table[$tr][] = (empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : $externalCtrlConfiguration['minimumRecords'];
-
-			// Render general information
-		$externalInformation .= '<h4>' . $GLOBALS['LANG']->getLL('general_information') . '</h4>';
-		$externalInformation .= $this->doc->table($table, $tableLayout);
-
-			// Prepare columns mapping information
-		t3lib_div::loadTCA($tableData['tablename']);
-		$columnsConfiguration = $GLOBALS['TCA'][$tableData['tablename']]['columns'];
-		ksort($columnsConfiguration);
-		$table = array();
-		$tr = 0;
-		foreach ($columnsConfiguration as $column => $columnData) {
-			if (isset($columnData['external'][$tableData['index']])) {
-				$table[$tr][] = $column;
-				$table[$tr][] = $this->dumpArray($columnData['external'][$tableData['index']]);
-				$tr++;
-			}
-		}
-			// Render columns mapping information
-		$externalInformation .= '<h4>' . $GLOBALS['LANG']->getLL('columns_mapping') . '</h4>';
-		$externalInformation .= $this->doc->table($table, $tableLayout);
-		return $externalInformation;
-	}
-
-	/**
-	 * Dump a PHP array to a HTML table
-	 * (This is somewhat similar to t3lib_div::view_array() but with styling ;-)
-	 *
-	 * @param	array	$array: Array to display
-	 * @return	string	HTML table assembled from array
-	 */
-	protected function dumpArray($array) {
-		$table = '<table border="0" cellpadding="1" cellspacing="1" bgcolor="#8a8a8a">';
-		foreach ($array as $key => $value) {
-			$table .= '<tr class="bgColor4-20" valign="top">';
-			$table .= '<td>' . $key . '</td>';
-			$table .= '<td>';
-			if (is_array($value)) {
-				$table .= $this->dumpArray($value);
-			} else {
-				$table .= $value;
-			}
-			$table .= '</td>';
-			$table .= '</tr>';
-		}
-		$table .= '</table>';
-		return $table;
-	}
-
-	/**
 	 * This method takes a message and a severity level and returns an appropriate box
 	 * ready for display
 	 *
@@ -831,33 +681,6 @@ class tx_externalimport_module1 extends t3lib_SCbase {
 		$messageDisplay = '<p style="' . $style . '">' . $message . '</p>';
 		return $messageDisplay;
 	}
-
-    /**
-     * Returns a linked icon with title from a page
-     *
-     * @param integer $uid ID of the page
-     * @return string HTML for icon, title and link
-     */
-    protected function  getPageLink($uid) {
-		$string = '';
-		if (!empty($uid)) {
-			$page = t3lib_BEfunc::getRecord('pages', $uid);
-				// If the page doesn't exist, the result is null, but we need rather an empty array
-			if ($page === NULL) {
-				$page = array();
-			}
-			$pageTitle = t3lib_BEfunc::getRecordTitle('pages', $page, 1);
-			$iconAltText = t3lib_BEfunc::getRecordIconAltText($page, 'pages');
-
-				// Create icon for record
-			$elementIcon = t3lib_iconWorks::getSpriteIconForRecord('pages', $page, array('title' => $iconAltText));
-
-				// Return item with link to Web > List
-			$editOnClick = "top.goToModule('web_list', '', '&id=" . $uid . "')";
-			$string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $GLOBALS['LANG']->getLL('jump_to_page') . '">' . $elementIcon . $pageTitle . '</a>';
-		}
-		return $string;
-    }
 }
 
 

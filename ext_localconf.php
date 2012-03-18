@@ -12,4 +12,10 @@ if (t3lib_extMgm::isLoaded('scheduler')) {
 		'additionalFields'	=> 'tx_externalimport_autosync_scheduler_AdditionalFieldProvider'
 	);
 }
+t3lib_extMgm::registerExtDirectComponent(
+	'TYPO3.ExternalImport.ExtDirect',
+	t3lib_extMgm::extPath($_EXTKEY, 'Classes/ExtDirect/Server.php:Tx_ExternalImport_ExtDirect_Server'),
+	'user_txexternalimportM1',
+	'user,group'
+);
 ?>

@@ -1,10 +1,15 @@
-.informationBlock {
-	height: 500px;
-	overflow: scroll;
+.informationTab {
+	margin: 6px;
 }
 .informationTable {
-	width: 400px;
+	margin-bottom: 10px;
 }
 .informationTable td {
 	padding: 2px;
+}
+.t3-icon-empty {
+	cursor: default;
+}
+.configurationGrid td.loading-indicator {
+	background-position: 5px 2px;
 }
