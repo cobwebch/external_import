@@ -92,6 +92,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			fixed: true,
 			sortable: false,
 			menuDisabled: true,
+			hidden: !TYPO3.settings.external_import.hasScheduler,
 			items: [
 				{
 					tooltip: TYPO3.lang['synchronise'],
