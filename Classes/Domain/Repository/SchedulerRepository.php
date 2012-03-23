@@ -69,10 +69,12 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository {
 			}
 			$taskList[$key] = array(
 				'uid' => $taskObject->getTaskUid(),
+					// Format date as needed for display
 				'nextexecution' => date($dateFormat ,$taskObject->getExecutionTime()),
 				'interval' => $taskObject->getExecution()->getInterval(),
 				'croncmd' => $taskObject->getExecution()->getCronCmd(),
-				'start' => $taskObject->getExecution()->getStart(),
+					// Format date as needed for form input
+				'start' => date('Y-m-d H:i:s', $taskObject->getExecution()->getStart()),
 			);
 		}
 		return $taskList;

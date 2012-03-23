@@ -160,10 +160,36 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			id: 'automated',
 			header: TYPO3.lang['autosync'],
 			width: 100,
-			sortable: false,
-			menuDisabled: true,
+			sortable: true,
 			hidden: !TYPO3.settings.external_import.hasScheduler,
 			tpl: TYPO3.ExternalImport.AutosyncColumnTemplate
+		},
+			// Scheduler form button
+		{
+			xtype: 'actioncolumn',
+			id: 'scheduler-button',
+			header: '',
+			width: 30,
+			fixed: true,
+			sortable: false,
+			menuDisabled: true,
+			items: [
+				{
+					tooltip: TYPO3.lang['change_sync'],
+					handler: function(grid, rowIndex, colIndex) {
+						var record = TYPO3.ExternalImport.ConfigurationStore.getAt(rowIndex);
+						TYPO3.ExternalImport.showAutoSyncForm(record.json);
+					},
+					getClass: function(v, meta, record) {
+							// If the automation is already activate, display an edit icon, otherwise display a new icon
+						if (record.json.automated) {
+							return 't3-icon t3-icon-actions t3-icon-actions-document t3-icon-document-open';
+						} else {
+							return 't3-icon t3-icon-actions t3-icon-actions-page t3-icon-page-new';
+						}
+					}
+				}
+			]
 		}
 	],
 	viewConfig: {
@@ -227,6 +253,23 @@ TYPO3.ExternalImport.showExternalImportInformation = function(table, index) {
 						}
 					}
 				]
+			})
+		]
+	}).show();
+};
+
+TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
+	console.log(configuration);
+	TYPO3.Windows.getWindow({
+		id: 'external_import_autosync_' + configuration.table + '_' + configuration.index,
+		title: TYPO3.lang['sync_settings'],
+		layout: 'fit',
+		width: Ext.getBody().getViewSize().width * 0.5,
+		items: [
+			new Ext.TabPanel({
+				activeTab: 0,
+				plain: true,
+				items: []
 			})
 		]
 	}).show();

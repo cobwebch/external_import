@@ -77,6 +77,8 @@
 			<label index="error_invalid_start_date">The given start date is not valid.</label>
 			<label index="add_sync">Define the synchronisation settings</label>
 			<label index="edit_sync">Edit the synchronisation settings</label>
+			<label index="change_sync">Define or edit the synchronization settings</label>
+			<label index="sync_settings">Synchronization settings</label>
 			<label index="cancel_edit_sync">Cancel modifications</label>
 			<label index="delete_sync">Remove the synchronisation</label>
 			<label index="delete_sync_confirm">Are you sure you want to remove this automatic synchronisation?</label>
