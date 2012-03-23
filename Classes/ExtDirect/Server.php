@@ -43,7 +43,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 
 	public function __construct() {
 			// Read the extension's configuration
-		$this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extensionConfiguration']['external_import']);
+		$this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
 			// Create an instance of the configuration repository
 		$this->repository = t3lib_div::makeInstance('Tx_ExternalImport_Domain_Model_Configuration');
 	}
