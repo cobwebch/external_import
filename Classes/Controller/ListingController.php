@@ -190,10 +190,4 @@ class Tx_ExternalImport_Controller_ListingController extends Tx_Extbase_MVC_Cont
 	}
 	 */
 }
-
-
-if (defined('TYPO3_MODE') && isset($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/workspaces/Classes/Controller/ReviewController.php'])) {
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/workspaces/Classes/Controller/ReviewController.php']);
-}
-
 ?>
