@@ -72,7 +72,7 @@
 			<label index="autosync_saved">The automatic synchronisation information has been saved.</label>
 			<label index="autosync_save_failed">The automatic synchronisation information could not be saved.</label>
 			<label index="no_autosync">The automatic synchronisation is not yet enabled.</label>
-			<label index="next_autosync">Activated. The next run will take place on %s.</label>
+			<label index="next_autosync">Activated. The next run will take place on {0}.</label>
 			<label index="error_invalid_frequency">The frequency should either be a cron command or a number of seconds larger than 0.</label>
 			<label index="error_invalid_start_date">The given start date is not valid.</label>
 			<label index="add_sync">Define the synchronisation settings</label>

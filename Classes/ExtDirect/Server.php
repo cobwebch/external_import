@@ -37,15 +37,15 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 */
 	protected $extensionConfiguration = array();
 	/**
-	 * @var Tx_ExternalImport_Domain_Model_Configuration Pseudo-repository used to read TCA configurations
+	 * @var Tx_ExternalImport_Domain_Repository_ConfigurationRepository Pseudo-repository used to read TCA configurations
 	 */
-	protected $repository;
+	protected $configurationRepository;
 
 	public function __construct() {
 			// Read the extension's configuration
 		$this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
 			// Create an instance of the configuration repository
-		$this->repository = t3lib_div::makeInstance('Tx_ExternalImport_Domain_Model_Configuration');
+		$this->configurationRepository = t3lib_div::makeInstance('Tx_ExternalImport_Domain_Repository_ConfigurationRepository');
 	}
 
 	/**
@@ -56,7 +56,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 */
 	public function getConfigurations($isSynchronizable) {
 		return array(
-			'data' => $this->repository->findByType($isSynchronizable)
+			'data' => $this->configurationRepository->findByType($isSynchronizable)
 		);
 	}
 
@@ -70,7 +70,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 	public function getGeneralConfiguration($table, $index) {
 		$externalInformation = '';
 			// Get the ctrl information
-		$externalCtrlConfiguration = $this->repository->findByTableAndIndex($table, $index);
+		$externalCtrlConfiguration = $this->configurationRepository->findByTableAndIndex($table, $index);
 
 		if (is_array($externalCtrlConfiguration)) {
 				// Prepare the display
@@ -159,7 +159,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 */
 	public function getColumnsConfiguration($table, $index) {
 		$externalInformation = '';
-		$columns = $this->repository->findColumnsByTableAndIndex($table, $index);
+		$columns = $this->configurationRepository->findColumnsByTableAndIndex($table, $index);
 
 		if (is_array($columns)) {
 			$externalInformation .= '<table border="0" cellspacing="1" cellpadding="0" class="informationTable">';
@@ -185,7 +185,6 @@ class Tx_ExternalImport_ExtDirect_Server {
 	public function launchSynchronization($table, $index) {
 			/** @var $importer tx_externalimport_importer */
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
-		$messages = array();
 
 			// Synchronize the table
 		$messages = $importer->synchronizeData($table, $index);

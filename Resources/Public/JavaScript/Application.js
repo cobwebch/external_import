@@ -21,13 +21,27 @@ TYPO3.ExternalImport.ConfigurationStore = new Ext.data.DirectStore({
 		{name: 'index'},
 		{name: 'priority'},
 		{name: 'description'},
-		{name: 'writeAccess'}
+		{name: 'writeAccess'},
+		{name: 'automated'},
+		{name: 'task'}
 	],
 	sortInfo: {
 		field: 'priority',
 		direction: 'ASC'
 	}
 });
+
+	// Template for the rendering of the automated synchronization column
+TYPO3.ExternalImport.AutosyncColumnTemplate = new Ext.XTemplate(
+	'<div class="longCellWrap">',
+		'<tpl if="automated == 0">',
+			'<p>' + TYPO3.lang['no_autosync'] + '</p>',
+		'</tpl>',
+		'<tpl if="automated == 1">',
+			'<p>{[String.format(TYPO3.lang["next_autosync"], values.task.nextexecution)]}</p>',
+		'</tpl>',
+	'</div>'
+);
 
 	// Define the grid where all configurations are displayed
 TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
@@ -47,14 +61,14 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			id: 'table',
 			header: TYPO3.lang['table'],
 			dataIndex: 'tableName',
-			width: 200,
+			width: 150,
 			sortable: true
 		},
 		{
 			id: 'description',
 			header: TYPO3.lang['description'],
 			dataIndex: 'description',
-			width: 200,
+			width: 150,
 			sortable: true
 		},
 		{
@@ -140,6 +154,16 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 					}
 				}
 			]
+		},
+		{
+			xtype: 'templatecolumn',
+			id: 'automated',
+			header: TYPO3.lang['autosync'],
+			width: 100,
+			sortable: false,
+			menuDisabled: true,
+			hidden: !TYPO3.settings.external_import.hasScheduler,
+			tpl: TYPO3.ExternalImport.AutosyncColumnTemplate
 		}
 	],
 	viewConfig: {

@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2009 Francois Suter (Cobweb) <typo3@cobweb.ch>
+*  (c) 2007-2012 Francois Suter (Cobweb) <typo3@cobweb.ch>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -24,7 +24,9 @@
 
 
 /**
- * This class implements the abstract autosync wrapper for the Scheduler
+ * Pseudo-repository class for Scheduler tasks
+ *
+ * This is not a true repository from an Extbase point of view. It implemented only a few features of a complete repository.
  *
  * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
  * @package		TYPO3
@@ -32,7 +34,7 @@
  *
  * $Id$
  */
-class tx_externalimport_autosync_wrapper_scheduler {
+class Tx_ExternalImport_Domain_Repository_SchedulerRepository {
 	/**
 	 * @var	string	Name of the related task class
 	 */
@@ -50,44 +52,43 @@ class tx_externalimport_autosync_wrapper_scheduler {
 	}
 
 	/**
-	 * This method fetches all tasks related to the external import extension
+	 * TFetches all tasks related to the external import extension
 	 * The return array is structured per table/index
 	 *
-	 * @return	array	List of registered events/tasks, per table and index
+	 * @return array List of registered events/tasks, per table and index
 	 */
-	public function getAllTasks() {
+	public function fetchAllTasks() {
 		$taskList = array();
 		$tasks = $this->scheduler->fetchTasksWithCondition("classname = '" . self::$taskClassName . "'", TRUE);
+		$dateFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
+			/** @var $taskObject tx_externalimport_autosync_scheduler_Task */
 		foreach ($tasks as $taskObject) {
 			$key = $taskObject->table;
 			if ($key != 'all') {
 				$key .= '/' . $taskObject->index;
 			}
 			$taskList[$key] = array(
-								'uid' => $taskObject->getTaskUid(),
-								'nextexecution' => $taskObject->getExecutionTime(),
-								'interval' => $taskObject->getExecution()->getInterval(),
-								'croncmd' => $taskObject->getExecution()->getCronCmd(),
-								'start' => $taskObject->getExecution()->getStart(),
-							);
+				'uid' => $taskObject->getTaskUid(),
+				'nextexecution' => date($dateFormat ,$taskObject->getExecutionTime()),
+				'interval' => $taskObject->getExecution()->getInterval(),
+				'croncmd' => $taskObject->getExecution()->getCronCmd(),
+				'start' => $taskObject->getExecution()->getStart(),
+			);
 		}
 		return $taskList;
 	}
 
 	/**
-	 * This method saves a given task
+	 * TSaves a given task
 	 * If no uid is given, a new taks is created
 	 *
-	 * @param	array		$taskData: list of fields to save. Must include "uid" for an existing registered task
-	 * @return	boolean		True or false depending on success or failure of action
+	 * @param array $taskData List of fields to save. Must include "uid" for an existing registered task
+	 * @return boolean True or false depending on success or failure of action
 	 */
 	public function saveTask($taskData) {
-		$result = FALSE;
 		if (empty($taskData['uid'])) {
 				// Create a new task instance and register the execution
-				/**
-				 * @var	tx_scheduler_Task
-				 */
+				/** @var $task tx_scheduler_Task */
 			$task = t3lib_div::makeInstance(self::$taskClassName);
 			$task->registerRecurringExecution($taskData['start'], $taskData['interval'], 0, FALSE, $taskData['croncmd']);
 				// Set the data specific to external import
@@ -106,10 +107,10 @@ class tx_externalimport_autosync_wrapper_scheduler {
 	}
 
 	/**
-	 * This method removes the registration of a given task
+	 * Removes the registration of a given task
 	 *
-	 * @param	integer		$uid: primary key of the task to remove
-	 * @return	boolean		True or false depending on success or failure of action
+	 * @param integer $uid Frimary key of the task to remove
+	 * @return boolean True or false depending on success or failure of action
 	 */
 	public function deleteTask($uid) {
 		$result = FALSE;

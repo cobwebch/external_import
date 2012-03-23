@@ -37,7 +37,7 @@
  *
  * $Id$
  */
-class Tx_ExternalImport_Domain_Model_Configuration {
+class Tx_ExternalImport_Domain_Repository_ConfigurationRepository {
 	/**
 	 * Returns the "ctrl" part of the external import configuration for the given table and index
 	 *
@@ -86,6 +86,14 @@ class Tx_ExternalImport_Domain_Model_Configuration {
 	public function findByType($synchronizable) {
 		$configurations = array();
 
+			// Get a list of all external import Scheduler tasks, if Scheduler is active
+		$tasks = array();
+		if (t3lib_extMgm::isLoaded('scheduler')) {
+				/** @var $schedulerRepository Tx_ExternalImport_Domain_Repository_SchedulerRepository */
+			$schedulerRepository = t3lib_div::makeInstance('Tx_ExternalImport_Domain_Repository_SchedulerRepository');
+			$tasks = $schedulerRepository->fetchAllTasks();
+		}
+
 			// Loop on all tables and extract external_import-related information from them
 		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
 				// Check if table has external info
@@ -112,7 +120,8 @@ class Tx_ExternalImport_Domain_Model_Configuration {
 							if (isset($externalConfig['description'])) {
 								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
 							}
-							$configurations[] = array(
+								// Store the base configuration
+							$tableConfiguration = array(
 								'id' => $tableName . '-' . $index,
 								'table' => $tableName,
 								'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']) . ' (' . $tableName . ')',
@@ -122,6 +131,16 @@ class Tx_ExternalImport_Domain_Model_Configuration {
 								'description' => $description,
 								'writeAccess' => $hasWriteAccess
 							);
+								// Add Scheduler task information, if any
+							$taskKey = $tableName . '/' . $index;
+							if (isset($tasks[$taskKey])) {
+								$tableConfiguration['automated'] = 1;
+								$tableConfiguration['task'] = $tasks[$taskKey];
+							} else {
+								$tableConfiguration['automated'] = 0;
+								$tableConfiguration['task'] = NULL;
+							}
+							$configurations[] = $tableConfiguration;
 						}
 					}
 				}
