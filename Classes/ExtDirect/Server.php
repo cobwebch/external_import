@@ -36,10 +36,16 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 * @var array The extension's configuration
 	 */
 	protected $extensionConfiguration = array();
+	/**
+	 * @var Tx_ExternalImport_Domain_Model_Configuration Pseudo-repository used to read TCA configurations
+	 */
+	protected $repository;
 
 	public function __construct() {
 			// Read the extension's configuration
 		$this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extensionConfiguration']['external_import']);
+			// Create an instance of the configuration repository
+		$this->repository = t3lib_div::makeInstance('Tx_ExternalImport_Domain_Model_Configuration');
 	}
 
 	/**
@@ -49,58 +55,8 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 * @return array
 	 */
 	public function getConfigurations($isSynchronizable) {
-		$configurations = array();
-
-		$hasAllWriteAccess = TRUE;
-			// Loop on all tables and extract external_import-related information from them
-		foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-				// Check if table has external info
-			if (isset($sections['ctrl']['external'])) {
-					// Check if user has read rights on it
-					// If not, the table is skipped entirely
-				if ($GLOBALS['BE_USER']->check('tables_select', $tableName)) {
-					$externalData = $sections['ctrl']['external'];
-					$hasWriteAccess = $GLOBALS['BE_USER']->check('tables_modify', $tableName);
-					foreach ($externalData as $index => $externalConfig) {
-							// Synchronizable tables have a connector configuration
-							// Non-synchronizable tables don't
-						if (
-							($isSynchronizable && !empty($externalConfig['connector'])) ||
-							(!$isSynchronizable && empty($externalConfig['connector']))
-						) {
-								// If priority is not defined, set to very low
-								// NOTE: the priority doesn't matter for non-synchronizable tables
-							$priority = 1000;
-							$description = '';
-							if (isset($externalConfig['priority'])) {
-								$priority = $externalConfig['priority'];
-							}
-							if (isset($externalConfig['description'])) {
-								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
-							}
-							$configurations[] = array(
-								'id' => $tableName . '-' . $index,
-								'table' => $tableName,
-								'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']) . ' (' . $tableName . ')',
-								'icon' => t3lib_iconWorks::getSpriteIconForRecord($tableName, array()),
-								'index' => $index,
-								'priority' => $priority,
-								'description' => $description,
-								'writeAccess' => $hasWriteAccess
-							);
-						}
-					}
-				} else {
-						// This general flag must be true only if user has write
-						// access to *all* tables
-					$hasAllWriteAccess &= FALSE;
-				}
-			}
-		}
-
-			// Return the results
 		return array(
-			'data' => $configurations
+			'data' => $this->repository->findByType($isSynchronizable)
 		);
 	}
 
@@ -112,81 +68,85 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 * @return string Content to display
 	 */
 	public function getGeneralConfiguration($table, $index) {
-		$externalInformation = '<table border="0" cellspacing="1" cellpadding="0" class="informationTable">';
-			// Prepare ctrl information
-		$externalCtrlConfiguration = $GLOBALS['TCA'][$table]['ctrl']['external'][$index];
+		$externalInformation = '';
+			// Get the ctrl information
+		$externalCtrlConfiguration = $this->repository->findByTableAndIndex($table, $index);
 
-			// Connector information
-		if (isset($externalCtrlConfiguration['connector'])) {
+		if (is_array($externalCtrlConfiguration)) {
+				// Prepare the display
+			$externalInformation .= '<table border="0" cellspacing="1" cellpadding="0" class="informationTable">';
+				// Connector information
+			if (isset($externalCtrlConfiguration['connector'])) {
+				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector') . '</td>';
+				$externalInformation .= '<td>' . $externalCtrlConfiguration['connector'] . '</td>';
+				$externalInformation .= '</tr>';
+				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector.details') . '</td>';
+				$externalInformation .= '<td>' . $this->dumpArray($externalCtrlConfiguration['parameters']) . '</td>';
+				$externalInformation .= '</tr>';
+			}
+				// Data information
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector') . '</td>';
-			$externalInformation .= '<td>' . $externalCtrlConfiguration['connector'] . '</td>';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_type') . '</td>';
+			$externalInformation .= '<td>' . $externalCtrlConfiguration['data'] . '</td>';
+			$externalInformation .= '</tr>';
+			if (isset($externalCtrlConfiguration['nodetype'])) {
+				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:reference_node') . '</td>';
+				$externalInformation .= '<td>' . $externalCtrlConfiguration['nodetype'] . '</td>';
+				$externalInformation .= '</tr>';
+			}
+			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:external_key') . '</td>';
+			$externalInformation .= '<td>' . $externalCtrlConfiguration['reference_uid'] . '</td>';
+			$externalInformation .= '</tr>';
+				// PID information
+			$pid = 0;
+			if (isset($externalCtrlConfiguration['pid'])) {
+				$pid = $externalCtrlConfiguration['pid'];
+			} elseif (isset($this->extensionConfiguration['storagePID'])) {
+				$pid = $this->extensionConfiguration['storagePID'];
+			}
+			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:storage_pid') . '</td>';
+			$externalInformation .= '<td>' . (($pid == 0) ? 0 : $this->getPageLink($pid)) . '</td>';
 			$externalInformation .= '</tr>';
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector.details') . '</td>';
-			$externalInformation .= '<td>' . $this->dumpArray($externalCtrlConfiguration['parameters']) . '</td>';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:enforce_pid') . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:yes')) . '</td>';
 			$externalInformation .= '</tr>';
-		}
-			// Data information
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_type') . '</td>';
-		$externalInformation .= '<td>' . $externalCtrlConfiguration['data'] . '</td>';
-		$externalInformation .= '</tr>';
-		if (isset($externalCtrlConfiguration['nodetype'])) {
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:reference_node') . '</td>';
-			$externalInformation .= '<td>' . $externalCtrlConfiguration['nodetype'] . '</td>';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disableLog') . '</td>';
+			if (isset($externalCtrlConfiguration['disableLog'])) {
+				$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:yes')) . '</td>';
+			} else {
+				$value = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:undefined') . '</td>';
+			}
+			$externalInformation .= '<td>' . $value . '</td>';
 			$externalInformation .= '</tr>';
-		}
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:external_key') . '</td>';
-		$externalInformation .= '<td>' . $externalCtrlConfiguration['reference_uid'] . '</td>';
-		$externalInformation .= '</tr>';
-			// PID information
-		$pid = 0;
-		if (isset($externalCtrlConfiguration['pid'])) {
-			$pid = $externalCtrlConfiguration['pid'];
-		} elseif (isset($this->extensionConfiguration['storagePID'])) {
-			$pid = $this->extensionConfiguration['storagePID'];
-		}
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:storage_pid') . '</td>';
-		$externalInformation .= '<td>' . (($pid == 0) ? 0 : $this->getPageLink($pid)) . '</td>';
-		$externalInformation .= '</tr>';
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:enforce_pid') . '</td>';
-		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:yes')) . '</td>';
-		$externalInformation .= '</tr>';
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disableLog') . '</td>';
-		if (isset($externalCtrlConfiguration['disableLog'])) {
-			$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:yes')) . '</td>';
-		} else {
-			$value = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:undefined') . '</td>';
-		}
-		$externalInformation .= '<td>' . $value . '</td>';
-		$externalInformation .= '</tr>';
-			// Additional fields
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:additional_fields') . '</td>';
-		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['additional_fields'])) ? '-' : $externalCtrlConfiguration['additional_fields']) . '</td>';
-		$externalInformation .= '</tr>';
-			// Control options
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:where_clause') . '</td>';
-		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['where_clause'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : $externalCtrlConfiguration['where_clause']) . '</td>';
-		$externalInformation .= '</tr>';
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disabled_operations') . '</td>';
-		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : $externalCtrlConfiguration['disabledOperations']) . '</td>';
-		$externalInformation .= '</tr>';
-		$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-		$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:minimum_records') . '</td>';
-		$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : $externalCtrlConfiguration['minimumRecords']) . '</td>';
-		$externalInformation .= '</tr>';
-		$externalInformation .= '</table>';
+				// Additional fields
+			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:additional_fields') . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['additional_fields'])) ? '-' : $externalCtrlConfiguration['additional_fields']) . '</td>';
+			$externalInformation .= '</tr>';
+				// Control options
+			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:where_clause') . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['where_clause'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : $externalCtrlConfiguration['where_clause']) . '</td>';
+			$externalInformation .= '</tr>';
+			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disabled_operations') . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : $externalCtrlConfiguration['disabledOperations']) . '</td>';
+			$externalInformation .= '</tr>';
+			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:minimum_records') . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : $externalCtrlConfiguration['minimumRecords']) . '</td>';
+			$externalInformation .= '</tr>';
+			$externalInformation .= '</table>';
 
-		$externalInformation .= '</table>';
+			$externalInformation .= '</table>';
+		}
 		return $externalInformation;
 	}
 
@@ -199,25 +159,19 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 */
 	public function getColumnsConfiguration($table, $index) {
 		$externalInformation = '';
-			// Prepare ctrl information
-		$externalCtrlConfiguration = $GLOBALS['TCA'][$table]['ctrl']['external'][$index];
+		$columns = $this->repository->findColumnsByTableAndIndex($table, $index);
 
-		$externalInformation .= '<table border="0" cellspacing="1" cellpadding="0" class="informationTable">';
-
-			// Prepare columns mapping information
-		t3lib_div::loadTCA($table);
-		$columnsConfiguration = $GLOBALS['TCA'][$table]['columns'];
-		ksort($columnsConfiguration);
-		foreach ($columnsConfiguration as $column => $columnData) {
-			if (isset($columnData['external'][$index])) {
+		if (is_array($columns)) {
+			$externalInformation .= '<table border="0" cellspacing="1" cellpadding="0" class="informationTable">';
+			foreach ($columns as $columnName => $columnData) {
 				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
-				$externalInformation .= '<td>' . $column . '</td>';
-				$externalInformation .= '<td>' . $this->dumpArray($columnData['external'][$index]) . '</td>';
+				$externalInformation .= '<td>' . $columnName . '</td>';
+				$externalInformation .= '<td>' . $this->dumpArray($columnData) . '</td>';
 				$externalInformation .= '</tr>';
 			}
-		}
 
-		$externalInformation .= '</table>';
+			$externalInformation .= '</table>';
+		}
 		return $externalInformation;
 	}
 
