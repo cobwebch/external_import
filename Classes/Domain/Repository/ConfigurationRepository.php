@@ -35,7 +35,7 @@
  * @package		TYPO3
  * @subpackage	tx_externalimport
  *
- * $Id: ListingController.php 59350 2012-03-18 20:57:11Z francois $
+ * $Id$
  */
 class Tx_ExternalImport_Domain_Model_Configuration {
 	/**
