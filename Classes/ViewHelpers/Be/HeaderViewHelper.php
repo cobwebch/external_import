@@ -61,7 +61,9 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 		$this->pageRenderer->addInlineSettingArray(
 			'external_import',
 			array(
-				'hasScheduler' => t3lib_extMgm::isLoaded('scheduler', FALSE)
+				'hasScheduler' => t3lib_extMgm::isLoaded('scheduler', FALSE),
+				'dateFormat' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'],
+				'timeFormat' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']
 			)
 		);
 			// Load application specific JS
@@ -69,7 +71,9 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 		$this->pageRenderer->addJsFile($doc->backPath . '../t3lib/js/extjs/notifications.js', 'text/javascript', FALSE);
 			// Load the specific stylesheet
 		$this->pageRenderer->addCssFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Stylesheet/ExternalImport.css');
+			// Load the specific language file
 		$this->pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/locallang.xml');
+		$this->pageRenderer->addInlineLanguageLabelFile('EXT:lang/locallang_common.xml');
 	}
 }
 

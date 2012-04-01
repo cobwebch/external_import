@@ -155,6 +155,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 				}
 			]
 		},
+			// Information about automated synchronization
 		{
 			xtype: 'templatecolumn',
 			id: 'automated',
@@ -196,6 +197,8 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 		forceFit: true
 	},
 	enableColumnHide: false,
+		// Make the grid use all the possible space available
+		// @see t3lib/js/extjs/ux/Ext.ux.FitToParent.js
 	plugins: [new Ext.ux.plugins.FitToParent()]
 });
 
@@ -258,25 +261,123 @@ TYPO3.ExternalImport.showExternalImportInformation = function(table, index) {
 	}).show();
 };
 
+/**
+ * Prepares and displays a form for defining (adding or editing) the automatic
+ * synchronization parameters for a given configuration
+ *
+ * @param configuration
+ */
 TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
-	console.log(configuration);
 	TYPO3.Windows.getWindow({
 		id: 'external_import_autosync_' + configuration.table + '_' + configuration.index,
 		title: TYPO3.lang['sync_settings'],
-		layout: 'fit',
 		width: Ext.getBody().getViewSize().width * 0.5,
 		items: [
-			new Ext.TabPanel({
-				activeTab: 0,
-				plain: true,
-				items: []
+			new Ext.form.FormPanel({
+					// Define which ExtDirect method must be called upon submit
+				api: {
+					submit: TYPO3.ExternalImport.ExtDirect.saveSchedulerTask
+				},
+					// List of form fields
+				items: [
+						// If the configuration contains a task, we are editing an existing task
+						// If not, we are adding a new one. All fields are initialized accordingly
+					{
+						xtype: 'hidden',
+						name: 'uid',
+						value: (configuration.task) ? configuration.task.uid : 0
+					},
+					{
+						xtype: 'hidden',
+						name: 'table',
+						value: configuration.table
+					},
+					{
+						xtype: 'hidden',
+						name: 'index',
+						value: configuration.index
+					},
+					{
+						fieldLabel: TYPO3.lang['frequency'],
+						name: 'frequency',
+						xtype: 'textfield',
+						value: (configuration.task) ? configuration.task.frequency : ''
+					},
+						// Simple box with help text
+						// This is a workaround for the impossibility to have something like bubble help in ExtJS forms
+					{
+						xtype: 'box',
+						autoEl: {
+							tag: 'p',
+							cls: 'help-text',
+							html: TYPO3.lang['frequency_help']
+						}
+					},
+						// Composite field to display date and time side by side
+					{
+						fieldLabel: TYPO3.lang['start_date'],
+						xtype: 'compositefield',
+						boxMinHeight: 25,
+						items: [
+							{
+								name: 'start_date',
+								xtype: 'datefield',
+								format: TYPO3.settings.external_import.dateFormat,
+								value: (configuration.task) ? configuration.task.start_date : ''
+							},
+							{
+								name: 'start_time',
+								xtype: 'timefield',
+								width: 70,
+								format: TYPO3.settings.external_import.timeFormat,
+								value: (configuration.task) ? configuration.task.start_time : '',
+								increment: 15
+							}
+						]
+					},
+						// Help text
+					{
+						xtype: 'box',
+						autoEl: {
+							tag: 'p',
+							cls: 'help-text',
+							html: TYPO3.lang['start_date_help']
+						}
+					}
+				],
+					// List of form buttons
+				buttons: [
+						// The save button triggers the submission of the form
+					{
+						text: TYPO3.lang['save'],
+						handler: function(button, event) {
+								// Find the parent form's BasicForm and submit it
+							button.findParentByType('form').getForm().submit({
+								success: function(form, action) {
+									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.ok, [TYPO3.lang['autosync_saved']]);
+									button.findParentByType('window').hide();
+								},
+								failure: function(form, action) {
+									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [TYPO3.lang['autosync_save_failed']]);
+								}
+							});
+						}
+					},
+						// On cancel, just dismiss the window
+					{
+						text: TYPO3.lang['cancel'],
+						handler: function(button, event) {
+							button.findParentByType('window').hide();
+						}
+					}
+				]
 			})
 		]
 	}).show();
 };
 
 /**
- * Renders an list of message of a given severity
+ * Renders a list of messages of a given severity
  *
  * @param severity Level of severity
  * @param messages Array of messages
@@ -288,6 +389,8 @@ TYPO3.ExternalImport.renderMessages = function(severity, messages) {
 		}
 	}
 };
+
+
 
 Ext.onReady(function() {
 		// Define the ExtDirect method to call for loading data into the configuration store
@@ -309,33 +412,3 @@ Ext.onReady(function() {
 		items: [TYPO3.ExternalImport.ConfigurationGrid]
 	});
 });
-
-/**
- * This function turns on or off the display of a synchronization form
- * It also changes the icon displayed accordingly
- *
- * @param theID ID of the element to act on
- * @param theAction Type of action
-function toggleSyncForm(theID, theAction) {
-	var theLink = Ext.get(theID + '_container');
-	var theElement = Ext.get(theID + '_wrapper');
-	var theIcon;
-	if (theElement.isDisplayed()) {
-		theElement.setDisplayed(false);
-		if (theAction === 'add') {
-			theIcon = LOCALAPP.imageExpand_add;
-		} else {
-			theIcon = LOCALAPP.imageExpand_edit;
-		}
-		theLink.update(theIcon);
-	} else {
-		theElement.setDisplayed(true);
-		if (theAction === 'add') {
-			theIcon = LOCALAPP.imageCollapse_add;
-		} else {
-			theIcon = LOCALAPP.imageCollapse_edit;
-		}
-		theLink.update(theIcon);
-	}
-}
-*/

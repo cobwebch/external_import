@@ -67,14 +67,18 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository {
 			if ($key != 'all') {
 				$key .= '/' . $taskObject->index;
 			}
+			$cronCommand = $taskObject->getExecution()->getCronCmd();
+			$interval = $taskObject->getExecution()->getInterval();
 			$taskList[$key] = array(
 				'uid' => $taskObject->getTaskUid(),
 					// Format date as needed for display
 				'nextexecution' => date($dateFormat ,$taskObject->getExecutionTime()),
-				'interval' => $taskObject->getExecution()->getInterval(),
-				'croncmd' => $taskObject->getExecution()->getCronCmd(),
-					// Format date as needed for form input
-				'start' => date('Y-m-d H:i:s', $taskObject->getExecution()->getStart()),
+				'interval' => $interval,
+				'croncmd' => $cronCommand,
+				'frequency' => ($cronCommand == '') ? $interval : $cronCommand,
+					// Format date and time as needed for form input
+				'start_date' => date('m/d/Y', $taskObject->getExecution()->getStart()),
+				'start_time' => date('H:i', $taskObject->getExecution()->getStart())
 			);
 		}
 		return $taskList;

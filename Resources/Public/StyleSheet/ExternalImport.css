@@ -19,3 +19,14 @@
 	white-space: normal;
 	overflow: visible;
 }
+div.x-form-invalid {
+	background: transparent none;
+	border: none;
+}
+.x-form-invalid {
+	background: #f6d3cf none;
+	border: 1px solid #d66c68;
+}
+.help-text {
+	margin: 4px 0 4px 105px;
+}

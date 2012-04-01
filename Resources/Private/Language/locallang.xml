@@ -57,9 +57,9 @@
 			<label index="autosync_intro">It is possible to define a frequency for the automatic synchronisation of &lt;strong&gt;all external tables&lt;/strong&gt;.</label>
 			<label index="autosync_error">Automatic synchronisation of external tables is not possible, because neither extension "gabriel", nor system extension "scheduler" (TYPO3 4.3+) are installed.</label>
 			<label index="autosync_noscheduler">Automatic synchronisation of external tables is not possible, because the system extension "scheduler" is not installed.</label>
-			<label index="start_date">Start date:</label>
+			<label index="start_date">Start date</label>
 			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
-			<label index="frequency">Frequency:</label>
+			<label index="frequency">Frequency</label>
 			<label index="frequency_help">(use cron-like syntax or simply enter a number of seconds)</label>
 			<label index="seconds">seconds</label>
 			<label index="minutes">minutes</label>
@@ -74,6 +74,8 @@
 			<label index="no_autosync">The automatic synchronisation is not yet enabled.</label>
 			<label index="next_autosync">Activated. The next run will take place on {0}.</label>
 			<label index="error_invalid_frequency">The frequency should either be a cron command or a number of seconds larger than 0.</label>
+			<label index="error_empty_frequency">The frequency may not be empty.</label>
+			<label index="error_wrong_frequency">The frequency should either be a cron command or a number of seconds larger than 0 (error: %s).</label>
 			<label index="error_invalid_start_date">The given start date is not valid.</label>
 			<label index="add_sync">Define the synchronisation settings</label>
 			<label index="edit_sync">Edit the synchronisation settings</label>

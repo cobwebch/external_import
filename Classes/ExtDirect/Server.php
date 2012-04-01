@@ -202,6 +202,72 @@ class Tx_ExternalImport_ExtDirect_Server {
 	}
 
 	/**
+	 * Processes the automate synchronization form
+	 *
+	 * @formHandler
+	 * @param array $formData Submitted form data
+	 * @return array Response
+	 */
+	public function saveSchedulerTask($formData) {
+		$response = array(
+			'errors' => array()
+		);
+		$success = TRUE;
+			// Handle the frequency
+			// Frequency cannot be empty
+		$frequency = 0;
+		$cronCommand = '';
+		if ($formData['frequency'] == '') {
+			$success = FALSE;
+			$response['errors']['frequency'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_empty_frequency');
+
+			// Check validity of frequency. It must be either a number or a cron command
+		} else {
+				// Try interpreting the frequency as a cron command
+			try {
+				tx_scheduler_CronCmd_Normalize::normalize($formData['frequency']);
+				$cronCommand = $formData['frequency'];
+			}
+				// If the cron command was invalid, we may still have a valid frequency in seconds
+			catch (Exception $e) {
+					// Check if the frequency is a valid number
+					// If yes, assume it is a frequency in seconds, and unset cron error code
+				if (is_numeric($formData['frequency'])) {
+					$frequency = intval($formData['frequency']);
+				} else {
+					$success = FALSE;
+					$response['errors']['frequency'] = sprintf(
+						$GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_wrong_frequency'),
+						$e->getMessage()
+					);
+				}
+			}
+		}
+			// Handle the start date
+			// If date is empty, use time() - 1 as default, in order to trigger calculation of
+			// soonest possible next execution date
+		if (empty($formData['start_date'])) {
+			$startDate = time() - 1;
+
+			// Otherwise interpret date using strotime()
+		} else {
+			$startDateString = $formData['start_date'];
+				// If the time is not empty, add it to the string to interpret
+			if (!empty($formData['start_time'])) {
+				$startDateString .= ' ' . $formData['start_time'];
+			}
+			$startDate = strtotime($startDateString);
+				// If the date is invalid, log an error
+			if ($startDate === FALSE) {
+				$success = FALSE;
+				$response['errors']['start_date'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_invalid_start_date');
+			}
+		}
+		$response['success'] = $success;
+		return $response;
+	}
+
+	/**
 	 * Utility method used to sort ctrl sections according to the priority value in the external information block
 	 *
 	 * @param	array	$a: first ctrl section to compare
