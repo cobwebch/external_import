@@ -85,7 +85,7 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository {
 	}
 
 	/**
-	 * TSaves a given task
+	 * Saves a given task
 	 * If no uid is given, a new taks is created
 	 *
 	 * @param array $taskData List of fields to save. Must include "uid" for an existing registered task
