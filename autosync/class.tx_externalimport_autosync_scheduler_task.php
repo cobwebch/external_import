@@ -52,9 +52,7 @@ class tx_externalimport_autosync_scheduler_Task extends tx_scheduler_Task {
 		$reportContent = '';
 
 			// Instantiate the import object and call appropriate method depending on command
-			/**
-			 * @var	tx_externalimport_importer
-			 */
+			/** @var $importer tx_externalimport_importer */
 		$importer = t3lib_div::makeInstance('tx_externalimport_importer');
 			// Get the extension's configuration from the importer object
 		$extensionConfiguration = $importer->getExtensionConfiguration();
