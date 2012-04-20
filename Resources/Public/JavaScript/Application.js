@@ -357,11 +357,12 @@ TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
 									console.log(action.result);
 									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.ok, [TYPO3.lang['autosync_saved']]);
 									button.findParentByType('window').hide();
-									var id = action.result.data['table'] + '-' + action.result.data['index'];
-									var record = TYPO3.ExternalImport.ConfigurationStore.getById(id);
-									record.set('task', action.result.data);
-									record.set('automated', 1);
-									record.commit();
+										// Get the grid data to reload
+										// (when a new automated sync is defined, several cells in the row need to be updated,
+										// it is easier to refresh the data than to try and update all the relevant cells)
+									TYPO3.ExternalImport.ConfigurationStore.load({
+										params: {isSynchronizable : true}
+									});
 								},
 								failure: function(form, action) {
 									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [action.result.errors['scheduler']]);
