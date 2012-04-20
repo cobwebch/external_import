@@ -72,7 +72,7 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository {
 			$taskList[$key] = array(
 				'uid' => $taskObject->getTaskUid(),
 					// Format date as needed for display
-				'nextexecution' => date($dateFormat ,$taskObject->getExecutionTime()),
+				'nextexecution' => date($dateFormat, $taskObject->getExecutionTime()),
 				'interval' => $interval,
 				'croncmd' => $cronCommand,
 				'frequency' => ($cronCommand == '') ? $interval : $cronCommand,
