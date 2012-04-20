@@ -40,12 +40,20 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 * @var Tx_ExternalImport_Domain_Repository_ConfigurationRepository Pseudo-repository used to read TCA configurations
 	 */
 	protected $configurationRepository;
+	/**
+	 * @var null|tx_scheduler Scheduler object (if extension is installed)
+	 */
+	protected $scheduler = NULL;
 
 	public function __construct() {
 			// Read the extension's configuration
 		$this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
 			// Create an instance of the configuration repository
 		$this->configurationRepository = t3lib_div::makeInstance('Tx_ExternalImport_Domain_Repository_ConfigurationRepository');
+			// Get an instance of the scheduler (if available)
+		if (t3lib_extMgm::isLoaded('scheduler')) {
+			$this->scheduler = t3lib_div::makeInstance('tx_scheduler');
+		}
 	}
 
 	/**
@@ -209,16 +217,31 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 * @return array Response
 	 */
 	public function saveSchedulerTask($formData) {
+			// Exit early if the scheduler extension is not installed, as it is impossible to save tasks in such a case
+			// Normally this should not happen, as the BE module should not offer the possibility to trigger such an action
+			// without the Scheduler being available
+		if ($this->scheduler === NULL) {
+			$response = array(
+				'succes' => FALSE,
+				'errors' => array(
+					'scheduler' => $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:autosync_noscheduler')
+				)
+			);
+			return $response;
+		}
+
+			// Initialize the response array
 		$response = array(
 			'errors' => array()
 		);
 		$success = TRUE;
 			// Handle the frequency
 			// Frequency cannot be empty
-		$frequency = 0;
+		$interval = 0;
 		$cronCommand = '';
 		if ($formData['frequency'] == '') {
 			$success = FALSE;
+			$response['errors']['scheduler'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_invalid_data');
 			$response['errors']['frequency'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_empty_frequency');
 
 			// Check validity of frequency. It must be either a number or a cron command
@@ -233,9 +256,10 @@ class Tx_ExternalImport_ExtDirect_Server {
 					// Check if the frequency is a valid number
 					// If yes, assume it is a frequency in seconds, and unset cron error code
 				if (is_numeric($formData['frequency'])) {
-					$frequency = intval($formData['frequency']);
+					$interval = intval($formData['frequency']);
 				} else {
 					$success = FALSE;
+					$response['errors']['scheduler'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_invalid_data');
 					$response['errors']['frequency'] = sprintf(
 						$GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_wrong_frequency'),
 						$e->getMessage()
@@ -260,13 +284,114 @@ class Tx_ExternalImport_ExtDirect_Server {
 				// If the date is invalid, log an error
 			if ($startDate === FALSE) {
 				$success = FALSE;
+				$response['errors']['scheduler'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_invalid_data');
 				$response['errors']['start_date'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:error_invalid_start_date');
+			}
+		}
+
+			// If successful so far, save the Scheduler task (create or update)
+		if ($success) {
+			$data = array(
+				'table' => $formData['table'],
+				'index' => $formData['index'],
+				'interval' => $interval,
+				'croncmd' => $cronCommand,
+				'start' => $startDate
+			);
+			if (empty($formData['uid'])) {
+				try {
+					$savedData = $this->createTask($data);
+					$savedData = $this->prepareTaskData($savedData);
+					$response['data'] = $savedData;
+				}
+				catch (Exception $e) {
+					$success = FALSE;
+					$response['errors']['scheduler'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:autosync_save_failed');
+				}
+			} else {
+				$data['uid'] = $formData['uid'];
+				try {
+					$savedData = $this->updateTask($data);
+					$savedData = $this->prepareTaskData($savedData);
+					$response['data'] = $savedData;
+				}
+				catch (Exception $e) {
+					$success = FALSE;
+					$response['errors']['scheduler'] = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:autosync_save_failed');
+				}
 			}
 		}
 		$response['success'] = $success;
 		return $response;
 	}
 
+	/**
+	 * Creates a new task and registers it with the Scheduler
+	 *
+	 * @param array $data Necessary information about the task
+	 * @return array Modified data arrary, with next execution time added
+	 * @throws Exception
+	 */
+	protected function createTask($data) {
+			// Create a new task instance and register the execution
+			/** @var $task tx_externalimport_autosync_scheduler_Task */
+		$task = t3lib_div::makeInstance('tx_externalimport_autosync_scheduler_Task');
+		$task->registerRecurringExecution($data['start'], $data['interval'], 0, FALSE, $data['croncmd']);
+			// Set the data specific to external import
+		$task->table = $data['table'];
+		$task->index = $data['index'];
+			// Schedule the task
+		$result = $this->scheduler->addTask($task);
+		if (!$result) {
+			throw new Exception('Task could not be added to the Scheduler', 1334948634);
+		} else {
+			$data['uid'] = $task->getTaskUid();
+			$data['nextexecution'] = $task->getExecutionTime();
+		}
+		return $data;
+	}
+
+	/**
+	 * Updates an existing task object
+	 *
+	 * @param array $data Necessary information about the task
+	 * @return array Modified data arrary, with next execution time added
+	 * @throws Exception
+	 */
+	protected function updateTask($data) {
+			// Get the corresponding task object
+		$task = $this->scheduler->fetchTask($data['uid']);
+			// Stop any existing execution...
+		$task->stop();
+			/// ...and replace it by a new one
+		$task->registerRecurringExecution($data['start'], $data['interval'], 0, FALSE, $data['croncmd']);
+		$result = $task->save();
+		if (!$result) {
+			throw new Exception('Task could not be modified', 1334948921);
+		} else {
+			$data['nextexecution'] = $task->getExecutionTime();
+		}
+		return $data;
+	}
+
+	/**
+	 * Prepares task data to fit the needs of the BE module's data grid
+	 *
+	 * @param array $data Properties of the task
+	 * @return array Modified properties of the task
+	 */
+	protected function prepareTaskData($data) {
+			// Format the execution date according to display format
+		$dateFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
+		$data['nextexecution'] = date($dateFormat, $data['nextexecution']);
+			// Set the frequency
+		$data['frequency'] = ($data['croncmd'] == '') ? $data['interval'] : $data['croncmd'];
+			// Format date and time as needed for form input
+		$data['start_date'] = date('m/d/Y', $data['start']);
+		$data['start_time'] = date('H:i', $data['start']);
+
+		return $data;
+	}
 	/**
 	 * Utility method used to sort ctrl sections according to the priority value in the external information block
 	 *

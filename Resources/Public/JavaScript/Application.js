@@ -354,11 +354,17 @@ TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
 								// Find the parent form's BasicForm and submit it
 							button.findParentByType('form').getForm().submit({
 								success: function(form, action) {
+									console.log(action.result);
 									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.ok, [TYPO3.lang['autosync_saved']]);
 									button.findParentByType('window').hide();
+									var id = action.result.data['table'] + '-' + action.result.data['index'];
+									var record = TYPO3.ExternalImport.ConfigurationStore.getById(id);
+									record.set('task', action.result.data);
+									record.set('automated', 1);
+									record.commit();
 								},
 								failure: function(form, action) {
-									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [TYPO3.lang['autosync_save_failed']]);
+									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [action.result.errors['scheduler']]);
 								}
 							});
 						}
