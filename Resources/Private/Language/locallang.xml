@@ -82,10 +82,10 @@
 			<label index="change_sync">Define or edit the synchronization settings</label>
 			<label index="sync_settings">Synchronization settings</label>
 			<label index="cancel_edit_sync">Cancel modifications</label>
-			<label index="delete_sync">Remove the synchronisation</label>
+			<label index="delete_sync">Remove the automated synchronization settings</label>
 			<label index="delete_sync_confirm">Are you sure you want to remove this automatic synchronisation?</label>
-			<label index="delete_done">The synchronisation settings were removed successfully.</label>
-			<label index="delete_failed">The synchronisation settings could not be removed.</label>
+			<label index="delete_done">The automatic synchronisation was successfully canceled.</label>
+			<label index="delete_failed">The automatic synchronisation could not be canceled.</label>
 			<label index="frequency_seconds">The frequency is %d seconds.</label>
 			<label index="frequency_cron">The frequency is &quot;%s&quot;.</label>
 		</languageKey>

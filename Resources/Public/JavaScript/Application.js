@@ -164,7 +164,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			hidden: !TYPO3.settings.external_import.hasScheduler,
 			tpl: TYPO3.ExternalImport.AutosyncColumnTemplate
 		},
-			// Scheduler form button
+			// Button to call up the automated synchronization settings form
 		{
 			xtype: 'actioncolumn',
 			id: 'scheduler-button',
@@ -179,14 +179,51 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 					tooltip: TYPO3.lang['change_sync'],
 					handler: function(grid, rowIndex, colIndex) {
 						var record = TYPO3.ExternalImport.ConfigurationStore.getAt(rowIndex);
-						TYPO3.ExternalImport.showAutoSyncForm(record.json);
+							// Display form only if user has write access to the table
+						if (record.json.writeAccess) {
+							TYPO3.ExternalImport.showAutoSyncForm(record.json);
+						}
 					},
 					getClass: function(v, meta, record) {
-							// If the automation is already activate, display an edit icon, otherwise display a new icon
-						if (record.json.automated) {
-							return 't3-icon t3-icon-actions t3-icon-actions-document t3-icon-document-open';
+						if (record.json.writeAccess) {
+								// If the automation is already active, display an edit icon, otherwise display a new icon
+								// Display nothing if the user doesn't have write access to the table
+							if (record.json.automated) {
+								return 't3-icon t3-icon-actions t3-icon-actions-document t3-icon-document-open';
+							} else {
+								return 't3-icon t3-icon-actions t3-icon-actions-page t3-icon-page-new';
+							}
 						} else {
-							return 't3-icon t3-icon-actions t3-icon-actions-page t3-icon-page-new';
+							return 't3-icon t3-icon-empty t3-icon-empty-empty t3-icon-empty';
+						}
+					}
+				}
+			]
+		},
+			// Button to delete the automated synchronization settings
+		{
+			xtype: 'actioncolumn',
+			id: 'delete-button',
+			header: '',
+			width: 30,
+			fixed: true,
+			sortable: false,
+			menuDisabled: true,
+			hidden: !TYPO3.settings.external_import.hasScheduler,
+			items: [
+				{
+					tooltip: TYPO3.lang['delete_sync'],
+					handler: function(grid, rowIndex, colIndex) {
+						var record = TYPO3.ExternalImport.ConfigurationStore.getAt(rowIndex);
+						TYPO3.ExternalImport.removeAutoSync(record.json);
+					},
+					getClass: function(v, meta, record) {
+							// If the automation is already active and user has write access to the table,
+							// display a delete icon, otherwise an empty space
+						if (record.json.automated && record.json.writeAccess) {
+							return 't3-icon t3-icon-actions t3-icon-actions-edit t3-icon-edit-delete';
+						} else {
+							return 't3-icon t3-icon-empty t3-icon-empty-empty t3-icon-empty';
 						}
 					}
 				}
@@ -268,119 +305,155 @@ TYPO3.ExternalImport.showExternalImportInformation = function(table, index) {
  * @param configuration
  */
 TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
-	TYPO3.Windows.getWindow({
-		id: 'external_import_autosync_' + configuration.table + '_' + configuration.index,
-		title: TYPO3.lang['sync_settings'],
-		width: Ext.getBody().getViewSize().width * 0.5,
-		items: [
-			new Ext.form.FormPanel({
-					// Define which ExtDirect method must be called upon submit
-				api: {
-					submit: TYPO3.ExternalImport.ExtDirect.saveSchedulerTask
-				},
-					// List of form fields
-				items: [
-						// If the configuration contains a task, we are editing an existing task
-						// If not, we are adding a new one. All fields are initialized accordingly
-					{
-						xtype: 'hidden',
-						name: 'uid',
-						value: (configuration.task) ? configuration.task.uid : 0
+	console.log(configuration);
+		// Act only if use has write access
+	if (configuration.writeAccess) {
+		TYPO3.Windows.getWindow({
+			id: 'external_import_autosync_' + configuration.table + '_' + configuration.index,
+			title: TYPO3.lang['sync_settings'],
+			width: Ext.getBody().getViewSize().width * 0.5,
+			items: [
+				new Ext.form.FormPanel({
+						// Define which ExtDirect method must be called upon submit
+					api: {
+						submit: TYPO3.ExternalImport.ExtDirect.saveSchedulerTask
 					},
-					{
-						xtype: 'hidden',
-						name: 'table',
-						value: configuration.table
-					},
-					{
-						xtype: 'hidden',
-						name: 'index',
-						value: configuration.index
-					},
-					{
-						fieldLabel: TYPO3.lang['frequency'],
-						name: 'frequency',
-						xtype: 'textfield',
-						value: (configuration.task) ? configuration.task.frequency : ''
-					},
-						// Simple box with help text
-						// This is a workaround for the impossibility to have something like bubble help in ExtJS forms
-					{
-						xtype: 'box',
-						autoEl: {
-							tag: 'p',
-							cls: 'help-text',
-							html: TYPO3.lang['frequency_help']
-						}
-					},
-						// Composite field to display date and time side by side
-					{
-						fieldLabel: TYPO3.lang['start_date'],
-						xtype: 'compositefield',
-						boxMinHeight: 25,
-						items: [
-							{
-								name: 'start_date',
-								xtype: 'datefield',
-								format: TYPO3.settings.external_import.dateFormat,
-								value: (configuration.task) ? configuration.task.start_date : ''
-							},
-							{
-								name: 'start_time',
-								xtype: 'timefield',
-								width: 70,
-								format: TYPO3.settings.external_import.timeFormat,
-								value: (configuration.task) ? configuration.task.start_time : '',
-								increment: 15
+						// List of form fields
+					items: [
+							// If the configuration contains a task, we are editing an existing task
+							// If not, we are adding a new one. All fields are initialized accordingly
+						{
+							xtype: 'hidden',
+							name: 'uid',
+							value: (configuration.task) ? configuration.task.uid : 0
+						},
+						{
+							xtype: 'hidden',
+							name: 'table',
+							value: configuration.table
+						},
+						{
+							xtype: 'hidden',
+							name: 'index',
+							value: configuration.index
+						},
+						{
+							fieldLabel: TYPO3.lang['frequency'],
+							name: 'frequency',
+							xtype: 'textfield',
+							value: (configuration.task) ? configuration.task.frequency : ''
+						},
+							// Simple box with help text
+							// This is a workaround for the impossibility to have something like bubble help in ExtJS forms
+						{
+							xtype: 'box',
+							autoEl: {
+								tag: 'p',
+								cls: 'help-text',
+								html: TYPO3.lang['frequency_help']
 							}
-						]
-					},
-						// Help text
-					{
-						xtype: 'box',
-						autoEl: {
-							tag: 'p',
-							cls: 'help-text',
-							html: TYPO3.lang['start_date_help']
-						}
-					}
-				],
-					// List of form buttons
-				buttons: [
-						// The save button triggers the submission of the form
-					{
-						text: TYPO3.lang['save'],
-						handler: function(button, event) {
-								// Find the parent form's BasicForm and submit it
-							button.findParentByType('form').getForm().submit({
-								success: function(form, action) {
-									console.log(action.result);
-									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.ok, [TYPO3.lang['autosync_saved']]);
-									button.findParentByType('window').hide();
-										// Get the grid data to reload
-										// (when a new automated sync is defined, several cells in the row need to be updated,
-										// it is easier to refresh the data than to try and update all the relevant cells)
-									TYPO3.ExternalImport.ConfigurationStore.load({
-										params: {isSynchronizable : true}
-									});
+						},
+							// Composite field to display date and time side by side
+						{
+							fieldLabel: TYPO3.lang['start_date'],
+							xtype: 'compositefield',
+							boxMinHeight: 25,
+							items: [
+								{
+									name: 'start_date',
+									xtype: 'datefield',
+									format: TYPO3.settings.external_import.dateFormat,
+									value: (configuration.task) ? configuration.task.start_date : ''
 								},
-								failure: function(form, action) {
-									TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [action.result.errors['scheduler']]);
+								{
+									name: 'start_time',
+									xtype: 'timefield',
+									width: 70,
+									format: TYPO3.settings.external_import.timeFormat,
+									value: (configuration.task) ? configuration.task.start_time : '',
+									increment: 15
 								}
+							]
+						},
+							// Help text
+						{
+							xtype: 'box',
+							autoEl: {
+								tag: 'p',
+								cls: 'help-text',
+								html: TYPO3.lang['start_date_help']
+							}
+						}
+					],
+						// List of form buttons
+					buttons: [
+							// The save button triggers the submission of the form
+						{
+							text: TYPO3.lang['save'],
+							handler: function(button, event) {
+									// Find the parent form's BasicForm and submit it
+								button.findParentByType('form').getForm().submit({
+									success: function(form, action) {
+										TYPO3.ExternalImport.renderMessages(TYPO3.Severity.ok, [TYPO3.lang['autosync_saved']]);
+										button.findParentByType('window').hide();
+											// Get the grid data to reload
+											// (when a new automated sync is defined, several cells in the row need to be updated,
+											// it is easier to refresh the data than to try and update all the relevant cells)
+										TYPO3.ExternalImport.ConfigurationStore.load({
+											params: {isSynchronizable : true}
+										});
+									},
+									failure: function(form, action) {
+										TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [action.result.errors['scheduler']]);
+									}
+								});
+							}
+						},
+							// On cancel, just dismiss the window
+						{
+							text: TYPO3.lang['cancel'],
+							handler: function(button, event) {
+								button.findParentByType('window').hide();
+							}
+						}
+					]
+				})
+			]
+		}).show();
+	}
+};
+
+/**
+ * Display a confirmation dialog about deleting the automatic synchronization settings
+ * for a given configuration
+ *
+ * @param configuration
+ */
+TYPO3.ExternalImport.removeAutoSync = function(configuration) {
+		// Act only if use has write access
+	if (configuration.writeAccess) {
+			// Display a confirmation dialog
+		TYPO3.Dialog.QuestionDialog({
+			msg: TYPO3.lang['delete_sync_confirm'],
+			fn: function(button) {
+					// If the "yes" button was pressed, delete the Scheduler task
+				if (button == 'yes') {
+					TYPO3.ExternalImport.ExtDirect.deleteSchedulerTask(configuration.task['uid'], function(response) {
+							// Display a message depending on response status
+							// If successful, trigger a refresh of the display by reloading the data for the grid
+						if (response.success) {
+							TYPO3.ExternalImport.renderMessages(TYPO3.Severity.ok, [TYPO3.lang['delete_done']]);
+							TYPO3.ExternalImport.ConfigurationStore.load({
+								params: {isSynchronizable : true}
 							});
+						} else {
+							TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [TYPO3.lang['delete_failed']]);
 						}
-					},
-						// On cancel, just dismiss the window
-					{
-						text: TYPO3.lang['cancel'],
-						handler: function(button, event) {
-							button.findParentByType('window').hide();
-						}
-					}
-				]
-			})
-		]
-	}).show();
+					});
+				}
+			}
+		});
+	}
 };
 
 /**

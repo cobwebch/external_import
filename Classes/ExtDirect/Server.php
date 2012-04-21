@@ -300,9 +300,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 			);
 			if (empty($formData['uid'])) {
 				try {
-					$savedData = $this->createTask($data);
-					$savedData = $this->prepareTaskData($savedData);
-					$response['data'] = $savedData;
+					$this->createTask($data);
 				}
 				catch (Exception $e) {
 					$success = FALSE;
@@ -311,9 +309,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 			} else {
 				$data['uid'] = $formData['uid'];
 				try {
-					$savedData = $this->updateTask($data);
-					$savedData = $this->prepareTaskData($savedData);
-					$response['data'] = $savedData;
+					$this->updateTask($data);
 				}
 				catch (Exception $e) {
 					$success = FALSE;
@@ -329,7 +325,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 * Creates a new task and registers it with the Scheduler
 	 *
 	 * @param array $data Necessary information about the task
-	 * @return array Modified data arrary, with next execution time added
+	 * @return void
 	 * @throws Exception
 	 */
 	protected function createTask($data) {
@@ -344,18 +340,14 @@ class Tx_ExternalImport_ExtDirect_Server {
 		$result = $this->scheduler->addTask($task);
 		if (!$result) {
 			throw new Exception('Task could not be added to the Scheduler', 1334948634);
-		} else {
-			$data['uid'] = $task->getTaskUid();
-			$data['nextexecution'] = $task->getExecutionTime();
 		}
-		return $data;
 	}
 
 	/**
 	 * Updates an existing task object
 	 *
 	 * @param array $data Necessary information about the task
-	 * @return array Modified data arrary, with next execution time added
+	 * @return void
 	 * @throws Exception
 	 */
 	protected function updateTask($data) {
@@ -368,30 +360,50 @@ class Tx_ExternalImport_ExtDirect_Server {
 		$result = $task->save();
 		if (!$result) {
 			throw new Exception('Task could not be modified', 1334948921);
-		} else {
-			$data['nextexecution'] = $task->getExecutionTime();
 		}
-		return $data;
 	}
 
 	/**
-	 * Prepares task data to fit the needs of the BE module's data grid
+	 * Removes the requested Scheduler task
 	 *
-	 * @param array $data Properties of the task
-	 * @return array Modified properties of the task
+	 * @param integer $taskId Id of the task to remove
+	 * @return array Response
 	 */
-	protected function prepareTaskData($data) {
-			// Format the execution date according to display format
-		$dateFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
-		$data['nextexecution'] = date($dateFormat, $data['nextexecution']);
-			// Set the frequency
-		$data['frequency'] = ($data['croncmd'] == '') ? $data['interval'] : $data['croncmd'];
-			// Format date and time as needed for form input
-		$data['start_date'] = date('m/d/Y', $data['start']);
-		$data['start_time'] = date('H:i', $data['start']);
+	public function deleteSchedulerTask($taskId) {
+			// Exit early if the scheduler extension is not installed, as it is impossible to save tasks in such a case
+			// Normally this should not happen, as the BE module should not offer the possibility to trigger such an action
+			// without the Scheduler being available
+		if ($this->scheduler === NULL) {
+			$response = array(
+				'succes' => FALSE,
+				'errors' => array(
+					'scheduler' => $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:autosync_noscheduler')
+				)
+			);
+			return $response;
+		}
 
-		return $data;
+			// Initialize the response array
+		$response = array(
+			'errors' => array()
+		);
+		if (empty($taskId)) {
+			$success = FALSE;
+		} else {
+				// Get the corresponding task object
+			try {
+				$task = $this->scheduler->fetchTask($taskId);
+					// Remove the task from the database
+				$success = $this->scheduler->removeTask($task);
+			}
+			catch (Exception $e) {
+				$success = FALSE;
+			}
+		}
+		$response['success'] = $success;
+		return $response;
 	}
+
 	/**
 	 * Utility method used to sort ctrl sections according to the priority value in the external information block
 	 *
