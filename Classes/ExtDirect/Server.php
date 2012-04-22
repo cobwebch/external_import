@@ -407,10 +407,9 @@ class Tx_ExternalImport_ExtDirect_Server {
 	/**
 	 * Utility method used to sort ctrl sections according to the priority value in the external information block
 	 *
-	 * @param	array	$a: first ctrl section to compare
-	 * @param	array	$b: second ctrl section to compare
-	 *
-	 * @return	int		1, 0 or -1 if a is smaller, equal or greater than b, respectively
+	 * @param array	$a First ctrl section to compare
+	 * @param array	$b Second ctrl section to compare
+	 * @return integer 1, 0 or -1 if a is smaller, equal or greater than b, respectively
 	 */
 	public function prioritySort($a, $b) {
 		if ($a['priority'] == $b['priority']) {
@@ -422,10 +421,10 @@ class Tx_ExternalImport_ExtDirect_Server {
 
 	/**
 	 * Dump a PHP array to a HTML table
-	 * (This is somewhat similar to t3lib_div::view_array() but with styling ;-)
+	 * (This is somewhat similar to t3lib_utility_Debug::view_array() but without the ugly red font)
 	 *
-	 * @param	array	$array: Array to display
-	 * @return	string	HTML table assembled from array
+	 * @param array $array Array to display
+	 * @return string HTML table assembled from array
 	 */
 	protected function dumpArray($array) {
 		$table = '<table border="0" cellpadding="1" cellspacing="1" bgcolor="#8a8a8a">';
