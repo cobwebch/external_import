@@ -80,10 +80,11 @@ class Tx_ExternalImport_Domain_Repository_ConfigurationRepository {
 	/**
 	 * Returns all relevant external import configurations
 	 *
-	 * @param boolean $synchronizable TRUE if synchronizable configurations should be fetched, false otherwise
+	 * @param object $parameters List of parameters passed to the method (as stdClass object)
 	 * @return array List of external import TCA configurations
 	 */
-	public function findByType($synchronizable) {
+	public function findByType($parameters) {
+		$synchronizable = (boolean)$parameters->synchronizable;
 		$configurations = array();
 
 			// Get a list of all external import Scheduler tasks, if Scheduler is active

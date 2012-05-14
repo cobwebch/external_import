@@ -48,9 +48,26 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 		$this->pageRenderer = $this->getDocInstance()->getPageRenderer();
 	}
 
-	public function render() {
+	/**
+	 * Renders the view helper
+	 *
+	 * In this case, it actually renders nothing, but only loads stuff in the page header
+	 *
+	 * @param string $view Will be "sync" or "nosync" depending on the current view
+	 * @return void
+	 */
+	public function render($view) {
 
 		$doc = $this->getDocInstance();
+
+			// Silly little JavaScript for the function menu
+		$doc->JScode = '
+			<script language="javascript" type="text/javascript">
+				function jumpToUrl(URL)	{
+					document.location = URL;
+				}
+			</script>
+		';
 
 			// Load ExtDirect
 		$this->pageRenderer->addExtDirectCode(array('TYPO3.ExternalImport'));
@@ -63,7 +80,8 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 			array(
 				'hasScheduler' => t3lib_extMgm::isLoaded('scheduler', FALSE),
 				'dateFormat' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'],
-				'timeFormat' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm']
+				'timeFormat' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'],
+				'view' => $view
 			)
 		);
 			// Load application specific JS

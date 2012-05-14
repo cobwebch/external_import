@@ -71,12 +71,14 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			width: 150,
 			sortable: true
 		},
+			// Hide if the view is not of the synchronizable tables
 		{
 			id: 'priority',
 			header: TYPO3.lang['priority'],
 			dataIndex: 'priority',
 			width: 40,
-			sortable: true
+			sortable: true,
+			hidden: TYPO3.settings.external_import.view != 'sync',
 		},
 			// Information button
 		{
@@ -99,6 +101,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			]
 		},
 			// Synchronization button
+			// Hide if the view is not of the synchronizable tables
 		{
 			xtype: 'actioncolumn',
 			id: 'sync-button',
@@ -107,6 +110,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			fixed: true,
 			sortable: false,
 			menuDisabled: true,
+			hidden: TYPO3.settings.external_import.view != 'sync',
 			items: [
 				{
 					tooltip: TYPO3.lang['synchronise'],
@@ -155,16 +159,18 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			]
 		},
 			// Information about automated synchronization
+			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables
 		{
 			xtype: 'templatecolumn',
 			id: 'automated',
 			header: TYPO3.lang['autosync'],
 			width: 100,
 			sortable: true,
-			hidden: !TYPO3.settings.external_import.hasScheduler,
+			hidden: !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.view != 'sync',
 			tpl: TYPO3.ExternalImport.AutosyncColumnTemplate
 		},
 			// Button to call up the automated synchronization settings form
+			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables
 		{
 			xtype: 'actioncolumn',
 			id: 'scheduler-button',
@@ -173,7 +179,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			fixed: true,
 			sortable: false,
 			menuDisabled: true,
-			hidden: !TYPO3.settings.external_import.hasScheduler,
+			hidden: !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.view != 'sync',
 			items: [
 				{
 					tooltip: TYPO3.lang['change_sync'],
@@ -201,6 +207,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			]
 		},
 			// Button to delete the automated synchronization settings
+			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables
 		{
 			xtype: 'actioncolumn',
 			id: 'delete-button',
@@ -209,7 +216,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			fixed: true,
 			sortable: false,
 			menuDisabled: true,
-			hidden: !TYPO3.settings.external_import.hasScheduler,
+			hidden: !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.view != 'sync',
 			items: [
 				{
 					tooltip: TYPO3.lang['delete_sync'],
@@ -479,7 +486,21 @@ Ext.onReady(function() {
 	});
 		// Fire the loading of the data
 	TYPO3.ExternalImport.ConfigurationStore.load({
-		params: {isSynchronizable : true}
+		params: {
+			synchronizable : (TYPO3.settings.external_import.view == 'sync')
+		},
+		callback: function(records, options, success) {
+				// If the call was successful, but the result set is empty, issue a warning
+			if (success) {
+				if (records.length == 0) {
+					TYPO3.Flashmessage.display(TYPO3.Severity.warning, '', TYPO3.lang['no_configurations_warning'], 5);
+				}
+
+				// If the call was unsuccessful, issue an error
+			} else {
+				TYPO3.Flashmessage.display(TYPO3.Severity.error, '', TYPO3.lang['configuration_loading_error'], 5);
+			}
+		}
 	});
 
 		// Initialize tooltips
