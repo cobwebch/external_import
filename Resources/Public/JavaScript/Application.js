@@ -65,11 +65,13 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			sortable: true
 		},
 		{
+			xtype: 'templatecolumn',
 			id: 'description',
 			header: TYPO3.lang['description'],
 			dataIndex: 'description',
 			width: 150,
-			sortable: true
+			sortable: true,
+			tpl: '[{values.index}] {values.description}'
 		},
 			// Hide if the view is not of the synchronizable tables
 		{
@@ -78,7 +80,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			dataIndex: 'priority',
 			width: 40,
 			sortable: true,
-			hidden: TYPO3.settings.external_import.view != 'sync',
+			hidden: TYPO3.settings.external_import.view != 'sync'
 		},
 			// Information button
 		{
