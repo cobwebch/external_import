@@ -47,6 +47,7 @@ TYPO3.ExternalImport.AutosyncColumnTemplate = new Ext.XTemplate(
 TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 	store: TYPO3.ExternalImport.ConfigurationStore,
 	cls: 'configurationGrid',
+	stripeRows: true,
 	columns: [
 		{
 			id: 'icon',
