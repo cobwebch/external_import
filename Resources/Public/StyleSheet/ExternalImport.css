@@ -12,6 +12,9 @@
 .t3-icon-empty {
 	cursor: default;
 }
+.t3-icon-actions {
+	margin-top: 2px;
+}
 .configurationGrid td.loading-indicator {
 	background-position: 5px 2px;
 }
