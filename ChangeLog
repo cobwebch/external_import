@@ -3,6 +3,7 @@
 	* Removed the doNotLoadInFE flag, resolves #37325
 	* Moved the whole BE module logic to Extbase and ExtJS, resolves #13836
 	* Adapted the BE module to match the TYPO3 skin, resolves #13835
+	* Removed all legacy code, resolves #5106
 
 2011-05-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
