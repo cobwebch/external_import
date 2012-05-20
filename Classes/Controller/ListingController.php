@@ -35,6 +35,20 @@
  * $Id$
  */
 class Tx_ExternalImport_Controller_ListingController extends Tx_Extbase_MVC_Controller_ActionController {
+	/**
+	 * @var Tx_ExternalImport_Domain_Repository_ConfigurationRepository
+	 */
+	protected $configurationRepository;
+
+	/**
+	 * Injects an instance of the configuration repository
+	 *
+	 * @param Tx_ExternalImport_Domain_Repository_ConfigurationRepository $configurationRepository
+	 * @return void
+	 */
+	public function injectConfigurationRepository(Tx_ExternalImport_Domain_Repository_ConfigurationRepository $configurationRepository) {
+		$this->configurationRepository = $configurationRepository;
+	}
 
 	/**
 	 * Renders the list of all synchronizable tables
@@ -44,6 +58,16 @@ class Tx_ExternalImport_Controller_ListingController extends Tx_Extbase_MVC_Cont
 	 * @return void
 	 */
 	public function syncAction() {
+			// If the Scheduler is loaded, check full write access rights
+			// (i.e. if user has write-rights to every table with external data)
+		if (t3lib_extMgm::isLoaded('scheduler', FALSE)) {
+			$globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();
+
+			// If the Scheduler is not loaded, no sync can be done or defined anyway
+		} else {
+			$globalWriteAccess = 'none';
+		}
+		$this->view->assign('globalWriteAccess', $globalWriteAccess);
 	}
 
 	/**

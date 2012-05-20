@@ -151,5 +151,46 @@ class Tx_ExternalImport_Domain_Repository_ConfigurationRepository {
 			// Return the results
 		return $configurations;
 	}
+
+	/**
+	 * Checks if user has write access to some, all or none of the tables having an external configuration
+	 *
+	 * @return string Global access (none, partial or all)
+	 */
+	public function findGlobalWriteAccess() {
+
+			// An admin user has full access
+		if ($GLOBALS['BE_USER']->isAdmin()) {
+			$hasGlobalWriteAccess = 'all';
+		} else {
+
+				// Loop on all tables and extract external_import-related information from them
+			$noAccessCount = 0;
+			$numberOfTables = 0;
+			foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+					// Check if table has external info
+				if (isset($sections['ctrl']['external'])) {
+					$numberOfTables++;
+						// Check if user has write rights on it
+					if (!$GLOBALS['BE_USER']->check('tables_modify', $tableName)) {
+						$noAccessCount++;
+					}
+				}
+			}
+				// If the user has no restriction, then access is full
+			if ($noAccessCount == 0) {
+				$hasGlobalWriteAccess = 'all';
+
+				// Assess if user has rights to no table at all or at least to some
+			} else {
+				if ($noAccessCount == $numberOfTables) {
+					$hasGlobalWriteAccess = 'none';
+				} else {
+					$hasGlobalWriteAccess = 'partial';
+				}
+			}
+		}
+		return $hasGlobalWriteAccess;
+	}
 }
 ?>

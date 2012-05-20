@@ -40,3 +40,20 @@ div.x-form-invalid {
 .help-text {
 	margin: 4px 0 4px 105px;
 }
+#external-import-grid {
+	margin-right: 10px;
+}
+#external-import-full-sync-box {
+	border: 1px solid #A2AAB8;
+	padding: 4px;
+	margin-top: 10px;
+}
+#external-import-full-sync-box h3 {
+	margin-top: 0;
+}
+#external_import_full_sync_panel table.x-btn {
+	margin: 2px;
+}
+#external_import_full_sync_panel table button span {
+	margin-top: -2px;
+}

@@ -54,9 +54,10 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 	 * In this case, it actually renders nothing, but only loads stuff in the page header
 	 *
 	 * @param string $view Will be "sync" or "nosync" depending on the current view
+	 * @param string $globalAccess TRUE if the user has write access to all tables with external data
 	 * @return void
 	 */
-	public function render($view) {
+	public function render($view, $globalAccess = 'none') {
 
 		$doc = $this->getDocInstance();
 
@@ -79,6 +80,7 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 			'external_import',
 			array(
 				'hasScheduler' => t3lib_extMgm::isLoaded('scheduler', FALSE),
+				'globalWriteAccess' => $globalAccess,
 				'dateFormat' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'],
 				'timeFormat' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'],
 				'view' => $view

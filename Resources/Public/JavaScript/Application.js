@@ -8,6 +8,15 @@ Ext.namespace('TYPO3.ExternalImport');
 	// Define general loading indicator
 TYPO3.ExternalImport.loadingIndicator = '<div class="loading-indicator">' + TYPO3.lang.action_loading + '</div>';
 
+	// Initialize with default values
+TYPO3.ExternalImport.fullSynchronizationSettings = {
+	id: 0,
+	table: 'all',
+	index: 0,
+		// User is considered to have "write access" to the full sync only if he has write access to every table with sync
+	writeAccess: (TYPO3.settings.external_import.globalWriteAccess == 'all')
+};
+
 	// Define the data in the (external import) configuration store
 TYPO3.ExternalImport.ConfigurationStore = new Ext.data.DirectStore({
 	storeId: 'configuration',
@@ -38,7 +47,7 @@ TYPO3.ExternalImport.AutosyncColumnTemplate = new Ext.XTemplate(
 			'<p>' + TYPO3.lang['no_autosync'] + '</p>',
 		'</tpl>',
 		'<tpl if="automated == 1">',
-			'<p>{[String.format(TYPO3.lang["next_autosync"], values.task.nextexecution)]}</p>',
+			'<p>{[String.format(TYPO3.lang["next_autosync"], values.task.nextexecution, values.task.frequency)]}</p>',
 		'</tpl>',
 	'</div>'
 );
@@ -104,7 +113,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			]
 		},
 			// Synchronization button
-			// Hide if the view is not of the synchronizable tables
+			// Hide if the view is not of the synchronizable tables or the use has no write access to any table
 		{
 			xtype: 'actioncolumn',
 			id: 'sync-button',
@@ -113,7 +122,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			fixed: true,
 			sortable: false,
 			menuDisabled: true,
-			hidden: TYPO3.settings.external_import.view != 'sync',
+			hidden: TYPO3.settings.external_import.view != 'sync' || TYPO3.settings.external_import.globalWriteAccess == 'none',
 			items: [
 				{
 					tooltip: TYPO3.lang['synchronise'],
@@ -162,18 +171,18 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			]
 		},
 			// Information about automated synchronization
-			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables
+			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables or if user has not write access to any table
 		{
 			xtype: 'templatecolumn',
 			id: 'automated',
 			header: TYPO3.lang['autosync'],
 			width: 100,
 			sortable: true,
-			hidden: !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.view != 'sync',
+			hidden: TYPO3.settings.external_import.view != 'sync' || !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.globalWriteAccess == 'none',
 			tpl: TYPO3.ExternalImport.AutosyncColumnTemplate
 		},
 			// Button to call up the automated synchronization settings form
-			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables
+			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables or if user has not write access to any table
 		{
 			xtype: 'actioncolumn',
 			id: 'scheduler-button',
@@ -182,7 +191,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			fixed: true,
 			sortable: false,
 			menuDisabled: true,
-			hidden: !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.view != 'sync',
+			hidden: TYPO3.settings.external_import.view != 'sync' || !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.globalWriteAccess == 'none',
 			items: [
 				{
 					tooltip: TYPO3.lang['change_sync'],
@@ -210,7 +219,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			]
 		},
 			// Button to delete the automated synchronization settings
-			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables
+			// Hide if the Scheduler is not installed or if the view is not of the synchronizable tables or if user has not write access to any table
 		{
 			xtype: 'actioncolumn',
 			id: 'delete-button',
@@ -219,7 +228,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 			fixed: true,
 			sortable: false,
 			menuDisabled: true,
-			hidden: !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.view != 'sync',
+			hidden: TYPO3.settings.external_import.view != 'sync' || !TYPO3.settings.external_import.hasScheduler || TYPO3.settings.external_import.globalWriteAccess == 'none',
 			items: [
 				{
 					tooltip: TYPO3.lang['delete_sync'],
@@ -247,6 +256,68 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 		// Make the grid use all the possible space available
 		// @see t3lib/js/extjs/ux/Ext.ux.FitToParent.js
 	plugins: [new Ext.ux.plugins.FitToParent()]
+});
+
+	// Template for the rendering of the automated synchronization column
+TYPO3.ExternalImport.AutosyncBoxTemplate = new Ext.XTemplate(
+	'<tpl for=".">',
+		'<tpl if="id == 0">',
+			'<p>' + TYPO3.lang['no_full_autosync'] + '</p>',
+		'</tpl>',
+		'<tpl if="id != 0">',
+			'<p>{[String.format(TYPO3.lang["next_full_autosync"], values.task.nextexecution, values.task.frequency)]}</p>',
+		'</tpl>',
+	'</tpl>'
+);
+
+	// Container to display information (and action buttons) about the "full" synchronization, i.e.
+	// the automation of the synchronization of all buttons
+TYPO3.ExternalImport.FullSyncPanel = new Ext.Container({
+	id: 'external_import_full_sync_panel',
+	items: [
+			// Display information about the full synchronization
+		{
+			id: 'external_import_full_sync_info',
+			xtype: 'box',
+			tpl: TYPO3.ExternalImport.AutosyncBoxTemplate,
+			data: TYPO3.ExternalImport.fullSynchronizationSettings
+		},
+			// Display buttons for adding, modifying and removing the full synchronization
+		{
+			xtype: 'container',
+			layout: 'column',
+			items: [
+				{
+					id: 'external_import_full_sync_activate',
+					xtype: 'button',
+					text: '<span class="t3-icon t3-icon-actions t3-icon-actions-page t3-icon-page-new"></span>' + TYPO3.lang['activate'],
+					hidden: false,
+					handler: function(button, event) {
+						TYPO3.ExternalImport.showAutoSyncForm(TYPO3.ExternalImport.fullSynchronizationSettings);
+					}
+				},
+				{
+					id: 'external_import_full_sync_modify',
+					xtype: 'button',
+					text: '<span class="t3-icon t3-icon-actions t3-icon-actions-document t3-icon-document-open"></span>' + TYPO3.lang['modify'],
+					hidden: true,
+					handler: function(button, event) {
+						TYPO3.ExternalImport.showAutoSyncForm(TYPO3.ExternalImport.fullSynchronizationSettings);
+					}
+				},
+				{
+					id: 'external_import_full_sync_deactivate',
+					xtype: 'button',
+					text: '<span class="t3-icon t3-icon-actions t3-icon-actions-edit t3-icon-edit-delete"></span>' + TYPO3.lang['deactivate'],
+					hidden: true,
+					handler: function(button, event) {
+						TYPO3.ExternalImport.removeAutoSync(TYPO3.ExternalImport.fullSynchronizationSettings);
+					}
+				}
+			]
+		}
+	],
+	hidden: true
 });
 
 /**
@@ -315,10 +386,9 @@ TYPO3.ExternalImport.showExternalImportInformation = function(table, index) {
  * @param configuration
  */
 TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
-	console.log(configuration);
 		// Act only if use has write access
 	if (configuration.writeAccess) {
-		TYPO3.Windows.getWindow({
+		new TYPO3.Components.Window({
 			id: 'external_import_autosync_' + configuration.table + '_' + configuration.index,
 			title: TYPO3.lang['sync_settings'],
 			width: Ext.getBody().getViewSize().width * 0.5,
@@ -405,13 +475,32 @@ TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
 								button.findParentByType('form').getForm().submit({
 									success: function(form, action) {
 										TYPO3.ExternalImport.renderMessages(TYPO3.Severity.ok, [TYPO3.lang['autosync_saved']]);
-										button.findParentByType('window').hide();
-											// Get the grid data to reload
-											// (when a new automated sync is defined, several cells in the row need to be updated,
-											// it is easier to refresh the data than to try and update all the relevant cells)
-										TYPO3.ExternalImport.ConfigurationStore.load({
-											params: {isSynchronizable : true}
-										});
+										button.findParentByType('window').close();
+											// Update the display
+											// For the full sync, update the various parts
+										if (configuration.table == 'all') {
+												// Read the full sync config again
+											TYPO3.ExternalImport.ExtDirect.getFullSynchronizationTask(function(response) {
+												if (response.id) {
+													response.writeAccess = (TYPO3.settings.external_import.globalWriteAccess == 'all');
+													TYPO3.ExternalImport.fullSynchronizationSettings = response;
+														// Update the full sync info and show/hide the appropriate buttons
+													Ext.getCmp('external_import_full_sync_info').update(response);
+													Ext.getCmp('external_import_full_sync_activate').hide();
+													Ext.getCmp('external_import_full_sync_modify').show();
+													Ext.getCmp('external_import_full_sync_deactivate').show();
+												}
+											});
+
+											// For a specific configuration, it's easier to reload the data and update the full grid
+										} else {
+												// Get the grid data to reload
+												// (when a new automated sync is defined, several cells in the row need to be updated,
+												// it is easier to refresh the data than to try and update all the relevant cells)
+											TYPO3.ExternalImport.ConfigurationStore.load({
+												params: {synchronizable : true}
+											});
+										}
 									},
 									failure: function(form, action) {
 										TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [action.result.errors['scheduler']]);
@@ -423,7 +512,7 @@ TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
 						{
 							text: TYPO3.lang['cancel'],
 							handler: function(button, event) {
-								button.findParentByType('window').hide();
+								button.findParentByType('window').close();
 							}
 						}
 					]
@@ -441,7 +530,7 @@ TYPO3.ExternalImport.showAutoSyncForm = function(configuration) {
  */
 TYPO3.ExternalImport.removeAutoSync = function(configuration) {
 		// Act only if use has write access
-	if (configuration.writeAccess) {
+	if (configuration.writeAccess && configuration.task) {
 			// Display a confirmation dialog
 		TYPO3.Dialog.QuestionDialog({
 			msg: TYPO3.lang['delete_sync_confirm'],
@@ -450,12 +539,30 @@ TYPO3.ExternalImport.removeAutoSync = function(configuration) {
 				if (button == 'yes') {
 					TYPO3.ExternalImport.ExtDirect.deleteSchedulerTask(configuration.task['uid'], function(response) {
 							// Display a message depending on response status
-							// If successful, trigger a refresh of the display by reloading the data for the grid
 						if (response.success) {
 							TYPO3.ExternalImport.renderMessages(TYPO3.Severity.ok, [TYPO3.lang['delete_done']]);
-							TYPO3.ExternalImport.ConfigurationStore.load({
-								params: {isSynchronizable : true}
-							});
+								// Update the display
+								// For the full sync, update the various parts
+							if (configuration.table == 'all') {
+									// Reset the full sync settings to default value
+								TYPO3.ExternalImport.fullSynchronizationSettings = {
+									id: 0,
+									table: 'all',
+									index: 0,
+									writeAccess: (TYPO3.settings.external_import.globalWriteAccess == 'all')
+								};
+									// Update the full sync info and show/hide the appropriate buttons
+								Ext.getCmp('external_import_full_sync_info').update(TYPO3.ExternalImport.fullSynchronizationSettings);
+								Ext.getCmp('external_import_full_sync_activate').show();
+								Ext.getCmp('external_import_full_sync_modify').hide();
+								Ext.getCmp('external_import_full_sync_deactivate').hide();
+
+								// For a specific configuration, it's easier to reload the data and update the full grid
+							} else {
+								TYPO3.ExternalImport.ConfigurationStore.load({
+									params: {synchronizable : true}
+								});
+							}
 						} else {
 							TYPO3.ExternalImport.renderMessages(TYPO3.Severity.error, [TYPO3.lang['delete_failed']]);
 						}
@@ -490,7 +597,7 @@ Ext.onReady(function() {
 		// Fire the loading of the data
 	TYPO3.ExternalImport.ConfigurationStore.load({
 		params: {
-			synchronizable : (TYPO3.settings.external_import.view == 'sync')
+			synchronizable: (TYPO3.settings.external_import.view == 'sync')
 		},
 		callback: function(records, options, success) {
 				// If the call was successful, but the result set is empty, issue a warning
@@ -508,6 +615,27 @@ Ext.onReady(function() {
 
 		// Initialize tooltips
 	Ext.QuickTips.init();
+
+		// Set the container for the full synchronization info and target it at the proper tag
+	if (Ext.fly('external-import-full-sync')) {
+		new Ext.Container({
+			renderTo: 'external-import-full-sync',
+			layout: 'fit',
+			items: [TYPO3.ExternalImport.FullSyncPanel]
+		});
+			// ExtDirect call to get the information about the full sync task, if any
+		TYPO3.ExternalImport.ExtDirect.getFullSynchronizationTask(function(response) {
+			if (response.id) {
+				response.writeAccess = (TYPO3.settings.external_import.globalWriteAccess == 'all');
+				TYPO3.ExternalImport.fullSynchronizationSettings = response;
+				Ext.getCmp('external_import_full_sync_info').update(response);
+				Ext.getCmp('external_import_full_sync_activate').hide();
+				Ext.getCmp('external_import_full_sync_modify').show();
+				Ext.getCmp('external_import_full_sync_deactivate').show();
+			}
+			Ext.getCmp('external_import_full_sync_panel').show();
+		});
+	}
 
 		// Set the main container and target it at the proper tag
 	new Ext.Container({

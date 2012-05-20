@@ -2,12 +2,18 @@
 <f:layout name="module" />
 
 <f:section name="header">
-	<ExtImp:be.header view="sync" />
+	<ExtImp:be.header view="sync" globalAccess="{globalWriteAccess}" />
 </f:section>
 
 <f:section name="main">
 	<h2><f:translate key="function_sync" /></h2>
 	<p><f:translate key="external_tables_intro" /></p>
+	<f:if condition="{0: globalWriteAccess} == {0: 'all'}">
+		<div id="external-import-full-sync-box">
+			<h3><f:translate key="full_autosync" /></h3>
+			<div id="external-import-full-sync"></div>
+		</div>
+	</f:if>
 	<p>&nbsp;</p>
 	<div id="external-import-grid"></div>
 

@@ -55,9 +55,9 @@
 			<label index="warning">Warning</label>
 			<label index="manual_sync">Manual synchronisation</label>
 			<label index="autosync">Automatic synchronisation</label>
-			<label index="full_autosync">Automatic complete synchronisation</label>
-			<label index="autosync_intro">It is possible to define a frequency for the automatic synchronisation of &lt;strong&gt;all external tables&lt;/strong&gt;.</label>
-			<label index="autosync_noscheduler">Automatic synchronisation of external tables requires system extension "scheduler" to be installed.</label>
+			<label index="full_autosync">Full automation of synchronization</label>
+			<label index="no_full_autosync">It is possible to enable the automatic synchronization of all tables with an external synchronization configuration. Configurations will be handled in order of decreasing priority. It is currently not activated.</label>
+			<label index="next_full_autosync">The automatic synchronization of all tables is activated (frequency: {1}). The next run will take place on {0}.</label>
 			<label index="start_date">Start date</label>
 			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
 			<label index="frequency">Frequency</label>
@@ -73,7 +73,7 @@
 			<label index="autosync_saved">The automatic synchronisation information has been saved.</label>
 			<label index="autosync_save_failed">The automatic synchronisation information could not be saved.</label>
 			<label index="no_autosync">The automatic synchronisation is not yet enabled.</label>
-			<label index="next_autosync">Activated. The next run will take place on {0}.</label>
+			<label index="next_autosync">Activated (frequency: {1}). The next run will take place on {0}.</label>
 			<label index="error_invalid_data">The form contains invalid input. Please correct the data in the highlighted fields.</label>
 			<label index="error_invalid_frequency">The frequency should either be a cron command or a number of seconds larger than 0.</label>
 			<label index="error_empty_frequency">The frequency may not be empty.</label>
@@ -88,8 +88,10 @@
 			<label index="delete_sync_confirm">Are you sure you want to remove this automatic synchronisation?</label>
 			<label index="delete_done">The automatic synchronisation was successfully canceled.</label>
 			<label index="delete_failed">The automatic synchronisation could not be canceled.</label>
-			<label index="frequency_seconds">The frequency is %d seconds.</label>
-			<label index="frequency_cron">The frequency is &quot;%s&quot;.</label>
+			<label index="number_of_seconds">%d seconds</label>
+			<label index="activate">Activate</label>
+			<label index="modify">Modify</label>
+			<label index="deactivate">Deactivate</label>
 		</languageKey>
 	</data>
 </T3locallang>

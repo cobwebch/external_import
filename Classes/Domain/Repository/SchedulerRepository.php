@@ -34,11 +34,18 @@
  *
  * $Id$
  */
-class Tx_ExternalImport_Domain_Repository_SchedulerRepository {
+class Tx_ExternalImport_Domain_Repository_SchedulerRepository implements t3lib_Singleton {
 	/**
 	 * @var	string	Name of the related task class
 	 */
 	static public $taskClassName = 'tx_externalimport_autosync_scheduler_Task';
+
+	/**
+	 * List of all tasks (stored locally in case the repository is called several times)
+	 *
+	 * @var array
+	 */
+	protected $tasks = NULL;
 
 	/**
 	 * Local instance of the scheduler object
@@ -47,41 +54,76 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository {
 	 */
 	protected $scheduler;
 
+	/**
+	 * @var string Display date format according to TYPO3 setup
+	 */
+	protected $dateFormat;
+
 	public function __construct() {
 		$this->scheduler = t3lib_div::makeInstance('tx_scheduler');
+		$this->tasks = $this->scheduler->fetchTasksWithCondition("classname = '" . self::$taskClassName . "'", TRUE);
+		$this->dateFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
 	}
 
 	/**
-	 * TFetches all tasks related to the external import extension
+	 * Fetches all tasks related to the external import extension
 	 * The return array is structured per table/index
 	 *
 	 * @return array List of registered events/tasks, per table and index
 	 */
 	public function fetchAllTasks() {
 		$taskList = array();
-		$tasks = $this->scheduler->fetchTasksWithCondition("classname = '" . self::$taskClassName . "'", TRUE);
-		$dateFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
 			/** @var $taskObject tx_externalimport_autosync_scheduler_Task */
-		foreach ($tasks as $taskObject) {
-			$key = $taskObject->table;
-			if ($key != 'all') {
-				$key .= '/' . $taskObject->index;
-			}
-			$cronCommand = $taskObject->getExecution()->getCronCmd();
-			$interval = $taskObject->getExecution()->getInterval();
-			$taskList[$key] = array(
-				'uid' => $taskObject->getTaskUid(),
-					// Format date as needed for display
-				'nextexecution' => date($dateFormat, $taskObject->getExecutionTime()),
-				'interval' => $interval,
-				'croncmd' => $cronCommand,
-				'frequency' => ($cronCommand == '') ? $interval : $cronCommand,
-					// Format date and time as needed for form input
-				'start_date' => date('m/d/Y', $taskObject->getExecution()->getStart()),
-				'start_time' => date('H:i', $taskObject->getExecution()->getStart())
-			);
+		foreach ($this->tasks as $taskObject) {
+			$key = $taskObject->table . '/' . $taskObject->index;
+			$taskList[$key] = $this->assembleTaskInformation($taskObject);
 		}
 		return $taskList;
+	}
+
+	/**
+	 * Fetches the specific task that synchronizes all tables
+	 *
+	 * @throws Exception
+	 * @return array Information about the task, if defined
+	 */
+	public function fetchFullSynchronizationTask() {
+		$taskInformation = array();
+			// Fetch all external import tasks
+			// NOTE: since the table parameter (which we want to test) is a property of the task object,
+			// we have to fetch all task objects and inspect them. There's no way to query that information directly
+		$tasks = $this->scheduler->fetchTasksWithCondition("classname = '" . self::$taskClassName . "'", TRUE);
+			/** @var $taskObject tx_externalimport_autosync_scheduler_Task */
+		foreach ($this->tasks as $taskObject) {
+			if ($taskObject->table == 'all') {
+				$taskInformation = $this->assembleTaskInformation($taskObject);
+				return $taskInformation;
+			}
+		}
+		throw new Exception('No task registered for full synchronization', 1337344319);
+	}
+
+	/**
+	 * Grabs the information about a given external import task and stores it into an array
+	 *
+	 * @param tx_externalimport_autosync_scheduler_Task $taskObject The task to handle
+	 * @return array The information about the task
+	 */
+	protected function assembleTaskInformation(tx_externalimport_autosync_scheduler_Task $taskObject) {
+		$cronCommand = $taskObject->getExecution()->getCronCmd();
+		$interval = $taskObject->getExecution()->getInterval();
+		$taskInformation = array(
+			'uid' => $taskObject->getTaskUid(),
+				// Format date as needed for display
+			'nextexecution' => date($this->dateFormat, $taskObject->getExecutionTime()),
+			'interval' => sprintf($GLOBALS['LANG']->sL('LLL:EXT:Resources/Private/Language/locallang.xml:number_of_seconds'), $interval),
+			'croncmd' => $cronCommand,
+			'frequency' => ($cronCommand == '') ? $interval : $cronCommand,
+				// Format date and time as needed for form input
+			'start_date' => date('m/d/Y', $taskObject->getExecution()->getStart()),
+			'start_time' => date('H:i', $taskObject->getExecution()->getStart())
+		);
+		return $taskInformation;
 	}
 
 	/**

@@ -184,6 +184,32 @@ class Tx_ExternalImport_ExtDirect_Server {
 	}
 
 	/**
+	 * Fetches information about the "all" synchronization task, if defined, and returns it
+	 *
+	 * @return array Task information
+	 */
+	public function getFullSynchronizationTask() {
+		$fullSyncTaskInformation = array();
+
+			// Find out if a Scheduler task has been registered for all tables
+		if (t3lib_extMgm::isLoaded('scheduler', FALSE)) {
+				/** @var $schedulerRepository Tx_ExternalImport_Domain_Repository_SchedulerRepository */
+			$schedulerRepository = t3lib_div::makeInstance('Tx_ExternalImport_Domain_Repository_SchedulerRepository');
+			try {
+				$task = $schedulerRepository->fetchFullSynchronizationTask();
+					// Create a fake configuration and add the task to it
+				$fullSyncTaskInformation['table'] = 'all';
+				$fullSyncTaskInformation['index'] = 0;
+				$fullSyncTaskInformation['task'] = $task;
+				$fullSyncTaskInformation['id'] = $task['uid'];
+			}
+			catch (Exception $e) {
+				// Nothing to do
+			}
+		}
+		return $fullSyncTaskInformation;
+	}
+	/**
 	 * Starts the synchronization of the given configuration (table/index)
 	 *
 	 * @param string $table The name of the table to synchronize
