@@ -1,3 +1,7 @@
+2012-05-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Removed the doNotLoadInFE flag, resolves #37325
+
 2011-05-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Used PHP time limit also for AJAX timeout, resolves #25893
