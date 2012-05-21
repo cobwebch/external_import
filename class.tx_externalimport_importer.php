@@ -863,16 +863,16 @@ class tx_externalimport_importer {
 
 					// If there was some special sorting to do, do it now
 				if ($sortingField) {
-					foreach ($mappings as $columnName => $columnMappings) {
+					foreach ($mappings as $innerColumnName => $columnMappings) {
 						foreach ($columnMappings as $uid => $values) {
 							ksort($values);
-							$mappings[$columnName][$uid] = $values;
+							$mappings[$innerColumnName][$uid] = $values;
 
 								// Do the same for extended MM-relations, if necessary
 							if ($additionalFields || $mmData['multiple']) {
-								$fullValues = $fullMappings[$columnName][$uid];
+								$fullValues = $fullMappings[$innerColumnName][$uid];
 								ksort($fullValues);
-								$fullMappings[$columnName][$uid] = $fullValues;
+								$fullMappings[$innerColumnName][$uid] = $fullValues;
 							}
 						}
 					}
