@@ -1,3 +1,7 @@
+2012-05-1  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Replaced excludedOperations by disabledOperations for naming consistency, resolves #29301
+
 2012-05-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Removed the doNotLoadInFE flag, resolves #37325

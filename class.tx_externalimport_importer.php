@@ -754,7 +754,20 @@ class tx_externalimport_importer {
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 				// Check if some fields are excluded from some operations
 				// and add them to the relevant list
+			if (isset($columnData['external'][$this->index]['disabledOperations'])) {
+				if (t3lib_div::inList($columnData['external'][$this->index]['disabledOperations'], 'insert')) {
+					$fieldsExcludedFromInserts[] = $columnName;
+				}
+				if (t3lib_div::inList($columnData['external'][$this->index]['disabledOperations'], 'update')) {
+					$fieldsExcludedFromUpdates[] = $columnName;
+				}
+			}
+				// The "excludedOperations" property is deprecated and replaced by "disabledOperations"
+				// It is currently kept for backwards-compatibility reasons
 			if (isset($columnData['external'][$this->index]['excludedOperations'])) {
+				$deprecationMessage = 'Property "excludedOperations" has been deprecated. Please use "disabledOperations" instead.';
+				$deprecationMessage .= LF . 'Support for "excludedOperations" will be removed at some point in the future.';
+				t3lib_div::deprecationLog($deprecationMessage);
 				if (t3lib_div::inList($columnData['external'][$this->index]['excludedOperations'], 'insert')) {
 					$fieldsExcludedFromInserts[] = $columnName;
 				}
