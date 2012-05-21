@@ -56,7 +56,7 @@ class tx_externalimport_importer {
 	 * This is the constructor
 	 * It initialises some properties and makes sure that a lang object is available
 	 *
-	 * @return	object		tx_externalimport_importer object
+	 * @return tx_externalimport_importer object
 	 */
 	public function __construct() {
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
@@ -83,7 +83,7 @@ class tx_externalimport_importer {
 	/**
 	 * This method synchronises all the external tables, respecting the order of priority
 	 *
-	 * @return	void
+	 * @return array List of all messages
 	 */
 	public function synchronizeAllTables() {
 
@@ -616,10 +616,11 @@ class tx_externalimport_importer {
 	/**
 	 * This method tries to match a single value to a table of mappings
 	 *
-	 * @param	mixed	$externalValue: the value to match
-	 * @param	array	$mappingInformation: mapping configuration
-	 * @param	array	$mappingTable: value map
-	 * @return	mixed	The matched value
+	 * @param mixed $externalValue The value to match
+	 * @param array $mappingInformation Mapping configuration
+	 * @param array $mappingTable Value map
+	 * @throws UnexpectedValueException
+	 * @return mixed The matched value
 	 */
 	public function matchSingleField($externalValue, $mappingInformation, $mappingTable) {
 		$returnValue = '';
@@ -1271,9 +1272,9 @@ class tx_externalimport_importer {
 	 * This method is used to add a message to the message queue that will be returned
 	 * when the synchronisation is complete
 	 *
-	 * @param	string		$text: the message itself
-	 * @param	string		$status: status of the message. Expected is "success", "warning" or "error"
-	 * @return	void
+	 * @param string $text The message itself
+	 * @param integer $status Status of the message. Expected is "success", "warning" or "error"
+	 * @return void
 	 */
 	public function addMessage($text, $status = t3lib_FlashMessage::ERROR) {
 		if (!empty($text)) {
@@ -1288,10 +1289,10 @@ class tx_externalimport_importer {
 	/**
 	 * This method assembles a report for a given table/index
 	 *
-	 * @param	string		$table: name of the table
-	 * @param	interger	$index: number of the synchronisation configuration
-	 * @param	array		$messages: list of messages for the given table
-	 * @return	string		Formatted text of the report
+	 * @param string $table Name of the table
+	 * @param integer $index Number of the synchronisation configuration
+	 * @param array $messages List of messages for the given table
+	 * @return string Formatted text of the report
 	 */
 	public function reportForTable($table, $index, $messages) {
 		$report = sprintf($GLOBALS['LANG']->getLL('synchronizeTableX'), $table, $index) . "\n\n";
