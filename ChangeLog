@@ -1,4 +1,8 @@
-2012-05-1  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2012-05-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Used SwiftMailer for reporting mail, resolves #13711
+
+2012-05-21  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Replaced excludedOperations by disabledOperations for naming consistency, resolves #29301
 

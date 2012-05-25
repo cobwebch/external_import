@@ -1311,34 +1311,64 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * This method sends a reporting mail to the configured e-mail address
+	 * Sends a reporting mail to the configured e-mail address
 	 *
-	 * @param	string	$subject: subject of the mail
-	 * @param	string	$body: text body of the mail
-	 * @return	void
+	 * @param string $subject Subject of the mail
+	 * @param string $body Text body of the mail
+	 * @return void
 	 */
 	public function sendMail($subject, $body) {
-			// Instantiate and initialize the mail object
-		require_once(PATH_t3lib . 'class.t3lib_htmlmail.php');
-		$mailObject = t3lib_div::makeInstance('t3lib_htmlmail');
-		$mailObject->start();
-		$mailObject->subject = $subject;
-		$mailObject->from_email = $GLOBALS['BE_USER']->user['email'];
-		$mailObject->from_name = $GLOBALS['BE_USER']->user['realName'];
-		$mailObject->replyto_email = $GLOBALS['BE_USER']->user['email'];
-		$mailObject->replyto_name = $GLOBALS['BE_USER']->user['realName'];
-		$mailObject->returnPath = $GLOBALS['BE_USER']->user['email'];
-		$mailObject->setPlain($body);
-			// Send mail
+		$result = 0;
+			// Define sender mail and name
+		$senderMail = '';
+		$senderName = '';
+		if (!empty($GLOBALS['BE_USER']->user['email'])) {
+			$senderMail = $GLOBALS['BE_USER']->user['email'];
+			$senderName = (empty($GLOBALS['BE_USER']->user['realName'])) ? $GLOBALS['BE_USER']->user['username'] : $GLOBALS['BE_USER']->user['realName'];
+		} elseif (!empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'])) {
+			$senderMail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
+			$senderName = (empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'])) ? $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'] : $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'];
+		}
+			// If no mail could be found, avoid sending the mail
+			// The message will be logged as an error
+		if (empty($senderMail)) {
+			$message = 'No sender mail defined. Please check the manual.';
+
+			// Proceed with sending the mail
+		} else {
+				// Instantiate and initialize the mail object
+				/** @var $mailObject t3lib_mail_Message */
+			$mailObject = t3lib_div::makeInstance('t3lib_mail_Message');
+			try {
+				$sender = array(
+					$senderMail => $senderName
+				);
+				$mailObject->setFrom($sender);
+				$mailObject->setReplyTo($sender);
+				$mailObject->setTo(array($this->extConf['reportEmail']));
+				$mailObject->setSubject($subject);
+				$mailObject->setBody($body);
+					// Send mail
+				$result = $mailObject->send();
+				$message = '';
+			}
+			catch (Exception $e) {
+				$message = $e->getMessage() . '[' . $e->getCode() . ']';
+			}
+		}
+
 			// Report error in log, if any
-		$result = $mailObject->send($this->extConf['reportEmail']);
-		if (!$result) {
+		if ($result == 0) {
+			$comment = 'Reporting mail could not be sent to ' . $this->extConf['reportEmail'];
+			if (!empty($message)) {
+				$comment .= ' (' . $message . ')';
+			}
 			$GLOBALS['BE_USER']->writelog(
 				4,
 				0,
 				1,
 				$this->extKey,
-				'Reporting mail could not be sent',
+				$comment,
 				array()
 			);
 		}
