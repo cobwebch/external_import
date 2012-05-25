@@ -43,9 +43,10 @@ class tx_externalimport_autosync_scheduler_Task extends tx_scheduler_Task {
 	public $index;
 
 	/**
-	 * This method executes the job registered in the Scheduler task
+	 * Executes the job registered in the Scheduler task
 	 *
-	 * @return	void
+	 * @throws Exception
+	 * @return boolean
 	 */
 	public function execute() {
 		$result = TRUE;
