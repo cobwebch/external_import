@@ -960,7 +960,11 @@ class tx_externalimport_importer {
 					}
 				}
 
-				$theRecord['pid'] = $this->pid;
+					// Make sure the record has a pid, but avoid overwriting an existing one
+					// (for example, when external data is imported into the pages table)
+				if (!isset($theRecord['pid'])) {
+					$theRecord['pid'] = $this->pid;
+				}
 					// If a temporary key was already defined, use it, otherwise create a new one.
 					// Temporary keys may exist if self-referential mapping was handled beforehand (see mapData())
 				if (isset($this->temporaryKeys[$externalUid])) {
