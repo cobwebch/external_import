@@ -1,6 +1,7 @@
 2012-05-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
-	* Added check to avoid overwriting imported records' pid, references #31787
+	* Added check to avoid overwriting imported records' pid, references #31787 (thanks to Ian)
+	* Added check to use only records with non-empty external references in mapping, resolves #31787 (thanks to Ian)
 
 2012-05-25  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

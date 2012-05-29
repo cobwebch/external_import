@@ -1147,9 +1147,9 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * Utility method to get a list of all existing primary keys in the table being synchronised
+	 * Gets a list of all existing primary keys in the table being synchronized
 	 *
-	 * @return	array	Hash table of all external primary keys matched to internal primary keys
+	 * @return array Hash table of all external primary keys matched to internal primary keys
 	 */
 	protected function getExistingUids() {
 		$existingUids = array();
@@ -1164,7 +1164,11 @@ class tx_externalimport_importer {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'] . ',uid', $this->table, $where);
 		if ($res) {
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$existingUids[$row[$this->externalConfig['reference_uid']]] = $row['uid'];
+					// Don't consider records with empty references, as they can't be matched
+					// to external data anyway
+				if (!empty($row[$this->externalConfig['reference_uid']])) {
+					$existingUids[$row[$this->externalConfig['reference_uid']]] = $row['uid'];
+				}
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
 		}
@@ -1172,10 +1176,10 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * Utility method used to retrieve a single mapping
+	 * Retrieves a single mapping
 	 *
-	 * @param	array		$mappingData: data for assemble a mapping of fields
-	 * @return	array		hash table for mapping
+	 * @param array $mappingData Data defining the mapping of fields
+	 * @return array Hash table for mapping
 	 */
 	protected function getMapping($mappingData) {
 		$localMapping = array();
@@ -1184,6 +1188,8 @@ class tx_externalimport_importer {
 		if (isset($mappingData['valueMap'])) {
 				// Use value map directly
 			$localMapping = $mappingData['valueMap'];
+
+			// No value map, get values from the database
 		} else {
 				// Assemble query and get data
 			$valueField = 'uid';
@@ -1203,7 +1209,11 @@ class tx_externalimport_importer {
 				// Fill hash table
 			if ($res) {
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-					$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
+					// Don't consider records with empty references, as they can't be matched
+					// to external data anyway
+					if (!empty($row[$mappingData['reference_field']])) {
+						$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
+					}
 				}
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);
 			}
