@@ -32,6 +32,7 @@
 			<label index="connector.details">Connector details</label>
 			<label index="data_type">Data type</label>
 			<label index="reference_node">Reference node</label>
+			<label index="namespaces">Namespaces</label>
 			<label index="external_key">External primary key</label>
 			<label index="storage_pid">Storage page</label>
 			<label index="jump_to_page">Jump to page</label>

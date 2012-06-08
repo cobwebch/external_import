@@ -1,3 +1,7 @@
+2012-06-07  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added support for namespaces in XML handling, resolves #30779
+
 2012-05-29  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added check to avoid overwriting imported records' pid, references #31787 (thanks to Ian)

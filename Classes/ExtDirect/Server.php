@@ -105,6 +105,12 @@ class Tx_ExternalImport_ExtDirect_Server {
 				$externalInformation .= '<td>' . $externalCtrlConfiguration['nodetype'] . '</td>';
 				$externalInformation .= '</tr>';
 			}
+			if (isset($externalCtrlConfiguration['namespaces']) && is_array($externalCtrlConfiguration['namespaces']) && count($externalCtrlConfiguration['namespaces']) > 0) {
+				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:namespaces') . '</td>';
+				$externalInformation .= '<td>' . $this->dumpArray($externalCtrlConfiguration['namespaces']) . '</td>';
+				$externalInformation .= '</tr>';
+			}
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:external_key') . '</td>';
 			$externalInformation .= '<td>' . $externalCtrlConfiguration['reference_uid'] . '</td>';

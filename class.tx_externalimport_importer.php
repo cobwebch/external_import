@@ -415,7 +415,13 @@ class tx_externalimport_importer {
 			// Load the XML into a DOM object
 		$dom = new DOMDocument();
 		$dom->loadXML($rawData);
+			// Instantiate a XPath object and load with any defined namespaces
 		$xPathObject = new DOMXPath($dom);
+		if (isset($this->externalConfig['namespaces']) && is_array($this->externalConfig['namespaces'])) {
+			foreach ($this->externalConfig['namespaces'] as $prefix => $uri) {
+				$xPathObject->registerNamespace($prefix, $uri);
+			}
+		}
 
 			// Get the nodes that represent the root of each data record
 		$records = $dom->getElementsByTagName($this->externalConfig['nodetype']);
