@@ -99,6 +99,28 @@ class Tx_ExternalImport_ExtDirect_Server {
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_type') . '</td>';
 			$externalInformation .= '<td>' . $externalCtrlConfiguration['data'] . '</td>';
 			$externalInformation .= '</tr>';
+				// Custom data handler
+			if (isset($externalCtrlConfiguration['dataHandler'])) {
+				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_handler') . '</td>';
+				$error = '';
+				try {
+					$this->verifyCustomDataHandler($externalCtrlConfiguration['dataHandler']);
+				}
+				catch (Exception $e) {
+						/** @var $flashMessage t3lib_FlashMessage */
+					$flashMessage = t3lib_div::makeInstance(
+						't3lib_FlashMessage',
+						$e->getMessage(),
+						'',
+						t3lib_FlashMessage::ERROR
+					);
+					$error = $flashMessage->render();
+				}
+				$externalInformation .= '<td>' . $externalCtrlConfiguration['dataHandler'] . ((empty($error)) ? '' : $error) . '</td>';
+				$externalInformation .= '</tr>';
+			}
+				// XML-related configuration
 			if (isset($externalCtrlConfiguration['nodetype'])) {
 				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:reference_node') . '</td>';
@@ -476,6 +498,35 @@ class Tx_ExternalImport_ExtDirect_Server {
 		return $table;
 	}
 
+	/**
+	 * Verifies if the custom handler is registered and meets expectations
+	 *
+	 * This method returns nothing. We are interested only in the exceptions it may throw
+	 *
+	 * @param string $class Name of the d
+	 * @throws Exception
+	 */
+	protected function verifyCustomDataHandler($class) {
+			// Check if the class exists
+		if (class_exists($class)) {
+				// Instantiate the custom handler
+			$dataHandler = t3lib_div::makeInstance($class);
+				// Verify that it implements the required interface
+			if (!($dataHandler instanceof tx_externalimport_dataHandler)) {
+				throw new Exception(
+					$GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_handler_wrong'),
+					1339271389
+				);
+			}
+
+			// If the class does not exist, throw an exception
+		} else {
+			throw new Exception(
+				$GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_handler_noclass'),
+				1339271389
+			);
+		}
+	}
 
 	/**
 	 * Returns a linked icon with title from a page

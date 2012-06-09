@@ -319,28 +319,46 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * This method receives raw data from some external source, transforms it and stores it into the local database
-	 * It returns information about the results of the operation
+	 * Receives raw data from some external source, transforms it and stores it into the local database
 	 *
-	 * @param	mixed		$rawData: data in the format provided by the external source (XML string, PHP array, etc.)
-	 * @return	void
+	 * Returns information about the results of the operation
+	 *
+	 * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
+	 * @return void
 	 */
 	protected function handleData($rawData) {
+			// Check for custom data handlers
+		if (!empty($this->externalConfig['dataHandler'])) {
+				/** @var $dataHandler tx_externalimport_dataHandler */
+			$dataHandler = t3lib_div::makeInstance($this->externalConfig['dataHandler']);
+			if ($dataHandler instanceof tx_externalimport_dataHandler) {
+				$records = $dataHandler->handleData($rawData, $this);
 
-			// Prepare the data, depending on result type
-		switch ($this->externalConfig['data']) {
-			case 'xml':
-				$records = $this->handleXML($rawData);
-				break;
-			case 'array':
-				$records = $this->handleArray($rawData);
-				break;
-			default:
+				// If the data handler is not appropriate, keep the raw data
+			} else {
 				$records = $rawData;
-				break;
+			}
+
+			// Use default handlers
+		} else {
+
+				// Prepare the data, depending on result type
+			switch ($this->externalConfig['data']) {
+				case 'xml':
+					$records = $this->handleXML($rawData);
+					break;
+				case 'array':
+					$records = $this->handleArray($rawData);
+					break;
+
+					// This should really not happen
+				default:
+					$records = $rawData;
+					break;
+			}
 		}
 
-			// Apply any existing preprocessing hook to the raw data
+			// Apply any existing pre-processing hook to the raw data
 		$records = $this->preprocessRawData($records);
 
 			// Check the raw data to see if import process should continue
@@ -351,7 +369,7 @@ class tx_externalimport_importer {
 				// Transform data
 			$records = $this->transformData($records);
 
-				// Apply any existing preprocessing hook to the transformed data
+				// Apply any existing pre-processing hook to the transformed data
 			$records = $this->preprocessData($records);
 
 				// Store data
