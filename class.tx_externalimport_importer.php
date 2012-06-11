@@ -375,6 +375,9 @@ class tx_externalimport_importer {
 				// Store data
 			$this->storeData($records);
 
+				// Clear cache
+			$this->clearCache();
+
 			// Import was aborted, issue warning message
 		} else {
 			$this->addMessage($GLOBALS['LANG']->getLL('importAborted'), t3lib_FlashMessage::WARNING);
@@ -1163,11 +1166,34 @@ class tx_externalimport_importer {
 		} else {
 			$inserts = $numberOfNewIDs;
 		}
+		unset($tce);
 
 			// Set informational messages
 		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_inserted'), $inserts);
 		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_updated'), $updates);
 		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_deleted'), $deletes);
+	}
+
+	/**
+	 * Clears the cache of some pages, if such a list was defined
+	 *
+	 * @return void
+	 */
+	protected function clearCache() {
+		if (!empty($this->externalConfig['clearCache'])) {
+				// Extract the list of pages for which to clear the cache
+			$pages = t3lib_div::trimExplode(',', $this->externalConfig['clearCache'], TRUE);
+				// Use TCEmain to clear the cache of individual pages
+			if (count($pages) > 0) {
+					/** @var $tce t3lib_TCEmain */
+				$tce = t3lib_div::makeInstance('t3lib_TCEmain');
+				$tce->start(array(), array());
+				foreach ($pages as $pageId) {
+					$tce->clear_cacheCmd(intval($pageId));
+				}
+			}
+			unset($tce);
+		}
 	}
 
 	/**

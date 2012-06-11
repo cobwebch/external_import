@@ -179,6 +179,10 @@ class Tx_ExternalImport_ExtDirect_Server {
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:minimum_records') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : $externalCtrlConfiguration['minimumRecords']) . '</td>';
 			$externalInformation .= '</tr>';
+			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:clear_cache') . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['clearCache'])) ? '-' : $externalCtrlConfiguration['clearCache']) . '</td>';
+			$externalInformation .= '</tr>';
 			$externalInformation .= '</table>';
 
 			$externalInformation .= '</table>';
