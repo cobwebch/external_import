@@ -41,6 +41,11 @@ class Tx_ExternalImport_Controller_ListingController extends Tx_Extbase_MVC_Cont
 	protected $configurationRepository;
 
 	/**
+	 * @var string Name of the refresh icon (see self::initializeAction())
+	 */
+	protected $refreshIcon = 'actions-system-refresh';
+
+	/**
 	 * Injects an instance of the configuration repository
 	 *
 	 * @param Tx_ExternalImport_Domain_Repository_ConfigurationRepository $configurationRepository
@@ -48,6 +53,19 @@ class Tx_ExternalImport_Controller_ListingController extends Tx_Extbase_MVC_Cont
 	 */
 	public function injectConfigurationRepository(Tx_ExternalImport_Domain_Repository_ConfigurationRepository $configurationRepository) {
 		$this->configurationRepository = $configurationRepository;
+	}
+
+	/**
+	 * Performs some initializations for all actions
+	 *
+	 * @return void
+	 */
+	public function initializeAction() {
+			// If TYPO3 version is lower then 4.7, use the old icon name for refresh
+			// (this is necessary due to the way the Fluid BE View Helper for icon buttons was coded)
+		if (t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_branch) < '4007000') {
+			$this->refreshIcon = 'refresh_n';
+		}
 	}
 
 	/**
@@ -68,6 +86,7 @@ class Tx_ExternalImport_Controller_ListingController extends Tx_Extbase_MVC_Cont
 			$globalWriteAccess = 'none';
 		}
 		$this->view->assign('globalWriteAccess', $globalWriteAccess);
+		$this->view->assign('refresh_icon', $this->refreshIcon);
 	}
 
 	/**
@@ -78,6 +97,7 @@ class Tx_ExternalImport_Controller_ListingController extends Tx_Extbase_MVC_Cont
 	 * @return void
 	 */
 	public function noSyncAction() {
+		$this->view->assign('refresh_icon', $this->refreshIcon);
 	}
 }
 ?>
