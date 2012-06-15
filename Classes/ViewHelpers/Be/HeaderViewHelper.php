@@ -61,15 +61,6 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 
 		$doc = $this->getDocInstance();
 
-			// Silly little JavaScript for the function menu
-		$doc->JScode = '
-			<script language="javascript" type="text/javascript">
-				function jumpToUrl(URL)	{
-					document.location = URL;
-				}
-			</script>
-		';
-
 			// Load ExtDirect
 		$this->pageRenderer->addExtDirectCode(array('TYPO3.ExternalImport'));
 			// Load the FitToParent ExtJS plugin
