@@ -14,6 +14,7 @@
 			<label index="function_nosync">Tables without synchronization</label>
 			<label index="external_tables_intro">Below is the list of all tables using external data as defined in the TCA. From here you can manually synchronize any table. Note that you should synchronize tables with high priority (lower number) first, since lower priority tables probably depend on them.</label>
 			<label index="nosync_tables">Non-synchronizable tables</label>
+			<label index="nosync_tables_intro">The tables listed below receive data from external sources, but do not fetch it directly. They cannot be synchronized from this BE module. They are listed here for information.</label>
 			<label index="external_information">External information</label>
 			<label index="configuration_loading_error">The list of configurations could not be loaded.</label>
 			<label index="no_configurations_warning">There are currently no matching configurations.</label>
