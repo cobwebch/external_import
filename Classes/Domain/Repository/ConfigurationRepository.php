@@ -128,8 +128,8 @@ class Tx_ExternalImport_Domain_Repository_ConfigurationRepository {
 								'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']) . ' (' . $tableName . ')',
 								'icon' => t3lib_iconWorks::getSpriteIconForRecord($tableName, array()),
 								'index' => $index,
-								'priority' => $priority,
-								'description' => $description,
+								'priority' => intval($priority),
+								'description' => htmlspecialchars($description),
 								'writeAccess' => $hasWriteAccess
 							);
 								// Add Scheduler task information, if any

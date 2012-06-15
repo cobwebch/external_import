@@ -87,7 +87,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 			if (isset($externalCtrlConfiguration['connector'])) {
 				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector') . '</td>';
-				$externalInformation .= '<td>' . $externalCtrlConfiguration['connector'] . '</td>';
+				$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['connector']) . '</td>';
 				$externalInformation .= '</tr>';
 				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector.details') . '</td>';
@@ -97,7 +97,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 				// Data information
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_type') . '</td>';
-			$externalInformation .= '<td>' . $externalCtrlConfiguration['data'] . '</td>';
+			$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['data']) . '</td>';
 			$externalInformation .= '</tr>';
 				// Custom data handler
 			if (isset($externalCtrlConfiguration['dataHandler'])) {
@@ -117,14 +117,14 @@ class Tx_ExternalImport_ExtDirect_Server {
 					);
 					$error = $flashMessage->render();
 				}
-				$externalInformation .= '<td>' . $externalCtrlConfiguration['dataHandler'] . ((empty($error)) ? '' : $error) . '</td>';
+				$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['dataHandler']) . ((empty($error)) ? '' : $error) . '</td>';
 				$externalInformation .= '</tr>';
 			}
 				// XML-related configuration
 			if (isset($externalCtrlConfiguration['nodetype'])) {
 				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:reference_node') . '</td>';
-				$externalInformation .= '<td>' . $externalCtrlConfiguration['nodetype'] . '</td>';
+				$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['nodetype']) . '</td>';
 				$externalInformation .= '</tr>';
 			}
 			if (isset($externalCtrlConfiguration['namespaces']) && is_array($externalCtrlConfiguration['namespaces']) && count($externalCtrlConfiguration['namespaces']) > 0) {
@@ -135,7 +135,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 			}
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:external_key') . '</td>';
-			$externalInformation .= '<td>' . $externalCtrlConfiguration['reference_uid'] . '</td>';
+			$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['reference_uid']) . '</td>';
 			$externalInformation .= '</tr>';
 				// PID information
 			$pid = 0;
@@ -150,12 +150,12 @@ class Tx_ExternalImport_ExtDirect_Server {
 			$externalInformation .= '</tr>';
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:enforce_pid') . '</td>';
-			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:yes')) . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:yes')) . '</td>';
 			$externalInformation .= '</tr>';
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disableLog') . '</td>';
 			if (isset($externalCtrlConfiguration['disableLog'])) {
-				$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:yes')) . '</td>';
+				$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:yes')) . '</td>';
 			} else {
 				$value = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:undefined') . '</td>';
 			}
@@ -164,24 +164,24 @@ class Tx_ExternalImport_ExtDirect_Server {
 				// Additional fields
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:additional_fields') . '</td>';
-			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['additional_fields'])) ? '-' : $externalCtrlConfiguration['additional_fields']) . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['additional_fields'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['additional_fields'])) . '</td>';
 			$externalInformation .= '</tr>';
 				// Control options
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:where_clause') . '</td>';
-			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['where_clause'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : $externalCtrlConfiguration['where_clause']) . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['where_clause'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['where_clause'])) . '</td>';
 			$externalInformation .= '</tr>';
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disabled_operations') . '</td>';
-			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : $externalCtrlConfiguration['disabledOperations']) . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : htmlspecialchars($externalCtrlConfiguration['disabledOperations'])) . '</td>';
 			$externalInformation .= '</tr>';
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:minimum_records') . '</td>';
-			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : $externalCtrlConfiguration['minimumRecords']) . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : intval($externalCtrlConfiguration['minimumRecords'])) . '</td>';
 			$externalInformation .= '</tr>';
 			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:clear_cache') . '</td>';
-			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['clearCache'])) ? '-' : $externalCtrlConfiguration['clearCache']) . '</td>';
+			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['clearCache'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['clearCache'])) . '</td>';
 			$externalInformation .= '</tr>';
 			$externalInformation .= '</table>';
 
@@ -488,12 +488,12 @@ class Tx_ExternalImport_ExtDirect_Server {
 		$table = '<table border="0" cellpadding="1" cellspacing="1" bgcolor="#8a8a8a">';
 		foreach ($array as $key => $value) {
 			$table .= '<tr class="bgColor4-20" valign="top">';
-			$table .= '<td>' . $key . '</td>';
+			$table .= '<td>' . htmlspecialchars($key) . '</td>';
 			$table .= '<td>';
 			if (is_array($value)) {
 				$table .= $this->dumpArray($value);
 			} else {
-				$table .= $value;
+				$table .= htmlspecialchars($value);
 			}
 			$table .= '</td>';
 			$table .= '</tr>';
