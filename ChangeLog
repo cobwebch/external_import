@@ -1,3 +1,8 @@
+2012-06-15  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released version 2.0.1 (with missing updated manual)
+	* Released version 2.0.0
+
 2012-06-09  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added support for custom data handlers, resolves #29196
