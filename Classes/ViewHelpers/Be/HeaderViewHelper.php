@@ -81,7 +81,7 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 		$this->pageRenderer->addJsFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/JavaScript/Application.js', 'text/javascript', FALSE);
 		$this->pageRenderer->addJsFile($doc->backPath . '../t3lib/js/extjs/notifications.js', 'text/javascript', FALSE);
 			// Load the specific stylesheet
-		$this->pageRenderer->addCssFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/Stylesheet/ExternalImport.css');
+		$this->pageRenderer->addCssFile(t3lib_extMgm::extRelPath('external_import') . 'Resources/Public/StyleSheet/ExternalImport.css');
 			// Load the specific language file
 		$this->pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/locallang.xml');
 		$this->pageRenderer->addInlineLanguageLabelFile('EXT:lang/locallang_common.xml');
