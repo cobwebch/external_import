@@ -2,6 +2,7 @@
 
 	* Corrected case error in CSS reference for BE module, resolves #39117
 	* Corrected error with hook names in the manual, resolves #33196
+	* Released version 2.0.3
 
 2012-06-15  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
