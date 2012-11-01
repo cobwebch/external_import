@@ -1,3 +1,7 @@
+2012-11-01  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Restored usage of time limit in AJAX timeout definition, resolves #42326 (thanks to Andreas Kiessling)
+
 2012-07-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected case error in CSS reference for BE module, resolves #39117

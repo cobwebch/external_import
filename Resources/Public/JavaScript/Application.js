@@ -137,6 +137,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 							Ext.fly(image[0]).hide();
 							cell.addClass('loading-indicator');
 								// Start the synchronization of the selected configuration
+							Ext.Ajax.timeout = TYPO3.settings.external_import.timelimit;
 							TYPO3.ExternalImport.ExtDirect.launchSynchronization(record.json.table, record.json.index, function(response) {
 									// If the response contains a general error, display that
 								if (response.error) {

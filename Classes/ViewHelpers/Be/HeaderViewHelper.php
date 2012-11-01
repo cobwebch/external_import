@@ -37,6 +37,11 @@
 class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHelpers_Be_AbstractBackendViewHelper {
 
 	/**
+	 * @var array The extension's configuration
+	 */
+	protected $extensionConfiguration = array();
+
+	/**
 	 * @var t3lib_PageRenderer
 	 */
 	private $pageRenderer;
@@ -46,6 +51,7 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 	 */
 	public function __construct() {
 		$this->pageRenderer = $this->getDocInstance()->getPageRenderer();
+		$this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
 	}
 
 	/**
@@ -67,9 +73,14 @@ class Tx_ExternalImport_ViewHelpers_Be_HeaderViewHelper extends Tx_Fluid_ViewHel
 		$uxPath = $doc->backPath . '../t3lib/js/extjs/ux/';
 		$this->pageRenderer->addJsFile($uxPath . 'Ext.ux.FitToParent.js');
 			// Pass some settings to the JavaScript application
+			// First calculate the time limit (which is multiplied by 1000, because JS uses milliseconds)
+			// Defaults to 30 seconds
+		$timeLimitConfiguration = intval($this->extensionConfiguration['timelimit']);
+		$timeLimit = ($timeLimitConfiguration > 0) ? $timeLimitConfiguration * 1000 : 30000;
 		$this->pageRenderer->addInlineSettingArray(
 			'external_import',
 			array(
+				'timelimit' => $timeLimit,
 				'hasScheduler' => t3lib_extMgm::isLoaded('scheduler', FALSE),
 				'globalWriteAccess' => $globalAccess,
 				'dateFormat' => $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'],

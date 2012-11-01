@@ -10,7 +10,7 @@
 			<label index="config.reporting">Reporting</label>
 			<label index="config.debugging">Debugging/Logging</label>
 			<label index="config.storagePid">Storage PID: Enter default page uid for storing imported records.</label>
-			<label index="config.timeLimit">Force time limit (seconds): Change the maximun execution time for the import process. Defaut time limit is used if value = -1. See the manual for more details</label>
+			<label index="config.timeLimit">Force time limit (seconds): Change the maximun execution time for the import process. Defaut time limit is used if value = -1. See the manual for more details.</label>
 			<label index="config.reportEmail">Email for reporting: When the import is executed automatically, you may receive a report about the execution if you set an email address (leave blank for no report).</label>
 			<label index="config.reportSubject">Subject of email report: Set a subject for the email report. Additional information will be appended to that subject (i.e. "Full synchronization" ou "Synchronization of table x, index y").</label>
 			<label index="config.previewLimit">Preview/Debug limit: The number of rows to show while doing a preview. Set to 0 for showing all. This also affects the debugging output.</label>
