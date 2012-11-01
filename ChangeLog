@@ -1,6 +1,7 @@
 2012-11-01  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Restored usage of time limit in AJAX timeout definition, resolves #42326 (thanks to Andreas Kiessling)
+	* Released version 2.0.4
 
 2012-07-20  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
