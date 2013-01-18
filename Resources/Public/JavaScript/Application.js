@@ -248,6 +248,15 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 					}
 				}
 			]
+		},
+			// Empty column (workaround a layout bug which appeared in some TYPO3 and/or browser version)
+		{
+			id: 'right-padding',
+			header: '',
+			width: 10,
+			fixed: true,
+			sortable: false,
+			menuDisabled: true
 		}
 	],
 	viewConfig: {

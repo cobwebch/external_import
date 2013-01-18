@@ -1,5 +1,8 @@
+{namespace ExtImp=Tx_ExternalImport_ViewHelpers}
+
 <f:render section="header" />
-<f:be.container pageTitle="" enableJumpToUrl="true" enableClickMenu="false" loadPrototype="false" loadScriptaculous="false" loadExtJs="true" loadExtJsTheme="false" extJsAdapter="" enableExtJsDebug="false">
+
+<ExtImp:be.container pageTitle="{f:translate(key: 'mlang_tabs_tab')}" enableClickMenu="false" loadPrototype="false" loadExtJs="true" loadExtJsTheme="false" addCssFile="{f:uri.resource(path:'StyleSheet/ExternalImport.css')}" addJsFile="{f:uri.resource(path:'JavaScript/Application.js')}" globalWriteAccess="{globalWriteAccess}" view="{view}" >
 	<div class="typo3-fullDoc">
 		<!-- Page header with buttons, path details and csh -->
 		<div id="typo3-docheader">
@@ -28,4 +31,4 @@
 			</div>
 		</div>
 	</div>
-</f:be.container>
+</ExtImp:be.container>

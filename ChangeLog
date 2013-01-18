@@ -1,3 +1,7 @@
+2013-01-18  Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Ensured compatibility with TYPO3 CMS 6.0, resolves #44303
+
 2012-11-01  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Restored usage of time limit in AJAX timeout definition, resolves #42326 (thanks to Andreas Kiessling)

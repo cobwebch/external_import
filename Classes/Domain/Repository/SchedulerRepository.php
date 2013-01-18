@@ -61,7 +61,14 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository implements t3lib_S
 
 	public function __construct() {
 		$this->scheduler = t3lib_div::makeInstance('tx_scheduler');
-		$this->tasks = $this->scheduler->fetchTasksWithCondition("classname = '" . self::$taskClassName . "'", TRUE);
+		$allTasks = $this->scheduler->fetchTasksWithCondition('', TRUE);
+		/** @var $aTaskObject tx_scheduler_Task */
+		foreach ($allTasks as $aTaskObject) {
+			if (get_class($aTaskObject) == self::$taskClassName) {
+				$this->tasks[] = $aTaskObject;
+			}
+		}
+
 		$this->dateFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
 	}
 
@@ -88,11 +95,7 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository implements t3lib_S
 	 * @return array Information about the task, if defined
 	 */
 	public function fetchFullSynchronizationTask() {
-		$taskInformation = array();
-			// Fetch all external import tasks
-			// NOTE: since the table parameter (which we want to test) is a property of the task object,
-			// we have to fetch all task objects and inspect them. There's no way to query that information directly
-		$tasks = $this->scheduler->fetchTasksWithCondition("classname = '" . self::$taskClassName . "'", TRUE);
+			// Check all tasks object to find the one with the "all" keyword as a table
 			/** @var $taskObject tx_externalimport_autosync_scheduler_Task */
 		foreach ($this->tasks as $taskObject) {
 			if ($taskObject->table == 'all') {
