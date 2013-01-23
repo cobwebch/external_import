@@ -452,37 +452,33 @@ class tx_externalimport_importer {
 
 				// Loop on the database columns and get the corresponding value from the import data
 			foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
-				if (isset($columnData['external'][$this->index]['field'])) {
-						// Use namespace or not
-					if (empty($columnData['external'][$this->index]['fieldNS'])) {
-						$nodeList = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
-					} else {
-						$nodeList = $theRecord->getElementsByTagNameNS($columnData['external'][$this->index]['fieldNS'], $columnData['external'][$this->index]['field']);
-					}
-
-					if ($nodeList->length > 0) {
-						/** @var $selectedNode DOMNode */
-						$selectedNode = $nodeList->item(0);
-							// If an XPath expression is defined, apply it (relative to currently selected node)
-						if (!empty($columnData['external'][$this->index]['xpath'])) {
-							$resultNodes = $xPathObject->evaluate($columnData['external'][$this->index]['xpath'], $selectedNode);
-							if ($resultNodes->length > 0) {
-								$selectedNode = $resultNodes->item(0);
-							}
-						}
-							// Get the named attribute, if defined
-						if (!empty($columnData['external'][$this->index]['attribute'])) {
-								// Use namespace or not
-							if (empty($columnData['external'][$this->index]['attributeNS'])) {
-								$theData[$columnName] = $selectedNode->attributes->getNamedItem($columnData['external'][$this->index]['attribute'])->nodeValue;
-							} else {
-								$theData[$columnName] = $selectedNode->attributes->getNamedItemNS($columnData['external'][$this->index]['attributeNS'], $columnData['external'][$this->index]['attribute'])->nodeValue;
-							}
-
-							// Otherwise directly take the node's value
+					// Act only if there's an external import definition
+				if (isset($columnData['external'][$this->index])) {
+						// If a "field" is defined, refine the selection to get the correct node
+					if (isset($columnData['external'][$this->index]['field'])) {
+							// Use namespace or not
+						if (empty($columnData['external'][$this->index]['fieldNS'])) {
+							$nodeList = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
 						} else {
-							$theData[$columnName] = $selectedNode->nodeValue;
+							$nodeList = $theRecord->getElementsByTagNameNS($columnData['external'][$this->index]['fieldNS'], $columnData['external'][$this->index]['field']);
 						}
+
+						if ($nodeList->length > 0) {
+							/** @var $selectedNode DOMNode */
+							$selectedNode = $nodeList->item(0);
+								// If an XPath expression is defined, apply it (relative to currently selected node)
+							if (!empty($columnData['external'][$this->index]['xpath'])) {
+								$resultNodes = $xPathObject->evaluate($columnData['external'][$this->index]['xpath'], $selectedNode);
+								if ($resultNodes->length > 0) {
+									$selectedNode = $resultNodes->item(0);
+								}
+							}
+							$theData[$columnName] = $this->extractValueFromNode($selectedNode, $columnData['external'][$this->index]);
+						}
+
+						// Without "field" property, use the current node itself
+					} else {
+						$theData[$columnName] = $this->extractValueFromNode($theRecord, $columnData['external'][$this->index]);
 					}
 				}
 			}
@@ -500,6 +496,31 @@ class tx_externalimport_importer {
 			$data[] = $theData;
 		}
 		return $data;
+	}
+
+	/**
+	 * Extracts either an attribute from a XML node or the value of the node itself,
+	 * based on the configuration received.
+	 *
+	 * @param DOMNode $node Currently handled XML node
+	 * @param array $columnData Handling information for the XML node
+	 * @return mixed The extracted value
+	 */
+	protected function extractValueFromNode($node, $columnData) {
+			// Get the named attribute, if defined
+		if (!empty($columnData['attribute'])) {
+				// Use namespace or not
+			if (empty($columnData['attributeNS'])) {
+				$value = $node->attributes->getNamedItem($columnData['attribute'])->nodeValue;
+			} else {
+				$value = $node->attributes->getNamedItemNS($columnData['attributeNS'], $columnData['attribute'])->nodeValue;
+			}
+
+			// Otherwise directly take the node's value
+		} else {
+			$value = $node->nodeValue;
+		}
+		return $value;
 	}
 
 	/**
