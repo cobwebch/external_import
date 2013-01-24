@@ -1,3 +1,7 @@
+2013-01-24 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released version 2.1.0
+
 2013-01-23  Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added possibility to tap reference nodes directly in XML, resolves #30015
