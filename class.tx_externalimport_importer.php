@@ -174,13 +174,17 @@ class tx_externalimport_importer {
 
 				// Instantiate specific connector service
 			if (empty($this->externalConfig['connector'])) {
-				$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_connector');
+				$this->addMessage(
+					$GLOBALS['LANG']->getLL('no_connector')
+				);
 			} else {
 				$services = t3lib_extMgm::findService('connector', $this->externalConfig['connector']);
 
 					// The service is not available
-				if ($services === false) {
-					$this->messages['error'][] = $GLOBALS['LANG']->getLL('no_service');
+				if ($services === FALSE) {
+					$this->addMessage(
+						$GLOBALS['LANG']->getLL('no_service')
+					);
 				} else {
 						/** @var $connector tx_svconnector_base */
 					$connector = t3lib_div::makeInstanceService('connector', $this->externalConfig['connector']);
@@ -188,7 +192,9 @@ class tx_externalimport_importer {
 						// The service was instantiated, but an error occurred while initiating the connection
 						// If the returned value is an array, an error has occurred
 					if (is_array($connector)) {
-						$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_not_fetched');
+						$this->addMessage(
+							$GLOBALS['LANG']->getLL('data_not_fetched')
+						);
 
 						// The connection is established, get the data
 					} else {
@@ -204,7 +210,9 @@ class tx_externalimport_importer {
 								}
 								catch (Exception $e) {
 									$abortImportProcess = TRUE;
-									$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage());
+									$this->addMessage(
+										sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage())
+									);
 								}
 								break;
 
@@ -214,14 +222,18 @@ class tx_externalimport_importer {
 								}
 								catch (Exception $e) {
 									$abortImportProcess = TRUE;
-									$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage());
+									$this->addMessage(
+										sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'), $e->getMessage())
+									);
 								}
 								break;
 
 								// If the data type is not defined, issue error and abort process
 							default:
 								$abortImportProcess = TRUE;
-								$this->messages['error'][] = $GLOBALS['LANG']->getLL('data_type_not_defined');
+								$this->addMessage(
+									$GLOBALS['LANG']->getLL('data_type_not_defined')
+								);
 								break;
 						}
 							// Continue, if the process was not marked as aborted
@@ -234,7 +246,7 @@ class tx_externalimport_importer {
 						}
 							// Call connector's post-processing with a rough error status
 						$errorStatus = FALSE;
-						if (count($this->messages['error']) > 0) {
+						if (count($this->messages[t3lib_FlashMessage::ERROR]) > 0) {
 							$errorStatus = TRUE;
 						}
 						$connector->postProcessOperations($this->externalConfig['parameters'], $errorStatus);
@@ -246,7 +258,9 @@ class tx_externalimport_importer {
 			// Log error
 		} else {
 			$userName = $GLOBALS['BE_USER']->user['username'];
-			$this->messages['error'][] = sprintf($GLOBALS['LANG']->getLL('no_rights_for_sync'), $userName, $table);
+			$this->addMessage(
+				sprintf($GLOBALS['LANG']->getLL('no_rights_for_sync'), $userName, $table)
+			);
 		}
 
 			// Log results to devlog

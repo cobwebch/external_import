@@ -1,3 +1,7 @@
+2013-07-22 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Fixed erroneous registration of error messages, resolves #49383
+
 2013-01-24 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released version 2.1.0
