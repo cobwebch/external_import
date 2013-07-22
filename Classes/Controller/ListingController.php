@@ -66,15 +66,8 @@ class Tx_ExternalImport_Controller_ListingController extends Tx_Extbase_MVC_Cont
 	 * @api
 	 */
 	protected function initializeView(Tx_Extbase_MVC_View_ViewInterface $view) {
-			// If the Scheduler is loaded, check full write access rights
-			// (i.e. if user has write-rights to every table with external data)
-		if (t3lib_extMgm::isLoaded('scheduler', FALSE)) {
-			$globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();
-
-			// If the Scheduler is not loaded, no sync can be done or defined anyway
-		} else {
-			$globalWriteAccess = 'none';
-		}
+		// Evaluate write access on all tables
+		$globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();
 		$view->assign('globalWriteAccess', $globalWriteAccess);
 		$view->assign('view', strtolower($this->request->getControllerActionName()));
 			// If TYPO3 version is lower then 4.7, use the old icon name for refresh
