@@ -1,6 +1,7 @@
 2013-07-22 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fixed erroneous registration of error messages, resolves #49383
+	* Corrected handling of limitless execution time for ExtJS calls, resolves #43941
 
 2013-01-24 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

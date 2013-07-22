@@ -68,11 +68,16 @@ class Tx_ExternalImport_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_View
 			// Load the FitToParent ExtJS plugin
 		$uxPath = $doc->backPath . '../t3lib/js/extjs/ux/';
 		$pageRenderer->addJsFile($uxPath . 'Ext.ux.FitToParent.js');
-			// Pass some settings to the JavaScript application
-			// First calculate the time limit (which is multiplied by 1000, because JS uses milliseconds)
-			// Defaults to 30 seconds
+		// Pass some settings to the JavaScript application
+		// First calculate the time limit (which is multiplied by 1000, because JS uses milliseconds)
+		// Defaults to 30 seconds
 		$timeLimitConfiguration = intval($extensionConfiguration['timelimit']);
-		$timeLimit = ($timeLimitConfiguration > 0) ? $timeLimitConfiguration * 1000 : 30000;
+		// If the time limit is 0, duration is supposed to be unlimited. Set 1 day as arbitrary value.
+		if ($timeLimitConfiguration === 0) {
+			$timeLimit = 86400 * 1000;
+		} else {
+			$timeLimit = ($timeLimitConfiguration > 0) ? $timeLimitConfiguration * 1000 : 30000;
+		}
 		$pageRenderer->addInlineSettingArray(
 			'external_import',
 			array(
