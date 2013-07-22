@@ -108,7 +108,6 @@ class tx_externalimport_autosync_scheduler_Task extends tx_scheduler_Task {
 	 * @return	string	Information to display
 	 */
 	public function getAdditionalInformation() {
-		$info = '';
 		if ($this->table == 'all') {
 			$info = $GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:allTables');
 		} else {

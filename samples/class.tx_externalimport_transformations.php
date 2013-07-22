@@ -24,8 +24,6 @@
 * $Id$
 ***************************************************************/
 
-require_once(t3lib_extMgm::extPath('external_import').'class.tx_externalimport_importer.php');
-
 /**
  * Example transformation functions for the 'external_import' extension
  *

@@ -3,6 +3,7 @@
 	* Fixed erroneous registration of error messages, resolves #49383
 	* Corrected handling of limitless execution time for ExtJS calls, resolves #43941
 	* Fixed wrong evaluation of rights to synchronization action, resolves #49415
+	* Ensured compatibility with TYPO3 CMS 6.1, resolves #50294
 
 2013-01-24 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
