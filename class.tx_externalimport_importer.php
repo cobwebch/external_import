@@ -1246,13 +1246,14 @@ class tx_externalimport_importer {
 			$where .= ' AND ' . $this->externalConfig['where_clause'];
 		}
 		$where .= t3lib_BEfunc::deleteClause($this->table);
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($this->externalConfig['reference_uid'] . ',uid', $this->table, $where);
+		$referenceUidField = $this->externalConfig['reference_uid'];
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($referenceUidField . ',uid', $this->table, $where);
 		if ($res) {
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 					// Don't consider records with empty references, as they can't be matched
-					// to external data anyway
-				if (!empty($row[$this->externalConfig['reference_uid']])) {
-					$existingUids[$row[$this->externalConfig['reference_uid']]] = $row['uid'];
+					// to external data anyway (but a real zero is acceptable)
+				if (!empty($row[$referenceUidField]) || $row[$referenceUidField] === '0' || $row[$referenceUidField] === 0) {
+					$existingUids[$row[$referenceUidField]] = $row['uid'];
 				}
 			}
 			$GLOBALS['TYPO3_DB']->sql_free_result($res);
@@ -1281,10 +1282,11 @@ class tx_externalimport_importer {
 			if (isset($mappingData['value_field'])) {
 				$valueField = $mappingData['value_field'];
 			}
-			$fields = $mappingData['reference_field'] . ', ' . $valueField;
-				// Define where clause
+			$referenceField = $mappingData['reference_field'];
+			$fields = $referenceField . ', ' . $valueField;
+			// Define where clause
 			$whereClause = '1 = 1';
-			if (!empty($mappingData['where_clause'])) {
+			if (!empty($mappingData['where_clause']) || $mappingData[$referenceField] === '0' || $mappingData[$referenceField] === 0) {
 				$whereClause = $mappingData['where_clause'];
 			}
 			$whereClause .= t3lib_BEfunc::deleteClause($mappingData['table']);
@@ -1296,8 +1298,8 @@ class tx_externalimport_importer {
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 					// Don't consider records with empty references, as they can't be matched
 					// to external data anyway
-					if (!empty($row[$mappingData['reference_field']])) {
-						$localMapping[$row[$mappingData['reference_field']]] = $row[$valueField];
+					if (!empty($row[$referenceField])) {
+						$localMapping[$row[$referenceField]] = $row[$valueField];
 					}
 				}
 				$GLOBALS['TYPO3_DB']->sql_free_result($res);

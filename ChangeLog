@@ -1,3 +1,7 @@
+2013-08-20 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Improved empty check for external reference values, resolves #51200
+
 2013-07-22 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fixed erroneous registration of error messages, resolves #49383
