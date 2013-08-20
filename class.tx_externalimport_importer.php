@@ -1286,7 +1286,7 @@ class tx_externalimport_importer {
 			$fields = $referenceField . ', ' . $valueField;
 			// Define where clause
 			$whereClause = '1 = 1';
-			if (!empty($mappingData['where_clause']) || $mappingData[$referenceField] === '0' || $mappingData[$referenceField] === 0) {
+			if (!empty($mappingData['where_clause'])) {
 				$whereClause = $mappingData['where_clause'];
 			}
 			$whereClause .= t3lib_BEfunc::deleteClause($mappingData['table']);
@@ -1297,8 +1297,8 @@ class tx_externalimport_importer {
 			if ($res) {
 				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 					// Don't consider records with empty references, as they can't be matched
-					// to external data anyway
-					if (!empty($row[$referenceField])) {
+					// to external data anyway (but a real zero is acceptable)
+					if (!empty($row[$referenceField]) || $mappingData[$referenceField] === '0' || $mappingData[$referenceField] === 0) {
 						$localMapping[$row[$referenceField]] = $row[$valueField];
 					}
 				}
