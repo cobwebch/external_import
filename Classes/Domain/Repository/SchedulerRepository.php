@@ -131,7 +131,7 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository implements t3lib_S
 
 	/**
 	 * Saves a given task
-	 * If no uid is given, a new taks is created
+	 * If no uid is given, a new task is created
 	 *
 	 * @param array $taskData List of fields to save. Must include "uid" for an existing registered task
 	 * @return boolean True or false depending on success or failure of action
@@ -145,6 +145,10 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository implements t3lib_S
 				// Set the data specific to external import
 			$task->table = $taskData['sync'];
 			$task->index = $taskData['index'];
+			// As of TYPO3 CMS 6.2, a task group must be defined
+			if (method_exists($task, 'setTaskGroup')) {
+				$task->setTaskGroup(0);
+			}
 			$result = $this->scheduler->addTask($task);
 		} else {
 			$task = $this->scheduler->fetchTask($taskData['uid']);
@@ -160,7 +164,7 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository implements t3lib_S
 	/**
 	 * Removes the registration of a given task
 	 *
-	 * @param integer $uid Frimary key of the task to remove
+	 * @param integer $uid Primary key of the task to remove
 	 * @return boolean True or false depending on success or failure of action
 	 */
 	public function deleteTask($uid) {

@@ -44,10 +44,10 @@ TYPO3.ExternalImport.ConfigurationStore = new Ext.data.DirectStore({
 TYPO3.ExternalImport.AutosyncColumnTemplate = new Ext.XTemplate(
 	'<div class="longCellWrap">',
 		'<tpl if="automated == 0">',
-			'<p>' + TYPO3.lang['no_autosync'] + '</p>',
+			TYPO3.lang['no_autosync'],
 		'</tpl>',
 		'<tpl if="automated == 1">',
-			'<p>{[String.format(TYPO3.lang["next_autosync"], values.task.nextexecution, values.task.frequency)]}</p>',
+			'{[String.format(TYPO3.lang["next_autosync"], values.task.nextexecution, values.task.frequency)]}',
 		'</tpl>',
 	'</div>'
 );
@@ -249,14 +249,15 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 				}
 			]
 		},
-			// Empty column (workaround a layout bug which appeared in some TYPO3 and/or browser version)
+		// Empty column (work around a layout bug which appeared in some TYPO3 and/or browser version)
 		{
 			id: 'right-padding',
 			header: '',
 			width: 10,
 			fixed: true,
 			sortable: false,
-			menuDisabled: true
+			menuDisabled: true,
+			dataIndex: 'dummy'
 		}
 	],
 	viewConfig: {

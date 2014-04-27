@@ -82,26 +82,26 @@ class Tx_ExternalImport_ExtDirect_Server {
 
 		if (is_array($externalCtrlConfiguration)) {
 				// Prepare the display
-			$externalInformation .= '<table border="0" cellspacing="1" cellpadding="0" class="informationTable">';
+			$externalInformation .= '<table class="informationTable">';
 				// Connector information
 			if (isset($externalCtrlConfiguration['connector'])) {
-				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<tr>';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector') . '</td>';
 				$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['connector']) . '</td>';
 				$externalInformation .= '</tr>';
-				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<tr>';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector.details') . '</td>';
 				$externalInformation .= '<td>' . $this->dumpArray($externalCtrlConfiguration['parameters']) . '</td>';
 				$externalInformation .= '</tr>';
 			}
 				// Data information
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_type') . '</td>';
 			$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['data']) . '</td>';
 			$externalInformation .= '</tr>';
 				// Custom data handler
 			if (isset($externalCtrlConfiguration['dataHandler'])) {
-				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<tr>';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:data_handler') . '</td>';
 				$error = '';
 				try {
@@ -122,18 +122,18 @@ class Tx_ExternalImport_ExtDirect_Server {
 			}
 				// XML-related configuration
 			if (isset($externalCtrlConfiguration['nodetype'])) {
-				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<tr>';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:reference_node') . '</td>';
 				$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['nodetype']) . '</td>';
 				$externalInformation .= '</tr>';
 			}
 			if (isset($externalCtrlConfiguration['namespaces']) && is_array($externalCtrlConfiguration['namespaces']) && count($externalCtrlConfiguration['namespaces']) > 0) {
-				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<tr>';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:namespaces') . '</td>';
 				$externalInformation .= '<td>' . $this->dumpArray($externalCtrlConfiguration['namespaces']) . '</td>';
 				$externalInformation .= '</tr>';
 			}
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:external_key') . '</td>';
 			$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['reference_uid']) . '</td>';
 			$externalInformation .= '</tr>';
@@ -144,15 +144,15 @@ class Tx_ExternalImport_ExtDirect_Server {
 			} elseif (isset($this->extensionConfiguration['storagePID'])) {
 				$pid = $this->extensionConfiguration['storagePID'];
 			}
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:storage_pid') . '</td>';
 			$externalInformation .= '<td>' . (($pid == 0) ? 0 : $this->getPageLink($pid)) . '</td>';
 			$externalInformation .= '</tr>';
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:enforce_pid') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['enforcePid'])) ? $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:yes')) . '</td>';
 			$externalInformation .= '</tr>';
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disableLog') . '</td>';
 			if (isset($externalCtrlConfiguration['disableLog'])) {
 				$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:yes')) . '</td>';
@@ -162,24 +162,24 @@ class Tx_ExternalImport_ExtDirect_Server {
 			$externalInformation .= '<td>' . $value . '</td>';
 			$externalInformation .= '</tr>';
 				// Additional fields
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:additional_fields') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['additional_fields'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['additional_fields'])) . '</td>';
 			$externalInformation .= '</tr>';
 				// Control options
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:where_clause') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['where_clause'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['where_clause'])) . '</td>';
 			$externalInformation .= '</tr>';
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disabled_operations') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['disabledOperations'])) ? $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:none') : htmlspecialchars($externalCtrlConfiguration['disabledOperations'])) . '</td>';
 			$externalInformation .= '</tr>';
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:minimum_records') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['minimumRecords'])) ? '-' : intval($externalCtrlConfiguration['minimumRecords'])) . '</td>';
 			$externalInformation .= '</tr>';
-			$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:clear_cache') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['clearCache'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['clearCache'])) . '</td>';
 			$externalInformation .= '</tr>';
@@ -202,9 +202,9 @@ class Tx_ExternalImport_ExtDirect_Server {
 		$columns = $this->configurationRepository->findColumnsByTableAndIndex($table, $index);
 
 		if (is_array($columns)) {
-			$externalInformation .= '<table border="0" cellspacing="1" cellpadding="0" class="informationTable">';
+			$externalInformation .= '<table class="informationTable">';
 			foreach ($columns as $columnName => $columnData) {
-				$externalInformation .= '<tr class="bgColor4-20" valign="top">';
+				$externalInformation .= '<tr>';
 				$externalInformation .= '<td>' . $columnName . '</td>';
 				$externalInformation .= '<td>' . $this->dumpArray($columnData) . '</td>';
 				$externalInformation .= '</tr>';
@@ -394,6 +394,10 @@ class Tx_ExternalImport_ExtDirect_Server {
 			// Set the data specific to external import
 		$task->table = $data['table'];
 		$task->index = $data['index'];
+		// As of TYPO3 CMS 6.2, a task group must be defined
+		if (method_exists($task, 'setTaskGroup')) {
+			$task->setTaskGroup(0);
+		}
 			// Schedule the task
 		$result = $this->scheduler->addTask($task);
 		if (!$result) {
@@ -485,9 +489,9 @@ class Tx_ExternalImport_ExtDirect_Server {
 	 * @return string HTML table assembled from array
 	 */
 	protected function dumpArray($array) {
-		$table = '<table border="0" cellpadding="1" cellspacing="1" bgcolor="#8a8a8a">';
+		$table = '<table>';
 		foreach ($array as $key => $value) {
-			$table .= '<tr class="bgColor4-20" valign="top">';
+			$table .= '<tr>';
 			$table .= '<td>' . htmlspecialchars($key) . '</td>';
 			$table .= '<td>';
 			if (is_array($value)) {

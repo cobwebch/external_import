@@ -141,6 +141,9 @@ class Tx_ExternalImport_Domain_Repository_ConfigurationRepository {
 								$tableConfiguration['automated'] = 0;
 								$tableConfiguration['task'] = NULL;
 							}
+							// Provide empty text for dummy column
+							// (see "Empty column" comment in Resources/Public/JavaScript/Application.js)
+							$tableConfiguration['dummy'] = '';
 							$configurations[] = $tableConfiguration;
 						}
 					}

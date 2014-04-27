@@ -62,11 +62,16 @@ class Tx_ExternalImport_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_View
 
 		$doc = $this->getDocInstance();
 		$pageRenderer = $doc->getPageRenderer();
+		$isTypo3Version62OrMore = version_compare(TYPO3_branch, '6.2', '>=');
 
-			// Load ExtDirect
+		// Load ExtDirect
 		$pageRenderer->addExtDirectCode(array('TYPO3.ExternalImport'));
-			// Load the FitToParent ExtJS plugin
-		$uxPath = $doc->backPath . '../t3lib/js/extjs/ux/';
+		// Load the FitToParent ExtJS plugin
+		if ($isTypo3Version62OrMore) {
+			$uxPath = $doc->backPath . '../typo3/js/extjs/ux/';
+		} else {
+			$uxPath = $doc->backPath . '../t3lib/js/extjs/ux/';
+		}
 		$pageRenderer->addJsFile($uxPath . 'Ext.ux.FitToParent.js');
 		// Pass some settings to the JavaScript application
 		// First calculate the time limit (which is multiplied by 1000, because JS uses milliseconds)
@@ -89,8 +94,13 @@ class Tx_ExternalImport_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_View
 				'view' => $view
 			)
 		);
-			// Load JS-powered flash messages library
-		$pageRenderer->addJsFile($doc->backPath . '../t3lib/js/extjs/notifications.js', 'text/javascript', FALSE);
+		// Load JS-powered flash messages library
+		if ($isTypo3Version62OrMore) {
+			$notificationLibraryPath = t3lib_extMgm::extRelPath('backend') . 'Resources/Public/JavaScript/notifications.js';
+		} else {
+			$notificationLibraryPath = $doc->backPath . '../t3lib/js/extjs/notifications.js';
+		}
+		$pageRenderer->addJsFile($notificationLibraryPath, 'text/javascript', FALSE);
 			// Load the specific language file
 		$pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/locallang.xml');
 		$pageRenderer->addInlineLanguageLabelFile('EXT:lang/locallang_common.xml');
