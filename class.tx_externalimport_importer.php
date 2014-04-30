@@ -869,7 +869,7 @@ class tx_externalimport_importer {
 						$foreignValue = $mmData['mapping']['value'];
 
 						// Next is "soft" matching method to mapping table
-					} elseif (!empty($mmData['mapping']['mapping_method'])) {
+					} elseif (!empty($mmData['mapping']['match_method'])) {
 						if ($mmData['mapping']['match_method'] == 'strpos' || $mmData['mapping']['match_method'] == 'stripos') {
 								// Try matching the value. If matching fails, unset it.
 							try {
