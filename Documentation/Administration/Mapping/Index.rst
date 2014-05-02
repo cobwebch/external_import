@@ -1,0 +1,218 @@
+﻿.. ==================================================
+.. FOR YOUR INFORMATION
+.. --------------------------------------------------
+.. -*- coding: utf-8 -*- with BOM.
+
+.. include:: ../../Includes.txt
+
+
+.. _administration-mapping:
+
+Mapping configuration
+^^^^^^^^^^^^^^^^^^^^^
+
+The external values can be matched to values from an existing
+TYPO3 CMS table, using the "mapping" property, which has its own
+set of properties. They are described below.
+
+
+.. _administration-mapping-properties:
+
+Properties
+""""""""""
+
+.. container:: ts-properties
+
+	========================= =============
+	Property                  Data type
+	========================= =============
+	`match\_method`_          string
+	`match\_symmetric`_       boolean
+	`reference\_field`_       string
+	table_                    string
+	`value\_field`_           string
+	valueMap_                 array
+	`where\_clause`_          string
+	========================= =============
+
+
+.. _administration-mapping-properties-table:
+
+table
+~~~~~
+
+Type
+  string
+
+Description
+  Name of the table to read the mapping data from.
+
+Scope
+  Transform data
+
+
+.. _administration-mapping-properties-reference-field:
+
+reference\_field
+~~~~~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+  Name of the field against which external values must be matched.
+
+Scope
+  Transform data
+
+
+.. _administration-mapping-properties-value-field:
+
+value\_field
+~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+  Name of the field to take the mapped value from. If not defined, this
+  will default to "uid".
+
+Scope
+  Transform data
+
+
+.. _administration-mapping-properties-where-clause:
+
+where\_clause
+~~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+  SQL condition (without the "WHERE" keyword) to apply to the referenced
+  table. This is typically meant to be a mirror of the
+  :ref:`foreign_table_where <t3tca:columns-select-properties-foreign-table-where>`
+  property of select-type fields.
+
+  However it is not possible to use markers in this case. So if you have
+  something like:
+
+  .. code-block:: php
+
+     'foreign_table_where' => 'AND pid = ###PAGE_TSCONFIG_ID###'
+
+  in the TCA for your column, you should replace the marker by a hard-
+  coded value instead for external import, e.g.
+
+  .. code-block:: php
+
+     'where_clause' => 'pid = 42'
+
+  .. important::
+
+     The clause must start with neither the "WHERE", nor the "AND" keyword.
+
+Scope
+  Transform data
+
+
+.. _administration-mapping-properties-valuemap:
+
+valueMap
+~~~~~~~~
+
+Type
+  array
+
+Description
+  Fixed hash table for mapping. Instead of using a database table to
+  match external values to internal values, this property makes it
+  possible to use a simple list of key-value pairs. The keys correspond
+  to the external values.
+
+Scope
+  Transform data
+
+
+.. _administration-mapping-properties-match-method:
+
+match\_method
+~~~~~~~~~~~~~
+
+Type
+  array
+
+Description
+  Value can be "strpos" or "stripos".
+
+  Normally mapping values are matched based on a strict equality. This
+  property can be used to match in a "softer" way. It will match if the
+  external value is found inside the values pointed to by the
+  :ref:`reference_field <administration-mapping-properties-reference-field>`
+  property. "strpos" will perform a case-sensitive
+  matching, while "stripos" is case-unsensitive.
+
+  Caution should be exercised when this property is used. Since the
+  matching is less strict it may lead to false positives. You should
+  review the data after such an import.
+
+  .. note::
+
+     It is important to understand how the "match\_method" property
+     influences the matching process. Consider trying to map freely input
+     country names to the :code:`static\_countries` table inside TYPO3 CMS.
+     This may not be so easy depending on how names were input in the
+     external data. For example, "Australia" will not strictly match the
+     official name, which is "Commonwealth of Australia". However setting
+     "match\_method" to "strpos" will generate a match, since "Australia"
+     can be found inside "Commonwealth of Australia"
+
+
+Scope
+  Transform data
+
+
+.. _administration-mapping-properties-match-symmetric:
+
+match\_symmetric
+~~~~~~~~~~~~~~~~
+
+Type
+  boolean
+
+Description
+  This property complements :ref:`match_method <administration-mapping-properties-match-method>`.
+  If set to :code:`TRUE`, the import process will not only
+  try to match the external value inside the mapping values,
+  but also the reverse, i.e. the mapping values
+  inside the external value.
+
+Scope
+  Transform data
+
+
+.. _administration-mapping-example:
+
+Example
+"""""""
+
+Here's an example TCA configuration.
+
+.. code-block:: php
+
+	$GLOBALS['TCA']['fe_users']['columns']['tx_externalimporttut_department']['external'] = array(
+		0 => array(
+			'field' => 'department',
+			'mapping' => array(
+				'table' => 'tx_externalimporttut_departments',
+				'reference_field' => 'code'
+			)
+		)
+	);
+
+The value found in the "department" field of the external data
+will be matched to the "code" field of the "tx_externalimporttut_departments" table,
+and thus create a relation between the "fe_users" and the
+"tx_externalimporttut_departments" table.
