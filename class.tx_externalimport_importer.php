@@ -447,10 +447,10 @@ class tx_externalimport_importer {
 	protected function handleXML($rawData) {
 		$data = array();
 
-			// Load the XML into a DOM object
+		// Load the XML into a DOM object
 		$dom = new DOMDocument();
 		$dom->loadXML($rawData);
-			// Instantiate a XPath object and load with any defined namespaces
+		// Instantiate a XPath object and load with any defined namespaces
 		$xPathObject = new DOMXPath($dom);
 		if (isset($this->externalConfig['namespaces']) && is_array($this->externalConfig['namespaces'])) {
 			foreach ($this->externalConfig['namespaces'] as $prefix => $uri) {
@@ -461,6 +461,7 @@ class tx_externalimport_importer {
 			// Get the nodes that represent the root of each data record
 		$records = $dom->getElementsByTagName($this->externalConfig['nodetype']);
 		for ($i = 0; $i < $records->length; $i++) {
+			/** @var DOMElement $theRecord */
 			$theRecord = $records->item($i);
 			$theData = array();
 
@@ -480,19 +481,49 @@ class tx_externalimport_importer {
 						if ($nodeList->length > 0) {
 							/** @var $selectedNode DOMNode */
 							$selectedNode = $nodeList->item(0);
-								// If an XPath expression is defined, apply it (relative to currently selected node)
+							// If an XPath expression is defined, apply it (relative to currently selected node)
 							if (!empty($columnData['external'][$this->index]['xpath'])) {
-								$resultNodes = $xPathObject->evaluate($columnData['external'][$this->index]['xpath'], $selectedNode);
-								if ($resultNodes->length > 0) {
-									$selectedNode = $resultNodes->item(0);
+								try {
+									$selectedNode = $this->selectNodeWithXpath(
+										$xPathObject,
+										$columnData['external'][$this->index]['xpath'],
+										$selectedNode
+									);
+								}
+								catch (Exception $e) {
+									// Nothing to do, data is ignored
 								}
 							}
-							$theData[$columnName] = $this->extractValueFromNode($selectedNode, $columnData['external'][$this->index]);
+							$theData[$columnName] = $this->extractValueFromNode(
+								$selectedNode,
+								$columnData['external'][$this->index]
+							);
 						}
 
-						// Without "field" property, use the current node itself
+					// Without "field" property, use the current node itself
 					} else {
-						$theData[$columnName] = $this->extractValueFromNode($theRecord, $columnData['external'][$this->index]);
+						// If an XPath expression is defined, apply it (relative to current node)
+						if (!empty($columnData['external'][$this->index]['xpath'])) {
+							try {
+								$selectedNode = $this->selectNodeWithXpath(
+									$xPathObject,
+									$columnData['external'][$this->index]['xpath'],
+									$theRecord
+								);
+								$theData[$columnName] = $this->extractValueFromNode(
+									$selectedNode,
+									$columnData['external'][$this->index]
+								);
+							}
+							catch (Exception $e) {
+								// Nothing to do, data is ignored
+							}
+						} else {
+							$theData[$columnName] = $this->extractValueFromNode(
+								$theRecord,
+								$columnData['external'][$this->index]
+							);
+						}
 					}
 				}
 			}
@@ -507,7 +538,9 @@ class tx_externalimport_importer {
 				}
 			}
 
-			$data[] = $theData;
+			if (count($theData) > 0) {
+				$data[] = $theData;
+			}
 		}
 		return $data;
 	}
@@ -535,6 +568,24 @@ class tx_externalimport_importer {
 			$value = $node->nodeValue;
 		}
 		return $value;
+	}
+
+	/**
+	 * Queries the current structure with an XPath query.
+	 *
+	 * @param DOMXPath $xPathObject Instantiated DOMXPath object
+	 * @param string $xPath XPath query to evaluate
+	 * @param DOMNode $context Node giving the context of the XPath query
+	 * @return DOMElement First node found
+	 * @throws Exception
+	 */
+	protected function selectNodeWithXpath($xPathObject, $xPath, $context) {
+		$resultNodes = $xPathObject->evaluate($xPath, $context);
+		if ($resultNodes->length > 0) {
+			return $resultNodes->item(0);
+		} else {
+			throw new Exception('No node found with xPath: ' . $xPath, 1399497464);
+		}
 	}
 
 	/**

@@ -11,7 +11,7 @@
 Columns configuration
 ^^^^^^^^^^^^^^^^^^^^^
 
-you also need an "external" syntax for each column to define
+You also need an "external" syntax for each column to define
 which external data goes into that column and any handling that might
 apply. This is also an indexed array. Obviously indices used for each
 column must relate to the indices used in the "ctrl" section. In its
@@ -96,8 +96,11 @@ Type
 
 Description
    If the data is of type XML, use this property to retrieve the value
-   from an attribute of the node (selected with the :ref:`field <administration-columns-properties-field>`
-   property above) rather than to the value of the node itself.
+   from an attribute of the node rather than the value of the node itself.
+
+   This applies to the node selected with the :ref:`field <administration-columns-properties-field>`
+   property or to the current node if :ref:`field <administration-columns-properties-field>`
+   is not defined.
 
 Scope
   Handle data (XML)
@@ -114,7 +117,11 @@ Type
 Description
   This property can be used to execute a XPath query relative to the
   node selected with the :ref:`field <administration-columns-properties-field>`
-  property. The value will be taken from the first node returned by the query.
+  property or (since version 2.3.0) directly on the current node
+  if :ref:`field <administration-columns-properties-field>`
+  is not defined.
+
+  The value will be taken from the first node returned by the query.
   If the :ref:`attribute <administration-columns-properties-attribute>` property is
   also defined, it will be applied to the node returned by the XPath query.
 

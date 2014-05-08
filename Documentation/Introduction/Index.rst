@@ -44,6 +44,11 @@ to put it through an ETL or ESB tool first, and then import it into TYPO3 CMS.
 Please also check extension :ref:`externalimport_tut <tut:start>`
 which provides a tutorial to this extension.
 
+More examples can be found in extension "externalimport_test", which is used
+for testing purposes. The setup is not documented, but can be interesting
+to look at. This extension is distributed only via Github:
+https://github.com/fsuter/externalimport_test
+
 .. note::
 
    In this manual it is often referred to "TCEmain". This the storage
