@@ -48,7 +48,7 @@ class tx_externalimport_transformations {
 	 * @param	array	$params: additional parameters from the TCA
 	 * @return	mixed	Timestamp or formatted date string
 	 */
-	function parseDate($record, $index, $params) {
+	public function parseDate($record, $index, $params) {
 		$value = strtotime($record[$index]);
 			// Consider time zone offset
 			// This is necessary because TCEmain will subtract the time zone offset upon saving the data,

@@ -105,7 +105,20 @@ class Tx_ExternalImport_ViewHelpers_Be_ContainerViewHelper extends Tx_Fluid_View
 		$pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/locallang.xml');
 		$pageRenderer->addInlineLanguageLabelFile('EXT:lang/locallang_common.xml');
 
-		$output = parent::render($pageTitle, $enableJumpToUrl, $enableClickMenu, $loadPrototype, $loadScriptaculous, $scriptaculousModule, $loadExtJs, $loadExtJsTheme, $extJsAdapter, $enableExtJsDebug, $addCssFile, $addJsFile);
+		$output = parent::render(
+			$pageTitle,
+			$enableJumpToUrl,
+			$enableClickMenu,
+			$loadPrototype,
+			$loadScriptaculous,
+			$scriptaculousModule,
+			$loadExtJs,
+			$loadExtJsTheme,
+			$extJsAdapter,
+			$enableExtJsDebug,
+			$addCssFile,
+			$addJsFile
+		);
 		return $output;
 	}
 }

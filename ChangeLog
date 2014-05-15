@@ -1,3 +1,7 @@
+2014-05-15 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Cleaned up some CGL violations, resolves #51686
+
 2014-05-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added possibility to apply XPath query directly on current node, resolves #51534

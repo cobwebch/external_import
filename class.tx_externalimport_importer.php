@@ -633,7 +633,15 @@ class tx_externalimport_importer {
 					// Could not instantiate the class, log error and do nothing
 				if ($userObject === FALSE) {
 					if ($this->extConf['debug'] || TYPO3_DLOG) {
-						t3lib_div::devLog(sprintf($GLOBALS['LANG']->getLL('invalid_userfunc'), $columnData['external'][$this->index]['userFunc']['class']), $this->extKey, 2, $columnData['external'][$this->index]['userFunc']);
+						t3lib_div::devLog(
+							sprintf(
+								$GLOBALS['LANG']->getLL('invalid_userfunc'),
+								$columnData['external'][$this->index]['userFunc']['class']
+							),
+							$this->extKey,
+							2,
+							$columnData['external'][$this->index]['userFunc']
+						);
 					}
 
 					// Otherwise call referenced class on all records
@@ -892,8 +900,8 @@ class tx_externalimport_importer {
 				// Process MM-relations, if any
 			if (isset($columnData['external'][$this->index]['MM'])) {
 				$mmData = $columnData['external'][$this->index]['MM'];
-				$sortingField = (isset($mmData['sorting'])) ? $mmData['sorting'] : false;
-				$additionalFields = (isset($mmData['additional_fields'])) ? $mmData['additional_fields'] : false;
+				$sortingField = (isset($mmData['sorting'])) ? $mmData['sorting'] : FALSE;
+				$additionalFields = (isset($mmData['additional_fields'])) ? $mmData['additional_fields'] : FALSE;
 
 				$mappings[$columnName] = array();
 				if ($additionalFields || $mmData['multiple']) {
@@ -1154,8 +1162,15 @@ class tx_externalimport_importer {
 		unset($tceData);
 		unset($savedData);
 
-			// Mark as deleted records with existing uids that were not in the import data anymore (if automatic delete is activated)
-		if (t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete') || (isset($this->externalConfig['deleteNonSynchedRecords']) && $this->externalConfig['deleteNonSynchedRecords'] === FALSE)) {
+		// Mark as deleted records with existing uids that were not in the import data anymore
+		// (if automatic delete is activated)
+		if (
+			t3lib_div::inList($this->externalConfig['disabledOperations'], 'delete')
+			|| (
+				isset($this->externalConfig['deleteNonSynchedRecords'])
+				&& $this->externalConfig['deleteNonSynchedRecords'] === FALSE
+				)
+			) {
 			$deletes = 0;
 		} else {
 			$absentUids = array_diff($existingUids, $updatedUids);
@@ -1201,7 +1216,7 @@ class tx_externalimport_importer {
 					$uid = $existingUids[$externalUid];
 
 						// Delete existing MM-relations for current uid
-					$GLOBALS['TYPO3_DB']->exec_DELETEquery($mmTable, "uid_local = '$uid'");
+					$GLOBALS['TYPO3_DB']->exec_DELETEquery($mmTable, 'uid_local = ' . intval($uid));
 
 						// Recreate all MM-relations with additional fields, if any
 					$counter = 0;
@@ -1476,10 +1491,18 @@ class tx_externalimport_importer {
 		$senderName = '';
 		if (!empty($GLOBALS['BE_USER']->user['email'])) {
 			$senderMail = $GLOBALS['BE_USER']->user['email'];
-			$senderName = (empty($GLOBALS['BE_USER']->user['realName'])) ? $GLOBALS['BE_USER']->user['username'] : $GLOBALS['BE_USER']->user['realName'];
+			if (empty($GLOBALS['BE_USER']->user['realName'])) {
+				$senderName = $GLOBALS['BE_USER']->user['username'];
+			} else {
+				$senderName = $GLOBALS['BE_USER']->user['realName'];
+			}
 		} elseif (!empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'])) {
 			$senderMail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
-			$senderName = (empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'])) ? $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'] : $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'];
+			if (empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'])) {
+				$senderName =  $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
+			} else {
+				$senderName =  $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'];
+			}
 		}
 			// If no mail could be found, avoid sending the mail
 			// The message will be logged as an error
