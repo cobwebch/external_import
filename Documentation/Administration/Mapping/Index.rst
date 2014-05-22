@@ -23,17 +23,18 @@ Properties
 
 .. container:: ts-properties
 
-	========================= =============
-	Property                  Data type
-	========================= =============
-	`match\_method`_          string
-	`match\_symmetric`_       boolean
-	`reference\_field`_       string
-	table_                    string
-	`value\_field`_           string
-	valueMap_                 array
-	`where\_clause`_          string
-	========================= =============
+	========================== =============
+	Property                   Data type
+	========================== =============
+	`match\_method`_           string
+	`match\_symmetric`_        boolean
+	`multipleValuesSeparator`_ string
+	`reference\_field`_        string
+	table_                     string
+	`value\_field`_            string
+	valueMap_                  array
+	`where\_clause`_           string
+	========================== =============
 
 
 .. _administration-mapping-properties-table:
@@ -136,6 +137,27 @@ Scope
   Transform data
 
 
+.. _administration-mapping-properties-multiplevaluesseparator:
+
+multipleValuesSeparator
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+  Set this property if the field to map contains several values,
+  separated by some symbol (for example, a comma). The values will
+  be split using the symbol defined in this property and each resulting
+  value will go through the mapping process.
+
+  This makes it possible to handle 1:n or m:n relations, where the
+  incoming values are all stored in the same field.
+
+Scope
+  Transform data
+
+
 .. _administration-mapping-properties-match-method:
 
 match\_method
@@ -195,8 +217,13 @@ Scope
 
 .. _administration-mapping-example:
 
-Example
-"""""""
+Examples
+""""""""
+
+.. _administration-mapping-example-simple:
+
+Simple mapping
+~~~~~~~~~~~~~~
 
 Here's an example TCA configuration.
 
@@ -216,3 +243,53 @@ The value found in the "department" field of the external data
 will be matched to the "code" field of the "tx_externalimporttut_departments" table,
 and thus create a relation between the "fe_users" and the
 "tx_externalimporttut_departments" table.
+
+
+.. _administration-mapping-example-multiple:
+
+Mapping multiple values
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This second example demonstrates usage of the
+:ref:`multipleValuesSeparator <administration-mapping-properties-multiplevaluesseparator>`
+property.
+
+The incoming data looks like:
+
+.. code-block:: xml
+
+	<catalogue>
+		<products type="current">
+			<item sku="000001">Long sword</item>
+			<tags>attack,metal</tags>
+		</products>
+		<products type="obsolete">
+			<item index="000002">Solar cream</item>
+		</products>
+		<products type="current">
+			<item sku="000005">Chain mail</item>
+			<tags>defense,metal</tags>
+		</products>
+		<item sku="000014" type="current">Out of structure</item>
+	</catalogue>
+
+and the external import configuration like:
+
+.. code-block:: php
+
+	$GLOBALS['TCA']['tx_externalimporttest_product']['columns']['tags']['external'] = array(
+		0 => array(
+			'xpath' => './self::*[@type="current"]/tags',
+			'mapping' => array(
+				'table' => 'tx_externalimporttest_tag',
+				'reference_field' => 'code',
+				'multipleValuesSeparator' => ','
+			)
+		)
+	)
+
+The values in the :code:`<tags>` nodes will be split on the
+comma and each will be matched to a tag from "tx_externalimporttest_tag"
+table, using the "code" field for matching.
+
+This example is taken from the "externalimport_test" extension.

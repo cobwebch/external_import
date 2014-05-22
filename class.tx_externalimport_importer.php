@@ -668,12 +668,12 @@ class tx_externalimport_importer {
 	protected function mapData($records, $columnName, $mappingInformation) {
 		$mappings = $this->getMapping($mappingInformation);
 		$numRecords = count($records);
-			// If no particular matching method is defined, match exactly on the keys of the mapping table
+		// If no particular matching method is defined, match exactly on the keys of the mapping table
 		if (empty($mappingInformation['match_method'])) {
-				// Determine if mapping is self-referential
-				// Self-referential mappings cause a problem, because they may refer to a record that is not yet
-				// in the database, but is part of the import. In this case we need to create a temporary ID for that
-				// record and store it in order to reuse it when assembling the TCEmain data map (in storeData()).
+			// Determine if mapping is self-referential
+			// Self-referential mappings cause a problem, because they may refer to a record that is not yet
+			// in the database, but is part of the import. In this case we need to create a temporary ID for that
+			// record and store it in order to reuse it when assembling the TCEmain data map (in storeData()).
 			$isSelfReferencing = FALSE;
 			if ($mappingInformation['table'] == $this->table) {
 				$isSelfReferencing = TRUE;
@@ -681,35 +681,53 @@ class tx_externalimport_importer {
 
 			for ($i = 0; $i < $numRecords; $i++) {
 				$externalValue = $records[$i][$columnName];
-					// If the external value is empty, don't even try to map it. Otherwise, proceed.
+				// If the external value is empty, don't even try to map it. Otherwise, proceed.
 				if (empty($externalValue)) {
 					unset($records[$i][$columnName]);
 				} else {
-					if (isset($mappings[$externalValue])) {
-						$records[$i][$columnName] = $mappings[$externalValue];
+					// The external field may contain multiple values
+					if (!empty($mappingInformation['multipleValuesSeparator'])) {
+						$singleExternalValues = t3lib_div::trimExplode(
+							$mappingInformation['multipleValuesSeparator'],
+							$externalValue,
+							TRUE
+						);
 
-						// Value is not matched
+					// The external field is expected to contain a single value
 					} else {
+						$singleExternalValues = array($externalValue);
+					}
+					// Loop on all values and try to map them
+					$mappedExternalValues = array();
+					foreach ($singleExternalValues as $singleValue) {
+
+						// Value is matched in the available mapping
+						if (isset($mappings[$singleValue])) {
+							$mappedExternalValues[] = $mappings[$singleValue];
+
+						// Value is not matched, maybe it matches a temporary key, if self-referential
+						} else {
 							// If the relation is self-referential, use a temporary key
-						if ($isSelfReferencing) {
+							if ($isSelfReferencing) {
 								// Check if a temporary key was already created for that external key
-							if (isset($this->temporaryKeys[$externalValue])) {
-								$temporaryKey = $this->temporaryKeys[$externalValue];
+								if (isset($this->temporaryKeys[$singleValue])) {
+									$temporaryKey = $this->temporaryKeys[$singleValue];
 
 								// If not, create a new temporary key
-							} else {
-								$this->newKeysCounter++;
-								$temporaryKey = 'NEW_' . $this->newKeysCounter;
-								$this->temporaryKeys[$externalValue] = $temporaryKey;
-							}
+								} else {
+									$this->newKeysCounter++;
+									$temporaryKey = 'NEW_' . $this->newKeysCounter;
+									$this->temporaryKeys[$singleValue] = $temporaryKey;
+								}
 								// Use temporary key
-							$records[$i][$columnName] = $temporaryKey;
-
-							// If the relation is not self-referential, the mapping does not point to an existing value,
-							// unset it
-						} else {
-							unset($records[$i][$columnName]);
+								$mappedExternalValues[] = $temporaryKey;
+							}
 						}
+					}
+					if (count($mappedExternalValues) > 0) {
+						$records[$i][$columnName] = implode(',', $mappedExternalValues);
+					} else {
+						unset($records[$i][$columnName]);
 					}
 				}
 			}
@@ -721,11 +739,32 @@ class tx_externalimport_importer {
 			if ($mappingInformation['match_method'] == 'strpos' || $mappingInformation['match_method'] == 'stripos') {
 				for ($i = 0; $i < $numRecords; $i++) {
 					$externalValue = $records[$i][$columnName];
-						// Try matching the value. If matching fails, unset it.
-					try {
-						$records[$i][$columnName] = $this->matchSingleField($externalValue, $mappingInformation, $mappings);
+					// The external field may contain multiple values
+					if (!empty($mappingInformation['multipleValuesSeparator'])) {
+						$singleExternalValues = t3lib_div::trimExplode(
+							$mappingInformation['multipleValuesSeparator'],
+							$externalValue,
+							TRUE
+						);
+
+					// The external field is expected to contain a single value
+					} else {
+						$singleExternalValues = array($externalValue);
 					}
-					catch (Exception $e) {
+					// Loop on all values and try to map them
+					$mappedExternalValues = array();
+					foreach ($singleExternalValues as $singleValue) {
+						// Try matching the value. If matching fails, unset it.
+						try {
+							$mappedExternalValues[] = $this->matchSingleField($singleValue, $mappingInformation, $mappings);
+						}
+						catch (Exception $e) {
+							// Ignore unmapped values
+						}
+					}
+					if (count($mappedExternalValues) > 0) {
+						$records[$i][$columnName] = implode(',', $mappedExternalValues);
+					} else {
 						unset($records[$i][$columnName]);
 					}
 				}

@@ -1,3 +1,7 @@
+2014-05-22 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added support for one to many relations in mapping, resolves #52664
+
 2014-05-15 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Cleaned up some CGL violations, resolves #51686
