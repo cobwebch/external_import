@@ -337,5 +337,7 @@ Type
 Description
   **Deprecated**. Use :ref:`disabledOperations <administration-columns-properties-disabledoperations>` instead.
 
+  **Will be removed in version 3.0.**
+
 Scope
   Store data

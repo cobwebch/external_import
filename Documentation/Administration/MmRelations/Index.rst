@@ -29,6 +29,7 @@ Properties
 	mapping_                  :ref:`Mapping configuration <administration-mapping>`
 	mappings_                 array
 	multiple_                 boolean
+	sorting_                  string
 	========================= =====================================================
 
 
@@ -43,6 +44,8 @@ Type
 Description
   **Deprecated**. Use :ref:`mapping <administration-mm-properties-mapping>`
   instead.
+
+  **Will be removed in version 3.0.**
 
 Scope
   Store data

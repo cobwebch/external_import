@@ -58,7 +58,6 @@ Properties
 	connector_                            string
 	data_                                 string
 	dataHandler_                          string
-	deleteNotSynchedRecords_              boolean
 	description_                          string
 	disabledOperations_                   string
 	enforcePid_                           boolean
@@ -418,21 +417,6 @@ Type
 Description
   Comma-separated list of pages whose cache should be cleared at the end
   of the import process. See :ref:`Clearing the cache <user-clear-cache>`.
-
-Scope
-  Store data
-
-
-.. _administration-general-tca-properties-deletenotsynchedrecords:
-
-deleteNotSynchedRecords
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Type
-  boolean
-
-Description
-  **Deprecated**. Use :ref:`disabledOperations <administration-general-tca-properties-disabledoperations>` instead.
 
 Scope
   Store data

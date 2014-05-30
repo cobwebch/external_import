@@ -923,11 +923,12 @@ class tx_externalimport_importer {
 					$fieldsExcludedFromUpdates[] = $columnName;
 				}
 			}
-				// The "excludedOperations" property is deprecated and replaced by "disabledOperations"
-				// It is currently kept for backwards-compatibility reasons
+			// The "excludedOperations" property is deprecated and replaced by "disabledOperations"
+			// It is currently kept for backwards-compatibility reasons
+			// TODO: remove in next major version
 			if (isset($columnData['external'][$this->index]['excludedOperations'])) {
 				$deprecationMessage = 'Property "excludedOperations" has been deprecated. Please use "disabledOperations" instead.';
-				$deprecationMessage .= LF . 'Support for "excludedOperations" will be removed at some point in the future.';
+				$deprecationMessage .= LF . 'Support for "excludedOperations" will be removed in external_import version 3.0.';
 				t3lib_div::deprecationLog($deprecationMessage);
 				if (t3lib_div::inList($columnData['external'][$this->index]['excludedOperations'], 'insert')) {
 					$fieldsExcludedFromInserts[] = $columnName;
@@ -936,7 +937,7 @@ class tx_externalimport_importer {
 					$fieldsExcludedFromUpdates[] = $columnName;
 				}
 			}
-				// Process MM-relations, if any
+			// Process MM-relations, if any
 			if (isset($columnData['external'][$this->index]['MM'])) {
 				$mmData = $columnData['external'][$this->index]['MM'];
 				$sortingField = (isset($mmData['sorting'])) ? $mmData['sorting'] : FALSE;
@@ -947,35 +948,43 @@ class tx_externalimport_importer {
 					$fullMappings[$columnName] = array();
 				}
 
-					// Get foreign mapping for column
+				// Get foreign mapping for column
 				$foreignMappings = array();
 				if (!isset($mmData['mapping']['value'])) {
-					$mappingInformation = isset($mmData['mappings']['uid_foreign']) ? $mmData['mappings']['uid_foreign'] : $mmData['mapping'];
+					// TODO: remove in next major version
+					if (isset($mmData['mappings']['uid_foreign'])) {
+						$deprecationMessage = 'Property "mappings.uid_foreign" has been deprecated. Please use "mapping" instead.';
+						$deprecationMessage .= LF . 'Support for "mappings.uid_foreign" will be removed in external_import version 3.0.';
+						t3lib_div::deprecationLog($deprecationMessage);
+						$mappingInformation = $mmData['mappings']['uid_foreign'];
+					} else {
+						$mappingInformation = $mmData['mapping'];
+					}
 					$foreignMappings = $this->getMapping($mappingInformation);
 				}
 
-					// Go through each record and assemble pairs of primary and foreign keys
+				// Go through each record and assemble pairs of primary and foreign keys
 				$foreignValue = '';
 				foreach ($records as $theRecord) {
 					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
 						// Make sure not to keep the value from the previous iteration
 					unset($foreignValue);
 
-						// Get foreign value
-						// First is a simple value
+					// Get foreign value
+					// First is a simple value
 					if (isset($mmData['mapping']['value'])) {
 						$foreignValue = $mmData['mapping']['value'];
 
 						// Next is "soft" matching method to mapping table
 					} elseif (!empty($mmData['mapping']['match_method'])) {
-						if ($mmData['mapping']['match_method'] == 'strpos' || $mmData['mapping']['match_method'] == 'stripos') {
-								// Try matching the value. If matching fails, unset it.
-							try {
+								if ($mmData['mapping']['match_method'] == 'strpos' || $mmData['mapping']['match_method'] == 'stripos') {
+									// Try matching the value. If matching fails, unset it.
+									try {
 								$foreignValue = $this->matchSingleField($theRecord[$columnName], $mmData['mapping'], $foreignMappings);
-							}
-							catch (Exception $e) {
+									}
+									catch (Exception $e) {
 								// Nothing to do, foreign value must stay "unset"
-							}
+								}
 						}
 
 						// Last is "strict" matching method to mapping table
@@ -992,7 +1001,7 @@ class tx_externalimport_importer {
 							}
 						}
 
-							// If additional fields are defined, store those values in an intermediate array
+						// If additional fields are defined, store those values in an intermediate array
 						$fields = array();
 						if ($additionalFields) {
 							foreach ($mmData['additional_fields'] as $localFieldName => $externalFieldName) {
@@ -1000,7 +1009,7 @@ class tx_externalimport_importer {
 							}
 						}
 
-							// If a sorting field is defined, use that value for indexing, otherwise just add the element at the end of the array
+						// If a sorting field is defined, use that value for indexing, otherwise just add the element at the end of the array
 						if ($sortingField) {
 							$sortingValue = $theRecord[$sortingField];
 							$mappings[$columnName][$externalUid][$sortingValue] =  $foreignValue;
@@ -1042,7 +1051,7 @@ class tx_externalimport_importer {
 		}
 		$hasMMRelations = count($mappings);
 
-			// Insert or update records depending on existing uids
+		// Insert or update records depending on existing uids
 		$updates = 0;
 		$updatedUids = array();
 		$handledUids = array();
