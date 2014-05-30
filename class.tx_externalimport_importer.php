@@ -949,49 +949,42 @@ class tx_externalimport_importer {
 				}
 
 				// Get foreign mapping for column
-				$foreignMappings = array();
-				if (!isset($mmData['mapping']['value'])) {
-					// TODO: remove in next major version
-					if (isset($mmData['mappings']['uid_foreign'])) {
-						$deprecationMessage = 'Property "mappings.uid_foreign" has been deprecated. Please use "mapping" instead.';
-						$deprecationMessage .= LF . 'Support for "mappings.uid_foreign" will be removed in external_import version 3.0.';
-						t3lib_div::deprecationLog($deprecationMessage);
-						$mappingInformation = $mmData['mappings']['uid_foreign'];
-					} else {
-						$mappingInformation = $mmData['mapping'];
-					}
-					$foreignMappings = $this->getMapping($mappingInformation);
+				// TODO: remove in next major version
+				if (isset($mmData['mappings']['uid_foreign'])) {
+					$deprecationMessage = 'Property "mappings.uid_foreign" has been deprecated. Please use "mapping" instead.';
+					$deprecationMessage .= LF . 'Support for "mappings.uid_foreign" will be removed in external_import version 3.0.';
+					t3lib_div::deprecationLog($deprecationMessage);
+					$mappingInformation = $mmData['mappings']['uid_foreign'];
+				} else {
+					$mappingInformation = $mmData['mapping'];
 				}
+				$foreignMappings = $this->getMapping($mappingInformation);
 
 				// Go through each record and assemble pairs of primary and foreign keys
-				$foreignValue = '';
 				foreach ($records as $theRecord) {
 					$externalUid = $theRecord[$this->externalConfig['reference_uid']];
 						// Make sure not to keep the value from the previous iteration
 					unset($foreignValue);
 
 					// Get foreign value
-					// First is a simple value
-					if (isset($mmData['mapping']['value'])) {
-						$foreignValue = $mmData['mapping']['value'];
-
-						// Next is "soft" matching method to mapping table
-					} elseif (!empty($mmData['mapping']['match_method'])) {
-								if ($mmData['mapping']['match_method'] == 'strpos' || $mmData['mapping']['match_method'] == 'stripos') {
-									// Try matching the value. If matching fails, unset it.
-									try {
-								$foreignValue = $this->matchSingleField($theRecord[$columnName], $mmData['mapping'], $foreignMappings);
-									}
-									catch (Exception $e) {
-								// Nothing to do, foreign value must stay "unset"
-								}
+					// First try the "soft" matching method to mapping table
+					if (!empty($mmData['mapping']['match_method'])) {
+						if ($mmData['mapping']['match_method'] == 'strpos' || $mmData['mapping']['match_method'] == 'stripos') {
+							// Try matching the value. If matching fails, unset it.
+							try {
+						$foreignValue = $this->matchSingleField($theRecord[$columnName], $mmData['mapping'], $foreignMappings);
+							}
+							catch (Exception $e) {
+						// Nothing to do, foreign value must stay "unset"
 						}
+					}
 
-						// Last is "strict" matching method to mapping table
+					// Then the "strict" matching method to mapping table
 					} elseif (isset($foreignMappings[$theRecord[$columnName]])) {
 						$foreignValue = $foreignMappings[$theRecord[$columnName]];
 					}
-						// If a value was found, use it
+
+					// If a value was found, use it
 					if (isset($foreignValue)) {
 						if (!isset($mappings[$columnName][$externalUid])) {
 							$mappings[$columnName][$externalUid] = array();
