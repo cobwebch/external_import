@@ -41,7 +41,7 @@ The properties for the columns configuration are described below.
 .. _administration-columns-properties:
 
 Properties
-~~~~~~~~~~
+""""""""""
 
 .. container:: ts-properties
 

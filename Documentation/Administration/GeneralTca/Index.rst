@@ -46,13 +46,13 @@ are described below.
 .. _administration-general-tca-properties:
 
 Properties
-^^^^^^^^^^
+""""""""""
 
 .. container:: ts-properties
 
-	===================================== =============
+	===================================== =================
 	Property                              Data type
-	===================================== =============
+	===================================== =================
 	`additional\_fields`_                 string
 	clearCache_                           integer
 	connector_                            string
@@ -68,8 +68,9 @@ Properties
 	pid_                                  integer
 	priority_                             integer
 	`reference\_uid`_                     string
+	useColumnIndex_                       string or integer
 	`where\_clause`_                      string
-	===================================== =============
+	===================================== =================
 
 
 .. _administration-general-tca-properties-connector:
@@ -236,6 +237,29 @@ Description
 
 Scope
   Store data
+
+
+.. _administration-general-tca-properties-usecolumnindex:
+
+useColumnIndex
+~~~~~~~~~~~~~~
+
+Type
+  string or integer
+
+Description
+  In a basic configuration the same index must be used for the general
+  TCA configuration and for each column configuration. With this property
+  it is possible to use a different index for the column configurations.
+  The "ctrl" part has to exist with its own index, but the columns may refer
+  to another index and thus their configuration does not need to be defined.
+  Obviously the index referred to must exist for columns.
+
+  The type may be a string or an integer, because a configuration key
+  may also be either a string or an integer.
+
+Scope
+  Configuration
 
 
 .. _administration-general-tca-properties-where-clause:

@@ -155,18 +155,18 @@ class Tx_ExternalImport_ExtDirect_Server {
 			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:disableLog') . '</td>';
 			if (isset($externalCtrlConfiguration['disableLog'])) {
-				$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:yes')) . '</td>';
+				$value = ((empty($externalCtrlConfiguration['disableLog'])) ? $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:no') : $GLOBALS['LANG']->sL('LLL:EXT:lang/locallang_common.xml:yes'));
 			} else {
-				$value = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:undefined') . '</td>';
+				$value = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:undefined');
 			}
 			$externalInformation .= '<td>' . $value . '</td>';
 			$externalInformation .= '</tr>';
-				// Additional fields
+			// Additional fields
 			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:additional_fields') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['additional_fields'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['additional_fields'])) . '</td>';
 			$externalInformation .= '</tr>';
-				// Control options
+			// Control options
 			$externalInformation .= '<tr>';
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:where_clause') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['where_clause'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['where_clause'])) . '</td>';
@@ -183,8 +183,15 @@ class Tx_ExternalImport_ExtDirect_Server {
 			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:clear_cache') . '</td>';
 			$externalInformation .= '<td>' . ((empty($externalCtrlConfiguration['clearCache'])) ? '-' : htmlspecialchars($externalCtrlConfiguration['clearCache'])) . '</td>';
 			$externalInformation .= '</tr>';
-			$externalInformation .= '</table>';
-
+			if (isset($externalCtrlConfiguration['useColumnIndex'])) {
+				$columnIndex = $externalCtrlConfiguration['useColumnIndex'];
+			} else {
+				$columnIndex = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:undefined');
+			}
+			$externalInformation .= '<tr>';
+			$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:columnIndex') . '</td>';
+			$externalInformation .= '<td>' . htmlspecialchars($columnIndex) . '</td>';
+			$externalInformation .= '</tr>';
 			$externalInformation .= '</table>';
 		}
 		return $externalInformation;

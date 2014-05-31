@@ -33,11 +33,18 @@
  */
 class tx_externalimport_importer {
 	public    $extKey = 'external_import';
-	protected $vars = array(); // Variables from the query string
+	protected $vars = array(); // Variables from the query string (TODO: remove, unused)
 	protected $extConf = array(); // Extension configuration
 	protected $messages = array(); // List of result messages
 	protected $table; // Name of the table being synchronised
-	protected $index; // Index of the synchronisation configuration in use
+	/**
+	 * @var mixed Index of the synchronisation configuration in use
+	 */
+	protected $index;
+	/**
+	 * @var mixed Index for the columns, may be different from $this->index
+	 */
+	protected $columnIndex;
 	protected $tableTCA; // TCA of the table being synchronised
 	protected $externalConfig; // Ctrl-section external config being used for synchronisation
 	protected $pid = 0; // uid of the page where the records will be stored
@@ -140,19 +147,25 @@ class tx_externalimport_importer {
 		t3lib_div::loadTCA($this->table);
 		$this->tableTCA = $GLOBALS['TCA'][$this->table];
 		$this->externalConfig = $GLOBALS['TCA'][$this->table]['ctrl']['external'][$index];
-			// Set the pid where the records will be stored
-			// This is either specific for the given table or generic from the extension configuration
+		// Set the pid where the records will be stored
+		// This is either specific for the given table or generic from the extension configuration
 		if (isset($this->externalConfig['pid'])) {
 			$this->pid = $this->externalConfig['pid'];
 		} else {
 			$this->pid = $this->extConf['storagePID'];
 		}
-			// Set this storage page as the related page for the devLog entries
+		// Sets the column configuration index (may differ from main one)
+		if (isset($this->externalConfig['useColumnIndex'])) {
+			$this->columnIndex = $this->externalConfig['useColumnIndex'];
+		} else {
+			$this->columnIndex = $index;
+		}
+		// Set this storage page as the related page for the devLog entries
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->pid;
 
-			// Get the list of additional fields
-			// Additional fields are fields that must be taken from the imported data,
-			// but that will not be saved into the database
+		// Get the list of additional fields
+		// Additional fields are fields that must be taken from the imported data,
+		// but that will not be saved into the database
 		if (!empty($this->externalConfig['additional_fields'])) {
 			$this->additionalFields = t3lib_div::trimExplode(',', $this->externalConfig['additional_fields'], 1);
 			$this->numAdditionalFields = count($this->additionalFields);
@@ -415,9 +428,9 @@ class tx_externalimport_importer {
 
 					// Loop on the database columns and get the corresponding value from the import data
 				foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
-					if (isset($columnData['external'][$this->index]['field'])) {
-						if (isset($theRecord[$columnData['external'][$this->index]['field']])) {
-							$theData[$columnName] = $theRecord[$columnData['external'][$this->index]['field']];
+					if (isset($columnData['external'][$this->columnIndex]['field'])) {
+						if (isset($theRecord[$columnData['external'][$this->columnIndex]['field']])) {
+							$theData[$columnName] = $theRecord[$columnData['external'][$this->columnIndex]['field']];
 						}
 					}
 				}
@@ -468,25 +481,25 @@ class tx_externalimport_importer {
 				// Loop on the database columns and get the corresponding value from the import data
 			foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 					// Act only if there's an external import definition
-				if (isset($columnData['external'][$this->index])) {
+				if (isset($columnData['external'][$this->columnIndex])) {
 						// If a "field" is defined, refine the selection to get the correct node
-					if (isset($columnData['external'][$this->index]['field'])) {
+					if (isset($columnData['external'][$this->columnIndex]['field'])) {
 							// Use namespace or not
-						if (empty($columnData['external'][$this->index]['fieldNS'])) {
-							$nodeList = $theRecord->getElementsByTagName($columnData['external'][$this->index]['field']);
+						if (empty($columnData['external'][$this->columnIndex]['fieldNS'])) {
+							$nodeList = $theRecord->getElementsByTagName($columnData['external'][$this->columnIndex]['field']);
 						} else {
-							$nodeList = $theRecord->getElementsByTagNameNS($columnData['external'][$this->index]['fieldNS'], $columnData['external'][$this->index]['field']);
+							$nodeList = $theRecord->getElementsByTagNameNS($columnData['external'][$this->columnIndex]['fieldNS'], $columnData['external'][$this->columnIndex]['field']);
 						}
 
 						if ($nodeList->length > 0) {
 							/** @var $selectedNode DOMNode */
 							$selectedNode = $nodeList->item(0);
 							// If an XPath expression is defined, apply it (relative to currently selected node)
-							if (!empty($columnData['external'][$this->index]['xpath'])) {
+							if (!empty($columnData['external'][$this->columnIndex]['xpath'])) {
 								try {
 									$selectedNode = $this->selectNodeWithXpath(
 										$xPathObject,
-										$columnData['external'][$this->index]['xpath'],
+										$columnData['external'][$this->columnIndex]['xpath'],
 										$selectedNode
 									);
 								}
@@ -496,23 +509,23 @@ class tx_externalimport_importer {
 							}
 							$theData[$columnName] = $this->extractValueFromNode(
 								$selectedNode,
-								$columnData['external'][$this->index]
+								$columnData['external'][$this->columnIndex]
 							);
 						}
 
 					// Without "field" property, use the current node itself
 					} else {
 						// If an XPath expression is defined, apply it (relative to current node)
-						if (!empty($columnData['external'][$this->index]['xpath'])) {
+						if (!empty($columnData['external'][$this->columnIndex]['xpath'])) {
 							try {
 								$selectedNode = $this->selectNodeWithXpath(
 									$xPathObject,
-									$columnData['external'][$this->index]['xpath'],
+									$columnData['external'][$this->columnIndex]['xpath'],
 									$theRecord
 								);
 								$theData[$columnName] = $this->extractValueFromNode(
 									$selectedNode,
-									$columnData['external'][$this->index]
+									$columnData['external'][$this->columnIndex]
 								);
 							}
 							catch (Exception $e) {
@@ -521,7 +534,7 @@ class tx_externalimport_importer {
 						} else {
 							$theData[$columnName] = $this->extractValueFromNode(
 								$theRecord,
-								$columnData['external'][$this->index]
+								$columnData['external'][$this->columnIndex]
 							);
 						}
 					}
@@ -602,52 +615,52 @@ class tx_externalimport_importer {
 			// Loop on all tables to find any defined transformations. This might be mappings and/or user functions
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 				// If the column's content must be trimmed, apply trim to all records
-			if (!empty($columnData['external'][$this->index]['trim'])) {
+			if (!empty($columnData['external'][$this->columnIndex]['trim'])) {
 				for ($i = 0; $i < $numRecords; $i++) {
 					$records[$i][$columnName] = trim($records[$i][$columnName]);
 				}
 			}
 
 				// Get existing mappings and apply them to records
-			if (isset($columnData['external'][$this->index]['mapping'])) {
-				$records = $this->mapData($records, $columnName, $columnData['external'][$this->index]['mapping']);
+			if (isset($columnData['external'][$this->columnIndex]['mapping'])) {
+				$records = $this->mapData($records, $columnName, $columnData['external'][$this->columnIndex]['mapping']);
 
 				// Otherwise apply constant value, if defined
-			} elseif (isset($columnData['external'][$this->index]['value'])) {
+			} elseif (isset($columnData['external'][$this->columnIndex]['value'])) {
 				for ($i = 0; $i < $numRecords; $i++) {
-					$records[$i][$columnName] = $columnData['external'][$this->index]['value'];
+					$records[$i][$columnName] = $columnData['external'][$this->columnIndex]['value'];
 				}
 			}
 
 				// Add field for RTE transformation to each record, if column has RTE enabled
-			if (!empty($columnData['external'][$this->index]['rteEnabled'])) {
+			if (!empty($columnData['external'][$this->columnIndex]['rteEnabled'])) {
 				for ($i = 0; $i < $numRecords; $i++) {
 					$records[$i]['_TRANSFORM_' . $columnName] = 'RTE';
 				}
 			}
 
 				// Apply defined user function
-			if (isset($columnData['external'][$this->index]['userFunc'])) {
+			if (isset($columnData['external'][$this->columnIndex]['userFunc'])) {
 					// Try to get the referenced class
-				$userObject = t3lib_div::getUserObj($columnData['external'][$this->index]['userFunc']['class']);
+				$userObject = t3lib_div::getUserObj($columnData['external'][$this->columnIndex]['userFunc']['class']);
 					// Could not instantiate the class, log error and do nothing
 				if ($userObject === FALSE) {
 					if ($this->extConf['debug'] || TYPO3_DLOG) {
 						t3lib_div::devLog(
 							sprintf(
 								$GLOBALS['LANG']->getLL('invalid_userfunc'),
-								$columnData['external'][$this->index]['userFunc']['class']
+								$columnData['external'][$this->columnIndex]['userFunc']['class']
 							),
 							$this->extKey,
 							2,
-							$columnData['external'][$this->index]['userFunc']
+							$columnData['external'][$this->columnIndex]['userFunc']
 						);
 					}
 
 					// Otherwise call referenced class on all records
 				} else {
-					$methodName = $columnData['external'][$this->index]['userFunc']['method'];
-					$parameters = isset($columnData['external'][$this->index]['userFunc']['params']) ? $columnData['external'][$this->index]['userFunc']['params'] : array();
+					$methodName = $columnData['external'][$this->columnIndex]['userFunc']['method'];
+					$parameters = isset($columnData['external'][$this->columnIndex]['userFunc']['params']) ? $columnData['external'][$this->columnIndex]['userFunc']['params'] : array();
 					for ($i = 0; $i < $numRecords; $i++) {
 						$records[$i][$columnName] = $userObject->$methodName($records[$i], $columnName, $parameters);
 					}
@@ -915,31 +928,31 @@ class tx_externalimport_importer {
 		foreach ($this->tableTCA['columns'] as $columnName => $columnData) {
 				// Check if some fields are excluded from some operations
 				// and add them to the relevant list
-			if (isset($columnData['external'][$this->index]['disabledOperations'])) {
-				if (t3lib_div::inList($columnData['external'][$this->index]['disabledOperations'], 'insert')) {
+			if (isset($columnData['external'][$this->columnIndex]['disabledOperations'])) {
+				if (t3lib_div::inList($columnData['external'][$this->columnIndex]['disabledOperations'], 'insert')) {
 					$fieldsExcludedFromInserts[] = $columnName;
 				}
-				if (t3lib_div::inList($columnData['external'][$this->index]['disabledOperations'], 'update')) {
+				if (t3lib_div::inList($columnData['external'][$this->columnIndex]['disabledOperations'], 'update')) {
 					$fieldsExcludedFromUpdates[] = $columnName;
 				}
 			}
 			// The "excludedOperations" property is deprecated and replaced by "disabledOperations"
 			// It is currently kept for backwards-compatibility reasons
 			// TODO: remove in next major version
-			if (isset($columnData['external'][$this->index]['excludedOperations'])) {
+			if (isset($columnData['external'][$this->columnIndex]['excludedOperations'])) {
 				$deprecationMessage = 'Property "excludedOperations" has been deprecated. Please use "disabledOperations" instead.';
 				$deprecationMessage .= LF . 'Support for "excludedOperations" will be removed in external_import version 3.0.';
 				t3lib_div::deprecationLog($deprecationMessage);
-				if (t3lib_div::inList($columnData['external'][$this->index]['excludedOperations'], 'insert')) {
+				if (t3lib_div::inList($columnData['external'][$this->columnIndex]['excludedOperations'], 'insert')) {
 					$fieldsExcludedFromInserts[] = $columnName;
 				}
-				if (t3lib_div::inList($columnData['external'][$this->index]['excludedOperations'], 'update')) {
+				if (t3lib_div::inList($columnData['external'][$this->columnIndex]['excludedOperations'], 'update')) {
 					$fieldsExcludedFromUpdates[] = $columnName;
 				}
 			}
 			// Process MM-relations, if any
-			if (isset($columnData['external'][$this->index]['MM'])) {
-				$mmData = $columnData['external'][$this->index]['MM'];
+			if (isset($columnData['external'][$this->columnIndex]['MM'])) {
+				$mmData = $columnData['external'][$this->columnIndex]['MM'];
 				$sortingField = (isset($mmData['sorting'])) ? $mmData['sorting'] : FALSE;
 				$additionalFields = (isset($mmData['additional_fields'])) ? $mmData['additional_fields'] : FALSE;
 
@@ -1448,14 +1461,22 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * This method returns the index of the configuration used in the current synchronisation
+	 * Returns the index of the configuration used in the current synchronisation.
 	 *
-	 * @return	integer		The index
+	 * @return mixed
 	 */
 	public function getIndex() {
 		return $this->index;
 	}
 
+	/**
+	 * Returns the index of the configuration used for the columns.
+	 *
+	 * @return mixed
+	 */
+	public function getColumnIndex() {
+		return $this->columnIndex;
+	}
 	/**
 	 * This method returns the external configuration found in the ctrl section of the TCA
 	 * of the table being synchronised

@@ -28,6 +28,7 @@ TYPO3.ExternalImport.ConfigurationStore = new Ext.data.DirectStore({
 		{name: 'tableName'},
 		{name: 'icon'},
 		{name: 'index'},
+		{name: 'columnIndex'},
 		{name: 'priority'},
 		{name: 'description'},
 		{name: 'writeAccess'},
@@ -107,7 +108,7 @@ TYPO3.ExternalImport.ConfigurationGrid = new Ext.grid.GridPanel({
 					tooltip: TYPO3.lang['view_details'],
 					handler: function(grid, rowIndex, colIndex) {
 						var record = TYPO3.ExternalImport.ConfigurationStore.getAt(rowIndex);
-						TYPO3.ExternalImport.showExternalImportInformation(record.json.table, record.json.index);
+						TYPO3.ExternalImport.showExternalImportInformation(record.json.table, record.json.index, record.json.columnIndex);
 					}
 				}
 			]
@@ -338,8 +339,9 @@ TYPO3.ExternalImport.FullSyncPanel = new Ext.Container({
  *
  * @param table The name of the table for which we want the details
  * @param index The index of the external configuration
+ * @param columnIndex The index for the column external configuration (may differ from main index)
  */
-TYPO3.ExternalImport.showExternalImportInformation = function(table, index) {
+TYPO3.ExternalImport.showExternalImportInformation = function(table, index, columnIndex) {
 	TYPO3.Windows.getWindow({
 		id: 'external_import_details_' + table + '_' + index,
 		title: TYPO3.lang['external_information'],
@@ -378,7 +380,7 @@ TYPO3.ExternalImport.showExternalImportInformation = function(table, index) {
 								// Get the information and display it inside the tab
 							activate: function(panel) {
 								panel.update(TYPO3.ExternalImport.loadingIndicator);
-								TYPO3.ExternalImport.ExtDirect.getColumnsConfiguration(table, index, function(response) {
+								TYPO3.ExternalImport.ExtDirect.getColumnsConfiguration(table, columnIndex, function(response) {
 									panel.update(response, true);
 								});
 							}

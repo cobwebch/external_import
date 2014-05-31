@@ -39,7 +39,8 @@
 			<label index="disableLog">Disable logging</label>
 			<label index="where_clause">SQL restriction</label>
 			<label index="clear_cache">Clear cache for pages</label>
-			<label index="undefined">Not defined</label>
+			<label index="columnIndex">Alternate column index</label>
+			<label index="undefined">(Not defined)</label>
 			<label index="additional_fields">Additional fields</label>
 			<label index="disabled_operations">Disabled operations</label>
 			<label index="none">None</label>

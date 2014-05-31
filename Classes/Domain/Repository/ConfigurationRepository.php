@@ -111,8 +111,8 @@ class Tx_ExternalImport_Domain_Repository_ConfigurationRepository {
 							($synchronizable && !empty($externalConfig['connector'])) ||
 							(!$synchronizable && empty($externalConfig['connector']))
 						) {
-								// If priority is not defined, set to very low
-								// NOTE: the priority doesn't matter for non-synchronizable tables
+							// If priority is not defined, set to very low
+							// NOTE: the priority doesn't matter for non-synchronizable tables
 							$priority = 1000;
 							$description = '';
 							if (isset($externalConfig['priority'])) {
@@ -121,13 +121,18 @@ class Tx_ExternalImport_Domain_Repository_ConfigurationRepository {
 							if (isset($externalConfig['description'])) {
 								$description = $GLOBALS['LANG']->sL($externalConfig['description']);
 							}
-								// Store the base configuration
+							if (isset($externalConfig['useColumnIndex'])) {
+								$columnIndex = $externalConfig['useColumnIndex'];
+							} else {
+								$columnIndex = $index;
+							}								// Store the base configuration
 							$tableConfiguration = array(
 								'id' => $tableName . '-' . $index,
 								'table' => $tableName,
 								'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']) . ' (' . $tableName . ')',
 								'icon' => t3lib_iconWorks::getSpriteIconForRecord($tableName, array()),
 								'index' => $index,
+								'columnIndex' => $columnIndex,
 								'priority' => intval($priority),
 								'description' => htmlspecialchars($description),
 								'writeAccess' => $hasWriteAccess
