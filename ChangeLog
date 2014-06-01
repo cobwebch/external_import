@@ -3,6 +3,7 @@
 	* Fixed array integrity after pre-processor calls, resolves #56186
 	* Added support for ###PID_IN_USE### marker in mapping where clause, resolves #56270
 	* Added implementation of singleton class in sample user function, resolves #58399
+	* Improved description of MM mappings, resolves #59214
 
 2014-05-30 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

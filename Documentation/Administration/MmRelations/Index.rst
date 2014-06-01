@@ -14,6 +14,12 @@ MM-relations configuration
 Things get a bit more complicated with MM-relations, where additional
 configuration is required. The related properties are described below.
 
+.. tip::
+
+   If all this seems a bit confusing, please refer to the
+   :ref:`chapter about mapping MM relations <user-mapping-data-mm>`.
+   Hopefully it will help (this is not a simple topic).
+
 
 .. _administration-mm-properties:
 
