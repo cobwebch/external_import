@@ -97,7 +97,8 @@ Description
   :ref:`foreign_table_where <t3tca:columns-select-properties-foreign-table-where>`
   property of select-type fields.
 
-  However it is not possible to use markers in this case. So if you have
+  However only one marker is supported in this case: :code:`###PID_IN_USE###`
+  which will be replaced by the current storage pid. So if you have
   something like:
 
   .. code-block:: php

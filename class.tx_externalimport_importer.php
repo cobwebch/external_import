@@ -1413,7 +1413,12 @@ class tx_externalimport_importer {
 			// Define where clause
 			$whereClause = '1 = 1';
 			if (!empty($mappingData['where_clause'])) {
-				$whereClause = $mappingData['where_clause'];
+				// If the where clause contains the ###PID_IN_USE### marker, replace it with current storage pid
+				if (strpos($mappingData['where_clause'], '###PID_IN_USE###') !== FALSE) {
+					$whereClause = str_replace('###PID_IN_USE###', $this->pid, $mappingData['where_clause']);
+				} else {
+					$whereClause = $mappingData['where_clause'];
+				}
 			}
 			$whereClause .= t3lib_BEfunc::deleteClause($mappingData['table']);
 				// Query the table

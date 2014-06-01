@@ -1,6 +1,7 @@
 2014-06-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fixed array integrity after pre-processor calls, resolves #56186
+	* Added support for ###PID_IN_USE### marker in mapping where clause, resolves #56270
 
 2014-05-30 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
