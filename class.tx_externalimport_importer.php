@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007-2009 Francois Suter (Cobweb) <typo3@cobweb.ch>
+*  (c) 2007-2014 Francois Suter (Cobweb) <typo3@cobweb.ch>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -28,8 +28,6 @@
  * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
  * @package		TYPO3
  * @subpackage	tx_externalimport
- *
- * $Id$
  */
 class tx_externalimport_importer {
 	public    $extKey = 'external_import';
@@ -819,17 +817,21 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * This method applies any existing pre-processing to the data just as it was fetched, before any transformation
-	 * Note that this method does not do anything by itself. It just calls on a pre-processing hook
+	 * This method applies any existing pre-processing to the data just as it was fetched,
+	 * before any transformation.
 	 *
-	 * @param	array		$records: records containing the raw data
-	 * @return	array		the pre-processed records
+	 * Note that this method does not do anything by itself. It just calls on a pre-processing hook.
+	 *
+	 * @param array $records Records containing the raw data
+	 * @return array The processed records
 	 */
 	protected function preprocessRawData($records) {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRawRecordset'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRawRecordset'] as $className) {
 				$preProcessor = &t3lib_div::getUserObj($className);
 				$records = $preProcessor->preprocessRawRecordset($records, $this);
+				// Compact the array again, in case some values were unset in the pre-processor
+				$records = array_values($records);
 			}
 		}
 		return $records;
@@ -874,17 +876,21 @@ class tx_externalimport_importer {
 	}
 
 	/**
-	 * This method applies any existing pre-processing to the data before it is stored (but after is has been transformed)
-	 * Note that this method does not do anything by itself. It just calls on a pre-processing hook
+	 * This method applies any existing pre-processing to the data before it is stored
+	 * (but after is has been transformed).
 	 *
-	 * @param	array		$records: records containing the data
-	 * @return	array		the pre-processed records
+	 * Note that this method does not do anything by itself. It just calls on a pre-processing hook.
+	 *
+	 * @param array $records Records containing the data
+	 * @return array The processed records
 	 */
 	protected function preprocessData($records) {
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRecordset'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRecordset'] as $className) {
 				$preProcessor = &t3lib_div::getUserObj($className);
 				$records = $preProcessor->preprocessRecordset($records, $this);
+				// Compact the array again, in case some values were unset in the pre-processor
+				$records = array_values($records);
 			}
 		}
 		return $records;
