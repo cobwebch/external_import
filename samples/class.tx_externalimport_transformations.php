@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2007 Francois Suter (Cobweb) <typo3@cobweb.ch>
+*  (c) 2007-2014 Francois Suter (Cobweb) <typo3@cobweb.ch>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,7 +31,7 @@
  * @package	TYPO3
  * @subpackage	tx_externalimport
  */
-class tx_externalimport_transformations {
+class tx_externalimport_transformations implements t3lib_Singleton {
 
 	/**
 	 * This an example method to be called by external import for transforming data
