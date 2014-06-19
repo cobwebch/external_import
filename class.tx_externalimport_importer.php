@@ -1101,27 +1101,29 @@ class tx_externalimport_importer {
 			}
 
 			$theID = '';
-				// Reference uid is found, perform an update (if not disabled)
-			if (isset($existingUids[$externalUid]) && !t3lib_div::inList($this->externalConfig['disabledOperations'], 'update')) {
+			// Reference uid is found, perform an update (if not disabled)
+			if (isset($existingUids[$externalUid])) {
+				if (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'update')) {
 					// First call a pre-processing hook
-				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'])) {
-					foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'] as $className) {
-						$preProcessor = &t3lib_div::getUserObj($className);
-						$theRecord = $preProcessor->processBeforeUpdate($theRecord, $this);
+					if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'])) {
+						foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'] as $className) {
+							$preProcessor = &t3lib_div::getUserObj($className);
+							$theRecord = $preProcessor->processBeforeUpdate($theRecord, $this);
+						}
 					}
-				}
 
 					// Remove the fields which must be excluded from updates
-				if (count($fieldsExcludedFromUpdates) > 0) {
-					foreach ($fieldsExcludedFromUpdates as $excludedField) {
-						unset($theRecord[$excludedField]);
+					if (count($fieldsExcludedFromUpdates) > 0) {
+						foreach ($fieldsExcludedFromUpdates as $excludedField) {
+							unset($theRecord[$excludedField]);
+						}
 					}
-				}
 
-				$theID = $existingUids[$externalUid];
-				$tceData[$this->table][$theID] = $theRecord;
-				$updatedUids[] = $theID;
-				$updates++;
+					$theID = $existingUids[$externalUid];
+					$tceData[$this->table][$theID] = $theRecord;
+					$updatedUids[] = $theID;
+					$updates++;
+				}
 
 				// Reference uid not found, perform an insert (if not disabled)
 			} elseif (!t3lib_div::inList($this->externalConfig['disabledOperations'], 'insert')) {

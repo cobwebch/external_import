@@ -2,6 +2,7 @@
 
 	* Ensured proper initialization of task list in Scheduler repository, resolves #59381
 	* Corrected LaTeX setup for PDF rendering, resolves #59386
+	* Corrected logic to avoid duplicate inserts when update is disabled, resolves #59609
 
 2014-06-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
