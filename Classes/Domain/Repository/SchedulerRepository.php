@@ -45,7 +45,7 @@ class Tx_ExternalImport_Domain_Repository_SchedulerRepository implements t3lib_S
 	 *
 	 * @var array
 	 */
-	protected $tasks = NULL;
+	protected $tasks = array();
 
 	/**
 	 * Local instance of the scheduler object

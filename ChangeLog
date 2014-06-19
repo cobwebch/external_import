@@ -1,3 +1,7 @@
+2014-06-19 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Ensured proper initialization of task list in Scheduler repository, resolves #59381
+
 2014-06-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released version 2.3.0, resolves #58038
