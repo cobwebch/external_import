@@ -1,6 +1,7 @@
 2014-06-19 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Ensured proper initialization of task list in Scheduler repository, resolves #59381
+	* Corrected LaTeX setup for PDF rendering, resolves #59386
 
 2014-06-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

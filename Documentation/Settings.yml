@@ -10,7 +10,7 @@ conf.py:
   release: 2.3.0
   latex_documents:
   - - Index
-    - sphinx.tex
+    - external_import.tex
     - External Import
     - Francois Suter
     - manual
@@ -18,8 +18,6 @@ conf.py:
     papersize: a4paper
     pointsize: 10pt
     preamble: \usepackage{typo3}
-  latex_use_parts: True
-  latex_show_pagerefs: True
   intersphinx_mapping:
     t3tca:
     - http://docs.typo3.org/typo3cms/TCAReference/
