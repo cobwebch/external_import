@@ -1072,27 +1072,28 @@ class tx_externalimport_importer {
 		foreach ($records as $theRecord) {
 			$localAdditionalFields = array();
 			$externalUid = $theRecord[$this->externalConfig['reference_uid']];
-				// Skip handling of already handled records (this can happen with denormalized structures)
-			if (in_array($externalUid, $handledUids)) {
+			// Skip handling of already handled records (this can happen with denormalized structures)
+			// NOTE: using isset() on index instead of in_array() offers far better performance
+			if (isset($handledUids[$externalUid])) {
 				continue;
 			}
-			$handledUids[] = $externalUid;
+			$handledUids[$externalUid] = $externalUid;
 
-				// Prepare MM-fields, if any
+			// Prepare MM-fields, if any
 			if ($hasMMRelations) {
 				foreach ($mappings as $columnName => $columnMappings) {
 					if (isset($columnMappings[$externalUid])) {
 						$theRecord[$columnName] = implode(',', $columnMappings[$externalUid]);
 
-						// Make sure not to keep the original value if no mapping was found
+					// Make sure not to keep the original value if no mapping was found
 					} else {
 						unset($theRecord[$columnName]);
 					}
 				}
 			}
 
-				// Remove additional fields data, if any. They must not be saved to database
-				// They are saved locally however, for later use
+			// Remove additional fields data, if any. They must not be saved to database
+			// They are saved locally however, for later use
 			if ($this->numAdditionalFields > 0) {
 				foreach ($this->additionalFields as $fieldName) {
 					$localAdditionalFields[$fieldName] = $theRecord[$fieldName];
