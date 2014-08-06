@@ -170,6 +170,12 @@ Description
   Name of the column where the equivalent of a primary key for the
   external data is stored.
 
+  .. important::
+
+     This is the name of a field in the TYPO3 CMS database, not in
+     the external data! It is the field where the reference
+     (or primary) key of the external data is stored.
+
 Scope
   Store data
 
