@@ -2,6 +2,7 @@
 
 	* Improved performance of handled items check, resolves #60445 (thanks to Johannes Feustel)
 	* Improved description of reference_uid property, resolves #60808
+	* Released version 2.3.2, resolves #60823
 
 2014-06-19 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
