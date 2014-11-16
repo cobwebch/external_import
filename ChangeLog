@@ -1,3 +1,8 @@
+2014-11-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added feature to preserve XML structure of imported values, resolves ##63012
+	* Improved manual by adding scope in properties TOC
+
 2014-08-06 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Improved performance of handled items check, resolves #60445 (thanks to Johannes Feustel)

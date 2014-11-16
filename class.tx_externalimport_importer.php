@@ -574,11 +574,34 @@ class tx_externalimport_importer {
 				$value = $node->attributes->getNamedItemNS($columnData['attributeNS'], $columnData['attribute'])->nodeValue;
 			}
 
-			// Otherwise directly take the node's value
+		// Otherwise directly take the node's value
 		} else {
-			$value = $node->nodeValue;
+			// If "xmlValue" is set, we want the node's inner XML structure as is.
+			// Otherwise, we take the straight node value, which is similar but with tags stripped.
+			if (empty($columnData['xmlValue'])) {
+				$value = $node->nodeValue;
+			} else {
+				$value = $this->getXmlValue($node);
+			}
 		}
 		return $value;
+	}
+
+	/**
+	 * Extracts the value of the node as structured XML.
+	 *
+	 * @param DOMNode $node Currently handled XML node
+	 * @throws Exception
+	 * @return string Code inside the node
+	 */
+
+	protected function getXmlValue($node) {
+		$innerHTML = '';
+		$children = $node->childNodes;
+		foreach ($children as $child) {
+			$innerHTML .= $child->ownerDocument->saveXML($child);
+		}
+		return $innerHTML;
 	}
 
 	/**

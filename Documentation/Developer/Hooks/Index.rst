@@ -66,7 +66,7 @@ deletePreProcess
 
 datamapPostProcess
   This hook is called after all records have
-  been updated or inserted using TCEmain. It can be used fo any follow-
+  been updated or inserted using TCEmain. It can be used for any follow-
   up operation. It receives as parameters the name of the affected
   table, the list of records keyed to their uid (including the new uid's
   for the new records) and a back-reference to the calling object (an

@@ -50,27 +50,28 @@ Properties
 
 .. container:: ts-properties
 
-	===================================== =================
-	Property                              Data type
-	===================================== =================
-	`additional\_fields`_                 string
-	clearCache_                           integer
-	connector_                            string
-	data_                                 string
-	dataHandler_                          string
-	description_                          string
-	disabledOperations_                   string
-	enforcePid_                           boolean
-	minimumRecords_                       integer
-	namespaces_                           array
-	nodetype_                             string
-	parameters_                           array
-	pid_                                  integer
-	priority_                             integer
-	`reference\_uid`_                     string
-	useColumnIndex_                       string or integer
-	`where\_clause`_                      string
-	===================================== =================
+	===================================== ================= ========================
+	Property                              Data type         Scope
+	===================================== ================= ========================
+	`additional\_fields`_                 string            Fetch data
+	clearCache_                           integer           Store data
+	connector_                            string            Fetch data
+	data_                                 string            Fetch data
+	dataHandler_                          string            Handle data
+	description_                          string            Display
+	disabledOperations_                   string            Store data
+	disableLog_                           boolean           Store data
+	enforcePid_                           boolean           Store data
+	minimumRecords_                       integer           Validate data
+	namespaces_                           array             Handle data (XML)
+	nodetype_                             string            Handle data (XML)
+	parameters_                           array             Fetch data
+	pid_                                  integer           Store data
+	priority_                             integer           Display/automated import
+	`reference\_uid`_                     string            Store data
+	useColumnIndex_                       string or integer Configuration
+	`where\_clause`_                      string            Store data
+	===================================== ================= ========================
 
 
 .. _administration-general-tca-properties-connector:

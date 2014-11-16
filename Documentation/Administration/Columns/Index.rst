@@ -45,23 +45,24 @@ Properties
 
 .. container:: ts-properties
 
-	========================= =====================================================
-	Property                  Data type
-	========================= =====================================================
-	attribute_                string
-	attributeNS_              string
-	disabledOperations_       string
-	excludedOperations_       string
-	field_                    string
-	fieldNS_                  string
-	mapping_                  :ref:`Mapping configuration <administration-mapping>`
-	MM_                       :ref:`MM configuration <administration-mm>`
-	rteEnabled_               boolean
-	trim_                     boolean
-	userFunc_                 array
-	value_                    simple type (string, integer, boolean)
-	xpath_                    string
-	========================= =====================================================
+	========================= ===================================================== =================
+	Property                  Data type                                             Scope
+	========================= ===================================================== =================
+	attribute_                string                                                Handle data (XML)
+	attributeNS_              string                                                Handle data (XML)
+	disabledOperations_       string                                                Store data
+	excludedOperations_       string                                                Store data
+	field_                    string                                                Handle data
+	fieldNS_                  string                                                Handle data (XML)
+	mapping_                  :ref:`Mapping configuration <administration-mapping>` Transform data
+	MM_                       :ref:`MM configuration <administration-mm>`           Transform data
+	rteEnabled_               boolean                                               Transform data
+	trim_                     boolean                                               Transform data
+	userFunc_                 array                                                 Transform data
+	value_                    simple type (string, integer, boolean)                Transform data
+	xmlValue_                 boolean                                               Handle data (XML)
+	xpath_                    string                                                Handle data (XML)
+	========================= ===================================================== =================
 
 
 .. _administration-columns-properties-field:
@@ -229,6 +230,24 @@ Description
 
 Scope
   Transform data
+
+
+.. _administration-columns-properties-xmlvalue:
+
+xmlValue
+~~~~~~~~
+
+Type
+  boolean
+
+Description
+  When taking the value of a node inside a XML structure, the default behaviour
+  is to retrieve this value as a string. If the node contained a XML sub-structure,
+  its tags will be stripped. When setting this value to :code:`TRUE`, the XML
+  structure of the child nodes is preserved.
+
+Scope
+  Handle data (XML)
 
 
 .. _administration-columns-properties-rteenabled:
