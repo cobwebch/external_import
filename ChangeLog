@@ -1,3 +1,7 @@
+2014-11-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released version 2.4.0, resolves #58038
+
 2014-11-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added feature to preserve XML structure of imported values, resolves ##63012

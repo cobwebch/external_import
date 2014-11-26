@@ -92,3 +92,15 @@ the time to implement any use case that I don't personally need.
 However you are welcome to join the development team if you want to
 bring in new features. If you are interested go to forge.typo3.org and
 apply to become a project member. I'll get in touch with you.
+
+
+.. _sponsoring:
+
+Sponsoring
+^^^^^^^^^^
+
+You are very welcome to support the further development of this
+extension. You will get mentioned here.
+
+- The :ref:`xmlValue <administration-columns-properties-xmlvalue>`
+  property was sponsored by `Bendoo e-work solutions <http://www.bendoo.nl/en/>`_.
