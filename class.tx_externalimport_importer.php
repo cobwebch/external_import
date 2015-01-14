@@ -315,23 +315,23 @@ class tx_externalimport_importer {
 			switch ($this->externalConfig['data']) {
 				case 'xml':
 
-						// Load the XML into a DOM object
+					// Load the XML into a DOM object
 					$dom = new DOMDocument();
-					$dom->loadXML($data);
-						// Prepare an empty DOM object for the sample data
+					$dom->loadXML($data, LIBXML_PARSEHUGE);
+					// Prepare an empty DOM object for the sample data
 					$domSample = new DOMDocument();
-						// Define a root node
+					// Define a root node
 					$element = $domSample->createElement('sample');
 					$domSample->appendChild($element);
-						// Get the desired nodes
+					// Get the desired nodes
 					$selectedNodes = $dom->getElementsByTagName($this->externalConfig['nodetype']);
-						// Loop until the preview limit and import selected nodes into the sample XML object
+					// Loop until the preview limit and import selected nodes into the sample XML object
 					$loopLimit = min($selectedNodes->length, $this->extConf['previewLimit']);
 					for ($i = 0; $i < $loopLimit; $i++) {
 						$newNode = $domSample->importNode($selectedNodes->item($i), TRUE);
 						$domSample->documentElement->appendChild($newNode);
 					}
-						// Store the XML sample in an arrray, to have a common return format
+					// Store the XML sample in an array, to have a common return format
 					$dataSample = array();
 					$dataSample[] = $domSample->saveXML();
 					break;
@@ -460,7 +460,7 @@ class tx_externalimport_importer {
 
 		// Load the XML into a DOM object
 		$dom = new DOMDocument();
-		$dom->loadXML($rawData);
+		$dom->loadXML($rawData, LIBXML_PARSEHUGE);
 		// Instantiate a XPath object and load with any defined namespaces
 		$xPathObject = new DOMXPath($dom);
 		if (isset($this->externalConfig['namespaces']) && is_array($this->externalConfig['namespaces'])) {
