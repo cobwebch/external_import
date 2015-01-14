@@ -1,6 +1,7 @@
 2015-01-14 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Allowed for import of very large XML files, resolves #63762 (thanks to Uwe Harnischmacher)
+	* Released version 2.4.1, resolves #64283
 
 2014-11-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
