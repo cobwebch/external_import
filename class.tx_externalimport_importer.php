@@ -207,12 +207,15 @@ class tx_externalimport_importer {
 							$GLOBALS['LANG']->getLL('data_not_fetched')
 						);
 
-						// The connection is established, get the data
+					// The connection is established, get the data
 					} else {
 						$data = array();
 
-							// A problem may happen while fetching the data
-							// If so, the import process has to be aborted
+						// Pre-process connector parameters
+						$this->externalConfig['parameters'] = $this->processParameters($this->externalConfig['parameters']);
+
+						// A problem may happen while fetching the data
+						// If so, the import process has to be aborted
 						$abortImportProcess = FALSE;
 						switch ($this->externalConfig['data']) {
 							case 'xml':
@@ -280,6 +283,22 @@ class tx_externalimport_importer {
 		}
 
 		return $this->messages;
+	}
+
+	/**
+	 * Pre-processes the configured connector parameters.
+	 *
+	 * @param array $parameters List of parameters to process
+	 * @return array The processed parameters
+	 */
+	protected function processParameters($parameters) {
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['processParameters'])) {
+			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['processParameters'] as $className) {
+				$preProcessor = t3lib_div::getUserObj($className);
+				$parameters = $preProcessor->processParameters($parameters, $this);
+			}
+		}
+		return $parameters;
 	}
 
 	/**

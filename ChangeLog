@@ -1,3 +1,7 @@
+2015-05-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added hook for processing connector parameters, resolves #66796 (thanks to Julien Henchoz)
+
 2015-01-14 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Allowed for import of very large XML files, resolves #63762 (thanks to Uwe Harnischmacher)

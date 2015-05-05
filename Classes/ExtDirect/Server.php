@@ -83,15 +83,24 @@ class Tx_ExternalImport_ExtDirect_Server {
 		if (is_array($externalCtrlConfiguration)) {
 				// Prepare the display
 			$externalInformation .= '<table class="informationTable">';
-				// Connector information
+			// Connector information
 			if (isset($externalCtrlConfiguration['connector'])) {
 				$externalInformation .= '<tr>';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector') . '</td>';
 				$externalInformation .= '<td>' . htmlspecialchars($externalCtrlConfiguration['connector']) . '</td>';
 				$externalInformation .= '</tr>';
+				// For connector details, we call the processParameters hook from the importer class,
+				// in order to show processed parameters to the user.
+				$processedParameters = array();
+				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'])) {
+					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
+						$preProcessor = t3lib_div::getUserObj($className);
+						$processedParameters = $preProcessor->processParameters($externalCtrlConfiguration['parameters'], $this);
+					}
+				}
 				$externalInformation .= '<tr>';
 				$externalInformation .= '<td>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:connector.details') . '</td>';
-				$externalInformation .= '<td>' . $this->dumpArray($externalCtrlConfiguration['parameters']) . '</td>';
+				$externalInformation .= '<td>' . $this->dumpTwinArrays($externalCtrlConfiguration['parameters'], $processedParameters) . '</td>';
 				$externalInformation .= '</tr>';
 			}
 				// Data information
@@ -489,8 +498,9 @@ class Tx_ExternalImport_ExtDirect_Server {
 	}
 
 	/**
-	 * Dump a PHP array to a HTML table
-	 * (This is somewhat similar to t3lib_utility_Debug::view_array() but without the ugly red font)
+	 * Dumps a PHP array to a HTML table.
+	 *
+	 * This is somewhat similar to t3lib_utility_Debug::view_array() but without the ugly red font.
 	 *
 	 * @param array $array Array to display
 	 * @return string HTML table assembled from array
@@ -505,6 +515,43 @@ class Tx_ExternalImport_ExtDirect_Server {
 				$table .= $this->dumpArray($value);
 			} else {
 				$table .= htmlspecialchars($value);
+			}
+			$table .= '</td>';
+			$table .= '</tr>';
+		}
+		$table .= '</table>';
+		return $table;
+	}
+
+	/**
+	 * Dumps two related PHP arrays to a HTML table.
+	 *
+	 * This is similar to dumpArray(), but using two arrays with the same keys.
+	 * Data from the second array is written alongside data from the first array,
+	 * with some highlighting in the markup.
+	 *
+	 * @param array $referenceArray Array to display
+	 * @param array $copyArray Related array
+	 * @return string HTML table assembled from array
+	 */
+	protected function dumpTwinArrays($referenceArray, $copyArray) {
+		$table = '<table>';
+		foreach ($referenceArray as $key => $value) {
+			$table .= '<tr>';
+			$table .= '<td>' . htmlspecialchars($key) . '</td>';
+			$table .= '<td>';
+			if (is_array($value)) {
+				$table .= $this->dumpTwinArrays(
+					$value,
+					(isset($copyArray[$key])) ? $copyArray[$key] : array()
+				);
+			} else {
+				$cellContent = htmlspecialchars($value);
+				// Add related value, if it exists and only if it is different (avoid cluttering display)
+				if (isset($copyArray[$key]) && $copyArray[$key] != $value) {
+					$cellContent .= '<br><em>' . htmlspecialchars($copyArray[$key]) . '</em>';
+				}
+				$table .= $cellContent;
 			}
 			$table .= '</td>';
 			$table .= '</tr>';

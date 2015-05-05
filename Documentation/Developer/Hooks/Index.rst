@@ -14,6 +14,38 @@ Hooks
 The external import process contains many hooks for improved
 flexibility. They are described below.
 
+processParameters
+  This allows for dynamic manipulation of the
+  :ref:`parameters <administration-general-tca-properties-parameters>`
+  array before it is passed to the connector.
+
+  **Example**
+
+  Let's assume that you are using the CSV connector and that you
+  would like the filename to automatically adjust to the current year.
+  Your parameters could be something like:
+
+  .. code-block:: php
+
+		'parameters' => array(
+			'filename' => 'fileadmin/imports/data-%Y.csv'
+		)
+
+  Inside the hook, you could run :code:`strftime()` on the
+  :code:`filename` parameter in order to replace "%Y" with the
+  current year.
+
+  The hook receives the parameters array as the first argument and a
+  back-reference to the calling object (an instance of class :code:`tx_externalimport_importer`)
+  as second argument. It is expected to return the full parameters
+  array, even if not modified.
+
+  .. note::
+
+     This hook is also used when displaying the configuration in the
+     BE module. This way the user can see how the processed parameters
+     look like.
+
 preprocessRawRecordset
   This hook makes it possible to manipulate
   the data just after it was fetched from the remote source, but already
