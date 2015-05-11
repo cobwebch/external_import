@@ -28,8 +28,6 @@
  * @author		Francois Suter (Cobweb) <typo3@cobweb.ch>
  * @package		TYPO3
  * @subpackage	tx_externalimport
- *
- * $Id$
  */
 class Tx_ExternalImport_ExtDirect_Server {
 	/**
@@ -93,6 +91,11 @@ class Tx_ExternalImport_ExtDirect_Server {
 				// in order to show processed parameters to the user.
 				$processedParameters = array();
 				if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'])) {
+					// The hook needs an instance of the importer class
+					/** @var tx_externalimport_importer $importer */
+					$importer = t3lib_div::makeInstance('tx_externalimport_importer');
+					$importer->setTableName($table);
+					$importer->setIndex($index);
 					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
 						$preProcessor = t3lib_div::getUserObj($className);
 						$processedParameters = $preProcessor->processParameters($externalCtrlConfiguration['parameters'], $this);

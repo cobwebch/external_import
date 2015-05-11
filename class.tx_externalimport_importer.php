@@ -1508,12 +1508,23 @@ class tx_externalimport_importer {
 
 
 	/**
-	 * This method returns the name of the table being synchronised
+	 * Returns the name of the table being synchronised
 	 *
-	 * @return	string		Name of the table
+	 * @return string Name of the table
 	 */
 	public function getTableName() {
 		return $this->table;
+	}
+
+	/**
+	 * Sets the name of the table to be synchronized.
+	 *
+	 * This is used only in special cases, you should never need to call this.
+	 *
+	 * @param string $table Name of the table
+	 */
+	public function setTableName($table) {
+		$this->table = $table;
 	}
 
 	/**
@@ -1523,6 +1534,17 @@ class tx_externalimport_importer {
 	 */
 	public function getIndex() {
 		return $this->index;
+	}
+
+	/**
+	 * Sets the index of the configuration to used for synchronization.
+	 *
+	 * This is used only in special cases, you should never need to call this.
+	 *
+	 * @param mixed $index Index to use
+	 */
+	public function setIndex($index) {
+		$this->index = $index;
 	}
 
 	/**
