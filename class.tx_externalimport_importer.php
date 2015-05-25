@@ -1207,41 +1207,41 @@ class tx_externalimport_importer {
 				$savedAdditionalFields[$theID] = $localAdditionalFields;
 			}
 		}
-			// If the table has a sorting field, reverse the data array,
-			// otherwise the first record will come last (because TCEmain
-			// itself inverts the incoming order)
-		if (!empty($this->tableTCA['ctrl']['sortby'])) {
-			$tceData[$this->table] = array_reverse($tceData[$this->table], TRUE);
-		}
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
 			t3lib_div::devLog('TCEmain data', $this->extKey, 0, $tceData);
 		}
-			// Create an instance of TCEmain and process the data
-			/** @var $tce t3lib_TCEmain */
+		// Create an instance of TCEmain and process the data
+		/** @var $tce t3lib_TCEmain */
 		$tce = t3lib_div::makeInstance('t3lib_TCEmain');
 		$tce->stripslashes_values = 0;
-			// Check if TCEmain logging should be turned on or off
+		// Check if TCEmain logging should be turned on or off
 		$disableLogging = (empty($this->extConf['disableLog'])) ? FALSE : TRUE;
 		if (isset($this->externalConfig['disableLog'])) {
 			$disableLogging = (empty($this->externalConfig['disableLog'])) ? FALSE : TRUE;
 		}
 		$tce->enableLogging = !$disableLogging;
-			// Load the data and process it
+		// If the table has a sorting field, reverse the data array,
+		// otherwise the first record will come last (because TCEmain
+		// itself inverts the incoming order)
+		if (!empty($this->tableTCA['ctrl']['sortby'])) {
+			$tce->reverseOrder = TRUE;
+		}
+		// Load the data and process it
 		$tce->start($tceData, array());
 		$tce->process_datamap();
 		if ($this->extConf['debug'] || TYPO3_DLOG) {
 			t3lib_div::devLog('New IDs', 'external_import', 0, $tce->substNEWwithIDs);
 		}
-			// Store the number of new IDs created. This is used in error reporting later
+		// Store the number of new IDs created. This is used in error reporting later
 		$numberOfNewIDs = count($tce->substNEWwithIDs);
 
-			// Post-processing hook after data was saved
+		// Post-processing hook after data was saved
 		$savedData = array();
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['datamapPostProcess'])) {
 			foreach ($tceData as $tableRecords) {
 				foreach ($tableRecords as $id => $record) {
-						// Added status to record
-						// If operation was insert, match placeholder to actual id
+					// Added status to record
+					// If operation was insert, match placeholder to actual id
 					$uid = $id;
 					if (isset($tce->substNEWwithIDs[$id])) {
 						$uid = $tce->substNEWwithIDs[$id];
@@ -1249,7 +1249,7 @@ class tx_externalimport_importer {
 					} else {
 						$record['tx_externalimport:status'] = 'update';
 					}
-						// Restore additional fields, if any
+					// Restore additional fields, if any
 					if ($this->numAdditionalFields > 0) {
 						foreach ($savedAdditionalFields[$id] as $fieldName => $fieldValue) {
 							$record[$fieldName] = $fieldValue;
@@ -1263,7 +1263,7 @@ class tx_externalimport_importer {
 				$postProcessor->datamapPostProcess($this->table, $savedData, $this);
 			}
 		}
-			// Clean up
+		// Clean up
 		unset($tceData);
 		unset($savedData);
 
