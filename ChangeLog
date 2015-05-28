@@ -1,3 +1,7 @@
+2015-05-28 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected handling of MM relations, resolves #64775
+
 2015-05-25 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Used reverseOrder flag for inverting sorted records, resolves #67132

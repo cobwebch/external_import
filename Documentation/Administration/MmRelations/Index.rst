@@ -142,6 +142,13 @@ properties are used, additional database operations are performed to honour thes
 settings, as it is not traditional behaviour for TYPO3 MM-relations.
 It should be possible with IRRE, but this isn't supported yet.
 
+Also note that these extra operations assume that the MM-relation
+is defined as originating **from** the currently imported table.
+This means that if you are importing table "foo" and its relations
+to table "bar", the import script assumes that the foreign keys of
+table "foo" are going into the :code:`uid_local` column. Importing
+from the "other" side is not supported yet.
+
 
 .. _administration-mm-example:
 

@@ -1305,36 +1305,9 @@ class tx_externalimport_importer {
 			}
 		}
 
-			// Perform post-processing of MM-relations if necessary
+		// Perform post-processing of MM-relations if necessary
 		if (count($fullMappings) > 0) {
-			if ($this->extConf['debug'] || TYPO3_DLOG) {
-				t3lib_div::devLog('Handling full mappings', $this->extKey, 0, $fullMappings);
-			}
-
-				// Refresh list of existing primary keys now that new records have been inserted
-			$existingUids = $this->getExistingUids();
-
-				// Loop on all columns that require a remapping
-			foreach ($fullMappings as $columnName => $mappingData) {
-				$mmTable = $this->tableTCA['columns'][$columnName]['config']['MM'];
-				foreach ($mappingData as $externalUid => $sortedData) {
-					$uid = $existingUids[$externalUid];
-
-						// Delete existing MM-relations for current uid
-					$GLOBALS['TYPO3_DB']->exec_DELETEquery($mmTable, 'uid_local = ' . intval($uid));
-
-						// Recreate all MM-relations with additional fields, if any
-					$counter = 0;
-					foreach ($sortedData as $mmData) {
-						$counter++;
-						$fields = $mmData['additional_fields'];
-						$fields['uid_local'] = $uid;
-						$fields['uid_foreign'] = $mmData['value'];
-						$fields['sorting'] = $counter;
-						$GLOBALS['TYPO3_DB']->exec_INSERTquery($mmTable, $fields);
-					}
-				}
-			}
+			$this->postProcessMmRelations($fullMappings);
 		}
 
 			// Check if there were any errors reported by TCEmain
@@ -1378,6 +1351,69 @@ class tx_externalimport_importer {
 		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_inserted'), $inserts);
 		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_updated'), $updates);
 		$this->messages[t3lib_FlashMessage::OK][] = sprintf($GLOBALS['LANG']->getLL('records_deleted'), $deletes);
+	}
+
+	/**
+	 * Stores all MM relations.
+	 *
+	 * Existing relations are deleted first.
+	 *
+	 * @param array $fullMappings List of all mapped data
+	 * @return void
+	 */
+	protected function postProcessMmRelations($fullMappings) {
+		if ($this->extConf['debug'] || TYPO3_DLOG) {
+			t3lib_div::devLog('Handling full mappings', $this->extKey, 0, $fullMappings);
+		}
+
+		// Refresh list of existing primary keys now that new records have been inserted
+		$existingUids = $this->getExistingUids();
+
+		// Loop on all columns that require a remapping
+		foreach ($fullMappings as $columnName => $mappingData) {
+			$mmTable = $this->tableTCA['columns'][$columnName]['config']['MM'];
+			// Assemble extra condition if MM_insert_fields or MM_match_fields are defined
+			$additionalWhere = '';
+			$mmAdditionalFields = array();
+			// Merge all insert and match fields together
+			if (isset($this->tableTCA['columns'][$columnName]['config']['MM_insert_fields']) && is_array($this->tableTCA['columns'][$columnName]['config']['MM_insert_fields'])) {
+				$mmAdditionalFields = $this->tableTCA['columns'][$columnName]['config']['MM_insert_fields'];
+			}
+			if (isset($this->tableTCA['columns'][$columnName]['config']['MM_match_fields']) && is_array($this->tableTCA['columns'][$columnName]['config']['MM_match_fields'])) {
+				$mmAdditionalFields = array_merge($mmAdditionalFields, $this->tableTCA['columns'][$columnName]['config']['MM_match_fields']);
+			}
+			// Assemble a condition with all these fields
+			foreach ($mmAdditionalFields as $column => $value) {
+				$additionalWhere .= ' AND ' . $column . ' = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($value, $mmTable);
+			}
+			foreach ($mappingData as $externalUid => $sortedData) {
+				$uid = $existingUids[$externalUid];
+
+				// Delete existing MM-relations for current uid
+				$GLOBALS['TYPO3_DB']->exec_DELETEquery(
+					$mmTable,
+					'uid_local = ' . intval($uid) . $additionalWhere
+				);
+
+				// Recreate all MM-relations with additional fields, if any
+				$counter = 0;
+				foreach ($sortedData as $mmData) {
+					$counter++;
+					$fields = $mmData['additional_fields'];
+					$fields['uid_local'] = $uid;
+					$fields['uid_foreign'] = $mmData['value'];
+					$fields['sorting'] = $counter;
+					// Add insert and match fields to values for insert
+					foreach ($mmAdditionalFields as $column => $value) {
+						$fields[$column] = $value;
+					}
+					$GLOBALS['TYPO3_DB']->exec_INSERTquery(
+						$mmTable,
+						$fields
+					);
+				}
+			}
+		}
 	}
 
 	/**
