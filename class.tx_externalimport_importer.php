@@ -1386,22 +1386,42 @@ class tx_externalimport_importer {
 			foreach ($mmAdditionalFields as $column => $value) {
 				$additionalWhere .= ' AND ' . $column . ' = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($value, $mmTable);
 			}
+			// Check if column is an opposite field
+			if (!empty($this->tableTCA['columns'][$columnName]['config']['MM_opposite_field'])) {
+				$isOppositeField = TRUE;
+			} else {
+				$isOppositeField = FALSE;
+			}
 			foreach ($mappingData as $externalUid => $sortedData) {
 				$uid = $existingUids[$externalUid];
 
-				// Delete existing MM-relations for current uid
+				// Delete existing MM-relations for current uid, taking relation side into account
+				if ($isOppositeField) {
+					$referenceField = 'uid_foreign';
+				} else {
+					$referenceField = 'uid_local';
+				}
 				$GLOBALS['TYPO3_DB']->exec_DELETEquery(
 					$mmTable,
-					'uid_local = ' . intval($uid) . $additionalWhere
+					$referenceField . ' = ' . intval($uid) . $additionalWhere
 				);
 
 				// Recreate all MM-relations with additional fields, if any
 				$counter = 0;
 				foreach ($sortedData as $mmData) {
 					$counter++;
+					// Define uid_local and uid_foreign depending on relation side
+					if ($isOppositeField) {
+						$uidLocal = $mmData['value'];
+						$uidForeign = $uid;
+					} else {
+						$uidLocal = $uid;
+						$uidForeign = $mmData['value'];
+					}
+
 					$fields = $mmData['additional_fields'];
-					$fields['uid_local'] = $uid;
-					$fields['uid_foreign'] = $mmData['value'];
+					$fields['uid_local'] = $uidLocal;
+					$fields['uid_foreign'] = $uidForeign;
 					$fields['sorting'] = $counter;
 					// Add insert and match fields to values for insert
 					foreach ($mmAdditionalFields as $column => $value) {
