@@ -1,3 +1,7 @@
+2015-06-11 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released version 2.5.0, resolves #67412
+
 2015-06-07 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added proper handling of MM_opposite_field property in MM relations, resolves #65648

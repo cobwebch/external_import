@@ -6,8 +6,8 @@
 conf.py:
   copyright: 2007-2014
   project: External Import
-  version: 2.4
-  release: 2.4.0
+  version: 2.5
+  release: 2.5.0
   latex_documents:
   - - Index
     - external_import.tex
