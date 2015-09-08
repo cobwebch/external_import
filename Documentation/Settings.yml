@@ -4,10 +4,10 @@
 
 ---
 conf.py:
-  copyright: 2007-2014
+  copyright: 2007-2015
   project: External Import
   version: 2.5
-  release: 2.5.0
+  release: 2.5.1
   latex_documents:
   - - Index
     - external_import.tex
