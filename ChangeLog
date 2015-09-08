@@ -1,3 +1,7 @@
+2015-09-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected wrong object being passed to process parameters hook, resolves #69579
+
 2015-06-11 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released version 2.5.0, resolves #67412

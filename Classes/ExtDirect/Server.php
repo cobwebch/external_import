@@ -98,7 +98,7 @@ class Tx_ExternalImport_ExtDirect_Server {
 					$importer->setIndex($index);
 					foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
 						$preProcessor = t3lib_div::getUserObj($className);
-						$processedParameters = $preProcessor->processParameters($externalCtrlConfiguration['parameters'], $this);
+						$processedParameters = $preProcessor->processParameters($externalCtrlConfiguration['parameters'], $importer);
 					}
 				}
 				$externalInformation .= '<tr>';
