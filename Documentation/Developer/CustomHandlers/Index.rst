@@ -24,7 +24,7 @@ is a class name. The corresponding class file should be declared with
 the autoloader (or use namespaces, since TYPO3 CMS 6.0).
 
 The class itself **must** implement the
-:code:`tx_externalimport_dataHandler` interface, which contains only
+:code:`\Cobweb\ExternalImport\DataHandlerInterface` interface, which contains only
 the :code:`handleData()` method. This method will receive two
 arguments:
 

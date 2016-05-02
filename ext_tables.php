@@ -1,10 +1,12 @@
 <?php
-if (!defined ('TYPO3_MODE')) 	die ('Access denied.');
+if (!defined ('TYPO3_MODE')) {
+	die ('Access denied.');
+}
 
 	// Avoid loading the module when in the frontend or the Install Tool
-if (TYPO3_MODE == 'BE' && !(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
+if (TYPO3_MODE === 'BE' && !(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 		// Register the backend module
-	Tx_Extbase_Utility_Extension::registerModule(
+	\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
 		$_EXTKEY,
 		'user', // Make module a submodule of 'user'
 		'external_import', // Submodule key
@@ -20,4 +22,3 @@ if (TYPO3_MODE == 'BE' && !(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_INSTALL)) {
 		)
 	);
 }
-?>

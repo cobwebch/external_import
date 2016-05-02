@@ -29,7 +29,7 @@
 			<label index="data_type">Data type</label>
 			<label index="data_handler">Custom data handler</label>
 			<label index="data_handler_noclass">The class declared for the custom data handler cannot be found. Make sure to register it with the autoloader.</label>
-			<label index="data_handler_wrong">The class declared for the custom data handler does not implement interface tx_externalimport_dataHandler.</label>
+			<label index="data_handler_wrong">The class declared for the custom data handler does not implement interface \Cobweb\ExternalImport\DataHandlerInterface.</label>
 			<label index="reference_node">Reference node</label>
 			<label index="namespaces">Namespaces</label>
 			<label index="external_key">External primary key</label>

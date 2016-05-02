@@ -1,3 +1,7 @@
+2016-05-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Moved to namespaces, applied PSR-2, replaced old API calls, resolves #76016
+
 2015-09-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected wrong object being passed to process parameters hook, resolves #69579
