@@ -1,0 +1,20 @@
+<html data-namespace-typo3-fluid="true"
+	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
+
+	<f:link.action
+		action="deleteTask"
+		arguments="{uid: uid}"
+		title="{f:translate(key: 'delete_sync')}"
+		class="btn btn-default t3js-modal-trigger"
+		data="{
+			title: '{f:translate(id: \'confirm\')}',
+			content: '{f:translate(id: \'delete_sync_confirm\')}',
+			severity: 'warning',
+			button-ok-text: '{f:translate(id: \'remove\')}',
+			button-close-text: '{f:translate(id: \'cancel\')}'
+		}"
+	>
+		<core:icon identifier="actions-delete" />
+	</f:link.action>
+</html>

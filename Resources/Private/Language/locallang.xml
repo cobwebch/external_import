@@ -7,9 +7,6 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
-			<label index="mlang_tabs_tab">External Data Import</label>
-			<label index="mlang_labels_tabdescr">Main BE module for the External Import extension</label>
-			<label index="mlang_labels_tablabel">External Import</label>
 			<label index="function_sync">Tables with synchronization</label>
 			<label index="function_nosync">Tables without synchronization</label>
 			<label index="external_tables_intro">Below is the list of all tables using external data as defined in the TCA. From here you can manually synchronize any table. Note that you should synchronize tables with high priority (lower number) first, since lower priority tables probably depend on them.</label>
@@ -18,9 +15,10 @@
 			<label index="external_information">External information</label>
 			<label index="configuration_loading_error">The list of configurations could not be loaded.</label>
 			<label index="no_configurations_warning">There are currently no matching configurations.</label>
-			<label index="action_loading">Loading...</label>
-			<label index="refresh">Refresh the view</label>
+			<label index="search">Search</label>
 			<label index="view_details">View details</label>
+			<label index="configuration_details">Configuration details for table "%1$s" (index: %2$s)</label>
+			<label index="back_to_list">Back to list</label>
 			<label index="table">Table</label>
 			<label index="description">Description</label>
 			<label index="priority">Priority</label>
@@ -54,24 +52,30 @@
 			<label index="autosync">Automatic synchronization</label>
 			<label index="full_autosync">Full automation of synchronization</label>
 			<label index="no_full_autosync">It is possible to enable the automatic synchronization of all tables with an external synchronization configuration. Configurations will be handled in order of decreasing priority. It is currently not activated.</label>
-			<label index="next_full_autosync">The automatic synchronization of all tables is activated (frequency: {1}). The next run will take place on {0}.</label>
+			<label index="next_full_autosync">The automatic synchronization of all tables is activated (frequency: %1$s). The next run will take place on %2$s.</label>
 			<label index="start_date">Start date</label>
 			<label index="start_date_help">(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</label>
 			<label index="frequency">Frequency</label>
 			<label index="frequency_help">(use cron-like syntax or simply enter a number of seconds)</label>
+			<label index="task_group">Task group</label>
 			<label index="set_sync">Set synchronisation</label>
+			<label index="set_sync_info">Table: %1$s (%2$s), index: %3$s</label>
+			<label index="set_full_sync_info">For all configurations</label>
 			<label index="autosync_saved">The automatic synchronization information has been saved.</label>
 			<label index="autosync_save_failed">The automatic synchronization information could not be saved.</label>
 			<label index="no_autosync">The automatic synchronization is not yet enabled.</label>
-			<label index="next_autosync">Activated (frequency: {1}). The next run will take place on {0}.</label>
+			<label index="next_autosync">Activated (frequency: %1$s). The next run will take place on %2$s.</label>
+			<label index="error_invalid_task">The chosen task was not found.</label>
 			<label index="error_invalid_data">The form contains invalid input. Please correct the data in the highlighted fields.</label>
 			<label index="error_invalid_frequency">The frequency should either be a cron command or a number of seconds larger than 0.</label>
 			<label index="error_empty_frequency">The frequency may not be empty.</label>
 			<label index="error_wrong_frequency">The frequency should either be a cron command or a number of seconds larger than 0 (error: %s).</label>
 			<label index="error_invalid_start_date">The given start date is not valid.</label>
-			<label index="change_sync">Define or edit the synchronization settings</label>
+			<label index="add_sync">Add synchronization settings</label>
+			<label index="edit_sync">Edit synchronization settings</label>
 			<label index="sync_settings">Synchronization settings</label>
 			<label index="delete_sync">Remove the automated synchronization settings</label>
+			<label index="confirm">Please confirm</label>
 			<label index="delete_sync_confirm">Are you sure you want to remove this automatic synchronisation?</label>
 			<label index="delete_done">The automatic synchronisation was successfully canceled.</label>
 			<label index="delete_failed">The automatic synchronisation could not be canceled.</label>
@@ -79,6 +83,8 @@
 			<label index="activate">Activate</label>
 			<label index="modify">Modify</label>
 			<label index="deactivate">Deactivate</label>
+			<label index="remove">Remove</label>
+			<label index="cancel">Cancel</label>
 		</languageKey>
 	</data>
 </T3locallang>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with DrawBerry (http://raphaelbost.free.fr/) -->
+<svg 
+ 	 width = "32.000000" 
+ 	 height = "32.000000" 
+xmlns:dc="http://purl.org/dc/elements/1.1/"
+xmlns:cc="http://web.resource.org/cc/"
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+ xmlns:svg="http://www.w3.org/2000/svg"
+ xmlns="http://www.w3.org/2000/svg" 
+ xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd"
+ xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+ >
+<g inkscape:label="New Layer" inkscape:groupmode="layer" id="New Layer">
+<path  style="fill:#ff8140;fill-opacity:1.000000;stroke:none;" 
+ d="M -4.415527,-2.732422 L 38.184082,-2.732422 L 38.184082,37.240234 L -4.415527,37.240234 L -4.415527,-2.732422  z"  />
+<path  style="fill:none;stroke:#ffffff;stroke-width:1.000000px;stroke-opacity:1.000000;stroke-linecap:butt;stroke-linejoin:miter;" 
+ d="M 26.541504,7.504769 C 19.900801,11.292135 19.955570,18.948677 19.955570,18.948677 C 19.955570,18.948677 26.541504,19.030184 26.541504,19.030184 C 26.541504,19.030184 16.657784,26.682617 16.657784,26.682617 C 16.657784,26.682617 6.810222,19.017021 6.810222,19.017021 C 6.810222,19.017021 13.375023,18.933102 13.375023,18.933102 C 13.375023,18.933102 13.472397,11.315029 6.758301,7.424316 C 11.140923,7.477350 22.769293,7.395893 26.541504,7.504769  z"  />
+</g>
+<g inkscape:label="Background" inkscape:groupmode="layer" id="Background">
+</g>
+</svg>

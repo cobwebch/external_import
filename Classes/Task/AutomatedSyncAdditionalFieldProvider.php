@@ -62,7 +62,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
 
         // Write the code for the field
         $fieldID = 'task_' . self::$fieldName;
-        $fieldCode = '<select name="tx_scheduler[' . self::$fieldName . ']" id="' . $fieldID . '">';
+        $fieldCode = '<select name="tx_scheduler[' . self::$fieldName . ']" id="' . $fieldID . '" class="form-control">';
         $selected = '';
         if ($taskInfo[self::$fieldName] === 'all') {
             $selected = ' selected="selected"';

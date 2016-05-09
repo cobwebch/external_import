@@ -14,8 +14,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -31,6 +30,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ConfigurationRepository
 {
     /**
+     * @var array Extension configuration
+     */
+    protected $extensionConfiguration = array();
+
+    public function __construct()
+    {
+        $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
+    }
+
+    /**
      * Returns the "ctrl" part of the external import configuration for the given table and index
      *
      * @param string $table Name of the table
@@ -40,7 +49,15 @@ class ConfigurationRepository
     public function findByTableAndIndex($table, $index)
     {
         if (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
-            return $GLOBALS['TCA'][$table]['ctrl']['external'][$index];
+            $externalCtrlConfiguration = $GLOBALS['TCA'][$table]['ctrl']['external'][$index];
+            $pid = 0;
+            if (array_key_exists('pid', $externalCtrlConfiguration)) {
+                $pid = $externalCtrlConfiguration['pid'];
+            } elseif (array_key_exists('storagePID', $this->extensionConfiguration)) {
+                $pid = $this->extensionConfiguration['storagePID'];
+            }
+            $externalCtrlConfiguration['pid'] = $pid;
+            return $externalCtrlConfiguration;
         } else {
             return null;
         }
@@ -71,26 +88,25 @@ class ConfigurationRepository
     }
 
     /**
-     * Returns all relevant external import configurations
+     * Returns external import configurations based on their sync type.
      *
-     * @param object $parameters List of parameters passed to the method (as stdClass object)
+     * @param bool $isSynchronizable True for tables with synchronization configuration, false for others
      * @return array List of external import TCA configurations
      */
-    public function findByType($parameters)
+    public function findBySync($isSynchronizable)
     {
-        $synchronizable = (boolean)$parameters->synchronizable;
+        $isSynchronizable = (bool)$isSynchronizable;
         $configurations = array();
 
         // Get a list of all external import Scheduler tasks, if Scheduler is active
         $tasks = array();
-        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('scheduler')) {
+        if (ExtensionManagementUtility::isLoaded('scheduler')) {
             /** @var $schedulerRepository SchedulerRepository */
             $schedulerRepository = GeneralUtility::makeInstance(SchedulerRepository::class);
             $tasks = $schedulerRepository->fetchAllTasks();
         }
 
         // Loop on all tables and extract external_import-related information from them
-        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             // Check if table has external info
             if (isset($sections['ctrl']['external'])) {
@@ -103,8 +119,8 @@ class ConfigurationRepository
                         // Synchronizable tables have a connector configuration
                         // Non-synchronizable tables don't
                         if (
-                                ($synchronizable && !empty($externalConfig['connector'])) ||
-                                (!$synchronizable && empty($externalConfig['connector']))
+                                ($isSynchronizable && !empty($externalConfig['connector'])) ||
+                                (!$isSynchronizable && empty($externalConfig['connector']))
                         ) {
                             // If priority is not defined, set to very low
                             // NOTE: the priority doesn't matter for non-synchronizable tables
@@ -125,8 +141,7 @@ class ConfigurationRepository
                             $tableConfiguration = array(
                                     'id' => $tableName . '-' . $index,
                                     'table' => $tableName,
-                                    'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']) . ' (' . $tableName . ')',
-                                    'icon' => $iconFactory->getIconForRecord($tableName, array(), Icon::SIZE_SMALL)->render(),
+                                    'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']),
                                     'index' => $index,
                                     'columnIndex' => $columnIndex,
                                     'priority' => (int)$priority,
@@ -135,16 +150,13 @@ class ConfigurationRepository
                             );
                             // Add Scheduler task information, if any
                             $taskKey = $tableName . '/' . $index;
-                            if (isset($tasks[$taskKey])) {
+                            if (array_key_exists($taskKey, $tasks)) {
                                 $tableConfiguration['automated'] = 1;
                                 $tableConfiguration['task'] = $tasks[$taskKey];
                             } else {
                                 $tableConfiguration['automated'] = 0;
                                 $tableConfiguration['task'] = null;
                             }
-                            // Provide empty text for dummy column
-                            // (see "Empty column" comment in Resources/Public/JavaScript/Application.js)
-                            $tableConfiguration['dummy'] = '';
                             $configurations[] = $tableConfiguration;
                         }
                     }
@@ -157,7 +169,7 @@ class ConfigurationRepository
     }
 
     /**
-     * Checks if user has write access to some, all or none of the tables having an external configuration
+     * Checks if user has write access to some, all or none of the tables having an external configuration.
      *
      * @return string Global access (none, partial or all)
      */
@@ -183,12 +195,12 @@ class ConfigurationRepository
                 }
             }
             // If the user has no restriction, then access is full
-            if ($noAccessCount == 0) {
+            if ($noAccessCount === 0) {
                 $hasGlobalWriteAccess = 'all';
 
                 // Assess if user has rights to no table at all or at least to some
             } else {
-                if ($noAccessCount == $numberOfTables) {
+                if ($noAccessCount === $numberOfTables) {
                     $hasGlobalWriteAccess = 'none';
                 } else {
                     $hasGlobalWriteAccess = 'partial';

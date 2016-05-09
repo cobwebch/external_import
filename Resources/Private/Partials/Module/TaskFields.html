@@ -1,0 +1,56 @@
+<html data-namespace-typo3-fluid="true"
+	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
+
+	<f:form.hidden name="table" value="{table}" />
+	<f:form.hidden name="index" value="{index}" />
+	<f:form.hidden name="uid" value="{task.uid}" />
+	<div class="typo3-TCEforms">
+		<div class="tab-pane">
+			<fieldset class="form-section">
+				<div class="form-group {ex:hasError(for: 'frequency', then: 'has-error', else: '')}">
+					<label>
+						<f:translate id="frequency" />
+					</label>
+					<div class="field-control-wrap">
+						<f:form.textfield class="form-control" name="frequency" value="{task.frequency}" />
+					</div>
+					<div class="help-text"><f:translate id="frequency_help" /></div>
+					<f:form.validationResults for="frequency">
+						<f:render partial="Module/ErrorMessages" arguments="{validationResults: validationResults}" />
+					</f:form.validationResults>
+				</div>
+				<div class="form-group">
+					<label>
+						<f:translate id="task_group" />
+					</label>
+					<div class="field-control-wrap">
+						<f:form.select class="form-control" name="group" value="{task.group}" options="{groups}" />
+					</div>
+				</div>
+				<div class="form-group {ex:hasError(for: 'start_date_hr', then: 'has-error', else: '')}">
+					<label>
+						<f:translate id="start_date" />
+					</label>
+					<div class="field-control-wrap">
+						<div class="input-group">
+							<f:form.textfield class="form-control t3js-datetimepicker t3js-clearable" data="{date-type: 'datetime', date-offset: 0}" name="start_date" id="start_date" value="{task.startDate}" />
+							<f:form.hidden name="start_date_hr" />
+							<span class="input-group-btn"><label class="btn btn-default" for="start_date"><span class="fa fa-calendar"></span></label></span>
+						</div>
+						<div class="help-text"><f:translate id="start_date_help" /></div>
+						<f:form.validationResults for="start_date_hr">
+							<f:render partial="Module/ErrorMessages" arguments="{validationResults: validationResults}" />
+						</f:form.validationResults>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="field-control-wrap">
+						<f:form.submit name="saveTask" value="{f:translate(id: 'LLL:EXT:lang/locallang_common.xlf:save')}" class="btn btn-default" />
+					</div>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+
+</html>

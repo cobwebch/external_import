@@ -1,0 +1,20 @@
+<html data-namespace-typo3-fluid="true"
+	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
+
+	<h1><f:translate id="add_sync" /></h1>
+	<p>
+		<f:if condition="{table} == 'all'">
+			<f:then>
+				<f:translate id="set_full_sync_info" />
+			</f:then>
+			<f:else>
+				<f:translate id="set_sync_info" arguments="{0: '{ex:be.tableTitle(table: table)}', 1: table, 2:index}" />
+			</f:else>
+		</f:if>
+	</p>
+
+	<f:form name="taskForm" action="createTask" method="post">
+		<f:render partial="Module/TaskFields" arguments="{_all}" />
+	</f:form>
+</html>

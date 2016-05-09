@@ -1,0 +1,12 @@
+<html data-namespace-typo3-fluid="true"
+	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
+
+<div class="error-messages">
+    <f:if condition="{validationResults.flattenedErrors}">
+        <ul class="typo3-messages">
+            <f:for each="{validationResults.errors}" as="error">
+                <li	class="alert alert-danger">{error}</li>
+            </f:for>
+        </ul>
+    </f:if>
+</div>
