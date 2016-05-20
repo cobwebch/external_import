@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2016-05-20T14:49:51Z" product-name="external_import">
+		<header/>
+		<body>
+			<trans-unit id="function_sync" xml:space="preserve">
+				<source>Tables with synchronization</source>
+			</trans-unit>
+			<trans-unit id="function_nosync" xml:space="preserve">
+				<source>Tables without synchronization</source>
+			</trans-unit>
+			<trans-unit id="external_tables_intro" xml:space="preserve">
+				<source>Below is the list of all tables using external data as defined in the TCA. From here you can manually synchronize any table. Note that you should synchronize tables with high priority (lower number) first, since lower priority tables probably depend on them.</source>
+			</trans-unit>
+			<trans-unit id="nosync_tables" xml:space="preserve">
+				<source>Non-synchronizable tables</source>
+			</trans-unit>
+			<trans-unit id="nosync_tables_intro" xml:space="preserve">
+				<source>The tables listed below receive data from external sources, but do not fetch it directly. They cannot be synchronized from this BE module. They are listed here for information.</source>
+			</trans-unit>
+			<trans-unit id="external_information" xml:space="preserve">
+				<source>External information</source>
+			</trans-unit>
+			<trans-unit id="no_configurations_warning" xml:space="preserve">
+				<source>There are currently no matching configurations.</source>
+			</trans-unit>
+			<trans-unit id="search" xml:space="preserve">
+				<source>Search</source>
+			</trans-unit>
+			<trans-unit id="view_details" xml:space="preserve">
+				<source>View details</source>
+			</trans-unit>
+			<trans-unit id="configuration_details" xml:space="preserve">
+				<source>Configuration details for table &quot;%1$s&quot; (index: %2$s)</source>
+			</trans-unit>
+			<trans-unit id="back_to_list" xml:space="preserve">
+				<source>Back to list</source>
+			</trans-unit>
+			<trans-unit id="table" xml:space="preserve">
+				<source>Table</source>
+			</trans-unit>
+			<trans-unit id="description" xml:space="preserve">
+				<source>Description</source>
+			</trans-unit>
+			<trans-unit id="priority" xml:space="preserve">
+				<source>Priority</source>
+			</trans-unit>
+			<trans-unit id="connector" xml:space="preserve">
+				<source>Connector</source>
+			</trans-unit>
+			<trans-unit id="connector.details" xml:space="preserve">
+				<source>Connector details</source>
+			</trans-unit>
+			<trans-unit id="data_type" xml:space="preserve">
+				<source>Data type</source>
+			</trans-unit>
+			<trans-unit id="data_handler" xml:space="preserve">
+				<source>Custom data handler</source>
+			</trans-unit>
+			<trans-unit id="reference_node" xml:space="preserve">
+				<source>Reference node</source>
+			</trans-unit>
+			<trans-unit id="namespaces" xml:space="preserve">
+				<source>Namespaces</source>
+			</trans-unit>
+			<trans-unit id="external_key" xml:space="preserve">
+				<source>External primary key</source>
+			</trans-unit>
+			<trans-unit id="storage_pid" xml:space="preserve">
+				<source>Storage page</source>
+			</trans-unit>
+			<trans-unit id="jump_to_page" xml:space="preserve">
+				<source>Jump to page</source>
+			</trans-unit>
+			<trans-unit id="enforce_pid" xml:space="preserve">
+				<source>Enforce PID</source>
+			</trans-unit>
+			<trans-unit id="disableLog" xml:space="preserve">
+				<source>Disable logging</source>
+			</trans-unit>
+			<trans-unit id="where_clause" xml:space="preserve">
+				<source>SQL restriction</source>
+			</trans-unit>
+			<trans-unit id="clear_cache" xml:space="preserve">
+				<source>Clear cache for pages</source>
+			</trans-unit>
+			<trans-unit id="columnIndex" xml:space="preserve">
+				<source>Alternate column index</source>
+			</trans-unit>
+			<trans-unit id="undefined" xml:space="preserve">
+				<source>(Not defined)</source>
+			</trans-unit>
+			<trans-unit id="additional_fields" xml:space="preserve">
+				<source>Additional fields</source>
+			</trans-unit>
+			<trans-unit id="disabled_operations" xml:space="preserve">
+				<source>Disabled operations</source>
+			</trans-unit>
+			<trans-unit id="none" xml:space="preserve">
+				<source>None</source>
+			</trans-unit>
+			<trans-unit id="minimum_records" xml:space="preserve">
+				<source>Minimum number of records</source>
+			</trans-unit>
+			<trans-unit id="general_information" xml:space="preserve">
+				<source>General information</source>
+			</trans-unit>
+			<trans-unit id="columns_mapping" xml:space="preserve">
+				<source>Columns mapping</source>
+			</trans-unit>
+			<trans-unit id="synchronise" xml:space="preserve">
+				<source>Synchronize</source>
+			</trans-unit>
+			<trans-unit id="autosync" xml:space="preserve">
+				<source>Automatic synchronization</source>
+			</trans-unit>
+			<trans-unit id="full_autosync" xml:space="preserve">
+				<source>Full automation of synchronization</source>
+			</trans-unit>
+			<trans-unit id="no_full_autosync" xml:space="preserve">
+				<source>It is possible to enable the automatic synchronization of all tables with an external synchronization configuration. Configurations will be handled in order of decreasing priority. It is currently not activated.</source>
+			</trans-unit>
+			<trans-unit id="next_full_autosync" xml:space="preserve">
+				<source>The automatic synchronization of all tables is activated (frequency: %1$s). The next run will take place on %2$s.</source>
+			</trans-unit>
+			<trans-unit id="start_date" xml:space="preserve">
+				<source>Start date</source>
+			</trans-unit>
+			<trans-unit id="start_date_help" xml:space="preserve">
+				<source>(leave empty for immediate activation; format: yyyy-mm-dd hh:mm:ss)</source>
+			</trans-unit>
+			<trans-unit id="frequency" xml:space="preserve">
+				<source>Frequency</source>
+			</trans-unit>
+			<trans-unit id="frequency_help" xml:space="preserve">
+				<source>(use cron-like syntax or simply enter a number of seconds)</source>
+			</trans-unit>
+			<trans-unit id="task_group" xml:space="preserve">
+				<source>Task group</source>
+			</trans-unit>
+			<trans-unit id="set_sync" xml:space="preserve">
+				<source>Set synchronisation</source>
+			</trans-unit>
+			<trans-unit id="set_sync_info" xml:space="preserve">
+				<source>Table: %1$s (%2$s), index: %3$s</source>
+			</trans-unit>
+			<trans-unit id="set_full_sync_info" xml:space="preserve">
+				<source>For all configurations</source>
+			</trans-unit>
+			<trans-unit id="autosync_saved" xml:space="preserve">
+				<source>The automatic synchronization information has been saved.</source>
+			</trans-unit>
+			<trans-unit id="autosync_save_failed" xml:space="preserve">
+				<source>The automatic synchronization information could not be saved.</source>
+			</trans-unit>
+			<trans-unit id="no_autosync" xml:space="preserve">
+				<source>The automatic synchronization is not yet enabled.</source>
+			</trans-unit>
+			<trans-unit id="next_autosync" xml:space="preserve">
+				<source>Activated (frequency: %1$s). The next run will take place on %2$s.</source>
+			</trans-unit>
+			<trans-unit id="error_invalid_task" xml:space="preserve">
+				<source>The chosen task was not found.</source>
+			</trans-unit>
+			<trans-unit id="error_invalid_data" xml:space="preserve">
+				<source>The form contains invalid input. Please correct the data in the highlighted fields.</source>
+			</trans-unit>
+			<trans-unit id="error_invalid_frequency" xml:space="preserve">
+				<source>The frequency should either be a cron command or a number of seconds larger than 0.</source>
+			</trans-unit>
+			<trans-unit id="error_empty_frequency" xml:space="preserve">
+				<source>The frequency may not be empty.</source>
+			</trans-unit>
+			<trans-unit id="error_wrong_frequency" xml:space="preserve">
+				<source>The frequency should either be a cron command or a number of seconds larger than 0 (error: %s).</source>
+			</trans-unit>
+			<trans-unit id="error_invalid_start_date" xml:space="preserve">
+				<source>The given start date is not valid.</source>
+			</trans-unit>
+			<trans-unit id="add_sync" xml:space="preserve">
+				<source>Add synchronization settings</source>
+			</trans-unit>
+			<trans-unit id="edit_sync" xml:space="preserve">
+				<source>Edit synchronization settings</source>
+			</trans-unit>
+			<trans-unit id="sync_settings" xml:space="preserve">
+				<source>Synchronization settings</source>
+			</trans-unit>
+			<trans-unit id="delete_sync" xml:space="preserve">
+				<source>Remove the automated synchronization settings</source>
+			</trans-unit>
+			<trans-unit id="confirm" xml:space="preserve">
+				<source>Please confirm</source>
+			</trans-unit>
+			<trans-unit id="delete_sync_confirm" xml:space="preserve">
+				<source>Are you sure you want to remove this automatic synchronisation?</source>
+			</trans-unit>
+			<trans-unit id="delete_done" xml:space="preserve">
+				<source>The automatic synchronisation was successfully canceled.</source>
+			</trans-unit>
+			<trans-unit id="delete_failed" xml:space="preserve">
+				<source>The automatic synchronisation could not be canceled.</source>
+			</trans-unit>
+			<trans-unit id="number_of_seconds" xml:space="preserve">
+				<source>%d seconds</source>
+			</trans-unit>
+			<trans-unit id="remove" xml:space="preserve">
+				<source>Remove</source>
+			</trans-unit>
+			<trans-unit id="cancel" xml:space="preserve">
+				<source>Cancel</source>
+			</trans-unit>
+			<trans-unit id="moreMessages" xml:space="preserve">
+				<source>There were actually %d messages, but only the first five are displayed here. Please check your logs for more information.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

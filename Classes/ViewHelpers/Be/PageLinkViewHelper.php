@@ -18,13 +18,14 @@ use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Creates a link to the given in Web > List view.
- * 
+ *
  * @package Cobweb\ExternalImport\ViewHelpers
  */
 class PageLinkViewHelper extends AbstractViewHelper implements CompilableInterface
@@ -77,7 +78,8 @@ class PageLinkViewHelper extends AbstractViewHelper implements CompilableInterfa
 
             // Return item with link to Web > List
             $editOnClick = "top.goToModule('web_list', '', '&id=" . $uid . "')";
-            $string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:jump_to_page') . '">' . $elementIcon . $pageTitle . '</a>';
+            $linkTitle = LocalizationUtility::translate('jump_to_page', 'external_import');
+            $string = '<a href="#" onclick="' . htmlspecialchars($editOnClick) . '" title="' . $linkTitle . '">' . $elementIcon . $pageTitle . '</a>';
         }
         return $string;
     }

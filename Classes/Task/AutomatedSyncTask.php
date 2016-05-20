@@ -106,9 +106,9 @@ class AutomatedSyncTask extends AbstractTask
     public function getAdditionalInformation()
     {
         if ($this->table === 'all') {
-            $info = $GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:allTables');
+            $info = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables');
         } else {
-            $info = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:tableAndIndex'), $this->table,
+            $info = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableAndIndex'), $this->table,
                     $this->index);
         }
         return $info;

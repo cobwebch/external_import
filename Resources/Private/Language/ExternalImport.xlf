@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file original="" product-name="Cobweb.FooBar" source-language="en" datatype="plaintext">
+		<body>
+			<trans-unit id="config.reporting" xml:space="preserve">
+				<source>Reporting</source>
+			</trans-unit>
+			<trans-unit id="config.debugging" xml:space="preserve">
+				<source>Debugging/Logging</source>
+			</trans-unit>
+			<trans-unit id="config.storagePid" xml:space="preserve">
+				<source>Storage PID: Enter default page uid for storing imported records.</source>
+			</trans-unit>
+			<trans-unit id="config.timeLimit" xml:space="preserve">
+				<source>Force time limit (seconds): Change the maximun execution time for the import process. Defaut time limit is used if value = -1. See the manual for more details.</source>
+			</trans-unit>
+			<trans-unit id="config.reportEmail" xml:space="preserve">
+				<source>Email for reporting: When the import is executed automatically, you may receive a report about the execution if you set an email address (leave blank for no report).</source>
+			</trans-unit>
+			<trans-unit id="config.reportSubject" xml:space="preserve">
+				<source>Subject of email report: Set a subject for the email report. Additional information will be appended to that subject (i.e. "Full synchronization" ou "Synchronization of table x, index y").</source>
+			</trans-unit>
+			<trans-unit id="config.previewLimit" xml:space="preserve">
+				<source>Preview/Debug limit: The number of rows to show while doing a preview. Set to 0 for showing all. This also affects the debugging output.</source>
+			</trans-unit>
+			<trans-unit id="config.debug" xml:space="preserve">
+				<source>Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.</source>
+			</trans-unit>
+			<trans-unit id="config.disableLog" xml:space="preserve">
+				<source>Disable logging: Check to disable logging by TCEmain. Recommended if you don't need to keep close track of the import process.</source>
+			</trans-unit>
+			<trans-unit id="all" xml:space="preserve">
+				<source>All</source>
+			</trans-unit>
+			<trans-unit id="table" xml:space="preserve">
+				<source>Table</source>
+			</trans-unit>
+			<trans-unit id="index" xml:space="preserve">
+				<source>Index</source>
+			</trans-unit>
+			<trans-unit id="no_connector" xml:space="preserve">
+				<source>No connector defined. Cannot synchronize.</source>
+			</trans-unit>
+			<trans-unit id="no_service" xml:space="preserve">
+				<source>No service available</source>
+			</trans-unit>
+			<trans-unit id="no_rights_for_sync" xml:space="preserve">
+				<source>User %1$s doesn't have enough rights for synchronizing table %2$s.</source>
+			</trans-unit>
+			<trans-unit id="data_type_not_defined" xml:space="preserve">
+				<source>Type of import data (array or xml) was not defined.</source>
+			</trans-unit>
+			<trans-unit id="data_not_fetched" xml:space="preserve">
+				<source>Data could not be fetched (connector service not available)</source>
+			</trans-unit>
+			<trans-unit id="data_not_fetched_connector_error" xml:space="preserve">
+				<source>Data could not be fetched (connector error: %s)</source>
+			</trans-unit>
+			<trans-unit id="records_inserted" xml:space="preserve">
+				<source>%d new record(s) inserted</source>
+			</trans-unit>
+			<trans-unit id="records_updated" xml:space="preserve">
+				<source>%d existing record(s) updated</source>
+			</trans-unit>
+			<trans-unit id="records_deleted" xml:space="preserve">
+				<source>%d existing record(s) deleted</source>
+			</trans-unit>
+			<trans-unit id="records_relationships" xml:space="preserve">
+				<source>%s mm-relationships created</source>
+			</trans-unit>
+			<trans-unit id="sync_all" xml:space="preserve">
+				<source>Synchronising all tables</source>
+			</trans-unit>
+			<trans-unit id="sync_table" xml:space="preserve">
+				<source>Synchronisation of table %s</source>
+			</trans-unit>
+			<trans-unit id="update_failed" xml:space="preserve">
+				<source>Update failed:</source>
+			</trans-unit>
+			<trans-unit id="insert_failed" xml:space="preserve">
+				<source>Insert failed:</source>
+			</trans-unit>
+			<trans-unit id="delete_failed" xml:space="preserve">
+				<source>Delete failed:</source>
+			</trans-unit>
+			<trans-unit id="invalid_userfunc" xml:space="preserve">
+				<source>Invalid user function %s</source>
+			</trans-unit>
+			<trans-unit id="timelimit" xml:space="preserve">
+				<source>PHP limit maximum execution time forced</source>
+			</trans-unit>
+			<trans-unit id="notEnoughRecords" xml:space="preserve">
+				<source>The number of records (%1$d) is below the required limit (%2$d).</source>
+			</trans-unit>
+			<trans-unit id="importAborted" xml:space="preserve">
+				<source>The import was aborted. Please see the relevant messages.</source>
+			</trans-unit>
+			<trans-unit id="things_happened" xml:space="preserve">
+				<source>One or more errors were reported. The count of operations performed may not be correct.</source>
+			</trans-unit>
+			<trans-unit id="scheduler.title" xml:space="preserve">
+				<source>External import</source>
+			</trans-unit>
+			<trans-unit id="scheduler.description" xml:space="preserve">
+				<source>This task can be used to set up automated executions of external imports, be it for all tables in one go or for a single table.</source>
+			</trans-unit>
+			<trans-unit id="synchronizeTableX" xml:space="preserve">
+				<source>Synchronization of table %1$s, index %2$d</source>
+			</trans-unit>
+			<trans-unit id="field.syncItem" xml:space="preserve">
+				<source>Item to synchronize</source>
+			</trans-unit>
+			<trans-unit id="label.warning" xml:space="preserve">
+				<source>Warnings</source>
+			</trans-unit>
+			<trans-unit id="label.error" xml:space="preserve">
+				<source>Errors</source>
+			</trans-unit>
+			<trans-unit id="label.success" xml:space="preserve">
+				<source>Success messages</source>
+			</trans-unit>
+			<trans-unit id="no.warning" xml:space="preserve">
+				<source>No warnings</source>
+			</trans-unit>
+			<trans-unit id="no.error" xml:space="preserve">
+				<source>No errors</source>
+			</trans-unit>
+			<trans-unit id="no.success" xml:space="preserve">
+				<source>No success messages</source>
+			</trans-unit>
+			<trans-unit id="allTables" xml:space="preserve">
+				<source>All tables</source>
+			</trans-unit>
+			<trans-unit id="tableAndIndex" xml:space="preserve">
+				<source>Table: %1$s, index: %2$s</source>
+			</trans-unit>
+			<trans-unit id="exceptionOccurred" xml:space="preserve">
+				<source>A problem occurred. The following error was returned: %1$s (Exception code: %2$d).</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

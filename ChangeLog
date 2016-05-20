@@ -1,3 +1,8 @@
+2016-05-20 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Refactored BE module, compatible with TYPO3 CMS 7, removed ExtJS, resolves #59441
+	* Moved languages files to XLIFF, resolves #76251
+
 2016-05-02 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Moved to namespaces, applied PSR-2, replaced old API calls, resolves #76016

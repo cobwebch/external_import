@@ -203,7 +203,7 @@ class ModuleController extends ActionController {
             if ($numMessages > 5) {
                 array_splice($messageList, 5);
                 $messageList[] = sprintf(
-                        $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xml:moreMessages'),
+                        LocalizationUtility::translate('moreMessages', 'external_import'),
                         $numMessages
                 );
                 $messages[$severity] = $messageList;

@@ -67,7 +67,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         if ($taskInfo[self::$fieldName] === 'all') {
             $selected = ' selected="selected"';
         }
-        $fieldCode .= '<option value="all"' . $selected . '>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:all') . '</option>';
+        $fieldCode .= '<option value="all"' . $selected . '>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') . '</option>';
         // Loop on the TCA of all tables to find those with an external import configuration
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             if (isset($sections['ctrl']['external'])) {
@@ -80,8 +80,8 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
                         if ($taskInfo[self::$fieldName] == $code) {
                             $selected = ' selected="selected"';
                         }
-                        $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:table') . ': ' . $tableName;
-                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/locallang.xml:index') . ': ' . $index;
+                        $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') . ': ' . $tableName;
+                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') . ': ' . $index;
                         $fieldCode .= '<option value="' . $code . '"' . $selected . '>' . $label . '</option>';
                     }
                 }
@@ -91,7 +91,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         $additionalFields = array();
         $additionalFields[$fieldID] = array(
                 'code' => $fieldCode,
-                'label' => 'LLL:EXT:external_import/locallang.xml:field.' . self::$fieldName,
+                'label' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:field.' . self::$fieldName,
                 'cshKey' => '_MOD_user_txexternalimportM1',
                 'cshLabel' => $fieldID
         );

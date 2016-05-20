@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * This class performs the data update from the external sources
@@ -101,10 +102,10 @@ class Importer
         // Make sure we have a language object
         // If initialised, use existing, if not, initialise it
         if (!isset($GLOBALS['LANG'])) {
-            $GLOBALS['LANG'] = GeneralUtility::makeInstance(\TYPO3\CMS\Lang\LanguageService::class);
+            $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
             $GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
         }
-        $GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/locallang.xml');
+        $GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/Resources/Private/Language/ExternalImport.xlf');
 
         // Force PHP limit execution time if set
         if (isset($this->extConf['timelimit']) && ($this->extConf['timelimit'] > -1)) {
