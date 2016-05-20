@@ -1041,20 +1041,6 @@ class Importer
                     $fieldsExcludedFromUpdates[] = $columnName;
                 }
             }
-            // The "excludedOperations" property is deprecated and replaced by "disabledOperations"
-            // It is currently kept for backwards-compatibility reasons
-            // TODO: remove in next major version
-            if (isset($columnData['external'][$this->columnIndex]['excludedOperations'])) {
-                $deprecationMessage = 'Property "excludedOperations" has been deprecated. Please use "disabledOperations" instead.';
-                $deprecationMessage .= LF . 'Support for "excludedOperations" will be removed in external_import version 3.0.';
-                GeneralUtility::deprecationLog($deprecationMessage);
-                if (GeneralUtility::inList($columnData['external'][$this->columnIndex]['excludedOperations'], 'insert')) {
-                    $fieldsExcludedFromInserts[] = $columnName;
-                }
-                if (GeneralUtility::inList($columnData['external'][$this->columnIndex]['excludedOperations'], 'update')) {
-                    $fieldsExcludedFromUpdates[] = $columnName;
-                }
-            }
             // Process MM-relations, if any
             if (isset($columnData['external'][$this->columnIndex]['MM'])) {
                 $mmData = $columnData['external'][$this->columnIndex]['MM'];
@@ -1067,15 +1053,7 @@ class Importer
                 }
 
                 // Get foreign mapping for column
-                // TODO: remove in next major version
-                if (isset($mmData['mappings']['uid_foreign'])) {
-                    $deprecationMessage = 'Property "mappings.uid_foreign" has been deprecated. Please use "mapping" instead.';
-                    $deprecationMessage .= LF . 'Support for "mappings.uid_foreign" will be removed in external_import version 3.0.';
-                    GeneralUtility::deprecationLog($deprecationMessage);
-                    $mappingInformation = $mmData['mappings']['uid_foreign'];
-                } else {
-                    $mappingInformation = $mmData['mapping'];
-                }
+                $mappingInformation = $mmData['mapping'];
                 $foreignMappings = $this->getMapping($mappingInformation);
 
                 // Go through each record and assemble pairs of primary and foreign keys
