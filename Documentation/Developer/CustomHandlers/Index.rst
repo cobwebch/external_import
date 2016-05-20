@@ -12,16 +12,15 @@ Custom data handlers
 ^^^^^^^^^^^^^^^^^^^^
 
 It is possible to use a custom data handler instead of the standard
-:code:`tx_externalimport_importer::handleArray()` and
-:code:`tx_externalimport_importer::handleXML()`. The value declared
+:code:`\Cobweb\ExternalImport\Importer::handleArray()` and
+:code:`\Cobweb\ExternalImport\Importer::handleXML()`. The value declared
 as a custom data handler:
 
 .. code-block:: php
 
-   $GLOBALS['TCA']['some_table']['ctrl']['external'][0]['data'] = 'tx_foo_bar';
+   $GLOBALS['TCA']['some_table']['ctrl']['external'][0]['data'] = Foo\MyExtension\DataHandler\CustomDataHandler::class;
 
-is a class name. The corresponding class file should be declared with
-the autoloader (or use namespaces, since TYPO3 CMS 6.0).
+is a class name.
 
 The class itself **must** implement the
 :code:`\Cobweb\ExternalImport\DataHandlerInterface` interface, which contains only
@@ -30,11 +29,11 @@ arguments:
 
 - an array containing the raw data returned by the connector service
 
-- a reference to the calling :code:`tx_externalimport_importer` object
+- a reference to the calling :code:`\Cobweb\ExternalImport\Importer` object
 
 The method is expected to return a simple PHP array, with indexed
-entries, like the standard methods (:code:`tx\_externalimport\_importer::handleArray()` and
-:code:`tx\_externalimport\_importer::handleXML()`).
+entries, like the standard methods (:code:`\Cobweb\ExternalImport\Importer::handleArray()` and
+:code:`\Cobweb\ExternalImport\Importer::handleXML()`).
 
 .. note::
 

@@ -12,8 +12,8 @@ User rights
 ^^^^^^^^^^^
 
 Before digging into the TCA specifics let's have a look at the topic
-of user rights. Since External Import relies on TCEmain for storing
-data, the user rights on the synchronized tables will always be
+of user rights. Since External Import relies on :code:`\TYPO3\CMS\Core\DataHandling\DataHandler`
+for storing data, the user rights on the synchronized tables will always be
 enforced. However additional checks are performed in both the BE
 module and the automated tasks to avoid displaying sensitive data or
 throwing needless error messages.

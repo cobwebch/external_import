@@ -54,8 +54,8 @@ anything.
 There are various ways to protect yourself against that. Obviously you
 can disable the delete operation, so that no record ever gets deleted.
 If this is not desirable, you can use the "minimumRecords" option (see
-"General TCA configuration") below. For example, if you always expect
-at least 100 items to be imported, set this option to 100. If fewer
-items than this are present in the external data, the import process
-will be aborted and nothing will get deleted.
+:ref:`General TCA configuration <administration-general-tca>`) below.
+For example, if you always expect at least 100 items to be imported,
+set this option to 100. If fewer items than this are present in the
+external data, the import process will be aborted and nothing will get deleted.
 

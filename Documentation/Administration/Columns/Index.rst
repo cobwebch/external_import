@@ -51,7 +51,6 @@ Properties
 	attribute_                string                                                Handle data (XML)
 	attributeNS_              string                                                Handle data (XML)
 	disabledOperations_       string                                                Store data
-	excludedOperations_       string                                                Store data
 	field_                    string                                                Handle data
 	fieldNS_                  string                                                Handle data (XML)
 	mapping_                  :ref:`Mapping configuration <administration-mapping>` Transform data
@@ -291,21 +290,19 @@ Description
   .. code-block:: php
 
 		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
-			0 => array(
-				'field' => 'start_date',
-				'userFunc' => array(
-					'class' => 'EXT:external_import/samples/class.tx_externalimport_transformations.php:tx_externalimport_transformations',
-					'method' => 'parseDate'
+				0 => array(
+						'field' => 'start_date',
+						'userFunc' => array(
+								'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+								'method' => 'parseDate'
+						)
 				)
-			)
 		);
 
   A user function requires three parameters:
 
   class
-    *(string)* Name of the class to be instantiated. It can be prefixed by a
-    path, in which case the file will be included automatically for you
-    (this is not needed with the autoloader or when using namespaces).
+    *(string)* Name of the class to be instantiated.
 
   method
     *(string)* Defines which method of the class should be called.
@@ -340,23 +337,6 @@ Description
 
   See also the general property
   :ref:`disabledOperations <administration-general-tca-properties-disabledoperations>`.
-
-Scope
-  Store data
-
-
-.. _administration-columns-properties-excludedoperations:
-
-excludedOperations
-~~~~~~~~~~~~~~~~~~
-
-Type
-  array
-
-Description
-  **Deprecated**. Use :ref:`disabledOperations <administration-columns-properties-disabledoperations>` instead.
-
-  **Will be removed in version 3.0.**
 
 Scope
   Store data

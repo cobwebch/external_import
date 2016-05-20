@@ -13,7 +13,7 @@ User functions
 
 The external import extension can call user functions for any field
 where external data is imported. A sample function is provided in
-:file:`samples/class.tx\_externalimport\_transformations.php` .
+:file:`Classes/Transformation/DateTimeTransformation.php` .
 Basically, the function receives three parameters:
 
 +----------+---------+-----------------------------------------------------------------------+

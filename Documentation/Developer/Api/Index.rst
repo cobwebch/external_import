@@ -14,11 +14,11 @@ External Import API
 It is very simple to use the external import features. You just need
 to assemble data in a format it can understand (XML structure or
 recordset) and call the appropriate method. All you need is an
-instance of class :code:`tx_externalimport_importer` and a single call.
+instance of class :code:`\Cobweb\ExternalImport\Importer` and a single call.
 
 .. code-block:: php
 
-	$importer = t3lib_div::makeInstance('tx_externalimport_importer');
+	$importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Cobweb\ExternalImport\Importer::class);
 	$importer->importData($table, $index, $rawData);
 
 

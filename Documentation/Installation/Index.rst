@@ -18,14 +18,23 @@ connect to.
 
 Automating the imports requires system extension "scheduler".
 
-TYPO3 CMS 4.5 or above is required, as well as system extensions
-"extbase" and "fluid".
+TYPO3 CMS 7 or above is required.
 
 
 .. _installation-compatibility:
 
 Compatibility issues
 ^^^^^^^^^^^^^^^^^^^^
+
+
+.. _installation-upgrade-300:
+
+Upgrade to 3.0.0
+""""""""""""""""
+
+The "excludedOperations" column configuration, which was deprecated since
+version 2.0.0, was entirely removed. The same goes for the "mappings.uid_foreign"
+configuration.
 
 
 .. _installation-upgrade-200:

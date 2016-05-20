@@ -13,7 +13,7 @@ Mapping data
 
 In the Administration chapter below, you will find explanations about
 how to map the data from the external source to existing or newly
-created tables in the TYPO3 database. There are two mandatory
+created tables in the TYPO3 CMS database. There are two mandatory
 conditions for this operation to succeed:
 
 - the external data **must** have the equivalent of a primary key

@@ -33,28 +33,9 @@ Properties
 	========================= =====================================================
 	`additional\_fields`_     array
 	mapping_                  :ref:`Mapping configuration <administration-mapping>`
-	mappings_                 array
 	multiple_                 boolean
 	sorting_                  string
 	========================= =====================================================
-
-
-.. _administration-mm-properties-mappings:
-
-mappings
-~~~~~~~~
-
-Type
-  array
-
-Description
-  **Deprecated**. Use :ref:`mapping <administration-mm-properties-mapping>`
-  instead.
-
-  **Will be removed in version 3.0.**
-
-Scope
-  Store data
 
 
 .. _administration-mm-properties-mapping:
