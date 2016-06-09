@@ -33,7 +33,6 @@ use TYPO3\CMS\Lang\LanguageService;
 class Importer
 {
     public $extKey = 'external_import';
-    protected $vars = array(); // Variables from the query string (TODO: remove, unused)
     protected $extConf = array(); // Extension configuration
     protected $messages = array(); // List of result messages
     protected $table; // Name of the table being synchronised
@@ -1480,22 +1479,26 @@ class Importer
     }
 
     /**
-     * Clears the cache of some pages, if such a list was defined
+     * Clears one or more caches, if such a list was defined.
      *
      * @return void
      */
     protected function clearCache()
     {
         if (!empty($this->externalConfig['clearCache'])) {
-            // Extract the list of pages for which to clear the cache
-            $pages = GeneralUtility::trimExplode(',', $this->externalConfig['clearCache'], true);
-            // Use TCEmain to clear the cache of individual pages
-            if (count($pages) > 0) {
+            // Extract the list of caches to clear
+            $caches = GeneralUtility::trimExplode(
+                    ',',
+                    $this->externalConfig['clearCache'],
+                    true
+            );
+            // Use DataHandler to clear the designated caches
+            if (count($caches) > 0) {
                 /** @var $tce DataHandler */
                 $tce = GeneralUtility::makeInstance(DataHandler::class);
                 $tce->start(array(), array());
-                foreach ($pages as $pageId) {
-                    $tce->clear_cacheCmd((int)$pageId);
+                foreach ($caches as $cacheId) {
+                    $tce->clear_cacheCmd($cacheId);
                 }
             }
             unset($tce);

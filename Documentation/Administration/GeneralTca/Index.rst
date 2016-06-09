@@ -54,7 +54,7 @@ Properties
 	Property                              Data type         Scope
 	===================================== ================= ========================
 	`additional\_fields`_                 string            Fetch data
-	clearCache_                           integer           Store data
+	clearCache_                           string            Store data
 	connector_                            string            Fetch data
 	data_                                 string            Fetch data
 	dataHandler_                          string            Handle data
@@ -443,11 +443,11 @@ clearCache
 ~~~~~~~~~~
 
 Type
-  integer
+  string
 
 Description
-  Comma-separated list of pages whose cache should be cleared at the end
-  of the import process. See :ref:`Clearing the cache <user-clear-cache>`.
+  Comma-separated list of caches identifiers for caches which should be cleared
+  at the end of the import process. See :ref:`Clearing the cache <user-clear-cache>`.
 
 Scope
   Store data

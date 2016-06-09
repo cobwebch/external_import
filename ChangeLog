@@ -1,3 +1,7 @@
+2016-06-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Expanded scope of clearCache property, #76133
+
 2016-05-20 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Refactored BE module, compatible with TYPO3 CMS 7, removed ExtJS, resolves #59441

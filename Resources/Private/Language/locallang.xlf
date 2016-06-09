@@ -81,8 +81,8 @@
 			<trans-unit id="where_clause" xml:space="preserve">
 				<source>SQL restriction</source>
 			</trans-unit>
-			<trans-unit id="clear_cache" xml:space="preserve">
-				<source>Clear cache for pages</source>
+			<trans-unit id="clearCache" xml:space="preserve">
+				<source>Clear cache</source>
 			</trans-unit>
 			<trans-unit id="columnIndex" xml:space="preserve">
 				<source>Alternate column index</source>

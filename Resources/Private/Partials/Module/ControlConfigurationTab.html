@@ -132,6 +132,19 @@
 			</td>
 		</tr>
 		<tr>
+			<td><f:translate id="clearCache" /></td>
+			<td>
+				<f:if condition="{ctrlConfiguration.clearCache}">
+					<f:then>
+						{ctrlConfiguration.clearCache}
+					</f:then>
+					<f:else>
+						-
+					</f:else>
+				</f:if>
+			</td>
+		</tr>
+		<tr>
 			<td><f:translate id="columnIndex" /></td>
 			<td>
 				<f:if condition="{ctrlConfiguration.useColumnIndex}">
