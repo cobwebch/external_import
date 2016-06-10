@@ -5,30 +5,32 @@
 
 	<h1><f:translate id="configuration_details" arguments="{0: '{ex:be.tableTitle(table: table)}', 1: index}" /></h1>
 
-	<ul class="nav nav-tabs t3js-tabs" role="tablist" data-store-last-tab="1">
-	    <li class="active">
-	        <a href="#ctrl" role="tab" data-toggle="tab">
-	            <f:translate id="general_information" />
-	        </a>
-	    </li>
-	    <li>
-	        <a href="#columns" role="tab" data-toggle="tab">
-				<f:translate id="columns_mapping" />
-	        </a>
-	    </li>
-	</ul>
-	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" id="ctrl">
-			<div class="panel panel-tab">
-				<div class="panel-body">
-					<f:render partial="Module/ControlConfigurationTab" arguments="{ctrlConfiguration: ctrlConfiguration}" />
+	<div id="tx_externalimport_details">
+		<ul class="nav nav-tabs t3js-tabs" role="tablist" data-store-last-tab="1">
+			<li class="active">
+				<a href="#ctrl" role="tab" data-toggle="tab">
+					<f:translate id="general_information" />
+				</a>
+			</li>
+			<li>
+				<a href="#columns" role="tab" data-toggle="tab">
+					<f:translate id="columns_mapping" />
+				</a>
+			</li>
+		</ul>
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="ctrl">
+				<div class="panel panel-tab">
+					<div class="panel-body">
+						<f:render partial="Module/ControlConfigurationTab" arguments="{table: table, ctrlConfiguration: ctrlConfiguration}" />
+					</div>
 				</div>
 			</div>
-		</div>
-		<div role="tabpanel" class="tab-pane" id="columns">
-			<div class="panel panel-tab">
-				<div class="panel-body">
-					<f:render partial="Module/ColumnConfigurationTab" arguments="{columnConfiguration: columnConfiguration}" />
+			<div role="tabpanel" class="tab-pane" id="columns">
+				<div class="panel panel-tab">
+					<div class="panel-body">
+						<f:render partial="Module/ColumnConfigurationTab" arguments="{table: table, ctrlConfiguration: ctrlConfiguration, columnConfiguration: columnConfiguration}" />
+					</div>
 				</div>
 			</div>
 		</div>

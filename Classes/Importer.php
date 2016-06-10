@@ -14,6 +14,8 @@ namespace Cobweb\ExternalImport;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -32,15 +34,36 @@ use TYPO3\CMS\Lang\LanguageService;
  */
 class Importer
 {
-    public $extKey = 'external_import';
-    protected $extConf = array(); // Extension configuration
-    protected $messages = array(); // List of result messages
-    protected $table; // Name of the table being synchronised
+    const DEFAULT_PRIORITY = 1000;
+
+    /**
+     * @var string Name of the extension
+     */
+    protected $extensionKey = 'external_import';
+
+    /**
+     * @var array Extension configuration
+     */
+    protected $extensionConfiguration = array();
+
+    /**
+     * @var array List of result messages
+     */
+    protected $messages = array();
+
+    /**
+     * @var ConfigurationRepository
+     */
+    protected $configurationRepository;
+
+    /**
+     * @var string Name of the table being synchronised
+     */
+    protected $table;
 
     /**
      * @var mixed Index of the synchronisation configuration in use
      */
-
     protected $index;
 
     /**
@@ -56,7 +79,7 @@ class Importer
     /**
      * @var array Ctrl-section external config being used for synchronisation
      */
-    protected $externalConfig;
+    protected $externalConfiguration;
 
     /**
      * @var int Uid of the page where the records will be stored
@@ -91,7 +114,7 @@ class Importer
      */
     public function __construct()
     {
-        $this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
+        $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extensionKey]);
         $this->messages = array(
                 FlashMessage::ERROR => array(),
                 FlashMessage::WARNING => array(),
@@ -104,13 +127,16 @@ class Importer
             $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
             $GLOBALS['LANG']->init($GLOBALS['BE_USER']->uc['lang']);
         }
-        $GLOBALS['LANG']->includeLLFile('EXT:' . $this->extKey . '/Resources/Private/Language/ExternalImport.xlf');
+        $GLOBALS['LANG']->includeLLFile('EXT:' . $this->extensionKey . '/Resources/Private/Language/ExternalImport.xlf');
+
+        // Get an instance of the configuration repository
+        $this->configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
 
         // Force PHP limit execution time if set
-        if (isset($this->extConf['timelimit']) && ($this->extConf['timelimit'] > -1)) {
-            set_time_limit($this->extConf['timelimit']);
-            if ($this->extConf['debug'] || TYPO3_DLOG) {
-                GeneralUtility::devLog($GLOBALS['LANG']->getLL('timelimit'), $this->extKey, 0, $this->extConf['timelimit']);
+        if (isset($this->extensionConfiguration['timelimit']) && ($this->extensionConfiguration['timelimit'] > -1)) {
+            set_time_limit($this->extensionConfiguration['timelimit']);
+            if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+                GeneralUtility::devLog($GLOBALS['LANG']->getLL('timelimit'), $this->extensionKey, 0, $this->extensionConfiguration['timelimit']);
             }
         }
     }
@@ -122,16 +148,16 @@ class Importer
      */
     public function synchronizeAllTables()
     {
-
         // Look in the TCA for tables with an "external" control section and a "connector"
         // Tables without connectors cannot be synchronised
+        // @todo: use configuration repository for this
         $externalTables = array();
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             if (isset($sections['ctrl']['external'])) {
                 foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
                     if (!empty($externalConfig['connector'])) {
                         // Default priority if not defined, set to very low
-                        $priority = 1000;
+                        $priority = self::DEFAULT_PRIORITY;
                         if (isset($externalConfig['priority'])) {
                             $priority = $externalConfig['priority'];
                         }
@@ -146,8 +172,8 @@ class Importer
 
         // Sort tables by priority (lower number is highest priority)
         ksort($externalTables);
-        if ($this->extConf['debug'] || TYPO3_DLOG) {
-            GeneralUtility::devLog($GLOBALS['LANG']->getLL('sync_all'), $this->extKey, 0, $externalTables);
+        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+            GeneralUtility::devLog($GLOBALS['LANG']->getLL('sync_all'), $this->extensionKey, 0, $externalTables);
         }
 
         // Synchronise all tables
@@ -170,50 +196,49 @@ class Importer
     }
 
     /**
-     * This method stores information about the synchronised table into member variables
+     * Stores information about the synchronized table into member variables.
      *
-     * @param    string $table : name of the table to synchronise
-     * @param    integer $index : index of the synchronisation configuration to use
-     * @return    void
+     * @param string $table Name of the table to synchronise
+     * @param integer $index Index of the synchronisation configuration to use
+     * @return void
      */
     protected function initTCAData($table, $index)
     {
         $this->table = $table;
         $this->index = $index;
         $this->tableTCA = $GLOBALS['TCA'][$this->table];
-        $this->externalConfig = $GLOBALS['TCA'][$this->table]['ctrl']['external'][$index];
-        // Set the pid where the records will be stored
-        // This is either specific for the given table or generic from the extension configuration
-        if (isset($this->externalConfig['pid'])) {
-            $this->pid = $this->externalConfig['pid'];
-        } else {
-            $this->pid = $this->extConf['storagePID'];
-        }
+        $this->externalConfiguration = $this->configurationRepository->findByTableAndIndex(
+                $table,
+                $index
+        );
+        $this->pid = $this->externalConfiguration['pid'];
+
         // Sets the column configuration index (may differ from main one)
-        if (isset($this->externalConfig['useColumnIndex'])) {
-            $this->columnIndex = $this->externalConfig['useColumnIndex'];
+        if (isset($this->externalConfiguration['useColumnIndex'])) {
+            $this->columnIndex = $this->externalConfiguration['useColumnIndex'];
         } else {
             $this->columnIndex = $index;
         }
-        // Set this storage page as the related page for the devLog entries
+        // Set the storage page as the related page for the devLog entries
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->pid;
 
         // Get the list of additional fields
         // Additional fields are fields that must be taken from the imported data,
         // but that will not be saved into the database
-        if (!empty($this->externalConfig['additional_fields'])) {
-            $this->additionalFields = GeneralUtility::trimExplode(',', $this->externalConfig['additional_fields'], 1);
+        if (!empty($this->externalConfiguration['additional_fields'])) {
+            $this->additionalFields = GeneralUtility::trimExplode(',', $this->externalConfiguration['additional_fields'], 1);
             $this->numAdditionalFields = count($this->additionalFields);
         }
     }
 
     /**
-     * This method calls on the distant data source and synchronises the data in the TYPO3 database
-     * It returns information about the results of the operation
+     * Calls on the distant data source and synchronizes the data into the TYPO3 database.
      *
-     * @param    string $table : name of the table to synchronise
-     * @param    integer $index : index of the synchronisation configuration to use
-     * @return    array        List of error or success messages
+     * It returns information about the results of the operation.
+     *
+     * @param string $table Name of the table to synchronise
+     * @param integer $index Index of the synchronisation configuration to use
+     * @return array List of error or success messages
      */
     public function synchronizeData($table, $index)
     {
@@ -221,89 +246,98 @@ class Importer
         if ($GLOBALS['BE_USER']->check('tables_modify', $table)) {
             $this->initTCAData($table, $index);
 
-            // Instantiate specific connector service
-            if (empty($this->externalConfig['connector'])) {
-                $this->addMessage(
-                        $GLOBALS['LANG']->getLL('no_connector')
-                );
-            } else {
-                $services = ExtensionManagementUtility::findService('connector', $this->externalConfig['connector']);
-
-                // The service is not available
-                if ($services === false) {
+            // Check configuration validity
+            $validator = GeneralUtility::makeInstance(ControlConfigurationValidator::class);
+            if ($validator->isValid($table, $this->externalConfiguration)) {
+                // Instantiate specific connector service
+                if (empty($this->externalConfiguration['connector'])) {
                     $this->addMessage(
-                            $GLOBALS['LANG']->getLL('no_service')
+                            $GLOBALS['LANG']->getLL('no_connector')
                     );
                 } else {
-                    /** @var $connector ConnectorBase */
-                    $connector = GeneralUtility::makeInstanceService('connector', $this->externalConfig['connector']);
+                    $services = ExtensionManagementUtility::findService('connector', $this->externalConfiguration['connector']);
 
-                    // The service was instantiated, but an error occurred while initiating the connection
-                    // If the returned value is an array, an error has occurred
-                    if (is_array($connector)) {
+                    // The service is not available
+                    if ($services === false) {
                         $this->addMessage(
-                                $GLOBALS['LANG']->getLL('data_not_fetched')
+                                $GLOBALS['LANG']->getLL('no_service')
                         );
-
-                        // The connection is established, get the data
                     } else {
-                        $data = array();
+                        /** @var $connector ConnectorBase */
+                        $connector = GeneralUtility::makeInstanceService('connector', $this->externalConfiguration['connector']);
 
-                        // Pre-process connector parameters
-                        $this->externalConfig['parameters'] = $this->processParameters($this->externalConfig['parameters']);
+                        // The service was instantiated, but an error occurred while initiating the connection
+                        // If the returned value is an array, an error has occurred
+                        if (is_array($connector)) {
+                            $this->addMessage(
+                                    $GLOBALS['LANG']->getLL('data_not_fetched')
+                            );
 
-                        // A problem may happen while fetching the data
-                        // If so, the import process has to be aborted
-                        $abortImportProcess = false;
-                        switch ($this->externalConfig['data']) {
-                            case 'xml':
-                                try {
-                                    $data = $connector->fetchXML($this->externalConfig['parameters']);
-                                } catch (\Exception $e) {
+                            // The connection is established, get the data
+                        } else {
+                            $data = array();
+
+                            // Pre-process connector parameters
+                            $this->externalConfiguration['parameters'] = $this->processParameters($this->externalConfiguration['parameters']);
+
+                            // A problem may happen while fetching the data
+                            // If so, the import process has to be aborted
+                            $abortImportProcess = false;
+                            switch ($this->externalConfiguration['data']) {
+                                case 'xml':
+                                    try {
+                                        $data = $connector->fetchXML($this->externalConfiguration['parameters']);
+                                    } catch (\Exception $e) {
+                                        $abortImportProcess = true;
+                                        $this->addMessage(
+                                                sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'),
+                                                        $e->getMessage())
+                                        );
+                                    }
+                                    break;
+
+                                case 'array':
+                                    try {
+                                        $data = $connector->fetchArray($this->externalConfiguration['parameters']);
+                                    } catch (\Exception $e) {
+                                        $abortImportProcess = true;
+                                        $this->addMessage(
+                                                sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'),
+                                                        $e->getMessage())
+                                        );
+                                    }
+                                    break;
+
+                                // If the data type is not defined, issue error and abort process
+                                default:
                                     $abortImportProcess = true;
                                     $this->addMessage(
-                                            sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'),
-                                                    $e->getMessage())
+                                            $GLOBALS['LANG']->getLL('data_type_not_defined')
                                     );
-                                }
-                                break;
-
-                            case 'array':
-                                try {
-                                    $data = $connector->fetchArray($this->externalConfig['parameters']);
-                                } catch (\Exception $e) {
-                                    $abortImportProcess = true;
-                                    $this->addMessage(
-                                            sprintf($GLOBALS['LANG']->getLL('data_not_fetched_connector_error'),
-                                                    $e->getMessage())
-                                    );
-                                }
-                                break;
-
-                            // If the data type is not defined, issue error and abort process
-                            default:
-                                $abortImportProcess = true;
-                                $this->addMessage(
-                                        $GLOBALS['LANG']->getLL('data_type_not_defined')
-                                );
-                                break;
-                        }
-                        // Continue, if the process was not marked as aborted
-                        if (!$abortImportProcess) {
-                            if ($this->extConf['debug'] || TYPO3_DLOG) {
-                                $debugData = $this->prepareDataSample($data);
-                                GeneralUtility::devLog('Data received (sample)', $this->extKey, -1, $debugData);
+                                    break;
                             }
-                            $this->handleData($data);
+                            // Continue, if the process was not marked as aborted
+                            if (!$abortImportProcess) {
+                                if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+                                    $debugData = $this->prepareDataSample($data);
+                                    GeneralUtility::devLog('Data received (sample)', $this->extensionKey, -1, $debugData);
+                                }
+                                $this->handleData($data);
+                            }
+                            // Call connector's post-processing with a rough error status
+                            $errorStatus = false;
+                            if (count($this->messages[FlashMessage::ERROR]) > 0) {
+                                $errorStatus = true;
+                            }
+                            $connector->postProcessOperations($this->externalConfiguration['parameters'], $errorStatus);
                         }
-                        // Call connector's post-processing with a rough error status
-                        $errorStatus = false;
-                        if (count($this->messages[FlashMessage::ERROR]) > 0) {
-                            $errorStatus = true;
-                        }
-                        $connector->postProcessOperations($this->externalConfig['parameters'], $errorStatus);
                     }
                 }
+
+            } else {
+                $this->addMessage(
+                        $GLOBALS['LANG']->getLL('configurationError')
+                );
             }
 
             // The user doesn't have enough rights on the table
@@ -316,7 +350,7 @@ class Importer
         }
 
         // Log results to devlog
-        if ($this->extConf['debug'] || TYPO3_DLOG) {
+        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
             $this->logMessages();
         }
 
@@ -331,8 +365,8 @@ class Importer
      */
     protected function processParameters($parameters)
     {
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['processParameters'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['processParameters'] as $className) {
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['processParameters'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['processParameters'] as $className) {
                 $preProcessor = GeneralUtility::getUserObj($className);
                 $parameters = $preProcessor->processParameters($parameters, $this);
             }
@@ -352,10 +386,19 @@ class Importer
     public function importData($table, $index, $rawData)
     {
         $this->initTCAData($table, $index);
-        $this->handleData($rawData);
+
+        // Check configuration validity
+        $validator = GeneralUtility::makeInstance(ControlConfigurationValidator::class);
+        if ($validator->isValid($table, $this->externalConfiguration)) {
+            $this->handleData($rawData);
+        } else {
+            $this->addMessage(
+                    $GLOBALS['LANG']->getLL('configurationError')
+            );
+        }
 
         // Log results to devlog
-        if ($this->extConf['debug'] || TYPO3_DLOG) {
+        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
             $this->logMessages();
         }
         return $this->messages;
@@ -371,8 +414,8 @@ class Importer
     protected function prepareDataSample($data)
     {
         $dataSample = $data;
-        if (!empty($this->extConf['previewLimit'])) {
-            switch ($this->externalConfig['data']) {
+        if (!empty($this->extensionConfiguration['previewLimit'])) {
+            switch ($this->externalConfiguration['data']) {
                 case 'xml':
 
                     // Load the XML into a DOM object
@@ -384,9 +427,9 @@ class Importer
                     $element = $domSample->createElement('sample');
                     $domSample->appendChild($element);
                     // Get the desired nodes
-                    $selectedNodes = $dom->getElementsByTagName($this->externalConfig['nodetype']);
+                    $selectedNodes = $dom->getElementsByTagName($this->externalConfiguration['nodetype']);
                     // Loop until the preview limit and import selected nodes into the sample XML object
-                    $loopLimit = min($selectedNodes->length, $this->extConf['previewLimit']);
+                    $loopLimit = min($selectedNodes->length, $this->extensionConfiguration['previewLimit']);
                     for ($i = 0; $i < $loopLimit; $i++) {
                         $newNode = $domSample->importNode($selectedNodes->item($i), true);
                         $domSample->documentElement->appendChild($newNode);
@@ -396,7 +439,7 @@ class Importer
                     $dataSample[] = $domSample->saveXML();
                     break;
                 case 'array':
-                    $dataSample = array_slice($data, 0, $this->extConf['previewLimit']);
+                    $dataSample = array_slice($data, 0, $this->extensionConfiguration['previewLimit']);
                     break;
             }
         }
@@ -414,9 +457,9 @@ class Importer
     protected function handleData($rawData)
     {
         // Check for custom data handlers
-        if (!empty($this->externalConfig['dataHandler'])) {
+        if (!empty($this->externalConfiguration['dataHandler'])) {
             /** @var $dataHandler DataHandlerInterface */
-            $dataHandler = GeneralUtility::makeInstance($this->externalConfig['dataHandler']);
+            $dataHandler = GeneralUtility::makeInstance($this->externalConfiguration['dataHandler']);
             if ($dataHandler instanceof DataHandlerInterface) {
                 $records = $dataHandler->handleData($rawData, $this);
 
@@ -429,7 +472,7 @@ class Importer
         } else {
 
             // Prepare the data, depending on result type
-            switch ($this->externalConfig['data']) {
+            switch ($this->externalConfiguration['data']) {
                 case 'xml':
                     $records = $this->handleXML($rawData);
                     break;
@@ -526,14 +569,14 @@ class Importer
         $dom->loadXML($rawData, LIBXML_PARSEHUGE);
         // Instantiate a XPath object and load with any defined namespaces
         $xPathObject = new \DOMXPath($dom);
-        if (isset($this->externalConfig['namespaces']) && is_array($this->externalConfig['namespaces'])) {
-            foreach ($this->externalConfig['namespaces'] as $prefix => $uri) {
+        if (isset($this->externalConfiguration['namespaces']) && is_array($this->externalConfiguration['namespaces'])) {
+            foreach ($this->externalConfiguration['namespaces'] as $prefix => $uri) {
                 $xPathObject->registerNamespace($prefix, $uri);
             }
         }
 
         // Get the nodes that represent the root of each data record
-        $records = $dom->getElementsByTagName($this->externalConfig['nodetype']);
+        $records = $dom->getElementsByTagName($this->externalConfiguration['nodetype']);
         for ($i = 0; $i < $records->length; $i++) {
             /** @var \DOMElement $theRecord */
             $theRecord = $records->item($i);
@@ -734,13 +777,13 @@ class Importer
                 $userObject = GeneralUtility::getUserObj($columnData['external'][$this->columnIndex]['userFunc']['class']);
                 // Could not instantiate the class, log error and do nothing
                 if ($userObject === false) {
-                    if ($this->extConf['debug'] || TYPO3_DLOG) {
+                    if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
                         GeneralUtility::devLog(
                                 sprintf(
                                         $GLOBALS['LANG']->getLL('invalid_userfunc'),
                                         $columnData['external'][$this->columnIndex]['userFunc']['class']
                                 ),
-                                $this->extKey,
+                                $this->extensionKey,
                                 2,
                                 $columnData['external'][$this->columnIndex]['userFunc']
                         );
@@ -920,8 +963,8 @@ class Importer
      */
     protected function preprocessRawData($records)
     {
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRawRecordset'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRawRecordset'] as $className) {
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['preprocessRawRecordset'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['preprocessRawRecordset'] as $className) {
                 $preProcessor = GeneralUtility::getUserObj($className);
                 $records = $preProcessor->preprocessRawRecordset($records, $this);
                 // Compact the array again, in case some values were unset in the pre-processor
@@ -945,20 +988,20 @@ class Importer
 
         // Check if number of records is larger than or equal to the minimum required number of records
         // Note that if the minimum is not defined, this test is skipped
-        if (!empty($this->externalConfig['minimumRecords'])) {
+        if (!empty($this->externalConfiguration['minimumRecords'])) {
             $numRecords = count($records);
-            $continueImport = $numRecords >= $this->externalConfig['minimumRecords'];
+            $continueImport = $numRecords >= $this->externalConfiguration['minimumRecords'];
             if (!$continueImport) {
                 $this->addMessage(sprintf($GLOBALS['LANG']->getLL('notEnoughRecords'), $numRecords,
-                        $this->externalConfig['minimumRecords']));
+                        $this->externalConfiguration['minimumRecords']));
             }
         }
 
         // Call hooks to perform additional checks,
         // but only if previous check was passed
         if ($continueImport) {
-            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['validateRawRecordset'])) {
-                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['validateRawRecordset'] as $className) {
+            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['validateRawRecordset'])) {
+                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['validateRawRecordset'] as $className) {
                     $validator = GeneralUtility::getUserObj($className);
                     $continueImport = $validator->validateRawRecordset($records, $this);
                     // If a single check fails, don't call further hooks
@@ -982,8 +1025,8 @@ class Importer
      */
     protected function preprocessData($records)
     {
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRecordset'])) {
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['preprocessRecordset'] as $className) {
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['preprocessRecordset'])) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['preprocessRecordset'] as $className) {
                 $preProcessor = GeneralUtility::getUserObj($className);
                 $records = $preProcessor->preprocessRecordset($records, $this);
                 // Compact the array again, in case some values were unset in the pre-processor
@@ -1002,8 +1045,8 @@ class Importer
      */
     protected function storeData($records)
     {
-        if ($this->extConf['debug'] || TYPO3_DLOG) {
-            GeneralUtility::devLog('Data received for storage', $this->extKey, 0, $records);
+        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+            GeneralUtility::devLog('Data received for storage', $this->extensionKey, 0, $records);
         }
 
         // Initialize some variables
@@ -1057,7 +1100,7 @@ class Importer
 
                 // Go through each record and assemble pairs of primary and foreign keys
                 foreach ($records as $theRecord) {
-                    $externalUid = $theRecord[$this->externalConfig['reference_uid']];
+                    $externalUid = $theRecord[$this->externalConfiguration['reference_uid']];
                     // Make sure not to keep the value from the previous iteration
                     unset($foreignValue);
 
@@ -1150,7 +1193,7 @@ class Importer
         $savedAdditionalFields = array();
         foreach ($records as $theRecord) {
             $localAdditionalFields = array();
-            $externalUid = $theRecord[$this->externalConfig['reference_uid']];
+            $externalUid = $theRecord[$this->externalConfiguration['reference_uid']];
             // Skip handling of already handled records (this can happen with denormalized structures)
             // NOTE: using isset() on index instead of in_array() offers far better performance
             if (isset($handledUids[$externalUid])) {
@@ -1183,10 +1226,10 @@ class Importer
             $theID = '';
             // Reference uid is found, perform an update (if not disabled)
             if (isset($existingUids[$externalUid])) {
-                if (!GeneralUtility::inList($this->externalConfig['disabledOperations'], 'update')) {
+                if (!GeneralUtility::inList($this->externalConfiguration['disabledOperations'], 'update')) {
                     // First call a pre-processing hook
-                    if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'])) {
-                        foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['updatePreProcess'] as $className) {
+                    if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['updatePreProcess'])) {
+                        foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['updatePreProcess'] as $className) {
                             $preProcessor = GeneralUtility::getUserObj($className);
                             $theRecord = $preProcessor->processBeforeUpdate($theRecord, $this);
                         }
@@ -1206,11 +1249,11 @@ class Importer
                 }
 
                 // Reference uid not found, perform an insert (if not disabled)
-            } elseif (!GeneralUtility::inList($this->externalConfig['disabledOperations'], 'insert')) {
+            } elseif (!GeneralUtility::inList($this->externalConfiguration['disabledOperations'], 'insert')) {
 
                 // First call a pre-processing hook
-                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'])) {
-                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['insertPreProcess'] as $className) {
+                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['insertPreProcess'])) {
+                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['insertPreProcess'] as $className) {
                         $preProcessor = GeneralUtility::getUserObj($className);
                         $theRecord = $preProcessor->processBeforeInsert($theRecord, $this);
                     }
@@ -1244,16 +1287,16 @@ class Importer
                 $savedAdditionalFields[$theID] = $localAdditionalFields;
             }
         }
-        if ($this->extConf['debug'] || TYPO3_DLOG) {
-            GeneralUtility::devLog('TCEmain data', $this->extKey, 0, $tceData);
+        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+            GeneralUtility::devLog('TCEmain data', $this->extensionKey, 0, $tceData);
         }
         // Create an instance of TCEmain and process the data
         /** @var $tce DataHandler */
         $tce = GeneralUtility::makeInstance(DataHandler::class);
         // Check if TCEmain logging should be turned on or off
-        $disableLogging = (empty($this->extConf['disableLog'])) ? false : true;
-        if (isset($this->externalConfig['disableLog'])) {
-            $disableLogging = (empty($this->externalConfig['disableLog'])) ? false : true;
+        $disableLogging = (empty($this->extensionConfiguration['disableLog'])) ? false : true;
+        if (isset($this->externalConfiguration['disableLog'])) {
+            $disableLogging = (empty($this->externalConfiguration['disableLog'])) ? false : true;
         }
         $tce->enableLogging = !$disableLogging;
         // If the table has a sorting field, reverse the data array,
@@ -1265,7 +1308,7 @@ class Importer
         // Load the data and process it
         $tce->start($tceData, array());
         $tce->process_datamap();
-        if ($this->extConf['debug'] || TYPO3_DLOG) {
+        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
             GeneralUtility::devLog('New IDs', 'external_import', 0, $tce->substNEWwithIDs);
         }
         // Store the number of new IDs created. This is used in error reporting later
@@ -1273,7 +1316,7 @@ class Importer
 
         // Post-processing hook after data was saved
         $savedData = array();
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['datamapPostProcess'])) {
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['datamapPostProcess'])) {
             foreach ($tceData as $tableRecords) {
                 foreach ($tableRecords as $id => $record) {
                     // Added status to record
@@ -1294,7 +1337,7 @@ class Importer
                     $savedData[$uid] = $record;
                 }
             }
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['datamapPostProcess'] as $className) {
+            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['datamapPostProcess'] as $className) {
                 $postProcessor = GeneralUtility::getUserObj($className);
                 $postProcessor->datamapPostProcess($this->table, $savedData, $this);
             }
@@ -1306,18 +1349,18 @@ class Importer
         // Mark as deleted records with existing uids that were not in the import data anymore
         // (if automatic delete is activated)
         if (
-                GeneralUtility::inList($this->externalConfig['disabledOperations'], 'delete')
+                GeneralUtility::inList($this->externalConfiguration['disabledOperations'], 'delete')
                 || (
-                        isset($this->externalConfig['deleteNonSynchedRecords'])
-                        && $this->externalConfig['deleteNonSynchedRecords'] === false
+                        isset($this->externalConfiguration['deleteNonSynchedRecords'])
+                        && $this->externalConfiguration['deleteNonSynchedRecords'] === false
                 )
         ) {
             $deletes = 0;
         } else {
             $absentUids = array_diff($existingUids, $updatedUids);
             // Call a pre-processing hook
-            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'])) {
-                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['deletePreProcess'] as $className) {
+            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['deletePreProcess'])) {
+                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['deletePreProcess'] as $className) {
                     $preProcessor = GeneralUtility::getUserObj($className);
                     $absentUids = $preProcessor->processBeforeDelete($this->table, $absentUids, $this);
                 }
@@ -1328,14 +1371,14 @@ class Importer
                 foreach ($absentUids as $id) {
                     $tceCommands[$this->table][$id] = array('delete' => 1);
                 }
-                if ($this->extConf['debug'] || TYPO3_DLOG) {
-                    GeneralUtility::devLog('TCEmain commands', $this->extKey, 0, $tceCommands);
+                if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+                    GeneralUtility::devLog('TCEmain commands', $this->extensionKey, 0, $tceCommands);
                 }
                 $tce->start(array(), $tceCommands);
                 $tce->process_cmdmap();
                 // Call a post-processing hook
-                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['cmdmapPostProcess'])) {
-                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['cmdmapPostProcess'] as $className) {
+                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['cmdmapPostProcess'])) {
+                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['cmdmapPostProcess'] as $className) {
                         $postProcessor = GeneralUtility::getUserObj($className);
                         $absentUids = $postProcessor->cmdmapPostProcess($this->table, $absentUids, $this);
                     }
@@ -1371,8 +1414,8 @@ class Importer
                                 htmlspecialchars($data[2]), htmlspecialchars($data[3]), htmlspecialchars($data[4]));
                     }
                     $this->messages[FlashMessage::ERROR][] = $message;
-                    if ($this->extConf['debug'] || TYPO3_DLOG) {
-                        GeneralUtility::devLog($message, $this->extKey, 3);
+                    if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+                        GeneralUtility::devLog($message, $this->extensionKey, 3);
                     }
                 }
                 $GLOBALS['TYPO3_DB']->sql_free_result($res);
@@ -1403,8 +1446,8 @@ class Importer
      */
     protected function postProcessMmRelations($fullMappings)
     {
-        if ($this->extConf['debug'] || TYPO3_DLOG) {
-            GeneralUtility::devLog('Handling full mappings', $this->extKey, 0, $fullMappings);
+        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+            GeneralUtility::devLog('Handling full mappings', $this->extensionKey, 0, $fullMappings);
         }
 
         // Refresh list of existing primary keys now that new records have been inserted
@@ -1485,11 +1528,11 @@ class Importer
      */
     protected function clearCache()
     {
-        if (!empty($this->externalConfig['clearCache'])) {
+        if (!empty($this->externalConfiguration['clearCache'])) {
             // Extract the list of caches to clear
             $caches = GeneralUtility::trimExplode(
                     ',',
-                    $this->externalConfig['clearCache'],
+                    $this->externalConfiguration['clearCache'],
                     true
             );
             // Use DataHandler to clear the designated caches
@@ -1514,14 +1557,14 @@ class Importer
     {
         $existingUids = array();
         $where = '1 = 1';
-        if ($this->externalConfig['enforcePid']) {
+        if ($this->externalConfiguration['enforcePid']) {
             $where = "pid = '" . $this->pid . "'";
         }
-        if (!empty($this->externalConfig['where_clause'])) {
-            $where .= ' AND ' . $this->externalConfig['where_clause'];
+        if (!empty($this->externalConfiguration['where_clause'])) {
+            $where .= ' AND ' . $this->externalConfiguration['where_clause'];
         }
         $where .= BackendUtility::deleteClause($this->table);
-        $referenceUidField = $this->externalConfig['reference_uid'];
+        $referenceUidField = $this->externalConfiguration['reference_uid'];
         $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($referenceUidField . ',uid', $this->table, $where);
         if ($res) {
             while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
@@ -1604,8 +1647,8 @@ class Importer
         } elseif (count($this->messages[FlashMessage::WARNING]) > 0) {
             $severity = 2;
         }
-        if ($this->extConf['debug'] || TYPO3_DLOG) {
-            GeneralUtility::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extKey, $severity,
+        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+            GeneralUtility::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extensionKey, $severity,
                     $this->messages);
         }
     }
@@ -1669,14 +1712,14 @@ class Importer
     }
 
     /**
-     * This method returns the external configuration found in the ctrl section of the TCA
-     * of the table being synchronised
+     * Returns the external configuration found in the ctrl section of the TCA
+     * of the table being synchronised.
      *
-     * @return    array        External configuration from the TCA ctrl section
+     * @return array External configuration from the TCA ctrl section
      */
     public function getExternalConfig()
     {
-        return $this->externalConfig;
+        return $this->externalConfiguration;
     }
 
     /**
@@ -1687,7 +1730,7 @@ class Importer
      */
     public function getExtensionConfiguration()
     {
-        return $this->extConf;
+        return $this->extensionConfiguration;
     }
 
     /**
@@ -1778,7 +1821,7 @@ class Importer
                 );
                 $mailObject->setFrom($sender);
                 $mailObject->setReplyTo($sender);
-                $mailObject->setTo(array($this->extConf['reportEmail']));
+                $mailObject->setTo(array($this->extensionConfiguration['reportEmail']));
                 $mailObject->setSubject($subject);
                 $mailObject->setBody($body);
                 // Send mail
@@ -1791,7 +1834,7 @@ class Importer
 
         // Report error in log, if any
         if ($result == 0) {
-            $comment = 'Reporting mail could not be sent to ' . $this->extConf['reportEmail'];
+            $comment = 'Reporting mail could not be sent to ' . $this->extensionConfiguration['reportEmail'];
             if (!empty($message)) {
                 $comment .= ' (' . $message . ')';
             }
@@ -1799,7 +1842,7 @@ class Importer
                     4,
                     0,
                     1,
-                    $this->extKey,
+                    $this->extensionKey,
                     $comment,
                     array()
             );

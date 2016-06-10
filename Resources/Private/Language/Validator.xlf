@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file original="" product-name="Cobweb.ExternalImport" source-language="en" datatype="plaintext">
+		<body>
+			<trans-unit id="missingDataProperty" xml:space="preserve">
+				<source>Property "data" is mandatory.</source>
+			</trans-unit>
+			<trans-unit id="invalidDataProperty" xml:space="preserve">
+				<source>Property "data" must be either "array" or "xml".</source>
+			</trans-unit>
+			<trans-unit id="unavailableConnector" xml:space="preserve">
+				<source>The chosen connector is not available or not defined.</source>
+			</trans-unit>
+			<trans-unit id="dataHandlerInterfaceIssue" xml:space="preserve">
+				<source>The dataHandler does not implement \Cobweb\ExternalImport\DataHandlerInterface. Data will be left in its raw state.</source>
+			</trans-unit>
+			<trans-unit id="dataHandlerNoInstance" xml:space="preserve">
+				<source>The dataHandler class cannot be instantiated. Data will be left in its raw state.</source>
+			</trans-unit>
+			<trans-unit id="dataHandlerNotFound" xml:space="preserve">
+				<source>The dataHandler class cannot be found. Data will be left in its raw state.</source>
+			</trans-unit>
+			<trans-unit id="missingNodetypeProperty" xml:space="preserve">
+				<source>Property "nodetype" is mandatory for "xml"-type data.</source>
+			</trans-unit>
+			<trans-unit id="missingReferenceUidProperty" xml:space="preserve">
+				<source>Property "reference_uid" is mandatory.</source>
+			</trans-unit>
+			<trans-unit id="defaultPriorityValue" xml:space="preserve">
+				<source>Property "priority" is not set. It will default to %d.</source>
+			</trans-unit>
+			<trans-unit id="pidNotSetStoreRootPage" xml:space="preserve">
+				<source>Property "pid" is not set. Records will be stored on root page.</source>
+			</trans-unit>
+			<trans-unit id="pidNotSetStoreRootPageNotAllowed" xml:space="preserve">
+				<source>Property "pid" is not set. Records would be stored on root page, but this is not allowed for table %s.</source>
+			</trans-unit>
+			<trans-unit id="negativePidProperty" xml:space="preserve">
+				<source>Property "pid" is not valid. It must be equal to or greater than zero.</source>
+			</trans-unit>
+			<trans-unit id="invalidPidPropertyOnlyRoot" xml:space="preserve">
+				<source>Property "pid" is not valid. Records for table %s can only be stored on root page.</source>
+			</trans-unit>
+			<trans-unit id="wrongUseColumnIndexProperty" xml:space="preserve">
+				<source>Property "setColumnIndex" is set to %1$s, but no matching configuration exists for table %2$s.</source>
+			</trans-unit>
+			<trans-unit id="missingFieldProperty" xml:space="preserve">
+				<source>Property "field" is mandatory for "array"-type data.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

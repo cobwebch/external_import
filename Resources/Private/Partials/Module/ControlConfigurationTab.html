@@ -2,161 +2,200 @@
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
 
-	<table class="information-table">
-		<f:if condition="{ctrlConfiguration.connector}">
+	<ex:validateControlConfiguration table="{table}" configuration="{ctrlConfiguration}" as="results">
+		<table class="information-table">
+			<f:if condition="{ctrlConfiguration.connector}">
+				<tr>
+					<td><f:translate id="connector" /></td>
+					<td>{ctrlConfiguration.connector}</td>
+				</tr>
+			</f:if>
+			<f:if condition="{ctrlConfiguration.parameters}">
+				<tr>
+					<td><f:translate id="connector.details" /></td>
+					<td>
+						<ex:processedParameters table="{table}" index="{index}" parameters="{ctrlConfiguration.parameters}">
+							<ex:twinDump originalArray="{ctrlConfiguration.parameters}" modifiedArray="{processedParameters}" />
+						</ex:processedParameters>
+						<f:if condition="{results.connector}">
+							<ex:displayValidationResult result="{results.connector}" />
+						</f:if>
+					</td>
+				</tr>
+			</f:if>
 			<tr>
-				<td><f:translate id="connector" /></td>
-				<td>{ctrlConfiguration.connector}</td>
-			</tr>
-		</f:if>
-		<f:if condition="{ctrlConfiguration.parameters}">
-			<tr>
-				<td><f:translate id="connector.details" /></td>
+				<td><f:translate id="data_type" /></td>
 				<td>
-					<ex:processedParameters table="{table}" index="{index}" parameters="{ctrlConfiguration.parameters}">
-						<ex:twinDump originalArray="{ctrlConfiguration.parameters}" modifiedArray="{processedParameters}" />
-					</ex:processedParameters>
+					{ctrlConfiguration.data}
+					<f:if condition="{results.data}">
+						<ex:displayValidationResult result="{results.data}" />
+					</f:if>
 				</td>
 			</tr>
-		</f:if>
-		<tr>
-			<td><f:translate id="data_type" /></td>
-			<td>{ctrlConfiguration.data}</td>
-		</tr>
-		<f:if condition="{ctrlConfiguration.dataHandler}">
 			<tr>
-				<td><f:translate id="data_handler" /></td>
-				<td>{ctrlConfiguration.dataHandler}</td>
-			</tr>
-		</f:if>
-		<f:if condition="{ctrlConfiguration.nodetype}">
-			<tr>
-				<td><f:translate id="reference_node" /></td>
-				<td>{ctrlConfiguration.nodetype}</td>
-			</tr>
-		</f:if>
-		<f:if condition="{ctrlConfiguration.namespaces}">
-			<tr>
-				<td><f:translate id="namespaces" /></td>
+				<td><f:translate id="priority" /></td>
 				<td>
-					<ex:dump array="{ctrlConfiguration.namespaces}" />
+					{ctrlConfiguration.priority}
+					<f:if condition="{results.priority}">
+						<ex:displayValidationResult result="{results.priority}" />
+					</f:if>
 				</td>
 			</tr>
-		</f:if>
-		<tr>
-			<td><f:translate id="external_key" /></td>
-			<td>{ctrlConfiguration.reference_uid}</td>
-		</tr>
-		<tr>
-			<td><f:translate id="storage_pid" /></td>
-			<td>
-				<ex:be.pageLink page="{ctrlConfiguration.pid}" />
-			</td>
-		</tr>
-		<tr>
-			<td><f:translate id="enforce_pid" /></td>
-			<td>
-				<f:if condition="{ctrlConfiguration.enforcePid}">
-					<f:then>
-						<f:translate id="LLL:EXT:lang/locallang_common.xml:yes" />
-					</f:then>
-					<f:else>
-						<f:translate id="LLL:EXT:lang/locallang_common.xml:no" />
-					</f:else>
-				</f:if>
-			</td>
-		</tr>
-		<tr>
-			<td><f:translate id="disableLog" /></td>
-			<td>
-				<f:if condition="{ctrlConfiguration.disableLog}">
-					<f:then>
-						<f:translate id="LLL:EXT:lang/locallang_common.xml:yes" />
-					</f:then>
-					<f:else>
-						<f:translate id="LLL:EXT:lang/locallang_common.xml:no" />
-					</f:else>
-				</f:if>
-			</td>
-		</tr>
-		<tr>
-			<td><f:translate id="additional_fields" /></td>
-			<td>
-				<f:if condition="{ctrlConfiguration.additional_fields}">
-					<f:then>
-						{ctrlConfiguration.additional_fields}
-					</f:then>
-					<f:else>
-						-
-					</f:else>
-				</f:if>
-			</td>
-		</tr>
-		<tr>
-			<td><f:translate id="where_clause" /></td>
-			<td>
-				<f:if condition="{ctrlConfiguration.where_clause}">
-					<f:then>
-						{ctrlConfiguration.where_clause}
-					</f:then>
-					<f:else>
-						-
-					</f:else>
-				</f:if>
-			</td>
-		</tr>
-		<tr>
-			<td><f:translate id="disabled_operations" /></td>
-			<td>
-				<f:if condition="{ctrlConfiguration.disabledOperations}">
-					<f:then>
-						{ctrlConfiguration.disabledOperations}
-					</f:then>
-					<f:else>
-						<f:translate id="none" />
-					</f:else>
-				</f:if>
-			</td>
-		</tr>
-		<tr>
-			<td><f:translate id="minimum_records" /></td>
-			<td>
-				<f:if condition="{ctrlConfiguration.minimumRecords}">
-					<f:then>
-						{ctrlConfiguration.minimumRecords}
-					</f:then>
-					<f:else>
-						-
-					</f:else>
-				</f:if>
-			</td>
-		</tr>
-		<tr>
-			<td><f:translate id="clearCache" /></td>
-			<td>
-				<f:if condition="{ctrlConfiguration.clearCache}">
-					<f:then>
-						{ctrlConfiguration.clearCache}
-					</f:then>
-					<f:else>
-						-
-					</f:else>
-				</f:if>
-			</td>
-		</tr>
-		<tr>
-			<td><f:translate id="columnIndex" /></td>
-			<td>
-				<f:if condition="{ctrlConfiguration.useColumnIndex}">
-					<f:then>
-						{ctrlConfiguration.useColumnIndex}
-					</f:then>
-					<f:else>
-						<f:translate id="undefined" />
-					</f:else>
-				</f:if>
-			</td>
-		</tr>
-	</table>
-
+			<f:if condition="{ctrlConfiguration.dataHandler}">
+				<tr>
+					<td><f:translate id="data_handler" /></td>
+					<td>
+						{ctrlConfiguration.dataHandler}
+						<f:if condition="{results.dataHandler}">
+							<ex:displayValidationResult result="{results.dataHandler}" />
+						</f:if>
+					</td>
+				</tr>
+			</f:if>
+			<f:if condition="{ctrlConfiguration.nodetype}">
+				<tr>
+					<td><f:translate id="reference_node" /></td>
+					<td>
+						{ctrlConfiguration.nodetype}
+						<f:if condition="{results.nodetype}">
+							<ex:displayValidationResult result="{results.nodetype}" />
+						</f:if>
+					</td>
+				</tr>
+			</f:if>
+			<f:if condition="{ctrlConfiguration.namespaces}">
+				<tr>
+					<td><f:translate id="namespaces" /></td>
+					<td>
+						<ex:dump array="{ctrlConfiguration.namespaces}" />
+					</td>
+				</tr>
+			</f:if>
+			<tr>
+				<td><f:translate id="external_key" /></td>
+				<td>
+					{ctrlConfiguration.reference_uid}
+					<f:if condition="{results.reference_uid}">
+						<ex:displayValidationResult result="{results.reference_uid}" />
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="storage_pid" /></td>
+				<td>
+					<ex:be.pageLink page="{ctrlConfiguration.pid}" />
+					<f:if condition="{results.pid}">
+						<ex:displayValidationResult result="{results.pid}" />
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="enforce_pid" /></td>
+				<td>
+					<f:if condition="{ctrlConfiguration.enforcePid}">
+						<f:then>
+							<f:translate id="LLL:EXT:lang/locallang_common.xml:yes" />
+						</f:then>
+						<f:else>
+							<f:translate id="LLL:EXT:lang/locallang_common.xml:no" />
+						</f:else>
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="disableLog" /></td>
+				<td>
+					<f:if condition="{ctrlConfiguration.disableLog}">
+						<f:then>
+							<f:translate id="LLL:EXT:lang/locallang_common.xml:yes" />
+						</f:then>
+						<f:else>
+							<f:translate id="LLL:EXT:lang/locallang_common.xml:no" />
+						</f:else>
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="additional_fields" /></td>
+				<td>
+					<f:if condition="{ctrlConfiguration.additional_fields}">
+						<f:then>
+							{ctrlConfiguration.additional_fields}
+						</f:then>
+						<f:else>
+							-
+						</f:else>
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="where_clause" /></td>
+				<td>
+					<f:if condition="{ctrlConfiguration.where_clause}">
+						<f:then>
+							{ctrlConfiguration.where_clause}
+						</f:then>
+						<f:else>
+							-
+						</f:else>
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="disabled_operations" /></td>
+				<td>
+					<f:if condition="{ctrlConfiguration.disabledOperations}">
+						<f:then>
+							{ctrlConfiguration.disabledOperations}
+						</f:then>
+						<f:else>
+							<f:translate id="none" />
+						</f:else>
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="minimum_records" /></td>
+				<td>
+					<f:if condition="{ctrlConfiguration.minimumRecords}">
+						<f:then>
+							{ctrlConfiguration.minimumRecords}
+						</f:then>
+						<f:else>
+							-
+						</f:else>
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="clearCache" /></td>
+				<td>
+					<f:if condition="{ctrlConfiguration.clearCache}">
+						<f:then>
+							{ctrlConfiguration.clearCache}
+						</f:then>
+						<f:else>
+							-
+						</f:else>
+					</f:if>
+				</td>
+			</tr>
+			<tr>
+				<td><f:translate id="columnIndex" /></td>
+				<td>
+					<f:if condition="{ctrlConfiguration.useColumnIndex}">
+						<f:then>
+							{ctrlConfiguration.useColumnIndex}
+							<f:if condition="{results.useColumnIndex}">
+								<ex:displayValidationResult result="{results.useColumnIndex}" />
+							</f:if>
+						</f:then>
+						<f:else>
+							<f:translate id="undefined" />
+						</f:else>
+					</f:if>
+				</td>
+			</tr>
+		</table>
+	</ex:validateControlConfiguration>
 </html>

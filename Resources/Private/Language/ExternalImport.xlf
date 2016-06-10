@@ -44,6 +44,9 @@
 			<trans-unit id="no_service" xml:space="preserve">
 				<source>No service available</source>
 			</trans-unit>
+			<trans-unit id="configurationError" xml:space="preserve">
+				<source>The configuration contains at least one error. Import was aborted. Use the "Data Import" module to check the configuration.</source>
+			</trans-unit>
 			<trans-unit id="no_rights_for_sync" xml:space="preserve">
 				<source>User %1$s doesn't have enough rights for synchronizing table %2$s.</source>
 			</trans-unit>

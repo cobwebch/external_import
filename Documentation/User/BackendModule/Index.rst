@@ -43,8 +43,22 @@ displays the configuration for each column ("Columns mapping").
 .. figure:: ../../Images/InformationInspector.png
 	:alt: Inspecting TCA properties
 
-	Viewing the details of the TCA properties for external import
+	Viewing the details of the TCA properties for External Import
 
+
+If the configuration contains errors, they will be displayed in this
+detailed view.
+
+.. figure:: ../../Images/InformationInspectorWithErrors.png
+	:alt: Raised errors about wrong configuration
+
+	Viewing errors in the External Import configuration
+
+.. note::
+
+   The configuration validator also runs right before an import.
+   The import will abort if any critical error is found in the
+   configuration. Notices do not block the import process.
 
 Clicking on the synchronize data button will immediately start
 the synchronization of the corresponding table. This may take quite

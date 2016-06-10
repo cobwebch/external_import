@@ -40,7 +40,7 @@ class ConfigurationRepository
     }
 
     /**
-     * Returns the "ctrl" part of the external import configuration for the given table and index
+     * Returns the "ctrl" part of the external import configuration for the given table and index.
      *
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
@@ -49,22 +49,33 @@ class ConfigurationRepository
     public function findByTableAndIndex($table, $index)
     {
         if (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
-            $externalCtrlConfiguration = $GLOBALS['TCA'][$table]['ctrl']['external'][$index];
-            $pid = 0;
-            if (array_key_exists('pid', $externalCtrlConfiguration)) {
-                $pid = $externalCtrlConfiguration['pid'];
-            } elseif (array_key_exists('storagePID', $this->extensionConfiguration)) {
-                $pid = $this->extensionConfiguration['storagePID'];
-            }
-            $externalCtrlConfiguration['pid'] = $pid;
-            return $externalCtrlConfiguration;
+            return $this->processCtrlConfiguration(
+                    $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
+            );
         } else {
             return null;
         }
     }
 
     /**
-     * Returns the columns part of the external import configuration for the given table and index
+     * Returns the "ctrl" part of all external import configurations for the given table.
+     *
+     * @param string $table Name of the table
+     * @return array The relevant TCA configurations
+     */
+    public function findByTable($table)
+    {
+        $configurations = array();
+        if (isset($GLOBALS['TCA'][$table]['ctrl']['external'])) {
+            foreach ($GLOBALS['TCA'][$table]['ctrl']['external'] as $index => $externalCtrlConfiguration) {
+                $configurations[$index] = $this->processCtrlConfiguration($externalCtrlConfiguration);
+            }
+        }
+        return $configurations;
+    }
+
+    /**
+     * Returns the columns part of the external import configuration for the given table and index.
      *
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
@@ -208,5 +219,24 @@ class ConfigurationRepository
             }
         }
         return $hasGlobalWriteAccess;
+    }
+
+    /**
+     * Performs some processing on the "ctrl" configuration, like taking global values into account.
+     *
+     * @param array $configuration The external import configuration to process
+     * @return array The processed configuration
+     */
+    protected function processCtrlConfiguration($configuration)
+    {
+        // If the pid is not set in the current configuration, use global storage pid
+        $pid = 0;
+        if (array_key_exists('pid', $configuration)) {
+            $pid = (int)$configuration['pid'];
+        } elseif (array_key_exists('storagePID', $this->extensionConfiguration)) {
+            $pid = (int)$this->extensionConfiguration['storagePID'];
+        }
+        $configuration['pid'] = $pid;
+        return $configuration;
     }
 }

@@ -144,10 +144,30 @@ define(['jquery',
 	};
 
 	/**
+	 * Checks if detail view tabs contain errors. If yes, tab is highlighted.
+	 *
+	 * @param detailView
+	 */
+	ExternalImportModule.raiseErrorsOnTab = function(detailView) {
+		// Inspect each tab
+		detailView.find('.tab-pane').each(function() {
+			var tabPanel = $(this);
+			// Count the number of alerts (of level "danger")
+			var alerts = tabPanel.find('.alert-danger');
+			if (alerts.length > 0) {
+				// Using the tab's id, grab the corresponding anchor and add an error class to it
+				var tabId = tabPanel.attr('id');
+				detailView.find('a[href="#' + tabId + '"]').parent('li').addClass('has-validation-error');
+			}
+		});
+	};
+
+	/**
 	 * Initialize this module
 	 */
 	$(function() {
 		var tableView = $('#tx_externalimport_list');
+		var detailView = $('#tx_externalimport_details');
 		if (tableView.length) {
 			// Activate DataTable
 			var listType = tableView.data('listType');
@@ -156,6 +176,9 @@ define(['jquery',
 			} else {
 				ExternalImportModule.buildTableForSynchronizableList(tableView);
 			}
+		}
+		if (detailView.length) {
+			ExternalImportModule.raiseErrorsOnTab(detailView);
 		}
 	});
 
