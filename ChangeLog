@@ -1,6 +1,10 @@
+2016-06-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added wizard for Scheduler tasks migration, resolves #76017
+
 2016-06-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
-	* Expanded scope of clearCache property, #76133
+	* Expanded scope of clearCache property, resolves #76133
 
 2016-05-20 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
