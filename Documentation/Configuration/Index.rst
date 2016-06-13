@@ -18,6 +18,10 @@ Storage PID
   are stored. This can be overridden specifically for each table (see
   Administration below).
 
+Log storage PID
+  Defines a page where log entries will be stored. The default
+  is :code:`0` (root page).
+
 Force time limit
   Sets a maximum execution time (in seconds) for
   the manual import processes (i.e. imports launched from the BE
@@ -35,7 +39,7 @@ Email for reporting
   a valid e-mail address to be available for sending from. This will
   either be the mail of the :code:`_cli_scheduler` user or the default mail
   address of the TYPO3 installation (
-  :code:`$TYPO3_CONF_VARS['MAIL']['defaultMailFromAddress']` ). If
+  :code:`$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']` ). If
   neither of these mails are available, the report will not be sent and
   an error will appear in the System > Log.
 

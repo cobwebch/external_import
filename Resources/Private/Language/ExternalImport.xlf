@@ -11,6 +11,9 @@
 			<trans-unit id="config.storagePid" xml:space="preserve">
 				<source>Storage PID: Enter default page uid for storing imported records.</source>
 			</trans-unit>
+			<trans-unit id="config.logStorage" xml:space="preserve">
+				<source>Log storage PID: Enter page uid for storing log entries (default is 0).</source>
+			</trans-unit>
 			<trans-unit id="config.timeLimit" xml:space="preserve">
 				<source>Force time limit (seconds): Change the maximun execution time for the import process. Defaut time limit is used if value = -1. See the manual for more details.</source>
 			</trans-unit>

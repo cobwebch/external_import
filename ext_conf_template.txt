@@ -1,10 +1,13 @@
 # customsubcategory=reporting=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.reporting
 # customsubcategory=debugging=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.debugging
 
-# cat=basic//a; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.storagePid
+# cat=basic/enable/a; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.storagePid
 storagePID = 0
 
-# cat=basic//b; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.timeLimit
+# cat=basic/enable/a; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.logStorage
+logStorage = 0
+
+# cat=basic/enable/c; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.timeLimit
 timelimit = -1
 
 # cat=basic/reporting/a; type=string; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.reportEmail

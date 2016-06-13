@@ -31,43 +31,46 @@ use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * Controller for the backend module
+ * Controller for the "Data Import" backend module
  *
  * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class ModuleController extends ActionController {
+class DataModuleController extends ActionController
+{
 
     /**
      * @var BackendTemplateView
      */
     protected $view;
 
-	/**
-	 * @var ConfigurationRepository
-	 */
-	protected $configurationRepository;
+    /**
+     * @var ConfigurationRepository
+     */
+    protected $configurationRepository;
 
     /**
      * @var SchedulerRepository
      */
     protected $schedulerRepository;
 
-	/**
-	 * Injects an instance of the configuration repository.
-	 *
-	 * @param ConfigurationRepository $configurationRepository
-	 * @return void
-	 */
-	public function injectConfigurationRepository(ConfigurationRepository $configurationRepository) {
-		$this->configurationRepository = $configurationRepository;
-	}
+    /**
+     * Injects an instance of the configuration repository.
+     *
+     * @param ConfigurationRepository $configurationRepository
+     * @return void
+     */
+    public function injectConfigurationRepository(ConfigurationRepository $configurationRepository)
+    {
+        $this->configurationRepository = $configurationRepository;
+    }
 
     /**
      * Injects an instance of the scheduler repository.
      *
      * @param SchedulerRepository $schedulerRepository
+     * @return void
      */
     public function injectSchedulerRepository(SchedulerRepository $schedulerRepository)
     {
@@ -84,37 +87,39 @@ class ModuleController extends ActionController {
         $this->defaultViewObjectName = BackendTemplateView::class;
     }
 
-	/**
-	 * Initializes the view before invoking an action method.
-	 *
-	 * @param ViewInterface $view The view to be initialized
-	 * @return void
-	 * @api
-	 */
-	protected function initializeView(ViewInterface $view) {
+    /**
+     * Initializes the view before invoking an action method.
+     *
+     * @param ViewInterface $view The view to be initialized
+     * @return void
+     * @api
+     */
+    protected function initializeView(ViewInterface $view)
+    {
         // Do not initialize the view for certain actions (which just do processing and do not display anything)
         $currentAction = $this->request->getControllerActionName();
         if ($currentAction !== 'synchronize' && $currentAction !== 'createTask' && $currentAction !== 'updateTask' && $currentAction !== 'deleteTask') {
             if ($view instanceof BackendTemplateView) {
-          			parent::initializeView($view);
-          		}
-                  $view->getModuleTemplate()->getPageRenderer()->addCssFile(
-                          ExtensionManagementUtility::extRelPath('external_import') . 'Resources/Public/StyleSheet/ExternalImport.css'
-                  );
-                  $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/ExternalImport/Module');
+                parent::initializeView($view);
+            }
+            $view->getModuleTemplate()->getPageRenderer()->addCssFile(
+                    ExtensionManagementUtility::extRelPath('external_import') . 'Resources/Public/StyleSheet/ExternalImport.css'
+            );
+            $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
 
-          		// Evaluate write access on all tables
-          		$globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();
-          		$view->assign('globalWriteAccess', $globalWriteAccess);
+            // Evaluate write access on all tables
+            $globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();
+            $view->assign('globalWriteAccess', $globalWriteAccess);
         }
-	}
+    }
 
-	/**
-	 * Renders the list of all synchronizable tables.
-	 *
-	 * @return void
-	 */
-	public function listSynchronizableAction() {
+    /**
+     * Renders the list of all synchronizable tables.
+     *
+     * @return void
+     */
+    public function listSynchronizableAction()
+    {
         $this->prepareDocHeaderMenu();
 
         $configurations = $this->configurationRepository->findBySync(true);
@@ -129,16 +134,14 @@ class ModuleController extends ActionController {
                         '',
                         FlashMessage::INFO
                 );
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 // The above code should really work, nothing to do if it doesn't
             }
         }
         // Try to get the task that performs synchronization for all configurations
         try {
             $fullSynchronizationTask = $this->schedulerRepository->fetchFullSynchronizationTask();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $fullSynchronizationTask = null;
         }
         $this->view->assignMultiple(
@@ -147,14 +150,15 @@ class ModuleController extends ActionController {
                         'fullSynchronizationTask' => $fullSynchronizationTask
                 )
         );
-	}
+    }
 
-	/**
-	 * Renders the list of all non-synchronizable tables.
-	 *
-	 * @return void
-	 */
-	public function listNonSynchronizableAction() {
+    /**
+     * Renders the list of all non-synchronizable tables.
+     *
+     * @return void
+     */
+    public function listNonSynchronizableAction()
+    {
         $this->prepareDocHeaderMenu();
 
         $configurations = $this->configurationRepository->findBySync(false);
@@ -169,8 +173,7 @@ class ModuleController extends ActionController {
                         '',
                         FlashMessage::INFO
                 );
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 // The above code should really work, nothing to do if it doesn't
             }
         }
@@ -179,7 +182,7 @@ class ModuleController extends ActionController {
                         'configurations' => $configurations
                 )
         );
-	}
+    }
 
     /**
      * Performs the synchronization for the given external import configuration.
@@ -216,8 +219,7 @@ class ModuleController extends ActionController {
                             '',
                             $severity
                     );
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     // Do nothing, just avoid crashing for failing to display a flash message
                 }
             }
@@ -313,8 +315,7 @@ class ModuleController extends ActionController {
                             'external_import'
                     )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addFlashMessage(
                     LocalizationUtility::translate(
                             'autosync_save_failed',
@@ -350,8 +351,7 @@ class ModuleController extends ActionController {
                             'groups' => $this->schedulerRepository->fetchAllGroups()
                     )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addFlashMessage(
                     LocalizationUtility::translate(
                             'error_invalid_task',
@@ -394,8 +394,7 @@ class ModuleController extends ActionController {
                             'external_import'
                     )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addFlashMessage(
                     LocalizationUtility::translate(
                             'autosync_save_failed',
@@ -427,8 +426,7 @@ class ModuleController extends ActionController {
                             'external_import'
                     )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addFlashMessage(
                     LocalizationUtility::translate(
                             'delete_failed',
@@ -507,11 +505,11 @@ class ModuleController extends ActionController {
     {
         $closeIcon = $this->view->getModuleTemplate()->getIconFactory()->getIcon('actions-close', Icon::SIZE_SMALL);
         $closeButton = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar()->makeLinkButton()
-            ->setIcon($closeIcon)
-            ->setTitle(LocalizationUtility::translate('back_to_list', 'external_import'))
-            ->setHref(
-                    $this->uriBuilder->uriFor($returnAction)
-            );
+                ->setIcon($closeIcon)
+                ->setTitle(LocalizationUtility::translate('back_to_list', 'external_import'))
+                ->setHref(
+                        $this->uriBuilder->uriFor($returnAction)
+                );
         $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar()->addButton(
                 $closeButton,
                 ButtonBar::BUTTON_POSITION_LEFT

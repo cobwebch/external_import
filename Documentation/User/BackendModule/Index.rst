@@ -8,8 +8,13 @@
 
 .. _user-backend-module:
 
-Using the backend module
-^^^^^^^^^^^^^^^^^^^^^^^^
+Using the backend modules
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The extension provides two backend modules. The "Data Import" is the main one,
+displaying all configurations and allowing to start imports manually. The
+second one, "Log", displays a list of all log entries generated during
+External Import runs.
 
 
 .. _user-backend-module-synchronizable:
@@ -17,7 +22,7 @@ Using the backend module
 Synchronizable tables
 """""""""""""""""""""
 
-The first function of the BE module – called "Tables with
+The first function of the "Data Import" BE module – called "Tables with
 synchronization" – displays a list of all synchronizable tables. The
 various features are summarized in the picture below.
 
@@ -126,12 +131,28 @@ in the "Administration" chapter.
 Non-synchronizable tables
 """""""""""""""""""""""""
 
-The second function of the BE module – called "Tables without
+The second function of the "Data Import" BE module – called "Tables without
 synchronization" – displays a list of non-synchronizable tables. This
 view is purely informative as no action can be taken for these tables.
 Only the detailed configuration information can be accessed.
 
 .. figure:: ../../Images/NonSynchronizableTablesOverview.png
+	:alt: BE module overview for non-synchronizable tables
+
+	Overview for non-synchronizable tables, with just the information icon
+
+
+.. _user-backend-module-logs:
+
+Logs
+""""
+
+As its name implies, the "Log" module displays a list of all log entries
+generated during External Import runs. The list is sortable and searchable.
+
+There is not much more to it for now. It may gain new features in the future.
+
+.. figure:: ../../Images/LogModule.png
 	:alt: BE module overview for non-synchronizable tables
 
 	Overview for non-synchronizable tables, with just the information icon

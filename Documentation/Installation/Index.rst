@@ -47,6 +47,14 @@ Install Tool. It will automatically migrate existing old tasks.
 If there are no tasks to migrate, the External Import wizard will simply not show up.
 Otherwise just click on the "Execute" button and follow the instructions.
 
+Several general TCA configuration properties were renamed, to respect a global
+lowerCamelCase naming convention. This is the list of properties and how they
+were renamed:
+
+- additional\_fields => additionalFields
+- reference\_uid => referenceUid
+- where\_clause => whereClause
+
 
 .. _installation-upgrade-200:
 

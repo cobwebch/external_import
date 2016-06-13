@@ -30,6 +30,9 @@
 			<trans-unit id="view_details" xml:space="preserve">
 				<source>View details</source>
 			</trans-unit>
+			<trans-unit id="view_log" xml:space="preserve">
+				<source>View log</source>
+			</trans-unit>
 			<trans-unit id="configuration_details" xml:space="preserve">
 				<source>Configuration details for table &quot;%1$s&quot; (index: %2$s)</source>
 			</trans-unit>
@@ -212,6 +215,25 @@
 			</trans-unit>
 			<trans-unit id="moreMessages" xml:space="preserve">
 				<source>There were actually %d messages, but only the first five are displayed here. Please check your logs for more information.</source>
+			</trans-unit>
+
+			<trans-unit id="logList" xml:space="preserve">
+				<source>Log entries</source>
+			</trans-unit>
+			<trans-unit id="logStatus" xml:space="preserve">
+				<source>Status</source>
+			</trans-unit>
+			<trans-unit id="logDate" xml:space="preserve">
+				<source>Run date</source>
+			</trans-unit>
+			<trans-unit id="logUser" xml:space="preserve">
+				<source>User</source>
+			</trans-unit>
+			<trans-unit id="logConfiguration" xml:space="preserve">
+				<source>Configuration</source>
+			</trans-unit>
+			<trans-unit id="logMessage" xml:space="preserve">
+				<source>Message</source>
 			</trans-unit>
 		</body>
 	</file>

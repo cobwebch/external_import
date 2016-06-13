@@ -31,3 +31,20 @@ ul.external-import-messages {
 	margin-bottom: 0;
 	padding: 5px;
 }
+
+a.paginate_button {
+	border-top: 1px solid #cccccc;
+	border-bottom: 1px solid #cccccc;
+	border-left: 1px solid #cccccc;
+	padding: 8px;
+	cursor: pointer;
+}
+a.previous {
+	border-bottom-left-radius: 2px;
+	border-top-left-radius: 2px;
+}
+a.next {
+	border-right: 1px solid #cccccc;
+	border-bottom-right-radius: 2px;
+	border-top-right-radius: 2px;
+}

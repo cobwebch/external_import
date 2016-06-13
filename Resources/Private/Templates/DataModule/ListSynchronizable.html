@@ -14,18 +14,18 @@
 				<f:if condition="{fullSynchronizationTask}">
 					<f:then>
 						<p><f:translate id="next_full_autosync" arguments="{0: fullSynchronizationTask.frequencyText, 1: fullSynchronizationTask.nextexecution}" /></p>
-						<f:render partial="Module/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid}" />
-						<f:render partial="Module/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid}" />
+						<f:render partial="DataModule/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid}" />
+						<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid}" />
 					</f:then>
 					<f:else>
 						<p><f:translate id="no_full_autosync" /></p>
-						<f:render partial="Module/Actions/AddButton" arguments="{table: 'all', index: ''}" />
+						<f:render partial="DataModule/Actions/AddButton" arguments="{table: 'all', index: ''}" />
 					</f:else>
 				</f:if>
 			</f:be.infobox>
 		</f:if>
 
-		<f:render partial="Module/SearchField" />
+		<f:render partial="DataModule/SearchField" />
 		<table class="table table-striped table-hover" id="tx_externalimport_list" data-list-type="sync">
 			<thead>
 				<tr>
@@ -90,11 +90,11 @@
 									<div class="btn-group">
 										<f:if condition="{configuration.automated}">
 											<f:then>
-												<f:render partial="Module/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
-												<f:render partial="Module/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
+												<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
+												<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
 											</f:then>
 											<f:else>
-												<f:render partial="Module/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
+												<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
 											</f:else>
 										</f:if>
 									</div>

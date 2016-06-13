@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -82,6 +83,11 @@ class Importer
     protected $externalConfiguration;
 
     /**
+     * @var ReportingUtility Utility for reporting after import
+     */
+    protected $reportingUtility;
+
+    /**
      * @var int Uid of the page where the records will be stored
      */
     protected $pid = 0;
@@ -129,8 +135,12 @@ class Importer
         }
         $GLOBALS['LANG']->includeLLFile('EXT:' . $this->extensionKey . '/Resources/Private/Language/ExternalImport.xlf');
 
-        // Get an instance of the configuration repository
+        // Get instances of needed objects
         $this->configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
+        $this->reportingUtility = GeneralUtility::makeInstance(
+                ReportingUtility::class,
+                $this
+        );
 
         // Force PHP limit execution time if set
         if (isset($this->extensionConfiguration['timelimit']) && ($this->extensionConfiguration['timelimit'] > -1)) {
@@ -353,10 +363,9 @@ class Importer
             );
         }
 
-        // Log results to devlog
-        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
-            $this->logMessages();
-        }
+        // Log results
+        $this->reportingUtility->writeToDevLog();
+        $this->reportingUtility->writeToLog();
 
         return $this->messages;
     }
@@ -401,10 +410,9 @@ class Importer
             );
         }
 
-        // Log results to devlog
-        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
-            $this->logMessages();
-        }
+        // Log results
+        $this->reportingUtility->writeToDevLog();
+        $this->reportingUtility->writeToLog();
         return $this->messages;
     }
 
@@ -1636,27 +1644,6 @@ class Importer
         return $localMapping;
     }
 
-    /**
-     * This method stores the error or success messages into the devLog
-     *
-     * @return    void
-     */
-    protected function logMessages()
-    {
-        $severity = -1;
-
-        // Define severity based on types of messages
-        if (count($this->messages[FlashMessage::ERROR]) > 0) {
-            $severity = 3;
-        } elseif (count($this->messages[FlashMessage::WARNING]) > 0) {
-            $severity = 2;
-        }
-        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
-            GeneralUtility::devLog(sprintf($GLOBALS['LANG']->getLL('sync_table'), $this->table), $this->extensionKey, $severity,
-                    $this->messages);
-        }
-    }
-
 
     // Getters and setters
 
@@ -1738,8 +1725,8 @@ class Importer
     }
 
     /**
-     * This method is used to add a message to the message queue that will be returned
-     * when the synchronisation is complete
+     * Adds a message to the message queue that will be returned
+     * when the synchronization is complete.
      *
      * @param string $text The message itself
      * @param integer $status Status of the message. Expected is "success", "warning" or "error"
@@ -1752,6 +1739,15 @@ class Importer
         }
     }
 
+    /**
+     * Returns the list of all messages.
+     *
+     * @return array
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
 
     // Reporting utilities
 

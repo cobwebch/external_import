@@ -12,8 +12,8 @@
  */
 
 /**
- * Module: TYPO3/CMS/ExternalImport/Module
- * External Import module JS
+ * Module: TYPO3/CMS/ExternalImport/DataModule
+ * External Import "Data Import" module JS
  */
 define(['jquery',
 		'TYPO3/CMS/Backend/Modal',
@@ -22,7 +22,7 @@ define(['jquery',
 	   ], function($, Modal) {
 	'use strict';
 
-	var ExternalImportModule = {
+	var ExternalImportDataModule = {
 		table: null
 	};
 
@@ -31,7 +31,7 @@ define(['jquery',
 	 *
 	 * @param tableView
 	 */
-	ExternalImportModule.buildTableForSynchronizableList = function(tableView) {
+	ExternalImportDataModule.buildTableForSynchronizableList = function(tableView) {
 		var columns = [
 			// Icon
 			{
@@ -69,7 +69,7 @@ define(['jquery',
 				orderable: false
 			}
 		];
-		ExternalImportModule.table = tableView.DataTable({
+		ExternalImportDataModule.table = tableView.DataTable({
 			dom: 't',
 			serverSide: false,
 			stateSave: true,
@@ -78,8 +78,8 @@ define(['jquery',
 			ordering: true,
 			columnDefs: columns
 		});
-		ExternalImportModule.table.order([3, 'asc']).draw();
-		ExternalImportModule.initializeSearchField();
+		ExternalImportDataModule.table.order([3, 'asc']).draw();
+		ExternalImportDataModule.initializeSearchField();
 	};
 
 	/**
@@ -87,7 +87,7 @@ define(['jquery',
 	 *
 	 * @param tableView
 	 */
-	ExternalImportModule.buildTableForNonSynchronizableList = function(tableView) {
+	ExternalImportDataModule.buildTableForNonSynchronizableList = function(tableView) {
 		var columns = [
 			// Icon
 			{
@@ -110,7 +110,7 @@ define(['jquery',
 				orderable: false
 			}
 		];
-		ExternalImportModule.table = tableView.DataTable({
+		ExternalImportDataModule.table = tableView.DataTable({
 			dom: 't',
 			serverSide: false,
 			stateSave: true,
@@ -119,22 +119,22 @@ define(['jquery',
 			ordering: true,
 			columnDefs: columns
 		});
-		ExternalImportModule.table.order([1, 'asc']).draw();
-		ExternalImportModule.initializeSearchField();
+		ExternalImportDataModule.table.order([1, 'asc']).draw();
+		ExternalImportDataModule.initializeSearchField();
 	};
 
 	/**
 	 * Initializes the search field (make it clearable and reactive to input).
 	 */
-	ExternalImportModule.initializeSearchField = function() {
+	ExternalImportDataModule.initializeSearchField = function() {
 		$('#tx_externalimport_search')
 			.on('input', function() {
-				ExternalImportModule.table.search($(this).val()).draw();
+				ExternalImportDataModule.table.search($(this).val()).draw();
 			})
 			.clearable({
 				onClear: function() {
-					if (ExternalImportModule.table !== null) {
-						ExternalImportModule.table.search('').draw();
+					if (ExternalImportDataModule.table !== null) {
+						ExternalImportDataModule.table.search('').draw();
 					}
 				}
 			})
@@ -148,7 +148,7 @@ define(['jquery',
 	 *
 	 * @param detailView
 	 */
-	ExternalImportModule.raiseErrorsOnTab = function(detailView) {
+	ExternalImportDataModule.raiseErrorsOnTab = function(detailView) {
 		// Inspect each tab
 		detailView.find('.tab-pane').each(function() {
 			var tabPanel = $(this);
@@ -172,16 +172,16 @@ define(['jquery',
 			// Activate DataTable
 			var listType = tableView.data('listType');
 			if (listType === 'nosync') {
-				ExternalImportModule.buildTableForNonSynchronizableList(tableView);
+				ExternalImportDataModule.buildTableForNonSynchronizableList(tableView);
 			} else {
-				ExternalImportModule.buildTableForSynchronizableList(tableView);
+				ExternalImportDataModule.buildTableForSynchronizableList(tableView);
 			}
 		}
 		if (detailView.length) {
-			ExternalImportModule.raiseErrorsOnTab(detailView);
+			ExternalImportDataModule.raiseErrorsOnTab(detailView);
 		}
 	});
 
-	return ExternalImportModule;
+	return ExternalImportDataModule;
 });
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file original="" product-name="Cobweb.ExternalImport" source-language="en" datatype="plaintext">
+		<body>
+			<trans-unit id="tx_externalimport_domain_model_log" xml:space="preserve">
+				<source>External Import log entry</source>
+			</trans-unit>
+			<trans-unit id="tx_externalimport_domain_model_log.status" xml:space="preserve">
+				<source>Status</source>
+			</trans-unit>
+			<trans-unit id="tx_externalimport_domain_model_log.crdate" xml:space="preserve">
+				<source>Run date</source>
+			</trans-unit>
+			<trans-unit id="tx_externalimport_domain_model_log.cruser_id" xml:space="preserve">
+				<source>User</source>
+			</trans-unit>
+			<trans-unit id="tx_externalimport_domain_model_log.configuration" xml:space="preserve">
+				<source>Configuration</source>
+			</trans-unit>
+			<trans-unit id="tx_externalimport_domain_model_log.message" xml:space="preserve">
+				<source>Message</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

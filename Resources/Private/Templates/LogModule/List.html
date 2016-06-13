@@ -1,0 +1,44 @@
+<html data-namespace-typo3-fluid="true"
+	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
+	<f:flashMessages />
+
+	<h1><f:translate id="logList" /></h1>
+
+	<div id="tx_externalimport_loglist_wrapper" class="hidden">
+		<form name="searchAndFilter">
+			<div class="form-group">
+				<f:form.textfield name="externalimport-searchfield" placeholder="{f:translate(key:'search')}"
+								  id="tx_externalimport_search"
+								  class="form-control t3js-externalimport-searchfield"/>
+			</div>
+
+		</form>
+		<table class="table table-striped table-hover" id="tx_externalimport_loglist">
+			<thead>
+				<tr>
+					<th class="log-status">
+						<f:translate id="logStatus" />
+					</th>
+					<th class="log-date">
+						<f:translate id="logDate" />
+					</th>
+					<th class="log-user">
+						<f:translate id="logUser" />
+					</th>
+					<th class="log-configuration">
+						<f:translate id="logConfiguration" />
+					</th>
+					<th class="log-message">
+						<f:translate id="logMessage" />
+					</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+	<!-- Loading mask -->
+	<div id="tx_externalimport_loglist_loader">
+		<core:icon identifier="provider-fontawesome-spinner" size="default" />
+	</div>
+</html>
