@@ -30,7 +30,7 @@ Here is an example of a typical "ctrl" section syntax:
 						'encoding' => 'latin1'
 					),
 					'data' => 'array',
-					'reference_uid' => 'code',
+					'referenceUid' => 'code',
 					'priority' => 10,
 					'description' => 'Import of all company departments'
 				)
@@ -53,7 +53,7 @@ Properties
 	===================================== ================= ========================
 	Property                              Data type         Scope
 	===================================== ================= ========================
-	`additional\_fields`_                 string            Fetch data
+	additionalFields_                     string            Fetch data
 	clearCache_                           string            Store data
 	connector_                            string            Fetch data
 	data_                                 string            Fetch data
@@ -68,9 +68,9 @@ Properties
 	parameters_                           array             Fetch data
 	pid_                                  integer           Store data
 	priority_                             integer           Display/automated import
-	`reference\_uid`_                     string            Store data
+	referenceUid_                         string            Store data
 	useColumnIndex_                       string or integer Configuration
-	`where\_clause`_                      string            Store data
+	whereClause_                          string            Store data
 	===================================== ================= ========================
 
 
@@ -161,8 +161,8 @@ Scope
 
 .. _administration-general-tca-properties-reference-uid:
 
-reference\_uid
-~~~~~~~~~~~~~~
+referenceUid
+~~~~~~~~~~~~
 
 Type
   string
@@ -176,6 +176,12 @@ Description
      This is the name of a field in the TYPO3 CMS database, not in
      the external data! It is the field where the reference
      (or primary) key of the external data is stored.
+
+  .. note::
+
+     This property was previously called :code:`reference_uid`.
+     Please update your configuration. Backwards compatibility with
+     old property name will be removed in the next major version.
 
 Scope
   Store data
@@ -271,8 +277,8 @@ Scope
 
 .. _administration-general-tca-properties-where-clause:
 
-where\_clause
-~~~~~~~~~~~~~
+whereClause
+~~~~~~~~~~~
 
 Type
   string
@@ -287,10 +293,16 @@ Description
 
      This may cause many records to be inserted over time.
      Indeed if some external data is imported the first time, but then
-     doesn't match the :code:`where_clause` condition, it will never be found
+     doesn't match the :code:`whereClause` condition, it will never be found
      for update. It will thus be inserted again and again. Whenever you
-     make use of the :code:`where_clause` property you should therefore watch
+     make use of the :code:`whereClause` property you should therefore watch
      for an unexpectedly high number of inserts.
+
+  .. note::
+
+     This property was previously called :code:`where_clause`.
+     Please update your configuration. Backwards compatibility with
+     old property name will be removed in the next major version.
 
 Scope
   Store data
@@ -298,8 +310,8 @@ Scope
 
 .. _administration-general-tca-properties-additional-fields:
 
-additional\_fields
-~~~~~~~~~~~~~~~~~~
+additionalFields
+~~~~~~~~~~~~~~~~
 
 Type
   string
@@ -311,6 +323,12 @@ Description
 
   This is usually the case for fields which you want to use in the
   transformation step, but that will not be stored eventually.
+
+  .. note::
+
+     This property was previously called :code:`additional_fields`.
+     Please update your configuration. Backwards compatibility with
+     old property name will be removed in the next major version.
 
 Scope
   Fetch data

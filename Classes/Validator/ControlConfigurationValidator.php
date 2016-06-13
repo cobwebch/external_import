@@ -44,11 +44,14 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
     {
         $this->table = $table;
 
+        // Add notices about renamed properties
+        $this->checkForRenamedProperties($ctrlConfiguration);
+
         // Validate all properties on which conditions apply
         $this->validateDataProperty($ctrlConfiguration['data']);
         $this->validateConnectorProperty($ctrlConfiguration['connector']);
         $this->validateDataHandlerProperty($ctrlConfiguration['dataHandler']);
-        $this->validateReferenceUidProperty($ctrlConfiguration['reference_uid']);
+        $this->validateReferenceUidProperty($ctrlConfiguration['referenceUid']);
         $this->validatePidProperty($ctrlConfiguration['pid']);
         $this->validateUseColumnIndexProperty($ctrlConfiguration['useColumnIndex']);
 
@@ -63,6 +66,35 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
         }
         // Return the global validation result
         return parent::isValid($table, $ctrlConfiguration, $columnConfiguration);
+    }
+
+    /**
+     * Checks for usage of old properties and issues notice for each one found.
+     *
+     * @param array $configuration The configuration to check
+     */
+    public function checkForRenamedProperties($configuration)
+    {
+        foreach (ConfigurationRepository::$renamedControlProperties as $oldName => $newName) {
+            // If the old property name is used, issue a notice about renaming
+            // NOTE: this is done *before* the rest of the validation. If the property value is wrong,
+            // the validation error will override the renaming notice, since there can be only one
+            // validation result per property.
+            if (array_key_exists($oldName, $configuration)) {
+                $this->addResult(
+                        $newName,
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:renamedProperty',
+                                'external_import',
+                                array(
+                                        $oldName,
+                                        $newName
+                                )
+                        ),
+                        FlashMessage::NOTICE
+                );
+            }
+        }
     }
 
     /**
@@ -188,7 +220,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
     }
 
     /**
-     * Validates the "reference_uid" property.
+     * Validates the "referenceUid" property.
      *
      * @param string $property Property value
      */
@@ -196,7 +228,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
     {
         if (empty($property)) {
             $this->addResult(
-                    'reference_uid',
+                    'referenceUid',
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingReferenceUidProperty',
                             'external_import'

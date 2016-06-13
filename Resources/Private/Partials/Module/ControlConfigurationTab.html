@@ -74,9 +74,9 @@
 			<tr>
 				<td><f:translate id="external_key" /></td>
 				<td>
-					{ctrlConfiguration.reference_uid}
-					<f:if condition="{results.reference_uid}">
-						<ex:displayValidationResult result="{results.reference_uid}" />
+					{ctrlConfiguration.referenceUid}
+					<f:if condition="{results.referenceUid}">
+						<ex:displayValidationResult result="{results.referenceUid}" />
 					</f:if>
 				</td>
 			</tr>
@@ -116,28 +116,34 @@
 				</td>
 			</tr>
 			<tr>
-				<td><f:translate id="additional_fields" /></td>
+				<td><f:translate id="additionalFields" /></td>
 				<td>
-					<f:if condition="{ctrlConfiguration.additional_fields}">
+					<f:if condition="{ctrlConfiguration.additionalFields}">
 						<f:then>
-							{ctrlConfiguration.additional_fields}
+							{ctrlConfiguration.additionalFields}
 						</f:then>
 						<f:else>
 							-
 						</f:else>
+					</f:if>
+					<f:if condition="{results.additionalFields}">
+						<ex:displayValidationResult result="{results.additionalFields}" />
 					</f:if>
 				</td>
 			</tr>
 			<tr>
 				<td><f:translate id="where_clause" /></td>
 				<td>
-					<f:if condition="{ctrlConfiguration.where_clause}">
+					<f:if condition="{ctrlConfiguration.whereClause}">
 						<f:then>
-							{ctrlConfiguration.where_clause}
+							{ctrlConfiguration.whereClause}
 						</f:then>
 						<f:else>
 							-
 						</f:else>
+					</f:if>
+					<f:if condition="{results.whereClause}">
+						<ex:displayValidationResult result="{results.whereClause}" />
 					</f:if>
 				</td>
 			</tr>

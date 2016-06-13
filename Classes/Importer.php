@@ -225,8 +225,12 @@ class Importer
         // Get the list of additional fields
         // Additional fields are fields that must be taken from the imported data,
         // but that will not be saved into the database
-        if (!empty($this->externalConfiguration['additional_fields'])) {
-            $this->additionalFields = GeneralUtility::trimExplode(',', $this->externalConfiguration['additional_fields'], 1);
+        if (!empty($this->externalConfiguration['additionalFields'])) {
+            $this->additionalFields = GeneralUtility::trimExplode(
+                    ',',
+                    $this->externalConfiguration['additionalFields'],
+                    true
+            );
             $this->numAdditionalFields = count($this->additionalFields);
         }
     }
@@ -1100,7 +1104,7 @@ class Importer
 
                 // Go through each record and assemble pairs of primary and foreign keys
                 foreach ($records as $theRecord) {
-                    $externalUid = $theRecord[$this->externalConfiguration['reference_uid']];
+                    $externalUid = $theRecord[$this->externalConfiguration['referenceUid']];
                     // Make sure not to keep the value from the previous iteration
                     unset($foreignValue);
 
@@ -1193,7 +1197,7 @@ class Importer
         $savedAdditionalFields = array();
         foreach ($records as $theRecord) {
             $localAdditionalFields = array();
-            $externalUid = $theRecord[$this->externalConfiguration['reference_uid']];
+            $externalUid = $theRecord[$this->externalConfiguration['referenceUid']];
             // Skip handling of already handled records (this can happen with denormalized structures)
             // NOTE: using isset() on index instead of in_array() offers far better performance
             if (isset($handledUids[$externalUid])) {
@@ -1560,11 +1564,11 @@ class Importer
         if ($this->externalConfiguration['enforcePid']) {
             $where = "pid = '" . $this->pid . "'";
         }
-        if (!empty($this->externalConfiguration['where_clause'])) {
-            $where .= ' AND ' . $this->externalConfiguration['where_clause'];
+        if (!empty($this->externalConfiguration['whereClause'])) {
+            $where .= ' AND ' . $this->externalConfiguration['whereClause'];
         }
         $where .= BackendUtility::deleteClause($this->table);
-        $referenceUidField = $this->externalConfiguration['reference_uid'];
+        $referenceUidField = $this->externalConfiguration['referenceUid'];
         $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($referenceUidField . ',uid', $this->table, $where);
         if ($res) {
             while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {

@@ -34,6 +34,15 @@ class ConfigurationRepository
      */
     protected $extensionConfiguration = array();
 
+    /**
+     * @var array List of renamed properties and their new name, for the "ctrl" part of the configuration
+     */
+    static public $renamedControlProperties = array(
+            'additional_fields' => 'additionalFields',
+            'reference_uid' => 'referenceUid',
+            'where_clause' => 'whereClause'
+    );
+
     public function __construct()
     {
         $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
@@ -237,6 +246,20 @@ class ConfigurationRepository
             $pid = (int)$this->extensionConfiguration['storagePID'];
         }
         $configuration['pid'] = $pid;
+
+        // Map old properties to new ones, to preserve backwards compatibility
+        $oldPropertiesCount = 0;
+        foreach (self::$renamedControlProperties as $oldName => $newName) {
+            if (array_key_exists($oldName, $configuration)) {
+                $configuration[$newName] = $configuration[$oldName];
+                $oldPropertiesCount++;
+            }
+        }
+        // If at least one old property was found, add an entry to the deprecation log
+        if ($oldPropertiesCount > 0) {
+            GeneralUtility::deprecationLog('Some old External Import properties were found in your configurations. Please use the Data Import module to check out which ones.');
+        }
+
         return $configuration;
     }
 }

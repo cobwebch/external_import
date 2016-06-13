@@ -47,6 +47,9 @@
 			<trans-unit id="missingFieldProperty" xml:space="preserve">
 				<source>Property "field" is mandatory for "array"-type data.</source>
 			</trans-unit>
+			<trans-unit id="renamedProperty" xml:space="preserve">
+				<source>Property "%1$s" was renamed to "%2$s". Please update your configuration.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
