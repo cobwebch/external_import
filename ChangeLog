@@ -3,6 +3,7 @@
 	* Added configuration validator, resolves #59250
 	* Harmonized naming of "ctrl" properties, resolves #76607
 	* Added logging, resolves #76618
+	* Added composer support, resolves #76621
 
 2016-06-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
