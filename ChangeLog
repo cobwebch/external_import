@@ -4,6 +4,7 @@
 	* Harmonized naming of "ctrl" properties, resolves #76607
 	* Added logging, resolves #76618
 	* Added composer support, resolves #76621
+	* Released version 3.0.0, resolves #76583
 
 2016-06-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
