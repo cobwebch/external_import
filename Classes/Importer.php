@@ -281,14 +281,28 @@ class Importer
                         $connector = GeneralUtility::makeInstanceService('connector', $this->externalConfiguration['connector']);
 
                         // The service was instantiated, but an error occurred while initiating the connection
-                        // If the returned value is an array, an error has occurred
-                        if (is_array($connector)) {
-                            $this->addMessage(
-                                    $GLOBALS['LANG']->getLL('data_not_fetched')
-                            );
+                        // The returned value is not a Connector service
+                        if (!($connector instanceof ConnectorBase)) {
+                            // If the returned value is an array, we have proper error reporting.
+                            if (is_array($connector)) {
+                                $this->addMessage(
+                                        sprintf(
+                                                $GLOBALS['LANG']->getLL('data_not_fetched_with_error'),
+                                                $connector['msg'],
+                                                $connector['nr']
+                                        )
+                                );
 
-                            // The connection is established, get the data
+                            // Otherwise display generic error message
+                            } else {
+                                $this->addMessage(
+                                        $GLOBALS['LANG']->getLL('data_not_fetched')
+                                );
+                            }
+
+                        // The connection is established, get the data
                         } else {
+                            $data = array();
                             $data = array();
 
                             // Pre-process connector parameters

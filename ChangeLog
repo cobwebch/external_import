@@ -1,3 +1,7 @@
+2016-07-19 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Improved check for failed connector service initialization, resolves #77151
+
 2016-06-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added configuration validator, resolves #59250
