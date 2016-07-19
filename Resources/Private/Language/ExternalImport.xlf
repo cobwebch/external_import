@@ -59,6 +59,9 @@
 			<trans-unit id="data_not_fetched" xml:space="preserve">
 				<source>Data could not be fetched (connector service not available)</source>
 			</trans-unit>
+			<trans-unit id="data_not_fetched_with_error" xml:space="preserve">
+				<source>Data could not be fetched (connector error: %1$s (%2$d))</source>
+			</trans-unit>
 			<trans-unit id="data_not_fetched_connector_error" xml:space="preserve">
 				<source>Data could not be fetched (connector error: %s)</source>
 			</trans-unit>
