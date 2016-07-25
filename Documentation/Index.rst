@@ -27,7 +27,7 @@ External Import
 		  data import, fetch data, services
 
 	:Copyright:
-		2007-2015
+		2007-2016
 
 	:Author:
 		  François Suter (Cobweb)

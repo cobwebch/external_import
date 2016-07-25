@@ -1,3 +1,7 @@
+2016-07-25 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Released version 3.0.1, resolves #77237
+
 2016-07-19 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Improved check for failed connector service initialization, resolves #77151
