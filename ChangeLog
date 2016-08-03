@@ -1,6 +1,7 @@
 2016-08-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected wrong namespace, resolves #77295
+	* Added API for retrieving existing uids, resolves #77305
 
 2016-07-25 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

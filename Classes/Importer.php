@@ -103,9 +103,14 @@ class Importer
     protected $numAdditionalFields = 0;
 
     /**
-     * @var array $temporaryKeys list of temporary keys created on the fly for new records. Used in TCEmain data map.
+     * @var array List of temporary keys created on the fly for new records. Used in DataHandler data map.
      */
     protected $temporaryKeys = array();
+
+    /**
+     * @var array List of primary keys of records that already exist in the database
+     */
+    protected $existingUids = array();
 
     /**
      * @var int $newKeysCounter simple counter for generating the temporary keys
@@ -1080,6 +1085,7 @@ class Importer
         $fieldsExcludedFromUpdates = array();
 
         // Get the list of existing uids for the table
+        $this->retrieveExistingUids();
         $existingUids = $this->getExistingUids();
 
         // Check which columns are MM-relations and get mappings to foreign tables for each
@@ -1477,6 +1483,7 @@ class Importer
         }
 
         // Refresh list of existing primary keys now that new records have been inserted
+        $this->retrieveExistingUids();
         $existingUids = $this->getExistingUids();
 
         // Loop on all columns that require a remapping
@@ -1575,13 +1582,15 @@ class Importer
     }
 
     /**
-     * Gets a list of all existing primary keys in the table being synchronized
+     * Prepares a list of all existing primary keys in the table being synchronized.
      *
-     * @return array Hash table of all external primary keys matched to internal primary keys
+     * The result is a hash table of all external primary keys matched to internal primary keys.
+     *
+     * @return void
      */
-    protected function getExistingUids()
+    protected function retrieveExistingUids()
     {
-        $existingUids = array();
+        $this->existingUids = array();
         $where = '1 = 1';
         if ($this->externalConfiguration['enforcePid']) {
             $where = "pid = '" . $this->pid . "'";
@@ -1591,18 +1600,21 @@ class Importer
         }
         $where .= BackendUtility::deleteClause($this->table);
         $referenceUidField = $this->externalConfiguration['referenceUid'];
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($referenceUidField . ',uid', $this->table, $where);
+        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+                $referenceUidField . ',uid',
+                $this->table,
+                $where
+        );
         if ($res) {
             while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
                 // Don't consider records with empty references, as they can't be matched
                 // to external data anyway (but a real zero is acceptable)
                 if (!empty($row[$referenceUidField]) || $row[$referenceUidField] === '0' || $row[$referenceUidField] === 0) {
-                    $existingUids[$row[$referenceUidField]] = $row['uid'];
+                    $this->existingUids[$row[$referenceUidField]] = $row['uid'];
                 }
             }
             $GLOBALS['TYPO3_DB']->sql_free_result($res);
         }
-        return $existingUids;
     }
 
     /**
@@ -1728,14 +1740,27 @@ class Importer
     }
 
     /**
-     * This method returns the extension's configuration
-     * It is used to avoid reading it multiple times from the various components of this extension
+     * Returns the extension's configuration.
      *
-     * @return    array    The unserialized extension's configuration
+     * It is used to avoid reading it multiple times from the various components of this extension.
+     *
+     * @return array The unserialized extension's configuration
      */
     public function getExtensionConfiguration()
     {
         return $this->extensionConfiguration;
+    }
+
+    /**
+     * Returns the list of primary keys of existing records in the database.
+     *
+     * This can be useful for hooks called during the import process.
+     *
+     * @return array
+     */
+    public function getExistingUids()
+    {
+        return $this->existingUids;
     }
 
     /**
