@@ -3,6 +3,7 @@
 	* Corrected wrong namespace, resolves #77295
 	* Added API for retrieving existing uids, resolves #77305
 	* Improved documentation about handling of namespaces in XML data, resolves #77241
+	* Release version 3.0.2, resolves #77394
 
 2016-07-25 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
