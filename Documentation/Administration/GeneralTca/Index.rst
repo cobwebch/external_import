@@ -343,9 +343,10 @@ Type
   array
 
 Description
-  Associative array of namespaces that can be used in XPath queries (see
-  "Columns Configuration" below). The keys correspond to prefixes and
-  the values to URIs. The prefixes can then be used in XPath queries.
+  Associative array of namespaces that can be used in
+  :ref:`XPath queries <administration-columns-properties-xpath>`.
+  The keys correspond to prefixes and the values to URIs.
+  The prefixes can then be used in XPath queries.
 
   **Example**
 

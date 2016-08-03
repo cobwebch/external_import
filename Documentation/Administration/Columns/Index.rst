@@ -144,6 +144,36 @@ Description
    Namespace for the given field. Use the full URI for the namespace, not
    a prefix.
 
+   **Example**
+
+   Given the following data to import:
+
+   .. code-block:: xml
+
+		<?xml version="1.0" encoding="UTF-8"?>
+		<Invoice xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
+			<InvoiceLine>
+				<cbc:ID>A1</cbc:ID>
+				<cbc:LineExtensionAmount currencyID="USD">100.00</cbc:LineExtensionAmount>
+				<cac:OrderReference>
+					<cbc:ID>000001</cbc:ID>
+				</cac:OrderReference>
+			</InvoiceLine>
+			...
+		</Invoice>
+
+   getting the value in the :code:`<cbc:LineExtensionAmount>` tag would require
+   the following configuration:
+
+   .. code-block:: php
+
+		'external' => array(
+			0 => array(
+				'fieldNS' => 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+				'field' => 'LineExtensionAmount'
+			)
+		)
+
 Scope
   Handle data (XML)
 
@@ -158,7 +188,8 @@ Type
 
 Description
    Namespace for the given attribute. Use the full URI for the namespace,
-   not a prefix.
+   not a prefix. See :ref:`fieldNS <administration-columns-properties-fieldns>`
+   for example usage.
 
 Scope
   Handle data (XML)
