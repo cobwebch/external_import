@@ -14,7 +14,7 @@ if (TYPO3_MODE === 'BE') {
             '',
             array(),
             array(
-                    'access' => '',
+                    'access' => 'user,group',
                     'icon' => 'EXT:' . $_EXTKEY . '/Resources/Public/Images/MainModuleIcon.svg',
                     'labels' => 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/MainModule.xlf'
             )

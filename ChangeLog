@@ -1,3 +1,7 @@
+2016-11-15 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Fixed permissions for main backend module, resolves #77399
+
 2016-08-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected wrong namespace, resolves #77295
