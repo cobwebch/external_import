@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport;
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
+use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -265,9 +266,8 @@ class Importer
         if ($GLOBALS['BE_USER']->check('tables_modify', $table)) {
             $this->initTCAData($table, $index);
 
-            // Check configuration validity
-            $validator = GeneralUtility::makeInstance(ControlConfigurationValidator::class);
-            if ($validator->isValid($table, $this->externalConfiguration)) {
+            // Proceed if configuration is valid
+            if ($this->validateConfiguration($table)) {
                 // Instantiate specific connector service
                 if (empty($this->externalConfiguration['connector'])) {
                     $this->addMessage(
@@ -366,11 +366,6 @@ class Importer
                         }
                     }
                 }
-
-            } else {
-                $this->addMessage(
-                        $GLOBALS['LANG']->getLL('configurationError')
-                );
             }
 
             // The user doesn't have enough rights on the table
@@ -387,6 +382,46 @@ class Importer
         $this->reportingUtility->writeToLog();
 
         return $this->messages;
+    }
+
+    /**
+     * Checks the validity of the external configuration, both general and for each column.
+     *
+     * @param string $table Name of the table to check the configuration for
+     * @return bool
+     */
+    protected function validateConfiguration($table)
+    {
+        $validator = GeneralUtility::makeInstance(ControlConfigurationValidator::class);
+        // Check the general configuration. If ok, proceed with columns configuration
+        if ($validator->isValid($table, $this->externalConfiguration)) {
+            $columnValidator = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
+            // Loop on the table columns to check if their external configuration is valid
+            foreach ($this->tableTCA['columns'] as $columnName => $columnConfiguration) {
+                if (isset($columnConfiguration['external'][$this->columnIndex])) {
+                    $isValid = $columnValidator->isValid(
+                            $table,
+                            $this->externalConfiguration,
+                            $columnConfiguration['external'][$this->columnIndex]
+                    );
+                    // If the column configuration is not valid, issue error message and return false
+                    if (!$isValid) {
+                        $this->addMessage(
+                                $GLOBALS['LANG']->getLL('configurationError')
+                        );
+                        return false;
+                    }
+                }
+            }
+
+        // If general configuration is not valid, issue error message and return false
+        } else {
+            $this->addMessage(
+                    $GLOBALS['LANG']->getLL('configurationError')
+            );
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -419,14 +454,9 @@ class Importer
     {
         $this->initTCAData($table, $index);
 
-        // Check configuration validity
-        $validator = GeneralUtility::makeInstance(ControlConfigurationValidator::class);
-        if ($validator->isValid($table, $this->externalConfiguration)) {
+        // Proceed if configuration is valid
+        if ($this->validateConfiguration($table)) {
             $this->handleData($rawData);
-        } else {
-            $this->addMessage(
-                    $GLOBALS['LANG']->getLL('configurationError')
-            );
         }
 
         // Log results

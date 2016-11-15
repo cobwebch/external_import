@@ -43,7 +43,7 @@ class ControlConfigurationValidatorTest extends BaseTestCase
                 'Typical configuration for array type' => array(
                         array(
                                 'data' => 'array',
-                                'reference_uid' => 'external_id',
+                                'referenceUid' => 'external_id',
                                 'pid' => 12
                         )
                 ),
@@ -51,7 +51,7 @@ class ControlConfigurationValidatorTest extends BaseTestCase
                         array(
                                 'data' => 'xml',
                                 'nodetype' => 'foo',
-                                'reference_uid' => 'external_id',
+                                'referenceUid' => 'external_id',
                                 'pid' => 12
                         )
                 )
@@ -229,7 +229,7 @@ class ControlConfigurationValidatorTest extends BaseTestCase
                 'tt_content',
                 array()
         );
-        $result = $this->subject->getResultForProperty('reference_uid');
+        $result = $this->subject->getResultForProperty('referenceUid');
         self::assertSame(
                 FlashMessage::ERROR,
                 $result['severity']

@@ -2,6 +2,7 @@
 
 	* Fixed permissions for main backend module, resolves #77399
 	* Added information about autoloading cache, resolves #77703
+	* Improved configuration validation check before import, resolves #78713
 
 2016-08-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
