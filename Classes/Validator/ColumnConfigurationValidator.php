@@ -37,31 +37,48 @@ class ColumnConfigurationValidator extends AbstractConfigurationValidator
      */
     public function isValid($table, $ctrlConfiguration, $columnConfiguration = null)
     {
-        // Validate properties specific to the "array"-type data
-        if ($ctrlConfiguration['data'] === 'array') {
-            $this->validateFieldProperty($columnConfiguration['field']);
-        }
+        // Validate properties used to choose the import value
+        $this->validateDataSettingProperties($ctrlConfiguration, $columnConfiguration);
 
         // Return the global validation result
         return parent::isValid($table, $ctrlConfiguration, $columnConfiguration);
     }
 
     /**
-     * Validates the "field" property.
+     * Validates that the column configuration contains the appropriate properties for
+     * choosing the value to import, depending on the data type (array or XML).
      *
-     * @param string $property Property value
+     * @param array $ctrlConfiguration "ctrl" configuration to check
+     * @param array $columnConfiguration Column configuration to check (unused when checking a "ctrl" configuration)
      */
-    public function validateFieldProperty($property)
+    public function validateDataSettingProperties($ctrlConfiguration, $columnConfiguration)
     {
-        if (!isset($property)) {
-            $this->addResult(
-                    'field',
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingFieldProperty',
-                            'external_import'
-                    ),
-                    FlashMessage::ERROR
-            );
+        // For data of type "array", either a "field" or a "value" property are needed
+        if ($ctrlConfiguration['data'] === 'array') {
+            if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value'])) {
+                // NOTE: validation result is arbitrarily added to the "field" property
+                $this->addResult(
+                        'field',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForArrayData',
+                                'external_import'
+                        ),
+                        FlashMessage::ERROR
+                );
+            }
+        // For data of type "xml", any of "field", "value", "attribute" or "xpath" must be set
+        } elseif ($ctrlConfiguration['data'] === 'xml') {
+            if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value']) && !isset($columnConfiguration['attribute']) && !isset($columnConfiguration['xpath'])) {
+                // NOTE: validation result is arbitrarily added to the "field" property
+                $this->addResult(
+                        'field',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForArrayData',
+                                'external_import'
+                        ),
+                        FlashMessage::ERROR
+                );
+            }
         }
     }
 

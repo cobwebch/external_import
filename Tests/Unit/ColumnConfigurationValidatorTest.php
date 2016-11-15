@@ -40,7 +40,7 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
     public function validConfigurationProvider()
     {
         return array(
-                'Field is a string' => array(
+                'Data type "array": using property "field" (string)' => array(
                         array(
                                 'data' => 'array',
                         ),
@@ -48,7 +48,7 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'field' => 'foo'
                         )
                 ),
-                'Field is a positive integer' => array(
+                'Data type "array": using property "field" (positive integer)' => array(
                         array(
                                 'data' => 'array',
                         ),
@@ -56,12 +56,68 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'field' => 42
                         )
                 ),
-                'Field is zero' => array(
+                'Data type "array": using property "field" (zero)' => array(
                         array(
                                 'data' => 'array',
                         ),
                         array(
                                 'field' => 0
+                        )
+                ),
+                'Data type "array": using property "value" (number)' => array(
+                        array(
+                                'data' => 'array',
+                        ),
+                        array(
+                                'value' => 17
+                        )
+                ),
+                'Data type "array": using property "value" (string)' => array(
+                        array(
+                                'data' => 'array',
+                        ),
+                        array(
+                                'value' => 'bar'
+                        )
+                ),
+                'Data type "xml": using property "field" (string)' => array(
+                        array(
+                                'data' => 'xml',
+                        ),
+                        array(
+                                'field' => 'foo'
+                        )
+                ),
+                'Data type "xml": using property "value" (number)' => array(
+                        array(
+                                'data' => 'xml',
+                        ),
+                        array(
+                                'value' => 17
+                        )
+                ),
+                'Data type "xml": using property "value" (string)' => array(
+                        array(
+                                'data' => 'xml',
+                        ),
+                        array(
+                                'value' => 'bar'
+                        )
+                ),
+                'Data type "xml": using property "attribute" (string)' => array(
+                        array(
+                                'data' => 'xml',
+                        ),
+                        array(
+                                'field' => 'baz'
+                        )
+                ),
+                'Data type "xml": using property "xpath" (string)' => array(
+                        array(
+                                'data' => 'xml',
+                        ),
+                        array(
+                                'field' => 'hello'
                         )
                 ),
         );
@@ -73,7 +129,8 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
      * @test
      * @dataProvider validConfigurationProvider
      */
-    public function isValidReturnsTrueForValidConfiguration($controlConfiguration, $columnConfiguration) {
+    public function isValidReturnsTrueForValidConfiguration($controlConfiguration, $columnConfiguration)
+    {
         self::assertTrue(
                 $this->subject->isValid(
                         'tt_content',

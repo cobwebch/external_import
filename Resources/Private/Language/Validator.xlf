@@ -24,7 +24,7 @@
 				<source>Property "nodetype" is mandatory for "xml"-type data.</source>
 			</trans-unit>
 			<trans-unit id="missingReferenceUidProperty" xml:space="preserve">
-				<source>Property "reference_uid" is mandatory.</source>
+				<source>Property "referenceUid" is mandatory.</source>
 			</trans-unit>
 			<trans-unit id="defaultPriorityValue" xml:space="preserve">
 				<source>Property "priority" is not set. It will default to %d.</source>
@@ -46,6 +46,12 @@
 			</trans-unit>
 			<trans-unit id="missingFieldProperty" xml:space="preserve">
 				<source>Property "field" is mandatory for "array"-type data.</source>
+			</trans-unit>
+			<trans-unit id="missingPropertiesForArrayData" xml:space="preserve">
+				<source>Array-type data must have either a "field" or a "value" property.</source>
+			</trans-unit>
+			<trans-unit id="missingPropertiesForXmlData" xml:space="preserve">
+				<source>XML-type data must have at least one of the following properties: "field", "value", "atribute" or "xpath".</source>
 			</trans-unit>
 			<trans-unit id="renamedProperty" xml:space="preserve">
 				<source>Property "%1$s" was renamed to "%2$s". Please update your configuration.</source>

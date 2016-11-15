@@ -4,6 +4,7 @@
 	* Added information about autoloading cache, resolves #77703
 	* Improved configuration validation check before import, resolves #78713
 	* Corrected column validator for "0" value, resolves #78485
+	* Corrected validation rule for column configuration, resolves #78487
 
 2016-08-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
