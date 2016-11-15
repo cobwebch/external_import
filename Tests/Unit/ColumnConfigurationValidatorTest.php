@@ -37,6 +37,52 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
         $this->subject = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
     }
 
+    public function validConfigurationProvider()
+    {
+        return array(
+                'Field is a string' => array(
+                        array(
+                                'data' => 'array',
+                        ),
+                        array(
+                                'field' => 'foo'
+                        )
+                ),
+                'Field is a positive integer' => array(
+                        array(
+                                'data' => 'array',
+                        ),
+                        array(
+                                'field' => 42
+                        )
+                ),
+                'Field is zero' => array(
+                        array(
+                                'data' => 'array',
+                        ),
+                        array(
+                                'field' => 0
+                        )
+                ),
+        );
+    }
+
+    /**
+     * @param array $controlConfiguration
+     * @param array $columnConfiguration
+     * @test
+     * @dataProvider validConfigurationProvider
+     */
+    public function isValidReturnsTrueForValidConfiguration($controlConfiguration, $columnConfiguration) {
+        self::assertTrue(
+                $this->subject->isValid(
+                        'tt_content',
+                        $controlConfiguration,
+                        $columnConfiguration
+                )
+        );
+    }
+
     /**
      * @test
      */

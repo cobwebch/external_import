@@ -53,7 +53,7 @@ class ColumnConfigurationValidator extends AbstractConfigurationValidator
      */
     public function validateFieldProperty($property)
     {
-        if (empty($property)) {
+        if (!isset($property)) {
             $this->addResult(
                     'field',
                     LocalizationUtility::translate(
