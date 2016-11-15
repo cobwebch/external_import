@@ -42,3 +42,13 @@ field.
    already gone through renaming the fields. That means the names of the
    fields are not those of the external data, but those of the TYPO3 CMS
    fields.
+
+.. note::
+
+   When adding a new user function, you may suddenly be faced with an autoloading
+   error, which flushing the cache will not solve. Indeed TYPO3 CMS builds
+   autoloading information which is not considered to be a cache. So flushing
+   all the cache will not help TYPO3 CMS detect your new class. You will need to
+   either uninstall and reinstall the extension to which your class belongs
+   or manually delete the :file:`typo3temp/autoload` folder where the autoloading
+   information resides.
