@@ -53,8 +53,8 @@ class ColumnConfigurationValidator extends AbstractConfigurationValidator
      */
     public function validateDataSettingProperties($ctrlConfiguration, $columnConfiguration)
     {
-        // For data of type "array", either a "field" or a "value" property are needed
         if ($ctrlConfiguration['data'] === 'array') {
+            // For data of type "array", either a "field" or a "value" property are needed
             if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
                 $this->addResult(
@@ -65,18 +65,43 @@ class ColumnConfigurationValidator extends AbstractConfigurationValidator
                         ),
                         FlashMessage::ERROR
                 );
+            // "value" property should not be set if another value-setting property is also defined
+            } elseif (isset($columnConfiguration['field']) && isset($columnConfiguration['value'])) {
+                // NOTE: validation result is arbitrarily added to the "field" property
+                $this->addResult(
+                        'field',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForArrayData',
+                                'external_import'
+                        ),
+                        FlashMessage::WARNING
+                );
             }
-        // For data of type "xml", any of "field", "value", "attribute" or "xpath" must be set
         } elseif ($ctrlConfiguration['data'] === 'xml') {
+            // For data of type "xml", any of "field", "value", "attribute" or "xpath" must be set
             if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value']) && !isset($columnConfiguration['attribute']) && !isset($columnConfiguration['xpath'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
                 $this->addResult(
                         'field',
                         LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForArrayData',
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForXmlData',
                                 'external_import'
                         ),
                         FlashMessage::ERROR
+                );
+            // "value" property should not be set if another value-setting property is also defined
+            } elseif (
+                isset($columnConfiguration['value'])
+                && (isset($columnConfiguration['field']) || isset($columnConfiguration['attribute']) || isset($columnConfiguration['xpath']))
+            ) {
+                // NOTE: validation result is arbitrarily added to the "field" property
+                $this->addResult(
+                        'field',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForXmlData',
+                                'external_import'
+                        ),
+                        FlashMessage::WARNING
                 );
             }
         }

@@ -140,21 +140,63 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
         );
     }
 
+    public function invalidConfigurationProvider()
+    {
+        return array(
+                'Data type "array": missing data-setting properties' => array(
+                        array(
+                                'data' => 'array'
+                        ),
+                        array(),
+                        FlashMessage::ERROR
+                ),
+                'Data type "xml": missing data-setting properties' => array(
+                        array(
+                                'data' => 'xml'
+                        ),
+                        array(),
+                        FlashMessage::ERROR
+                ),
+                'Data type "array": conflicting data-setting properties' => array(
+                        array(
+                                'data' => 'array'
+                        ),
+                        array(
+                                'value' => 42,
+                                'field' => 'foo'
+                        ),
+                        FlashMessage::WARNING
+                ),
+                'Data type "xml": conflicting data-setting properties' => array(
+                        array(
+                                'data' => 'xml'
+                        ),
+                        array(
+                                'value' => 42,
+                                'xpath' => 'item'
+                        ),
+                        FlashMessage::WARNING
+                ),
+        );
+    }
+
     /**
+     * @param array $controlConfiguration
+     * @param array $columnConfiguration
+     * @param int $severity
      * @test
+     * @dataProvider invalidConfigurationProvider
      */
-    public function validateFieldPropertyWithEmptyValueRaisesError()
+    public function validateDataSettingPropertiesRaisesErrorOrWarning($controlConfiguration, $columnConfiguration, $severity)
     {
         $this->subject->isValid(
                 'tt_content',
-                array(
-                        'data' => 'array'
-                ),
-                array()
+                $controlConfiguration,
+                $columnConfiguration
         );
         $result = $this->subject->getResultForProperty('field');
         self::assertSame(
-                FlashMessage::ERROR,
+                $severity,
                 $result['severity']
         );
     }
