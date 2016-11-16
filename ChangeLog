@@ -2,6 +2,7 @@
 
 	* Fixed display of saved search in Data Import module, resolves #78721
 	* Improved column configuration validator with additional warnings, resolves #78723
+	* Released version 3.0.3, resolves #78724
 
 2016-11-15 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
@@ -16,7 +17,7 @@
 	* Corrected wrong namespace, resolves #77295
 	* Added API for retrieving existing uids, resolves #77305
 	* Improved documentation about handling of namespaces in XML data, resolves #77241
-	* Release version 3.0.2, resolves #77394
+	* Released version 3.0.2, resolves #77394
 
 2016-07-25 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
