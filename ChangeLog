@@ -1,3 +1,7 @@
+2016-11-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Fixed display of saved search in Data Import module, resolves #78721
+
 2016-11-15 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fixed permissions for main backend module, resolves #77399

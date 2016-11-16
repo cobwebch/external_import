@@ -127,7 +127,11 @@ define(['jquery',
 	 * Initializes the search field (make it clearable and reactive to input).
 	 */
 	ExternalImportDataModule.initializeSearchField = function() {
-		$('#tx_externalimport_search')
+		var searchField = $('#tx_externalimport_search');
+		// Restore existing filter
+		searchField.val(ExternalImportDataModule.table.search());
+
+		searchField
 			.on('input', function() {
 				ExternalImportDataModule.table.search($(this).val()).draw();
 			})
