@@ -1,3 +1,7 @@
+2017-03-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Fixed wrong declaration of Data Module menu items, resolves #1
+
 2016-11-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fixed display of saved search in Data Import module, resolves #78721

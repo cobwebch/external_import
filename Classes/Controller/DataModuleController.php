@@ -456,11 +456,12 @@ class DataModuleController extends ActionController
         $menu = GeneralUtility::makeInstance(Menu::class);
         $menu->setIdentifier('_externalImportMenu');
 
-        /** @var MenuItem $languageListMenuItem */
-        $languageListMenuItem = GeneralUtility::makeInstance(MenuItem::class);
+        // Link to synchronizable tables view
+        /** @var MenuItem $synchronizationMenuItem */
+        $synchronizationMenuItem = GeneralUtility::makeInstance(MenuItem::class);
         $action = 'listSynchronizable';
         $isActive = $this->request->getControllerActionName() === $action;
-        $languageListMenuItem->setTitle(
+        $synchronizationMenuItem->setTitle(
                 LocalizationUtility::translate(
                         'function_sync',
                         'external_import'
@@ -469,15 +470,16 @@ class DataModuleController extends ActionController
         $uri = $uriBuilder->reset()->uriFor(
                 $action,
                 array(),
-                'Module'
+                'DataModule'
         );
-        $languageListMenuItem->setHref($uri)->setActive($isActive);
+        $synchronizationMenuItem->setHref($uri)->setActive($isActive);
 
-        /** @var MenuItem $translationMenuItem */
-        $translationMenuItem = GeneralUtility::makeInstance(MenuItem::class);
+        // Link to non-synchronizable tables view
+        /** @var MenuItem $noSynchronizationMenuItem */
+        $noSynchronizationMenuItem = GeneralUtility::makeInstance(MenuItem::class);
         $action = 'listNonSynchronizable';
         $isActive = $this->request->getControllerActionName() === $action;
-        $translationMenuItem->setTitle(
+        $noSynchronizationMenuItem->setTitle(
                 LocalizationUtility::translate(
                         'function_nosync',
                         'external_import'
@@ -486,12 +488,12 @@ class DataModuleController extends ActionController
         $uri = $uriBuilder->reset()->uriFor(
                 $action,
                 array(),
-                'Module'
+                'DataModule'
         );
-        $translationMenuItem->setHref($uri)->setActive($isActive);
+        $noSynchronizationMenuItem->setHref($uri)->setActive($isActive);
 
-        $menu->addMenuItem($languageListMenuItem);
-        $menu->addMenuItem($translationMenuItem);
+        $menu->addMenuItem($synchronizationMenuItem);
+        $menu->addMenuItem($noSynchronizationMenuItem);
         $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
     }
 
