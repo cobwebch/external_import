@@ -92,8 +92,8 @@ class ConfigurationRepository
      */
     public function findColumnsByTableAndIndex($table, $index)
     {
+        $columns = array();
         if (isset($GLOBALS['TCA'][$table]['columns'])) {
-            $columns = array();
             $columnsConfiguration = $GLOBALS['TCA'][$table]['columns'];
             ksort($columnsConfiguration);
             foreach ($columnsConfiguration as $columnName => $columnData) {
@@ -101,8 +101,6 @@ class ConfigurationRepository
                     $columns[$columnName] = $columnData['external'][$index];
                 }
             }
-        } else {
-            $columns = null;
         }
         return $columns;
     }

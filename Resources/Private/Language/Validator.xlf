@@ -42,7 +42,7 @@
 				<source>Property "pid" is not valid. Records for table %s can only be stored on root page.</source>
 			</trans-unit>
 			<trans-unit id="wrongUseColumnIndexProperty" xml:space="preserve">
-				<source>Property "setColumnIndex" is set to %1$s, but no matching configuration exists for table %2$s.</source>
+				<source>Property "useColumnIndex" is set to %1$s, but no matching configuration exists for table %2$s.</source>
 			</trans-unit>
 			<trans-unit id="missingFieldProperty" xml:space="preserve">
 				<source>Property "field" is mandatory for "array"-type data.</source>

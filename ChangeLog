@@ -1,3 +1,7 @@
+2017-03-23 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected logic of "useColumnIndex" validator, resolves #3
+
 2017-03-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fixed wrong declaration of Data Module menu items, resolves #1

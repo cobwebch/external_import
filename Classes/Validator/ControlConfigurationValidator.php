@@ -331,10 +331,14 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
     public function validateUseColumnIndexProperty($property)
     {
         // If useColumnIndex is defined, it needs to match an existing index for the same table
+        // If there's no column configuration using that index, issue an error
         if ($property !== null) {
             $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
-            $configurations = $configurationRepository->findByTable($this->table);
-            if (!array_key_exists($property, $configurations)) {
+            $referencedColumnConfiguration = $configurationRepository->findColumnsByTableAndIndex(
+                    $this->table,
+                    $property
+            );
+            if (count($referencedColumnConfiguration) === 0) {
                 $this->addResult(
                         'useColumnIndex',
                         LocalizationUtility::translate(
