@@ -51,7 +51,7 @@
 				<source>Array-type data must have either a "field" or a "value" property.</source>
 			</trans-unit>
 			<trans-unit id="missingPropertiesForXmlData" xml:space="preserve">
-				<source>XML-type data must have at least one of the following properties: "field", "value", "atribute" or "xpath".</source>
+				<source>No configuration. The imported value will be that of the node directly targeted by the "nodetype" property.</source>
 			</trans-unit>
 			<trans-unit id="conflictingPropertiesForArrayData" xml:space="preserve">
 				<source>Do not set both the "value" and the "field" properties as they are conflicting. The "value" property takes precedence.</source>

@@ -78,7 +78,7 @@ class ColumnConfigurationValidator extends AbstractConfigurationValidator
                 );
             }
         } elseif ($ctrlConfiguration['data'] === 'xml') {
-            // For data of type "xml", any of "field", "value", "attribute" or "xpath" must be set
+            // It is okay to have no configuration for a column. Just make sure this is really what the user wanted.
             if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value']) && !isset($columnConfiguration['attribute']) && !isset($columnConfiguration['xpath'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
                 $this->addResult(
@@ -87,7 +87,7 @@ class ColumnConfigurationValidator extends AbstractConfigurationValidator
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForXmlData',
                                 'external_import'
                         ),
-                        FlashMessage::ERROR
+                        FlashMessage::NOTICE
                 );
             // "value" property should not be set if another value-setting property is also defined
             } elseif (

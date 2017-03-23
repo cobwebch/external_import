@@ -1,6 +1,7 @@
 2017-03-23 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected logic of "useColumnIndex" validator, resolves #3
+	* Corrected logic of column configuration validator for XML-type data, resolves #5
 
 2017-03-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
