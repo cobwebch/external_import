@@ -29,6 +29,13 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 class ProcessedParametersViewHelper extends AbstractViewHelper implements CompilableInterface
 {
     /**
+     * Do not escape output of child nodes.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+    /**
      * Process parameters and set them as variable.
      *
      * @param string $table Name of the table being displayed
@@ -69,7 +76,7 @@ class ProcessedParametersViewHelper extends AbstractViewHelper implements Compil
             $importer->setTableName($arguments['table']);
             $importer->setIndex($arguments['index']);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
-                $preProcessor = GeneralUtility::getUserObj($className);
+                $preProcessor = GeneralUtility::makeInstance($className);
                 $processedParameters = $preProcessor->processParameters(
                         $arguments['parameters'],
                         $importer

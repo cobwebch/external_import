@@ -25,6 +25,13 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 class DisplayValidationResultViewHelper extends AbstractViewHelper
 {
     /**
+     * Do not escape output of child nodes.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+    /**
      * Renders the validation result.
      *
      * @param array $result Validation result (contains message and severity)

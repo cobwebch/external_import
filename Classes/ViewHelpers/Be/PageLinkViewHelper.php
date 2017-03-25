@@ -31,6 +31,13 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 class PageLinkViewHelper extends AbstractViewHelper implements CompilableInterface
 {
     /**
+     * Do not escape output of child nodes.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+    /**
      * Creates the link.
      *
      * @param int $page The original array to dump

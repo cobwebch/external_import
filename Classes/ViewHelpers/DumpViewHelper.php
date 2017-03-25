@@ -21,11 +21,18 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Dumps an array in a formatted way.
- * 
+ *
  * @package Cobweb\ExternalImport\ViewHelpers
  */
 class DumpViewHelper extends AbstractViewHelper implements CompilableInterface
 {
+    /**
+     * Do not escape output of child nodes.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
     /**
      * Dumps the array.
      *

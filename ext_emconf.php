@@ -21,18 +21,18 @@ $EM_CONF[$_EXTKEY] = array (
   'createDirs' => '',
   'clearCacheOnLoad' => 0,
   'author_company' => '',
-  'version' => '3.0.5',
-  'constraints' => 
+  'version' => '3.1.0-dev',
+  'constraints' =>
   array (
-    'depends' => 
+    'depends' =>
     array (
       'svconnector' => '3.0.0-0.0.0',
-      'typo3' => '7.6.0-7.99.99',
+      'typo3' => '7.6.0-8.99.99',
     ),
-    'conflicts' => 
+    'conflicts' =>
     array (
     ),
-    'suggests' => 
+    'suggests' =>
     array (
       'externalimport_tut' => '2.0.1-0.0.0',
       'scheduler' => '',

@@ -185,7 +185,7 @@ class SchedulerRepository implements SingletonInterface
                 'group' => $taskObject->getTaskGroup(),
                 // Format date and time as needed for form input
                 'startTimestamp' => $startTimestamp,
-                'startDate' => ($startTimestamp === 0) ? '' : date($editFormat, $taskObject->getExecution()->getStart())
+                'startDate' => (empty($startTimestamp)) ? '' : date($editFormat, $taskObject->getExecution()->getStart())
         );
         return $taskInformation;
     }
@@ -256,13 +256,13 @@ class SchedulerRepository implements SingletonInterface
      *
      * @param string $frequency Automation frequency
      * @param int $group Scheduler task group
-     * @param int $startDate Automation start date
+     * @param \DateTime $startDate Automation start date
      * @param string $table Name of the table for which to set an automated task for
      * @param string $index Index for which to set an automated task for
      * @param int $uid Id of an existing task (will be 0 for a new task)
      * @return array
      */
-    public function prepareTaskData($frequency, $group, $startDate, $table = '', $index = '', $uid = 0)
+    public function prepareTaskData($frequency, $group, \DateTime $startDate = null, $table = '', $index = '', $uid = 0)
     {
         // Assemble base data
         $taskData = array(
@@ -270,10 +270,12 @@ class SchedulerRepository implements SingletonInterface
             'table' => $table,
             'index' => $index,
             'group' => (int)$group,
-            'start' => (int)$startDate,
             'interval' => 0,
             'croncmd' => ''
         );
+        if (isset($startDate)) {
+            $taskData['start'] = $startDate->format('U');
+        }
         // Handle frequency, which may be a simple number of seconds or a cron command
         // Try interpreting the frequency as a cron command
         try {

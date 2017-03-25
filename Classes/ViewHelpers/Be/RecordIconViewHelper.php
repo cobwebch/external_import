@@ -24,6 +24,13 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 class RecordIconViewHelper extends AbstractViewHelper implements CompilableInterface
 {
     /**
+     * Do not escape output of child nodes.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+    /**
      * Prints icon html for the given table.
      *
      * @param string $table Name of the table

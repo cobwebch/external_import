@@ -434,7 +434,7 @@ class Importer
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['processParameters'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['processParameters'] as $className) {
-                $preProcessor = GeneralUtility::getUserObj($className);
+                $preProcessor = GeneralUtility::makeInstance($className);
                 $parameters = $preProcessor->processParameters($parameters, $this);
             }
         }
@@ -835,7 +835,7 @@ class Importer
             // Apply defined user function
             if (isset($columnData['external'][$this->columnIndex]['userFunc'])) {
                 // Try to get the referenced class
-                $userObject = GeneralUtility::getUserObj($columnData['external'][$this->columnIndex]['userFunc']['class']);
+                $userObject = GeneralUtility::makeInstance($columnData['external'][$this->columnIndex]['userFunc']['class']);
                 // Could not instantiate the class, log error and do nothing
                 if ($userObject === false) {
                     if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
@@ -1026,7 +1026,7 @@ class Importer
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['preprocessRawRecordset'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['preprocessRawRecordset'] as $className) {
-                $preProcessor = GeneralUtility::getUserObj($className);
+                $preProcessor = GeneralUtility::makeInstance($className);
                 $records = $preProcessor->preprocessRawRecordset($records, $this);
                 // Compact the array again, in case some values were unset in the pre-processor
                 $records = array_values($records);
@@ -1063,7 +1063,7 @@ class Importer
         if ($continueImport) {
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['validateRawRecordset'])) {
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['validateRawRecordset'] as $className) {
-                    $validator = GeneralUtility::getUserObj($className);
+                    $validator = GeneralUtility::makeInstance($className);
                     $continueImport = $validator->validateRawRecordset($records, $this);
                     // If a single check fails, don't call further hooks
                     if (!$continueImport) {
@@ -1088,7 +1088,7 @@ class Importer
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['preprocessRecordset'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['preprocessRecordset'] as $className) {
-                $preProcessor = GeneralUtility::getUserObj($className);
+                $preProcessor = GeneralUtility::makeInstance($className);
                 $records = $preProcessor->preprocessRecordset($records, $this);
                 // Compact the array again, in case some values were unset in the pre-processor
                 $records = array_values($records);
@@ -1292,7 +1292,7 @@ class Importer
                     // First call a pre-processing hook
                     if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['updatePreProcess'])) {
                         foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['updatePreProcess'] as $className) {
-                            $preProcessor = GeneralUtility::getUserObj($className);
+                            $preProcessor = GeneralUtility::makeInstance($className);
                             $theRecord = $preProcessor->processBeforeUpdate($theRecord, $this);
                         }
                     }
@@ -1316,7 +1316,7 @@ class Importer
                 // First call a pre-processing hook
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['insertPreProcess'])) {
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['insertPreProcess'] as $className) {
-                        $preProcessor = GeneralUtility::getUserObj($className);
+                        $preProcessor = GeneralUtility::makeInstance($className);
                         $theRecord = $preProcessor->processBeforeInsert($theRecord, $this);
                     }
                 }
@@ -1400,7 +1400,7 @@ class Importer
                 }
             }
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['datamapPostProcess'] as $className) {
-                $postProcessor = GeneralUtility::getUserObj($className);
+                $postProcessor = GeneralUtility::makeInstance($className);
                 $postProcessor->datamapPostProcess($this->table, $savedData, $this);
             }
         }
@@ -1423,7 +1423,7 @@ class Importer
             // Call a pre-processing hook
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['deletePreProcess'])) {
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['deletePreProcess'] as $className) {
-                    $preProcessor = GeneralUtility::getUserObj($className);
+                    $preProcessor = GeneralUtility::makeInstance($className);
                     $absentUids = $preProcessor->processBeforeDelete($this->table, $absentUids, $this);
                 }
             }
@@ -1441,7 +1441,7 @@ class Importer
                 // Call a post-processing hook
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['cmdmapPostProcess'])) {
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extensionKey]['cmdmapPostProcess'] as $className) {
-                        $postProcessor = GeneralUtility::getUserObj($className);
+                        $postProcessor = GeneralUtility::makeInstance($className);
                         $absentUids = $postProcessor->cmdmapPostProcess($this->table, $absentUids, $this);
                     }
                 }

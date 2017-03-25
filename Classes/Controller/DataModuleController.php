@@ -291,13 +291,12 @@ class DataModuleController extends ActionController
      * @param string $table Name of the table for which to set an automated task for
      * @param string $frequency Automation frequency
      * @param int $group Scheduler task group
-     * @param int $start_date_hr Automation start date
+     * @param \DateTime $start_date_hr Automation start date
      * @param string $index Index for which to set an automated task for
      * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
-     * @validate $start_date_hr \Cobweb\ExternalImport\Validator\DateTimeValidator
      * @return void
      */
-    public function createTaskAction($table, $frequency, $group, $start_date_hr, $index = '')
+    public function createTaskAction($table, $frequency, $group, \DateTime $start_date_hr = null, $index = '')
     {
         try {
             $this->schedulerRepository->saveTask(
@@ -370,12 +369,11 @@ class DataModuleController extends ActionController
      * @param int $uid Id of the task to update
      * @param string $frequency Automation frequency
      * @param int $group Scheduler task group
-     * @param int $start_date_hr Automation start date
+     * @param \DateTime $start_date_hr Automation start date
      * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
-     * @validate $start_date_hr \Cobweb\ExternalImport\Validator\DateTimeValidator
      * @return void
      */
-    public function updateTaskAction($uid, $frequency, $group, $start_date_hr)
+    public function updateTaskAction($uid, $frequency, $group, \DateTime $start_date_hr = null)
     {
         try {
             $this->schedulerRepository->saveTask(

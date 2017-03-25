@@ -25,6 +25,13 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 class ValidateControlConfigurationViewHelper extends AbstractViewHelper
 {
     /**
+     * Do not escape output of child nodes.
+     *
+     * @var bool
+     */
+    protected $escapeOutput = false;
+
+    /**
      * Runs the validation and loads the results.
      *
      * @param string $table Name of the table the configuration applies to
