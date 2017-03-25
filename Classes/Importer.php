@@ -1149,7 +1149,7 @@ class Importer
             if (isset($columnData['external'][$this->columnIndex]['MM'])) {
                 $mmData = $columnData['external'][$this->columnIndex]['MM'];
                 $sortingField = (isset($mmData['sorting'])) ? $mmData['sorting'] : false;
-                $additionalFields = (isset($mmData['additional_fields'])) ? $mmData['additional_fields'] : false;
+                $additionalFields = (isset($mmData['additionalFields'])) ? $mmData['additionalFields'] : false;
 
                 $mappings[$columnName] = array();
                 if ($additionalFields || $mmData['multiple']) {
@@ -1200,7 +1200,7 @@ class Importer
                         // If additional fields are defined, store those values in an intermediate array
                         $fields = array();
                         if ($additionalFields) {
-                            foreach ($mmData['additional_fields'] as $localFieldName => $externalFieldName) {
+                            foreach ($additionalFields as $localFieldName => $externalFieldName) {
                                 $fields[$localFieldName] = $theRecord[$externalFieldName];
                             }
                         }
@@ -1212,7 +1212,7 @@ class Importer
                             if ($additionalFields || $mmData['multiple']) {
                                 $fullMappings[$columnName][$externalUid][$sortingValue] = array(
                                         'value' => $foreignValue,
-                                        'additional_fields' => $fields
+                                        'additionalFields' => $fields
                                 );
                             }
                         } else {
@@ -1220,7 +1220,7 @@ class Importer
                             if ($additionalFields || $mmData['multiple']) {
                                 $fullMappings[$columnName][$externalUid][] = array(
                                         'value' => $foreignValue,
-                                        'additional_fields' => $fields
+                                        'additionalFields' => $fields
                                 );
                             }
                         }
@@ -1567,7 +1567,7 @@ class Importer
                         $uidForeign = $mmData['value'];
                     }
 
-                    $fields = $mmData['additional_fields'];
+                    $fields = $mmData['additionalFields'];
                     $fields['uid_local'] = $uidLocal;
                     $fields['uid_foreign'] = $uidForeign;
                     $fields['sorting'] = $counter;
