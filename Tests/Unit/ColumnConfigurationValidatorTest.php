@@ -155,7 +155,7 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'xml'
                         ),
                         array(),
-                        FlashMessage::ERROR
+                        FlashMessage::NOTICE
                 ),
                 'Data type "array": conflicting data-setting properties' => array(
                         array(
@@ -187,7 +187,7 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
      * @test
      * @dataProvider invalidConfigurationProvider
      */
-    public function validateDataSettingPropertiesRaisesErrorOrWarning($controlConfiguration, $columnConfiguration, $severity)
+    public function validateDataSettingPropertiesRaisesMessage($controlConfiguration, $columnConfiguration, $severity)
     {
         $this->subject->isValid(
                 'tt_content',
