@@ -1,3 +1,7 @@
+2017-03-31 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected name pattern for new records placeholders, resolves #10
+
 2017-03-25 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected usage of old "additionalFields" property name, resolves #9
