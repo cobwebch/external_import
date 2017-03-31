@@ -94,6 +94,11 @@ class Importer
     protected $pid = 0;
 
     /**
+     * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
+     */
+    protected $forcedStoragePid = 0;
+
+    /**
      * @var array List of fields to import, but not to save
      */
     protected $additionalFields = array();
@@ -227,7 +232,7 @@ class Importer
                 $table,
                 $index
         );
-        $this->pid = $this->externalConfiguration['pid'];
+        $this->pid = ($this->forcedStoragePid > 0) ? $this->forcedStoragePid : $this->externalConfiguration['pid'];
 
         // Sets the column configuration index (may differ from main one)
         if (isset($this->externalConfiguration['useColumnIndex'])) {
@@ -1182,7 +1187,7 @@ class Importer
                             }
                         }
 
-                        // Then the "strict" matching method to mapping table
+                    // Then the "strict" matching method to mapping table
                     } elseif (isset($foreignMappings[$theRecord[$columnName]])) {
                         $foreignValue = $foreignMappings[$theRecord[$columnName]];
                     }
@@ -1457,8 +1462,7 @@ class Importer
         if (count($tce->errorLog) > 0) {
             // If yes, get these messages from the sys_log table
             $where = "tablename = '" . $this->table . "' AND error > '0'";
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_log', $where, '', 'tstamp DESC',
-                    count($tce->errorLog));
+            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'sys_log', $where, '', 'tstamp DESC', count($tce->errorLog));
             if ($res) {
                 while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
                     // Check if there's a label for the message
@@ -1482,7 +1486,7 @@ class Importer
                 }
                 $GLOBALS['TYPO3_DB']->sql_free_result($res);
             }
-            // Substract the number of new IDs from the number of inserts,
+            // Subtract the number of new IDs from the number of inserts,
             // to get a realistic number of new records
             $inserts = $this->newKeysCounter + ($numberOfNewIDs - $this->newKeysCounter);
             // Add a warning that numbers reported (below) may not be accurate
@@ -1916,5 +1920,15 @@ class Importer
                     array()
             );
         }
+    }
+
+    /**
+     * Forces the storage pid for imported records. Used for testing only!
+     *
+     * @param $pid
+     */
+    public function setForcedStoragePid($pid)
+    {
+        $this->forcedStoragePid = (int)$pid;
     }
 }
