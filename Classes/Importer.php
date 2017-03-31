@@ -923,7 +923,7 @@ class Importer
                                     // If not, create a new temporary key
                                 } else {
                                     $this->newKeysCounter++;
-                                    $temporaryKey = 'NEW_' . $this->newKeysCounter;
+                                    $temporaryKey = 'NEW' . $this->newKeysCounter;
                                     $this->temporaryKeys[$singleValue] = $temporaryKey;
                                 }
                                 // Use temporary key
@@ -1339,7 +1339,7 @@ class Importer
                     $theID = $this->temporaryKeys[$externalUid];
                 } else {
                     $this->newKeysCounter++;
-                    $theID = 'NEW_' . $this->newKeysCounter;
+                    $theID = 'NEW' . $this->newKeysCounter;
                 }
                 $tceData[$this->table][$theID] = $theRecord;
             }
