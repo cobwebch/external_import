@@ -27,8 +27,8 @@ interface DataHandlerInterface
      * Handles the raw data passed to it and returns it as a simple, indexed PHP array
      *
      * @param mixed $rawData Data to handle. Could be of any type, as suited for the data handler.
-     * @param Importer $importerObject The calling importer object
+     * @param Importer $importer Back-reference to the current Importer instance
      * @return array The handled data, as PHP array
      */
-    public function handleData($rawData, Importer $importerObject);
+    public function handleData($rawData, Importer $importer);
 }

@@ -15,7 +15,9 @@ namespace Cobweb\ExternalImport\Task;
  */
 
 use Cobweb\ExternalImport\Importer;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 /**
@@ -49,14 +51,26 @@ class AutomatedSyncTask extends AbstractTask
         $reportContent = '';
 
         // Instantiate the import object and call appropriate method depending on command
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var $importer Importer */
-        $importer = GeneralUtility::makeInstance(Importer::class);
+        $importer = $objectManager->get(Importer::class);
         // Get the extension's configuration from the importer object
         $extensionConfiguration = $importer->getExtensionConfiguration();
         // Synchronize all tables
         $globalStatus = 'OK';
+        $allMessages = array();
         if ($this->table === 'all') {
-            $allMessages = $importer->synchronizeAllTables();
+            $configurations = $importer->getConfigurationRepository()->findOrderedConfigurations();
+            foreach ($configurations as $tableList) {
+                foreach ($tableList as $configuration) {
+                    $messages = $importer->synchronizeData(
+                            $configuration['table'],
+                            $configuration['index']
+                    );
+                    $key = $configuration['table'] . '/' . $configuration['index'];
+                    $allMessages[$key] = $messages;
+                }
+            }
             // If necessary, prepare a report with all messages
             if (!empty($extensionConfiguration['reportEmail'])) {
                 foreach ($allMessages as $key => $messages) {

@@ -16,8 +16,8 @@ namespace Cobweb\ExternalImport\Tests\Unit\Validator;
 
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Tests\BaseTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\BaseTestCase;
 
 class ColumnConfigurationValidatorTest extends BaseTestCase
 {

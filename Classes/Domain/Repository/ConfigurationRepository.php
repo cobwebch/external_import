@@ -14,6 +14,9 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Exception\ConfigurationNotFoundException;
+use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -35,6 +38,16 @@ class ConfigurationRepository
     protected $extensionConfiguration = array();
 
     /**
+     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     */
+    protected $objectManager;
+
+    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager)
+    {
+        $this->objectManager = $objectManager;
+    }
+
+    /**
      * @var array List of renamed properties and their new name, for the "ctrl" part of the configuration
      */
     static public $renamedControlProperties = array(
@@ -54,6 +67,7 @@ class ConfigurationRepository
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
      * @return array The relevant TCA configuration
+     * @throws \Cobweb\ExternalImport\Exception\ConfigurationNotFoundException
      */
     public function findByTableAndIndex($table, $index)
     {
@@ -61,9 +75,11 @@ class ConfigurationRepository
             return $this->processCtrlConfiguration(
                     $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
             );
-        } else {
-            return null;
         }
+        throw new ConfigurationNotFoundException(
+                sprintf('No ctrl configuration found for table %s, index %s', $table, $index),
+                1492287150
+        );
     }
 
     /**
@@ -89,6 +105,7 @@ class ConfigurationRepository
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
      * @return array The relevant TCA configuration
+     * @throws \Cobweb\ExternalImport\Exception\ConfigurationNotFoundException
      */
     public function findColumnsByTableAndIndex($table, $index)
     {
@@ -102,7 +119,71 @@ class ConfigurationRepository
                 }
             }
         }
+        if (count($columns) === 0) {
+            throw new ConfigurationNotFoundException(
+                    sprintf('No column configurations found for table %s, index %s', $table, $index),
+                    1492287150
+            );
+        }
         return $columns;
+    }
+
+    /**
+     * Finds all synchronizable configurations and returns them order by priority.
+     *
+     * @return array
+     */
+    public function findOrderedConfigurations()
+    {
+        $externalTables = array();
+        foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+            if (isset($sections['ctrl']['external'])) {
+                foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
+                    if (!empty($externalConfig['connector'])) {
+                        // Default priority if not defined, set to very low
+                        $priority = Importer::DEFAULT_PRIORITY;
+                        if (isset($externalConfig['priority'])) {
+                            $priority = $externalConfig['priority'];
+                        }
+                        if (!isset($externalTables[$priority])) {
+                            $externalTables[$priority] = array();
+                        }
+                        $externalTables[$priority][] = array('table' => $tableName, 'index' => $index);
+                    }
+                }
+            }
+        }
+        // Sort tables by priority (lower number is highest priority)
+        ksort($externalTables);
+
+        return $externalTables;
+    }
+
+    /**
+     * Returns the full External Import configuration as an object for the given table and index.
+     *
+     * @param string $table Name of the table
+     * @param string|integer $index Key of the configuration
+     * @return Configuration
+     * @throws \Cobweb\ExternalImport\Exception\ConfigurationNotFoundException
+     */
+    public function findConfigurationObject($table, $index)
+    {
+        $configuration = $this->objectManager->get(Configuration::class);
+        $ctrlConfiguration = $this->findByTableAndIndex($table, $index);
+
+        // Override the configuration index for columns, if so defined
+        if (isset($ctrlConfiguration['useColumnIndex'])) {
+            $index = $ctrlConfiguration['useColumnIndex'];
+        }
+        $columnsConfiguration = $this->findColumnsByTableAndIndex($table, $index);
+
+        // Set the values in the Configuration object
+        $configuration->setTable($table);
+        $configuration->setIndex($index);
+        $configuration->setCtrlConfiguration($ctrlConfiguration);
+        $configuration->setColumnConfiguration($columnsConfiguration);
+        return $configuration;
     }
 
     /**

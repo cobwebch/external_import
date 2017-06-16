@@ -14,8 +14,9 @@ namespace Cobweb\ExternalImport\Tests\Unit;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Utility\MappingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\BaseTestCase;
 
 /**
  * Testcase for the External Import importer
@@ -24,7 +25,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class ImporterTest extends \TYPO3\CMS\Core\Tests\BaseTestCase
+class MappingUtilityTest extends BaseTestCase
 {
     /**
      * @var array List of globals to exclude (contain closures which cannot be serialized)
@@ -34,13 +35,13 @@ class ImporterTest extends \TYPO3\CMS\Core\Tests\BaseTestCase
     /**
      * Local instance for testing
      *
-     * @var Importer
+     * @var MappingUtility
      */
-    protected $importer;
+    protected $mappingUtility;
 
     public function setUp()
     {
-        $this->importer = GeneralUtility::makeInstance(Importer::class);
+        $this->mappingUtility = GeneralUtility::makeInstance(MappingUtility::class);
     }
 
     /**
@@ -185,7 +186,7 @@ class ImporterTest extends \TYPO3\CMS\Core\Tests\BaseTestCase
      */
     public function matchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult)
     {
-        $actualResult = $this->importer->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
+        $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
     }
 
@@ -197,7 +198,7 @@ class ImporterTest extends \TYPO3\CMS\Core\Tests\BaseTestCase
      */
     public function matchWordsWithStrposSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult)
     {
-        $actualResult = $this->importer->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
+        $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
     }
 
@@ -208,7 +209,7 @@ class ImporterTest extends \TYPO3\CMS\Core\Tests\BaseTestCase
      */
     public function failMatchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration)
     {
-        $this->importer->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
+        $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
     }
 
     /**
@@ -219,7 +220,7 @@ class ImporterTest extends \TYPO3\CMS\Core\Tests\BaseTestCase
      */
     public function matchWordsWithStirposNotSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult)
     {
-        $actualResult = $this->importer->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
+        $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
     }
 
@@ -230,6 +231,6 @@ class ImporterTest extends \TYPO3\CMS\Core\Tests\BaseTestCase
      */
     public function failMatchWordsWithStriposNotSymmetric($inputData, $mappingTable, $mappingConfiguration)
     {
-        $this->importer->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
+        $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
     }
 }

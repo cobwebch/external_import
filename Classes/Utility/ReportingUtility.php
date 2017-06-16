@@ -20,6 +20,8 @@ use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This class performs various reporting actions after a data import has taken place.
@@ -48,12 +50,36 @@ class ReportingUtility
      */
     protected $logRepository;
 
-    public function __construct(Importer $importer)
+    /**
+     * @var PersistenceManager
+     */
+    protected $persistenceManager;
+
+    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager)
+    {
+        $this->objectManager = $objectManager;
+    }
+
+    public function injectLogRepository(\Cobweb\ExternalImport\Domain\Repository\LogRepository $logRepository)
+    {
+        $this->logRepository = $logRepository;
+    }
+
+    public function injectPersistenceManager(\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager)
+    {
+        $this->persistenceManager = $persistenceManager;
+    }
+
+    /**
+     * Sets a back-reference to the Importer object.
+     *
+     * @param Importer $importer
+     * @return void
+     */
+    public function setImporter(Importer $importer)
     {
         $this->importer = $importer;
         $this->extensionConfiguration = $importer->getExtensionConfiguration();
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->logRepository = $this->objectManager->get(LogRepository::class);
     }
 
     /**
@@ -63,7 +89,7 @@ class ReportingUtility
      */
     public function writeToDevLog()
     {
-        if (TYPO3_DLOG || $this->extensionConfiguration['debug']) {
+        if ($this->extensionConfiguration['debug']) {
             $messages = $this->importer->getMessages();
 
             // Define a global severity based on the highest issue level reported
@@ -76,9 +102,12 @@ class ReportingUtility
 
             // Log all the messages in one go
             GeneralUtility::devLog(
-                    sprintf(
-                            $this->getLanguageObject()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:sync_table'),
-                            $this->importer->getTableName()
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:sync_table',
+                            'external_import',
+                            array(
+                                    $this->importer->getExternalConfiguration()->getTable()
+                            )
                     ),
                     'external_import',
                     $severity,
@@ -108,21 +137,14 @@ class ReportingUtility
                         (isset($GLOBALS['BE_USER']->user['uid'])) ? $GLOBALS['BE_USER']->user['uid'] : 0
                 );
                 $logEntry->setConfiguration(
-                        $this->importer->getTableName() . ' / ' . $this->importer->getIndex()
+                        $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()
                 );
                 $logEntry->setMessage($message);
                 $this->logRepository->add($logEntry);
             }
         }
-    }
-
-    /**
-     * Returns the global language object.
-     *
-     * @return \TYPO3\CMS\Lang\LanguageService
-     */
-    protected function getLanguageObject()
-    {
-        return $GLOBALS['LANG'];
+        // Make sure the entries are persisted (this will not happen automatically
+        // when called from the command line)
+        $this->persistenceManager->persistAll();
     }
 }

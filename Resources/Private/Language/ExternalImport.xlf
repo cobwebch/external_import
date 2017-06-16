@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-	<file original="" product-name="Cobweb.FooBar" source-language="en" datatype="plaintext">
+	<file original="" product-name="Cobweb.ExternalImport" source-language="en" datatype="plaintext">
 		<body>
 			<trans-unit id="config.reporting" xml:space="preserve">
 				<source>Reporting</source>
@@ -145,6 +145,15 @@
 			</trans-unit>
 			<trans-unit id="exceptionOccurred" xml:space="preserve">
 				<source>A problem occurred. The following error was returned: %1$s (Exception code: %2$d).</source>
+			</trans-unit>
+			<trans-unit id="invalidCustomHandler" xml:space="preserve">
+				<source>Class %s does not implement the \Cobweb\ExternalImport\DataHandlerInterface interface.</source>
+			</trans-unit>
+			<trans-unit id="wrongCustomHandler" xml:space="preserve">
+				<source>Could not instantiate class %s as a custom data handler.</source>
+			</trans-unit>
+			<trans-unit id="noConfigurationFound" xml:space="preserve">
+				<source>The requested configuration was not found (table: %1$s, index: %2$s). Message: %3$s [%4$d]</source>
 			</trans-unit>
 		</body>
 	</file>

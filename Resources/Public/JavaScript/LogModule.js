@@ -60,7 +60,7 @@ define(['jquery',
 				ExternalImportLogModule.table = tableView.DataTable({
 					data: data,
 					dom: 'tp',
-					// Default ordering is "title" column
+					// Default ordering is "date" column
 					order: [
 						[1, 'desc']
 					],
@@ -69,7 +69,7 @@ define(['jquery',
 							targets: 'log-status',
 							data: 'status',
 							render:  function(data, type, row, meta) {
-								if (type == 'display') {
+								if (type === 'display') {
 									return ExternalImportLogModule.icons[data];
 								} else {
 									return data;
@@ -80,7 +80,7 @@ define(['jquery',
 							targets: 'log-date',
 							data: 'date',
 							render:  function(data, type, row, meta) {
-								if (type == 'sort') {
+								if (type === 'sort') {
 									return data;
 								} else {
 									var lastModifiedDate = new Date(data * 1000);

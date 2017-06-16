@@ -31,7 +31,7 @@ Properties
 	========================= =====================================================
 	Property                  Data type
 	========================= =====================================================
-	`additional\_fields`_     array
+	`additionalFields`_       array
 	mapping_                  :ref:`Mapping configuration <administration-mapping>`
 	multiple_                 boolean
 	sorting_                  string
@@ -57,8 +57,8 @@ Scope
 
 .. _administration-mm-properties-additional-fields:
 
-additional\_fields
-~~~~~~~~~~~~~~~~~~
+additionalFields
+~~~~~~~~~~~~~~~~
 
 Type
   array
