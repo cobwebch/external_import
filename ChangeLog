@@ -1,6 +1,7 @@
 2017-06-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Refactored Importer class, resolves #8
+	* Added command controller, resolves #20
 
 2017-03-23 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
