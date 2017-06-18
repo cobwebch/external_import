@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand;
@@ -55,12 +56,14 @@ class SchedulerRepository implements SingletonInterface
 
     public function __construct()
     {
-        $this->scheduler = GeneralUtility::makeInstance(Scheduler::class);
-        $allTasks = $this->scheduler->fetchTasksWithCondition('', true);
-        /** @var $aTaskObject AbstractTask */
-        foreach ($allTasks as $aTaskObject) {
-            if (get_class($aTaskObject) === self::$taskClassName) {
-                $this->tasks[] = $aTaskObject;
+        if (ExtensionManagementUtility::isLoaded('scheduler')) {
+            $this->scheduler = GeneralUtility::makeInstance(Scheduler::class);
+            $allTasks = $this->scheduler->fetchTasksWithCondition('', true);
+            /** @var $aTaskObject AbstractTask */
+            foreach ($allTasks as $aTaskObject) {
+                if (get_class($aTaskObject) === self::$taskClassName) {
+                    $this->tasks[] = $aTaskObject;
+                }
             }
         }
     }
@@ -136,20 +139,21 @@ class SchedulerRepository implements SingletonInterface
         $groups = array(
             0 => ''
         );
-        try {
-            $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
-                    'uid, groupName',
-                    'tx_scheduler_task_group',
-                    '1 = 1' . BackendUtility::deleteClause('tx_scheduler_task_group') . BackendUtility::BEenableFields('tx_scheduler_task_group'),
-                    '',
-                    'groupName'
-            );
-            foreach ($rows as $row) {
-                $groups[$row['uid']] = $row['groupName'];
+        if (ExtensionManagementUtility::isLoaded('scheduler')) {
+            try {
+                $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
+                        'uid, groupName',
+                        'tx_scheduler_task_group',
+                        '1 = 1' . BackendUtility::deleteClause('tx_scheduler_task_group') . BackendUtility::BEenableFields('tx_scheduler_task_group'),
+                        '',
+                        'groupName'
+                );
+                foreach ($rows as $row) {
+                    $groups[$row['uid']] = $row['groupName'];
+                }
+            } catch (\Exception $e) {
+                // Nothing to do, let an empty groups list be returned
             }
-        }
-        catch (\Exception $e) {
-            // Nothing to do, let an empty groups list be returned
         }
         return $groups;
     }
@@ -200,6 +204,11 @@ class SchedulerRepository implements SingletonInterface
      */
     public function saveTask($taskData)
     {
+        // Early exit if "scheduler" extension is not loaded
+        if (ExtensionManagementUtility::isLoaded('scheduler')) {
+            return false;
+        }
+
         if ($taskData['uid'] === 0) {
             // Create a new task instance and register the execution
             /** @var $task AutomatedSyncTask */
@@ -241,6 +250,11 @@ class SchedulerRepository implements SingletonInterface
      */
     public function deleteTask($uid)
     {
+        // Early exit if "scheduler" extension is not loaded
+        if (ExtensionManagementUtility::isLoaded('scheduler')) {
+            return false;
+        }
+
         $result = false;
         $uid = (int)$uid;
         if ($uid > 0) {
