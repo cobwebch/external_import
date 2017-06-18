@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Validator;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Exception\ConfigurationNotFoundException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -334,11 +335,13 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
         // If there's no column configuration using that index, issue an error
         if ($property !== null) {
             $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
-            $referencedColumnConfiguration = $configurationRepository->findColumnsByTableAndIndex(
-                    $this->table,
-                    $property
-            );
-            if (count($referencedColumnConfiguration) === 0) {
+            try {
+                $configurationRepository->findColumnsByTableAndIndex(
+                        $this->table,
+                        $property
+                );
+            }
+            catch (ConfigurationNotFoundException $e) {
                 $this->addResult(
                         'useColumnIndex',
                         LocalizationUtility::translate(
