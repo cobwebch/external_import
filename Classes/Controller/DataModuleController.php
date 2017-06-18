@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Controller;
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
+use Cobweb\ExternalImport\Exception\ConfigurationNotFoundException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
@@ -261,15 +262,21 @@ class DataModuleController extends ActionController
         // Add a close button to the toolbar
         $this->prepareCloseButton($returnAction);
 
+        try {
+            $columnConfiguration = $this->configurationRepository->findColumnsByTableAndIndex(
+                                            $table,
+                                            isset($controlConfiguration['useColumnIndex']) ? $controlConfiguration['useColumnIndex'] : $index
+                                    );
+        }
+        catch (ConfigurationNotFoundException $e) {
+            $columnConfiguration = array();
+        }
         $this->view->assignMultiple(
                 array(
                         'table' => $table,
                         'index' => $index,
                         'ctrlConfiguration' => $controlConfiguration,
-                        'columnConfiguration' => $this->configurationRepository->findColumnsByTableAndIndex(
-                                $table,
-                                isset($controlConfiguration['useColumnIndex']) ? $controlConfiguration['useColumnIndex'] : $index
-                        )
+                        'columnConfiguration' => $columnConfiguration
                 )
         );
     }
