@@ -26,7 +26,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class ImporterTest extends \Tx_Phpunit_Database_TestCase
+class ImporterTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCase
 {
     /**
      * @var Importer

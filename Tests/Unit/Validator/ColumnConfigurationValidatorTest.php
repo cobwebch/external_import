@@ -19,7 +19,7 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\BaseTestCase;
 
-class ColumnConfigurationValidatorTest extends BaseTestCase
+class ColumnConfigurationValidatorTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
     /**
      * @var array List of globals to exclude (contain closures which cannot be serialized)

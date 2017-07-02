@@ -25,7 +25,7 @@ use TYPO3\TestingFramework\Core\BaseTestCase;
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class MappingUtilityTest extends BaseTestCase
+class MappingUtilityTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
 {
     /**
      * @var array List of globals to exclude (contain closures which cannot be serialized)
