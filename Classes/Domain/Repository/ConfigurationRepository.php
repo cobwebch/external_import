@@ -15,7 +15,6 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
-use Cobweb\ExternalImport\Exception\ConfigurationNotFoundException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -67,19 +66,15 @@ class ConfigurationRepository
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
      * @return array The relevant TCA configuration
-     * @throws \Cobweb\ExternalImport\Exception\ConfigurationNotFoundException
      */
-    public function findByTableAndIndex($table, $index)
+    protected function findByTableAndIndex($table, $index)
     {
         if (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
             return $this->processCtrlConfiguration(
                     $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
             );
         }
-        throw new ConfigurationNotFoundException(
-                sprintf('No ctrl configuration found for table %s, index %s', $table, $index),
-                1492287150
-        );
+        return array();
     }
 
     /**
@@ -87,6 +82,7 @@ class ConfigurationRepository
      *
      * @param string $table Name of the table
      * @return array The relevant TCA configurations
+     * @deprecated This method is deprecated without replacement. Do not use it anymore. It will be removed in version 4.1.0.
      */
     public function findByTable($table)
     {
@@ -105,9 +101,8 @@ class ConfigurationRepository
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
      * @return array The relevant TCA configuration
-     * @throws \Cobweb\ExternalImport\Exception\ConfigurationNotFoundException
      */
-    public function findColumnsByTableAndIndex($table, $index)
+    protected function findColumnsByTableAndIndex($table, $index)
     {
         $columns = array();
         if (isset($GLOBALS['TCA'][$table]['columns'])) {
@@ -119,17 +114,11 @@ class ConfigurationRepository
                 }
             }
         }
-        if (count($columns) === 0) {
-            throw new ConfigurationNotFoundException(
-                    sprintf('No column configurations found for table %s, index %s', $table, $index),
-                    1492287150
-            );
-        }
         return $columns;
     }
 
     /**
-     * Finds all synchronizable configurations and returns them order by priority.
+     * Finds all synchronizable configurations and returns them ordered by priority.
      *
      * @return array
      */
@@ -165,7 +154,6 @@ class ConfigurationRepository
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
      * @return Configuration
-     * @throws \Cobweb\ExternalImport\Exception\ConfigurationNotFoundException
      */
     public function findConfigurationObject($table, $index)
     {
@@ -188,6 +176,9 @@ class ConfigurationRepository
 
     /**
      * Returns external import configurations based on their sync type.
+     *
+     * The return structure of this method is very specific and used only by the DataModuleController
+     * to display a list of all configurations, including Scheduler information, if any.
      *
      * @param bool $isSynchronizable True for tables with synchronization configuration, false for others
      * @return array List of external import TCA configurations
@@ -223,7 +214,7 @@ class ConfigurationRepository
                         ) {
                             // If priority is not defined, set to very low
                             // NOTE: the priority doesn't matter for non-synchronizable tables
-                            $priority = 1000;
+                            $priority = Importer::DEFAULT_PRIORITY;
                             $description = '';
                             if (isset($externalConfig['priority'])) {
                                 $priority = $externalConfig['priority'];

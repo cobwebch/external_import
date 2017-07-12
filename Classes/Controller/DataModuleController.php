@@ -16,7 +16,6 @@ namespace Cobweb\ExternalImport\Controller;
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
-use Cobweb\ExternalImport\Exception\ConfigurationNotFoundException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
@@ -249,12 +248,13 @@ class DataModuleController extends ActionController
      */
     public function viewConfigurationAction($table, $index)
     {
-        // Define which action to back to for the close button (depends on whether the configuration is synchronizable or not)
-        $controlConfiguration = $this->configurationRepository->findByTableAndIndex(
+        $configuration = $this->configurationRepository->findConfigurationObject(
                 $table,
                 $index
         );
-        if (empty($controlConfiguration['connector'])) {
+        $connector = $configuration->getCtrlConfigurationProperty('connector');
+        // Define which action to go back to for the close button (depends on whether the configuration is synchronizable or not)
+        if (empty($connector)) {
             $returnAction = 'listNonSynchronizable';
         } else {
             $returnAction = 'listSynchronizable';
@@ -262,21 +262,11 @@ class DataModuleController extends ActionController
         // Add a close button to the toolbar
         $this->prepareCloseButton($returnAction);
 
-        try {
-            $columnConfiguration = $this->configurationRepository->findColumnsByTableAndIndex(
-                                            $table,
-                                            isset($controlConfiguration['useColumnIndex']) ? $controlConfiguration['useColumnIndex'] : $index
-                                    );
-        }
-        catch (ConfigurationNotFoundException $e) {
-            $columnConfiguration = array();
-        }
         $this->view->assignMultiple(
                 array(
                         'table' => $table,
                         'index' => $index,
-                        'ctrlConfiguration' => $controlConfiguration,
-                        'columnConfiguration' => $columnConfiguration
+                        'configuration' => $configuration
                 )
         );
     }

@@ -47,6 +47,12 @@
 			<trans-unit id="no_service" xml:space="preserve">
 				<source>No service available</source>
 			</trans-unit>
+			<trans-unit id="missingCtrlConfigurationError" xml:space="preserve">
+				<source>No general configuration could be found for table "%1$s" and index "%2$s". Import was aborted.</source>
+			</trans-unit>
+			<trans-unit id="missingColumnConfigurationError" xml:space="preserve">
+				<source>No column configuration could be found for table "%1$s" and index "%2$s". Import was aborted.</source>
+			</trans-unit>
 			<trans-unit id="configurationError" xml:space="preserve">
 				<source>The configuration contains at least one error. Import was aborted. Use the "Data Import" module to check the configuration.</source>
 			</trans-unit>

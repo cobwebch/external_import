@@ -219,6 +219,9 @@
 			<trans-unit id="moreMessages" xml:space="preserve">
 				<source>There were actually %d messages, but only the first five are displayed here. Please check your logs for more information.</source>
 			</trans-unit>
+			<trans-unit id="noColumnConfigurationError" xml:space="preserve">
+				<source>No column is defined for this configuration.</source>
+			</trans-unit>
 
 			<trans-unit id="logList" xml:space="preserve">
 				<source>Log entries</source>

@@ -207,7 +207,6 @@ class Importer
      * @param string $table Name of the table to synchronise
      * @param mixed $index Index of the synchronisation configuration to use
      * @return void
-     * @throws \Cobweb\ExternalImport\Exception\ConfigurationNotFoundException
      */
     protected function initialize($table, $index)
     {

@@ -27,48 +27,94 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class ValidateConfigurationStep extends AbstractStep
 {
     /**
+     * @var ControlConfigurationValidator
+     */
+    protected $ctrlValidator;
+
+    /**
+     * @var ColumnConfigurationValidator
+     */
+    protected $columnValidator;
+
+    public function injectCtrlValidator(\Cobweb\ExternalImport\Validator\ControlConfigurationValidator $validator)
+    {
+        $this->ctrlValidator = $validator;
+    }
+
+    public function injectColumnValidator(\Cobweb\ExternalImport\Validator\ColumnConfigurationValidator $validator)
+    {
+        $this->columnValidator = $validator;
+    }
+
+    /**
      * Validates the External Import configuration.
      *
      * @return void
      */
     public function run()
     {
-        $validator = GeneralUtility::makeInstance(ControlConfigurationValidator::class);
-        // Check the general configuration. If ok, proceed with columns configuration
         $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
-        $table = $this->importer->getTableName();
-        if ($validator->isValid($table, $ctrlConfiguration)) {
-            $columnValidator = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
-            $columnConfiguration = $this->configuration->getColumnConfiguration();
-            // Loop on the table columns to check if their external configuration is valid
-            foreach ($columnConfiguration as $columnName => $columnData) {
-                    $isValid = $columnValidator->isValid(
-                            $table,
-                            $ctrlConfiguration,
-                            $columnData
-                    );
-                    // If the column configuration is not valid, issue error message and return false
-                    if (!$isValid) {
-                        $this->importer->addMessage(
-                                LocalizationUtility::translate(
-                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
-                                        'external_import'
-                                )
-                        );
-                        $this->abortFlag = true;
-                        break;
-                    }
-            }
-
-        // If general configuration is not valid, issue error message and return false
-        } else {
+        // If there's no "ctrl" configuration, issue error
+        if (count($ctrlConfiguration) === 0) {
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
-                            'external_import'
+                    sprintf(
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingCtrlConfigurationError',
+                                    'external_import'
+                            ),
+                            $this->configuration->getTable(),
+                            $this->configuration->getIndex()
                     )
             );
             $this->abortFlag = true;
+        } else {
+            // Check the general configuration. If ok, proceed with columns configuration
+            if ($this->ctrlValidator->isValid($this->configuration)) {
+                $columnConfiguration = $this->configuration->getColumnConfiguration();
+                // If there's no column configuration at all, issue error
+                if (count($columnConfiguration) === 0) {
+                    $this->importer->addMessage(
+                            sprintf(
+                                    LocalizationUtility::translate(
+                                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingColumnConfigurationError',
+                                            'external_import'
+                                    ),
+                                    $this->configuration->getTable(),
+                                    $this->configuration->getIndex()
+                            )
+                    );
+                    $this->abortFlag = true;
+                } else {
+                    // Loop on the table columns to check if their external configuration is valid
+                    foreach ($columnConfiguration as $columnName => $columnData) {
+                        $isValid = $this->columnValidator->isValid(
+                                $this->configuration,
+                                $columnName
+                        );
+                        // If the column configuration is not valid, issue error message and return false
+                        if (!$isValid) {
+                            $this->importer->addMessage(
+                                    LocalizationUtility::translate(
+                                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
+                                            'external_import'
+                                    )
+                            );
+                            $this->abortFlag = true;
+                            break;
+                        }
+                    }
+                }
+
+            // If general configuration is not valid, issue error message and return false
+            } else {
+                $this->importer->addMessage(
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
+                                'external_import'
+                        )
+                );
+                $this->abortFlag = true;
+            }
         }
     }
 }

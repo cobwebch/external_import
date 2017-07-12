@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -34,17 +35,16 @@ class ValidateControlConfigurationViewHelper extends AbstractViewHelper
     /**
      * Runs the validation and loads the results.
      *
-     * @param string $table Name of the table the configuration applies to
-     * @param array $configuration The configuration to check
+     * @param Configuration $configuration The configuration to check
      * @param string $as Name of the variable in which to store the validation results
      * @return string
      */
-    public function render($table, array $configuration, $as)
+    public function render(Configuration $configuration, $as)
     {
         $configurationValidator = $this->objectManager->get(ControlConfigurationValidator::class);
-        $configurationValidator->isValid($table, $configuration);
+        $configurationValidator->isValid($configuration);
         $templateVariableContainer = $this->renderingContext->getTemplateVariableContainer();
-        $templateVariableContainer->add($as, $configurationValidator->getAllResults());
+        $templateVariableContainer->add($as, $configurationValidator->getResults());
         $output = $this->renderChildren();
         $templateVariableContainer->remove($as);
         return $output;

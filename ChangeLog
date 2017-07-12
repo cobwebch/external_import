@@ -1,3 +1,7 @@
+2017-07-12 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Improved configuration loading and validation, resolves #18
+
 2017-06-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Refactored Importer class, resolves #8
