@@ -1,3 +1,7 @@
+2017-08-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected usage of "useColumnIndex" in configuration loading, resolves #24
+
 2017-07-12 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Improved configuration loading and validation, resolves #18

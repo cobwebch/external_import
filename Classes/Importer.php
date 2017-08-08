@@ -415,6 +415,7 @@ class Importer
      * Returns the index of the configuration used for the columns.
      *
      * @return mixed
+     * @deprecated since 4.0.0, this method is not used and will be dropped without replacement
      */
     public function getColumnIndex()
     {

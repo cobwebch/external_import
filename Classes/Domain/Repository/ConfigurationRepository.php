@@ -161,10 +161,11 @@ class ConfigurationRepository
         $ctrlConfiguration = $this->findByTableAndIndex($table, $index);
 
         // Override the configuration index for columns, if so defined
+        $columnIndex = $index;
         if (isset($ctrlConfiguration['useColumnIndex'])) {
-            $index = $ctrlConfiguration['useColumnIndex'];
+            $columnIndex = $ctrlConfiguration['useColumnIndex'];
         }
-        $columnsConfiguration = $this->findColumnsByTableAndIndex($table, $index);
+        $columnsConfiguration = $this->findColumnsByTableAndIndex($table, $columnIndex);
 
         // Set the values in the Configuration object
         $configuration->setTable($table);
@@ -222,18 +223,12 @@ class ConfigurationRepository
                             if (isset($externalConfig['description'])) {
                                 $description = $GLOBALS['LANG']->sL($externalConfig['description']);
                             }
-                            if (isset($externalConfig['useColumnIndex'])) {
-                                $columnIndex = $externalConfig['useColumnIndex'];
-                            } else {
-                                $columnIndex = $index;
-                            }
                             // Store the base configuration
                             $tableConfiguration = array(
                                     'id' => $tableName . '-' . $index,
                                     'table' => $tableName,
                                     'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']),
                                     'index' => $index,
-                                    'columnIndex' => $columnIndex,
                                     'priority' => (int)$priority,
                                     'description' => htmlspecialchars($description),
                                     'writeAccess' => $hasWriteAccess
