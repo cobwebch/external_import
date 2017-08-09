@@ -102,7 +102,7 @@ class Importer
     /**
      * @var array List of default steps for the synchronize data process
      */
-    protected $synchronizeDataSteps = array(
+    const SYNCHRONYZE_DATA_STEPS = array(
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\ReadDataStep::class,
@@ -116,7 +116,7 @@ class Importer
     /**
      * @var array List of default steps for the import data process
      */
-    protected $importDataSteps = array(
+    const IMPORT_DATA_STEPS = array(
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\HandleDataStep::class,
@@ -245,7 +245,8 @@ class Importer
                 );
             } else {
                 $data = $this->objectManager->get(Data::class);
-                foreach ($this->synchronizeDataSteps as $stepClass) {
+                $steps = $this->externalConfiguration->getSteps();
+                foreach ($steps as $stepClass) {
                     /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
                     $step = $this->objectManager->get($stepClass);
                     $step->setImporter($this);

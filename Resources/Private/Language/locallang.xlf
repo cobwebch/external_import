@@ -93,6 +93,9 @@
 			<trans-unit id="columnIndex" xml:space="preserve">
 				<source>Alternate column index</source>
 			</trans-unit>
+			<trans-unit id="customSteps" xml:space="preserve">
+				<source>Custom process steps</source>
+			</trans-unit>
 			<trans-unit id="undefined" xml:space="preserve">
 				<source>(Not defined)</source>
 			</trans-unit>
@@ -113,6 +116,12 @@
 			</trans-unit>
 			<trans-unit id="columns_mapping" xml:space="preserve">
 				<source>Columns mapping</source>
+			</trans-unit>
+			<trans-unit id="steps" xml:space="preserve">
+				<source>Process steps</source>
+			</trans-unit>
+			<trans-unit id="stepsIntro" xml:space="preserve">
+				<source>The import process will go through the following steps:</source>
 			</trans-unit>
 			<trans-unit id="synchronise" xml:space="preserve">
 				<source>Synchronize</source>

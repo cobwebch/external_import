@@ -155,4 +155,4 @@ There is not much more to it for now. It may gain new features in the future.
 .. figure:: ../../Images/LogModule.png
 	:alt: BE module overview for non-synchronizable tables
 
-	Overview for non-synchronizable tables, with just the information icon
+	List of import log entries

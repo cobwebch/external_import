@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -54,9 +55,24 @@ class Configuration
     protected $countAdditionalFields = 0;
 
     /**
+     * @var array List of steps that the process will go through (depends on process type)
+     */
+    protected $steps = array();
+
+    /**
      * @var \Cobweb\Svconnector\Service\ConnectorBase Reference to the connector object
      */
     protected $connector;
+
+    /**
+     * @var \Cobweb\ExternalImport\Utility\StepUtility
+     */
+    protected $stepUtility;
+
+    public function injectStepUtility(\Cobweb\ExternalImport\Utility\StepUtility $stepUtility)
+    {
+        $this->stepUtility = $stepUtility;
+    }
 
     /**
      * @return string
@@ -99,11 +115,28 @@ class Configuration
     }
 
     /**
+     * Sets the "ctrl" part of the configuration and performs extra processing
+     * on some properties.
+     *
      * @param array $ctrlConfiguration
      */
     public function setCtrlConfiguration(array $ctrlConfiguration)
     {
         $this->ctrlConfiguration = $ctrlConfiguration;
+        // Define the process default steps, depending on process type
+        if (array_key_exists('connector', $ctrlConfiguration)) {
+            $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+        } else {
+            $steps = Importer::IMPORT_DATA_STEPS;
+        }
+        // Perform extra processing for custom steps
+        if (array_key_exists('customSteps', $ctrlConfiguration)) {
+            foreach ($ctrlConfiguration['customSteps'] as $customStepConfiguration) {
+                $steps = $this->stepUtility->insertStep($steps, $customStepConfiguration);
+            }
+        }
+        $this->steps = $steps;
+        // Perform extra processing for additional fields
         if (array_key_exists('additionalFields', $ctrlConfiguration)) {
             $additionalFields = GeneralUtility::trimExplode(
                     ',',
@@ -191,6 +224,18 @@ class Configuration
     public function setCountAdditionalFields($countAdditionalFields)
     {
         $this->countAdditionalFields = $countAdditionalFields;
+    }
+
+    /**
+     * Returns the list of process steps.
+     *
+     * NOTE: an equivalent setter does not exist as steps should never be defined from the outside.
+     *
+     * @return array
+     */
+    public function getSteps()
+    {
+        return $this->steps;
     }
 
     /**

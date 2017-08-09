@@ -15,7 +15,6 @@ namespace Cobweb\ExternalImport\Task;
  */
 
 use Cobweb\ExternalImport\Importer;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;

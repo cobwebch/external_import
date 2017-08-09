@@ -51,11 +51,12 @@ Properties
 .. container:: ts-properties
 
 	===================================== ================= ========================
-	Property                              Data type         Scope
+	Property                              Data type         Scope/Step
 	===================================== ================= ========================
 	additionalFields_                     string            Fetch data
 	clearCache_                           string            Store data
 	connector_                            string            Fetch data
+	customSteps_                          array             Any step
 	data_                                 string            Fetch data
 	dataHandler_                          string            Handle data
 	description_                          string            Display
@@ -273,6 +274,45 @@ Description
 
 Scope
   Configuration
+
+
+.. _administration-general-tca-properties-customsteps:
+
+customSteps
+~~~~~~~~~~~
+
+Type
+  array
+
+Description
+  As explained in the :ref:`process overview <user-overview>`, the import
+  process goes through several steps, depending on its type. This property
+  makes it possible to register additional steps. Each step can be placed
+  before or after any existing step (including previously registered custom
+  steps).
+
+  The configuration is a simple array, each entry being itself an array with
+  two properties: "class" referring to the PHP class containing the custom step
+  code and "position" stating when the new step should happen. The syntax for
+  position is made of the keyword :code:`before` or :code:`after`, followed by
+  a colon (:code:`:`) and the name of an existing step class.
+
+  Example:
+
+  .. code-block:: php
+
+       'customSteps' => array(
+               array(
+                       'class' => \Cobweb\ExternalimportTest\Step\EnhanceDataStep::class,
+                       'position' => 'after:' . \Cobweb\ExternalImport\Step\ValidateDataStep::class
+               )
+       ),
+
+  If any element of the custom step declaration is invalid, the step will be
+  ignored. More information is given in the :ref:`Developer's Guide <developer-steps>`.
+
+Scope
+  Any step
 
 
 .. _administration-general-tca-properties-where-clause:

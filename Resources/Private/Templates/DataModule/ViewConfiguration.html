@@ -17,6 +17,11 @@
 					<f:translate id="columns_mapping" />
 				</a>
 			</li>
+			<li>
+				<a href="#steps" role="tab" data-toggle="tab">
+					<f:translate id="steps" />
+				</a>
+			</li>
 		</ul>
 		<div class="tab-content">
 			<div role="tabpanel" class="tab-pane active" id="ctrl">
@@ -30,6 +35,13 @@
 				<div class="panel panel-tab">
 					<div class="panel-body">
 						<f:render partial="DataModule/ColumnConfigurationTab" arguments="{table: table, configuration: configuration}" />
+					</div>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane" id="steps">
+				<div class="panel panel-tab">
+					<div class="panel-body">
+						<f:render partial="DataModule/StepsTab" arguments="{steps: configuration.steps}" />
 					</div>
 				</div>
 			</div>

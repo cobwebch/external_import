@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Validator;
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -43,9 +44,19 @@ class ControlConfigurationValidator
      */
     protected $results;
 
+    /**
+     * @var \Cobweb\ExternalImport\Utility\StepUtility
+     */
+    protected $stepUtility;
+
     public function injectValidationResult(ValidationResult $result)
     {
         $this->results = $result;
+    }
+
+    public function injectStepUtility(\Cobweb\ExternalImport\Utility\StepUtility $stepUtility)
+    {
+        $this->stepUtility = $stepUtility;
     }
 
     /**
@@ -93,6 +104,7 @@ class ControlConfigurationValidator
      * Checks for usage of old properties and issues notice for each one found.
      *
      * @param array $configuration The configuration to check
+     * @return void
      */
     public function checkForRenamedProperties($configuration)
     {
@@ -122,6 +134,7 @@ class ControlConfigurationValidator
      * Validates the "data" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateDataProperty($property)
     {
@@ -155,6 +168,7 @@ class ControlConfigurationValidator
      * (of course, this may be wrong, but we have no way to guess the user's intent ;-) ).
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateConnectorProperty($property)
     {
@@ -180,6 +194,7 @@ class ControlConfigurationValidator
      * Validates the "dataHandler" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateDataHandlerProperty($property)
     {
@@ -225,6 +240,7 @@ class ControlConfigurationValidator
      * Validates the "nodetype" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateNodetypeProperty($property)
     {
@@ -244,6 +260,7 @@ class ControlConfigurationValidator
      * Validates the "referenceUid" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateReferenceUidProperty($property)
     {
@@ -263,6 +280,7 @@ class ControlConfigurationValidator
      * Validates the "priority" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validatePriorityProperty($property)
     {
@@ -285,6 +303,7 @@ class ControlConfigurationValidator
      * Validates the "pid" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validatePidProperty($property)
     {
@@ -349,6 +368,7 @@ class ControlConfigurationValidator
      *
      * @param string $property Property value
      * @param array $columns List of column configurations
+     * @return void
      */
     public function validateUseColumnIndexProperty($property, $columns)
     {
@@ -367,6 +387,45 @@ class ControlConfigurationValidator
                     ),
                     AbstractMessage::ERROR
             );
+        }
+    }
+
+    /**
+     * Validates the "customSteps" property.
+     *
+     * @param array $property Property value
+     * @param array $ctrlConfiguration Full "ctrl" configuration
+     * @return void
+     */
+    public function validateCustomStepsProperty($property, $ctrlConfiguration)
+    {
+        if ($property !== null && is_array($property) && count($property) > 0) {
+            // Define the process default steps, depending on process type
+            if (array_key_exists('connector', $ctrlConfiguration)) {
+                $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+            } else {
+                $steps = Importer::IMPORT_DATA_STEPS;
+            }
+            foreach ($property as $customStepConfiguration) {
+                try {
+                    $steps = $this->stepUtility->validateCustomStepConfiguration($steps, $customStepConfiguration);
+                }
+                catch (InvalidCustomStepConfiguration $e) {
+                    $this->results->add(
+                            'customSteps',
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidCustomStepsProperty',
+                                    'external_import',
+                                    array(
+                                            $e->getMessage(),
+                                            $e->getCode()
+                                    )
+                            ),
+                            AbstractMessage::NOTICE
+                    );
+                    break;
+                }
+            }
         }
     }
 

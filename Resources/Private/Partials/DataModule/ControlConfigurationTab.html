@@ -203,6 +203,22 @@
 						</f:if>
 					</td>
 				</tr>
+				<tr>
+					<td><f:translate id="customSteps" /></td>
+					<td>
+						<f:if condition="{ctrlConfiguration.customSteps}">
+							<f:then>
+								<ex:dump array="{ctrlConfiguration.customSteps}" />
+								<f:if condition="{results.customSteps}">
+									<ex:displayValidationResult result="{results.customSteps}" />
+								</f:if>
+							</f:then>
+							<f:else>
+								<f:translate id="none" />
+							</f:else>
+						</f:if>
+					</td>
+				</tr>
 			</table>
 		</f:alias>
 	</ex:validateControlConfiguration>

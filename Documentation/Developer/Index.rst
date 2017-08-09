@@ -20,5 +20,6 @@ Developer's Guide
    Api/Index
    UserFunctions/Index
    Hooks/Index
+   Steps/Index
    CustomHandlers/Index
 
