@@ -27,6 +27,20 @@ Compatibility issues
 ^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-400:
+
+Upgrade to 4.0.0
+""""""""""""""""
+
+(to be written)
+
+.. note::
+
+   The upgrade wizard from version 3.0.0 has been removed. If you are upgrading from TYPO3
+   6.2 to TYPO3 8.7, you must go through TYPO3 7.6 first and use the upgrade wizard from
+   External Import 3.0.x before moving on to TYPO3 8.7.
+
+
 .. _installation-upgrade-300:
 
 Upgrade to 3.0.0
