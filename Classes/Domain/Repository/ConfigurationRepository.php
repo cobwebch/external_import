@@ -153,9 +153,10 @@ class ConfigurationRepository
      *
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
+     * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return Configuration
      */
-    public function findConfigurationObject($table, $index)
+    public function findConfigurationObject($table, $index, $defaultSteps = null)
     {
         $configuration = $this->objectManager->get(Configuration::class);
         $ctrlConfiguration = $this->findByTableAndIndex($table, $index);
@@ -170,7 +171,7 @@ class ConfigurationRepository
         // Set the values in the Configuration object
         $configuration->setTable($table);
         $configuration->setIndex($index);
-        $configuration->setCtrlConfiguration($ctrlConfiguration);
+        $configuration->setCtrlConfiguration($ctrlConfiguration, $defaultSteps);
         $configuration->setColumnConfiguration($columnsConfiguration);
         return $configuration;
     }

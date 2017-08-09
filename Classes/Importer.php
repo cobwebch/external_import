@@ -206,15 +206,17 @@ class Importer
      *
      * @param string $table Name of the table to synchronise
      * @param mixed $index Index of the synchronisation configuration to use
+     * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return void
      */
-    protected function initialize($table, $index)
+    protected function initialize($table, $index, $defaultSteps = null)
     {
         $this->table = $table;
         $this->index = $index;
         $this->externalConfiguration = $this->configurationRepository->findConfigurationObject(
                 $table,
-                $index
+                $index,
+                $defaultSteps
         );
         $this->pid = ($this->forcedStoragePid > 0) ? $this->forcedStoragePid : $this->externalConfiguration->getCtrlConfigurationProperty('pid');
         // Set the storage page as the related page for the devLog entries
@@ -301,23 +303,64 @@ class Importer
     }
 
     /**
-     * This method receives raw data from some external source, transforms it and stores it into the local database
-     * It returns information about the results of the operation
+     * Receives raw data from some external source, transforms it and stores it into the TYPO3 database.
      *
-     * @param    string $table : name of the table to import into
-     * @param    integer $index : index of the synchronisation configuration to use
-     * @param    mixed $rawData : data in the format provided by the external source (XML string, PHP array, etc.)
-     * @return    array        List of error or success messages
+     * @param string $table Name of the table to import into
+     * @param integer $index Index of the synchronisation configuration to use
+     * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
+     * @return array List of error or success messages
      */
     public function importData($table, $index, $rawData)
     {
-        $this->initialize($table, $index);
-
-        // Proceed if configuration is valid
-        if ($this->validateConfiguration($table)) {
-            $this->handleData($rawData);
+        // Initialize message array
+        $this->resetMessages();
+        try {
+            $this->initialize(
+                    $table,
+                    $index,
+                    // Force steps for the "import data" process, as a synchronizable configuration could also be used
+                    self::IMPORT_DATA_STEPS
+            );
+            // Initialize the Data object with the raw data
+            $data = $this->objectManager->get(Data::class);
+            $data->setRawData($rawData);
+            // Loop on all the process steps
+            $steps = $this->externalConfiguration->getSteps();
+            foreach ($steps as $stepClass) {
+                /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
+                $step = $this->objectManager->get($stepClass);
+                $step->setImporter($this);
+                $step->setConfiguration($this->externalConfiguration);
+                $step->setData($data);
+                $step->run();
+                if ($step->isAbortFlag()) {
+                    // Report about aborting
+                    $this->addMessage(
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
+                                    'external_import'
+                            ),
+                            FlashMessage::WARNING
+                    );
+                    break;
+                }
+                $data = $step->getData();
+            }
         }
-
+        catch (\Exception $e) {
+            $this->addMessage(
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
+                            'external_import',
+                            array(
+                                    $table,
+                                    $index,
+                                    $e->getMessage(),
+                                    $e->getCode()
+                            )
+                    )
+            );
+        }
         // Log results
         $this->reportingUtility->writeToDevLog();
         $this->reportingUtility->writeToLog();

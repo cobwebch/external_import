@@ -2,6 +2,7 @@
 
 	* Added possibility to register custom process steps, resolves #23
 	* Removed old upgrade wizard, resolves #13
+	* Adapted import API to refactored step structure, resolves #22
 
 2017-08-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

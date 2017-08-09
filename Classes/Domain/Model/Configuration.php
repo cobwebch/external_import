@@ -119,15 +119,21 @@ class Configuration
      * on some properties.
      *
      * @param array $ctrlConfiguration
+     * @param array $defaultSteps List of default steps (if null will be guessed by the repository)
+     * @return void
      */
-    public function setCtrlConfiguration(array $ctrlConfiguration)
+    public function setCtrlConfiguration(array $ctrlConfiguration, $defaultSteps = null)
     {
         $this->ctrlConfiguration = $ctrlConfiguration;
-        // Define the process default steps, depending on process type
-        if (array_key_exists('connector', $ctrlConfiguration)) {
-            $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+        // Define the process default steps, depending on process type or the predefined value
+        if ($defaultSteps === null) {
+            if (array_key_exists('connector', $ctrlConfiguration)) {
+                $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+            } else {
+                $steps = Importer::IMPORT_DATA_STEPS;
+            }
         } else {
-            $steps = Importer::IMPORT_DATA_STEPS;
+            $steps = $defaultSteps;
         }
         // Perform extra processing for custom steps
         if (array_key_exists('customSteps', $ctrlConfiguration)) {
