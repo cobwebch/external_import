@@ -15,11 +15,12 @@ namespace Cobweb\ExternalImport\Tests\Unit\Validator;
  */
 
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
+use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\BaseTestCase;
 
-class ColumnConfigurationValidatorTest extends \Nimut\TestingFramework\TestCase\UnitTestCase
+class ColumnConfigurationValidatorTest extends UnitTestCase
 {
     /**
      * @var array List of globals to exclude (contain closures which cannot be serialized)
