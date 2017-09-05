@@ -20,7 +20,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\BaseTestCase;
 
 /**
- * Testcase for the External Import importer
+ * Test case for the External Import mapping utility.
  *
  * @author Francois Suter <typo3@cobweb.ch>
  * @package TYPO3

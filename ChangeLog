@@ -1,3 +1,17 @@
+2017-08-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added possibility to register custom process steps, resolves #23
+	* Removed old upgrade wizard, resolves #13
+	* Adapted import API to refactored step structure, resolves #22
+
+2017-08-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected usage of "useColumnIndex" in configuration loading, resolves #24
+
+2017-07-12 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Improved configuration loading and validation, resolves #18
+
 2017-06-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Refactored Importer class, resolves #8

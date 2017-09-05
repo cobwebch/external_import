@@ -1,4 +1,5 @@
 <?php
+namespace Cobweb\ExternalImport\Exception;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -13,9 +14,14 @@
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Exception;
+
 /**
- * This class is just used to be able to unserialize the objects stored in old Scheduler tasks.
+ * Exception for invalid custom step configuration.
+ *
+ * @package Cobweb\ExternalImport\Exception
  */
-class tx_externalimport_autosync_scheduler_Task extends \Cobweb\ExternalImport\Task\AutomatedSyncTask
+class InvalidCustomStepConfiguration extends Exception
 {
+
 }

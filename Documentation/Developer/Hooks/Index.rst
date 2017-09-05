@@ -14,6 +14,15 @@ Hooks
 The external import process contains many hooks for improved
 flexibility. They are described below.
 
+.. note::
+
+   Since External Import version 4.0.0, :ref:`custom process steps <developer-steps>`
+   are available. In general, they are far more powerful than hooks,
+   although hooks cover specific scenarios which custom steps can't.
+   No hook has been deprecated, but a notice has beed added to their
+   description for those that could be replaced by custom steps.
+
+
 processParameters
   This allows for dynamic manipulation of the
   :ref:`parameters <administration-general-tca-properties-parameters>`
@@ -54,6 +63,12 @@ preprocessRawRecordset
   object (an instance of class :code:`\Cobweb\ExternalImport\Importer`) as
   parameters. It is expected to return a full recordset too.
 
+  .. note::
+
+     Since External Import version 4.0.0, use a custom step instead,
+     using :code:`after:\Cobweb\ExternalImport\Step\HandleDataStep`
+     as a position.
+
 validateRawRecordset
   This hook is called during the data
   validation step. It is used to perform checks on the nearly raw data
@@ -62,11 +77,18 @@ validateRawRecordset
   and a back-reference to the calling object (an instance of class
   :code:`\Cobweb\ExternalImport\Importer`) as parameters. It is expected
   to return a boolean, true if the import may continue, false if it must
-  be aborted.Note the following: if the minimum number of records
+  be aborted. Note the following: if the minimum number of records
   condition was not matched, the hooks will not be called at all. Import
   is aborted before that. If several methods are registered with the
   hook, the first method that returns false aborts the import. Further
   methods are not called.
+
+  .. note::
+
+     Since External Import version 4.0.0, use a custom step instead,
+     using :code:`after:\Cobweb\ExternalImport\Step\ValidateDataStep`
+     as a position (or :code:`before:` if you want to shortcircuit
+     the default validation process).
 
 preprocessRecordset
   Similar to "preprocessRawRecordset", but
@@ -75,6 +97,12 @@ preprocessRecordset
   the calling object (an instance of class
   :code:`\Cobweb\ExternalImport\Importer`) as parameters. It is expected
   to return a full recordset too.
+
+  .. note::
+
+     Since External Import version 4.0.0, use a custom step instead,
+     using :code:`after:\Cobweb\ExternalImport\Step\TransformDataStep`
+     as a position.
 
 updatePreProcess
   This hook can be used to modify a record just

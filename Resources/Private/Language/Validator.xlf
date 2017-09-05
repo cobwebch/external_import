@@ -44,6 +44,9 @@
 			<trans-unit id="wrongUseColumnIndexProperty" xml:space="preserve">
 				<source>Property "useColumnIndex" is set to %1$s, but no matching configuration exists for table %2$s.</source>
 			</trans-unit>
+			<trans-unit id="invalidCustomStepsProperty" xml:space="preserve">
+				<source>Property "customSteps" contains an erroneous configuration. Invalid custom steps are ignored. Reported error is: %1$s (exception code: %2$d).</source>
+			</trans-unit>
 			<trans-unit id="missingFieldProperty" xml:space="preserve">
 				<source>Property "field" is mandatory for "array"-type data.</source>
 			</trans-unit>

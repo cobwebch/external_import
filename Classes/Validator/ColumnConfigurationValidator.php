@@ -14,7 +14,8 @@ namespace Cobweb\ExternalImport\Validator;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use Cobweb\ExternalImport\Domain\Model\Configuration;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -25,23 +26,37 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  *
  * @package Cobweb\ExternalImport\Validator
  */
-class ColumnConfigurationValidator extends AbstractConfigurationValidator
+class ColumnConfigurationValidator
 {
+    /**
+     * @var ValidationResult
+     */
+    protected $results;
+
+    public function injectValidationResult(ValidationResult $result)
+    {
+        $this->results = $result;
+    }
+
     /**
      * Validates the given configuration.
      *
-     * @param string $table Name of the table to which the configuration applies
-     * @param array $ctrlConfiguration "ctrl" configuration to check
-     * @param array $columnConfiguration Column configuration to check (unused when checking a "ctrl" configuration)
+     * @param Configuration $configuration Configuration object to check
+     * @param string $column Name of the column to check
      * @return bool
      */
-    public function isValid($table, $ctrlConfiguration, $columnConfiguration = null)
+    public function isValid(Configuration $configuration, $column)
     {
         // Validate properties used to choose the import value
-        $this->validateDataSettingProperties($ctrlConfiguration, $columnConfiguration);
-
+        $this->validateDataSettingProperties(
+                $configuration->getCtrlConfiguration(),
+                $configuration->getConfigurationForColumn($column)
+        );
         // Return the global validation result
-        return parent::isValid($table, $ctrlConfiguration, $columnConfiguration);
+        // Consider that the configuration does not validate if there's at least one error or one warning
+        $errorResults = $this->results->getForSeverity(AbstractMessage::ERROR);
+        $warningResults = $this->results->getForSeverity(AbstractMessage::WARNING);
+        return count($errorResults) + count($warningResults) === 0;
     }
 
     /**
@@ -57,37 +72,37 @@ class ColumnConfigurationValidator extends AbstractConfigurationValidator
             // For data of type "array", either a "field" or a "value" property are needed
             if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
-                $this->addResult(
+                $this->results->add(
                         'field',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForArrayData',
                                 'external_import'
                         ),
-                        FlashMessage::ERROR
+                        AbstractMessage::ERROR
                 );
             // "value" property should not be set if another value-setting property is also defined
-            } elseif (isset($columnConfiguration['field']) && isset($columnConfiguration['value'])) {
+            } elseif (isset($columnConfiguration['field'], $columnConfiguration['value'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
-                $this->addResult(
+                $this->results->add(
                         'field',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForArrayData',
                                 'external_import'
                         ),
-                        FlashMessage::WARNING
+                        AbstractMessage::WARNING
                 );
             }
         } elseif ($ctrlConfiguration['data'] === 'xml') {
             // It is okay to have no configuration for a column. Just make sure this is really what the user wanted.
             if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value']) && !isset($columnConfiguration['attribute']) && !isset($columnConfiguration['xpath'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
-                $this->addResult(
+                $this->results->add(
                         'field',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForXmlData',
                                 'external_import'
                         ),
-                        FlashMessage::NOTICE
+                        AbstractMessage::NOTICE
                 );
             // "value" property should not be set if another value-setting property is also defined
             } elseif (
@@ -95,16 +110,26 @@ class ColumnConfigurationValidator extends AbstractConfigurationValidator
                 && (isset($columnConfiguration['field']) || isset($columnConfiguration['attribute']) || isset($columnConfiguration['xpath']))
             ) {
                 // NOTE: validation result is arbitrarily added to the "field" property
-                $this->addResult(
+                $this->results->add(
                         'field',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForXmlData',
                                 'external_import'
                         ),
-                        FlashMessage::WARNING
+                        AbstractMessage::WARNING
                 );
             }
         }
+    }
+
+    /**
+     * Returns all validation results.
+     *
+     * @return array
+     */
+    public function getResults()
+    {
+        return $this->results->getAll();
     }
 
 }

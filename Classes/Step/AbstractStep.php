@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
+use Cobweb\ExternalImport\Importer;
 
 /**
  * Abstract class from which all External Import process steps **must** inherit.
@@ -40,7 +41,7 @@ abstract class AbstractStep
     protected $abortFlag = false;
 
     /**
-     * @var \Cobweb\ExternalImport\Importer Back-reference to the Importer
+     * @var Importer Back-reference to the Importer
      */
     protected $importer;
 
@@ -54,7 +55,7 @@ abstract class AbstractStep
     /**
      * @return Data
      */
-    public function getData(): Data
+    public function getData()
     {
         return $this->data;
     }
@@ -70,7 +71,7 @@ abstract class AbstractStep
     /**
      * @return Configuration
      */
-    public function getConfiguration(): Configuration
+    public function getConfiguration()
     {
         return $this->configuration;
     }
@@ -100,7 +101,7 @@ abstract class AbstractStep
     }
 
     /**
-     * @return \Cobweb\ExternalImport\Importer
+     * @return Importer
      */
     public function getImporter()
     {
@@ -108,9 +109,9 @@ abstract class AbstractStep
     }
 
     /**
-     * @param \Cobweb\ExternalImport\Importer $importer
+     * @param Importer $importer
      */
-    public function setImporter(\Cobweb\ExternalImport\Importer $importer)
+    public function setImporter(Importer $importer)
     {
         $this->importer = $importer;
     }

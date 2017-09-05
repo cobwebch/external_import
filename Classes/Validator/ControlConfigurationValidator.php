@@ -15,10 +15,11 @@ namespace Cobweb\ExternalImport\Validator;
  */
 
 use Cobweb\ExternalImport\DataHandlerInterface;
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
-use Cobweb\ExternalImport\Exception\ConfigurationNotFoundException;
+use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -31,19 +32,43 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  *
  * @package Cobweb\ExternalImport\Validator
  */
-class ControlConfigurationValidator extends AbstractConfigurationValidator
+class ControlConfigurationValidator
 {
+    /**
+     * @var string Name of the table for which the configuration is checked
+     */
+    protected $table;
+
+    /**
+     * @var ValidationResult
+     */
+    protected $results;
+
+    /**
+     * @var \Cobweb\ExternalImport\Utility\StepUtility
+     */
+    protected $stepUtility;
+
+    public function injectValidationResult(ValidationResult $result)
+    {
+        $this->results = $result;
+    }
+
+    public function injectStepUtility(\Cobweb\ExternalImport\Utility\StepUtility $stepUtility)
+    {
+        $this->stepUtility = $stepUtility;
+    }
+
     /**
      * Validates the given configuration.
      *
-     * @param string $table Name of the table to which the configuration applies
-     * @param array $ctrlConfiguration "ctrl" configuration to check
-     * @param array $columnConfiguration Column configuration to check (unused when checking a "ctrl" configuration)
+     * @param Configuration $configuration Configuration object to check
      * @return bool
      */
-    public function isValid($table, $ctrlConfiguration, $columnConfiguration = null)
+    public function isValid(Configuration $configuration)
     {
-        $this->table = $table;
+        $this->table = $configuration->getTable();
+        $ctrlConfiguration = $configuration->getCtrlConfiguration();
 
         // Add notices about renamed properties
         $this->checkForRenamedProperties($ctrlConfiguration);
@@ -54,7 +79,10 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
         $this->validateDataHandlerProperty($ctrlConfiguration['dataHandler']);
         $this->validateReferenceUidProperty($ctrlConfiguration['referenceUid']);
         $this->validatePidProperty($ctrlConfiguration['pid']);
-        $this->validateUseColumnIndexProperty($ctrlConfiguration['useColumnIndex']);
+        $this->validateUseColumnIndexProperty(
+                $ctrlConfiguration['useColumnIndex'],
+                $configuration->getColumnConfiguration()
+        );
 
         // Validate properties for pull-only configurations
         if (!empty($ctrlConfiguration['connector'])) {
@@ -66,13 +94,17 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
             $this->validateNodetypeProperty($ctrlConfiguration['nodetype']);
         }
         // Return the global validation result
-        return parent::isValid($table, $ctrlConfiguration, $columnConfiguration);
+        // Consider that the configuration does not validate if there's at least one error or one warning
+        $errorResults = $this->results->getForSeverity(AbstractMessage::ERROR);
+        $warningResults = $this->results->getForSeverity(AbstractMessage::WARNING);
+        return count($errorResults) + count($warningResults) === 0;
     }
 
     /**
      * Checks for usage of old properties and issues notice for each one found.
      *
      * @param array $configuration The configuration to check
+     * @return void
      */
     public function checkForRenamedProperties($configuration)
     {
@@ -82,7 +114,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
             // the validation error will override the renaming notice, since there can be only one
             // validation result per property.
             if (array_key_exists($oldName, $configuration)) {
-                $this->addResult(
+                $this->results->add(
                         $newName,
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:renamedProperty',
@@ -92,7 +124,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
                                         $newName
                                 )
                         ),
-                        FlashMessage::NOTICE
+                        AbstractMessage::NOTICE
                 );
             }
         }
@@ -102,27 +134,28 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
      * Validates the "data" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateDataProperty($property)
     {
         if (empty($property)) {
-            $this->addResult(
+            $this->results->add(
                     'data',
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingDataProperty',
                             'external_import'
                     ),
-                    FlashMessage::ERROR
+                    AbstractMessage::ERROR
             );
         } else {
             if ($property !== 'array' && $property !== 'xml') {
-                $this->addResult(
+                $this->results->add(
                         'data',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty',
                                 'external_import'
                         ),
-                        FlashMessage::ERROR
+                        AbstractMessage::ERROR
                 );
             }
         }
@@ -135,6 +168,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
      * (of course, this may be wrong, but we have no way to guess the user's intent ;-) ).
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateConnectorProperty($property)
     {
@@ -144,13 +178,13 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
                     $property
             );
             if ($services === false) {
-                $this->addResult(
+                $this->results->add(
                         'connector',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:unavailableConnector',
                                 'external_import'
                         ),
-                        FlashMessage::ERROR
+                        AbstractMessage::ERROR
                 );
             }
         }
@@ -160,6 +194,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
      * Validates the "dataHandler" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateDataHandlerProperty($property)
     {
@@ -168,34 +203,34 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
                 try {
                     $dataHandler = GeneralUtility::makeInstance($property);
                     if (!($dataHandler instanceof DataHandlerInterface)) {
-                        $this->addResult(
+                        $this->results->add(
                                 'dataHandler',
                                 LocalizationUtility::translate(
                                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerInterfaceIssue',
                                         'external_import'
                                 ),
-                                FlashMessage::NOTICE
+                                AbstractMessage::NOTICE
                         );
                     }
                 }
                 catch (\Exception $e) {
-                    $this->addResult(
+                    $this->results->add(
                             'dataHandler',
                             LocalizationUtility::translate(
                                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNoInstance',
                                     'external_import'
                             ),
-                            FlashMessage::NOTICE
+                            AbstractMessage::NOTICE
                     );
                 }
             } else {
-                $this->addResult(
+                $this->results->add(
                         'dataHandler',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNotFound',
                                 'external_import'
                         ),
-                        FlashMessage::NOTICE
+                        AbstractMessage::NOTICE
                 );
             }
         }
@@ -205,17 +240,18 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
      * Validates the "nodetype" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateNodetypeProperty($property)
     {
         if (empty($property)) {
-            $this->addResult(
+            $this->results->add(
                     'nodetype',
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodetypeProperty',
                             'external_import'
                     ),
-                    FlashMessage::ERROR
+                    AbstractMessage::ERROR
             );
         }
     }
@@ -224,17 +260,18 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
      * Validates the "referenceUid" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validateReferenceUidProperty($property)
     {
         if (empty($property)) {
-            $this->addResult(
+            $this->results->add(
                     'referenceUid',
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingReferenceUidProperty',
                             'external_import'
                     ),
-                    FlashMessage::ERROR
+                    AbstractMessage::ERROR
             );
         }
     }
@@ -243,11 +280,12 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
      * Validates the "priority" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validatePriorityProperty($property)
     {
         if (empty($property)) {
-            $this->addResult(
+            $this->results->add(
                     'priority',
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:defaultPriorityValue',
@@ -256,7 +294,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
                                     Importer::DEFAULT_PRIORITY
                             )
                     ),
-                    FlashMessage::NOTICE
+                    AbstractMessage::NOTICE
             );
         }
     }
@@ -265,6 +303,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
      * Validates the "pid" property.
      *
      * @param string $property Property value
+     * @return void
      */
     public function validatePidProperty($property)
     {
@@ -274,17 +313,17 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
         if ($property === 0) {
             // Table is allowed on root page, just issue notice to make sure pid was not forgotten
             if ($rootLevelFlag === -1 || $rootLevelFlag === 1) {
-                $this->addResult(
+                $this->results->add(
                         'pid',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPage',
                                 'external_import'
                         ),
-                        FlashMessage::NOTICE
+                        AbstractMessage::NOTICE
                 );
             } else {
                 // Records for current table are not allowed on root page
-                $this->addResult(
+                $this->results->add(
                         'pid',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPageNotAllowed',
@@ -293,23 +332,23 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
                                         $this->table
                                 )
                         ),
-                        FlashMessage::ERROR
+                        AbstractMessage::ERROR
                 );
             }
         } elseif ($property < 0) {
             // Negative pid is invalid
-            $this->addResult(
+            $this->results->add(
                     'pid',
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:negativePidProperty',
                             'external_import'
                     ),
-                    FlashMessage::ERROR
+                    AbstractMessage::ERROR
             );
         } else {
             // Pid is a positive integer, but records for current table can only be stored on root page
             if ($rootLevelFlag === 1) {
-                $this->addResult(
+                $this->results->add(
                         'pid',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidPidPropertyOnlyRoot',
@@ -318,7 +357,7 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
                                         $this->table
                                 )
                         ),
-                        FlashMessage::ERROR
+                        AbstractMessage::ERROR
                 );
             }
         }
@@ -328,33 +367,75 @@ class ControlConfigurationValidator extends AbstractConfigurationValidator
      * Validates the "useColumnIndex" property.
      *
      * @param string $property Property value
+     * @param array $columns List of column configurations
+     * @return void
      */
-    public function validateUseColumnIndexProperty($property)
+    public function validateUseColumnIndexProperty($property, $columns)
     {
         // If useColumnIndex is defined, it needs to match an existing index for the same table
         // If there's no column configuration using that index, issue an error
-        if ($property !== null) {
-            $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
-            try {
-                $configurationRepository->findColumnsByTableAndIndex(
-                        $this->table,
-                        $property
-                );
+        if ($property !== null && count($columns) === 0) {
+            $this->results->add(
+                    'useColumnIndex',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:wrongUseColumnIndexProperty',
+                            'external_import',
+                            array(
+                                    $property,
+                                    $this->table
+                            )
+                    ),
+                    AbstractMessage::ERROR
+            );
+        }
+    }
+
+    /**
+     * Validates the "customSteps" property.
+     *
+     * @param array $property Property value
+     * @param array $ctrlConfiguration Full "ctrl" configuration
+     * @return void
+     */
+    public function validateCustomStepsProperty($property, $ctrlConfiguration)
+    {
+        if ($property !== null && is_array($property) && count($property) > 0) {
+            // Define the process default steps, depending on process type
+            if (array_key_exists('connector', $ctrlConfiguration)) {
+                $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+            } else {
+                $steps = Importer::IMPORT_DATA_STEPS;
             }
-            catch (ConfigurationNotFoundException $e) {
-                $this->addResult(
-                        'useColumnIndex',
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:wrongUseColumnIndexProperty',
-                                'external_import',
-                                array(
-                                        $property,
-                                        $this->table
-                                )
-                        ),
-                        FlashMessage::ERROR
-                );
+            foreach ($property as $customStepConfiguration) {
+                try {
+                    $steps = $this->stepUtility->validateCustomStepConfiguration($steps, $customStepConfiguration);
+                }
+                catch (InvalidCustomStepConfiguration $e) {
+                    $this->results->add(
+                            'customSteps',
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidCustomStepsProperty',
+                                    'external_import',
+                                    array(
+                                            $e->getMessage(),
+                                            $e->getCode()
+                                    )
+                            ),
+                            AbstractMessage::NOTICE
+                    );
+                    break;
+                }
             }
         }
+    }
+
+    /**
+     * Returns all validation results.
+     *
+     * @return array
+     */
+    public function getResults()
+    {
+        return $this->results->getAll();
     }
 }

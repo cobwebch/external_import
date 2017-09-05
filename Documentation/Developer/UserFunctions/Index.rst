@@ -50,5 +50,4 @@ field.
    autoloading information which is not considered to be a cache. So flushing
    all the cache will not help TYPO3 CMS detect your new class. You will need to
    either uninstall and reinstall the extension to which your class belongs
-   or manually delete the :file:`typo3temp/autoload` folder where the autoloading
-   information resides.
+   or recreate the autoloading cache using the Install Tool.

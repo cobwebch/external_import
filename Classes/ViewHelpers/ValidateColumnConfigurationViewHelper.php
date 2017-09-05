@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -34,18 +35,17 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
     /**
      * Runs the validation and loads the results.
      *
-     * @param string $table Name of the table the configuration applies to
-     * @param array $columnConfiguration The configuration to check
-     * @param array $ctrlConfiguration The corresponding "ctrl" configuration
+     * @param Configuration $configuration The general external import configuration
+     * @param string $column The name of the column to check
      * @param string $as Name of the variable in which to store the validation results
      * @return string
      */
-    public function render($table, array $columnConfiguration, array $ctrlConfiguration, $as)
+    public function render(Configuration $configuration, $column, $as)
     {
         $configurationValidator = $this->objectManager->get(ColumnConfigurationValidator::class);
-        $configurationValidator->isValid($table, $ctrlConfiguration, $columnConfiguration);
+        $configurationValidator->isValid($configuration, $column);
         $templateVariableContainer = $this->renderingContext->getTemplateVariableContainer();
-        $templateVariableContainer->add($as, $configurationValidator->getAllResults());
+        $templateVariableContainer->add($as, $configurationValidator->getResults());
         $output = $this->renderChildren();
         $templateVariableContainer->remove($as);
         return $output;
