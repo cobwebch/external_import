@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Tests\Functional;
  */
 
 use Cobweb\ExternalImport\Importer;
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -26,8 +27,18 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class ImporterTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCase
+class ImporterTest extends FunctionalTestCase
 {
+/*
+    protected $coreExtensionsToLoad = [
+        'core'
+    ];
+*/
+    protected $testExtensionsToLoad = [
+            'typo3conf/ext/external_import',
+            'typo3conf/ext/externalimport_test'
+    ];
+
     /**
      * @var Importer
      */
@@ -35,14 +46,13 @@ class ImporterTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCase
 
     protected function setUp()
     {
+/*
         if (!ExtensionManagementUtility::isLoaded('externalimport_test')) {
             self::markTestSkipped('Test extension "externalimport_test" is not loaded.');
         }
-        if (!$this->createDatabase()) {
-            self::markTestSkipped('Test database could not be created.');
-        }
-        $this->importExtensions(['core']);
-        $this->importExtensions(['externalimport_test']);
+*/
+        parent::setUp();
+        $this->setUpBackendUserFromFixture(1);
 
         $objectManager = new ObjectManager();
         $this->subject = $objectManager->get(Importer::class);
@@ -68,16 +78,16 @@ class ImporterTest extends \Nimut\TestingFramework\TestCase\FunctionalTestCase
                 'tx_externalimporttest_tag',
                 0
         );
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countRecords = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'tx_externalimporttest_tag'
         );
-        $countRecords = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countRecords++;
-        }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(5, $countRecords, serialize($messages));
+        self::assertEquals(
+                5,
+                $countRecords,
+                serialize($messages)
+        );
     }
 
     /**
