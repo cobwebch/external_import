@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Task;
 
 /*
@@ -36,6 +37,11 @@ class AutomatedSyncTask extends AbstractTask
      * @var mixed Index of the particular synchronization
      */
     public $index;
+
+    /**
+     * @var integer Priority of the particular synchronization
+     */
+    public $priority;
 
     /**
      * Executes the job registered in the Scheduler task
@@ -108,8 +114,12 @@ class AutomatedSyncTask extends AbstractTask
         if ($this->table === 'all') {
             $info = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables');
         } else {
-            $info = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableAndIndex'), $this->table,
-                    $this->index);
+            $info = sprintf(
+                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'),
+                $this->table,
+                $this->index,
+                $this->priority
+            );
         }
         return $info;
     }

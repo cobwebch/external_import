@@ -140,8 +140,8 @@
 			<trans-unit id="allTables" xml:space="preserve">
 				<source>All tables</source>
 			</trans-unit>
-			<trans-unit id="tableAndIndex" xml:space="preserve">
-				<source>Table: %1$s, index: %2$s</source>
+			<trans-unit id="tableIndexAndPriority" xml:space="preserve">
+				<source>Table: %1$s, index: %2$s, priority: %3$s</source>
 			</trans-unit>
 			<trans-unit id="exceptionOccurred" xml:space="preserve">
 				<source>A problem occurred. The following error was returned: %1$s (Exception code: %2$d).</source>

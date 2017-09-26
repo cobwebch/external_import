@@ -1,3 +1,8 @@
+2017-03-31 André Wuttig (portrino)  <wuttig@portrino.de>
+
+	* Add priority to scheduler task option label for easier selecting of items to synchronuze when having multiple
+	  configurations for one table
+
 2017-03-31 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected name pattern for new records placeholders, resolves #10
