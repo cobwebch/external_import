@@ -41,6 +41,9 @@
 			<trans-unit id="index" xml:space="preserve">
 				<source>Index</source>
 			</trans-unit>
+            <trans-unit id="priority" xml:space="preserve">
+				<source>Priority</source>
+			</trans-unit>
 			<trans-unit id="no_connector" xml:space="preserve">
 				<source>No connector defined. Cannot synchronize.</source>
 			</trans-unit>
