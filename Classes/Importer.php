@@ -738,7 +738,9 @@ class Importer
     }
 
     /**
-     * Forces the storage pid for imported records. Used for testing only!
+     * Forces the storage pid for imported records.
+     *
+     * This is meant essentially for testing, but can also be useful when using Importer::importData().
      *
      * @param $pid
      */
