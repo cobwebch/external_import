@@ -301,7 +301,7 @@ class StoreDataStep extends AbstractStep
                 if ($this->importer->hasTemporaryKey($externalUid)) {
                     $theID = $this->importer->getTemporaryKeyForValue($externalUid);
                 } else {
-                    $theID = uniqid('NEW', true);;
+                    $theID = uniqid('NEW', true);
                 }
                 $tceData[$table][$theID] = $theRecord;
             }
