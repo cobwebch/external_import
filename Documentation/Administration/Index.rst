@@ -36,5 +36,6 @@ each example.
    UserRights/Index
    GeneralTca/Index
    Columns/Index
+   Transformations/Index
    Mapping/Index
    MmRelations/Index

@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Domain\Model;
  */
 
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Step\TransformDataStep;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -179,11 +180,15 @@ class Configuration
     }
 
     /**
+     * Sets the column configurations and processes some data.
+     *
      * @param array $columnConfiguration
      */
     public function setColumnConfiguration(array $columnConfiguration)
     {
         $this->columnConfiguration = $columnConfiguration;
+        $this->updateTransformationConfiguration();
+        $this->sortTransformationProperties();
     }
 
     /**
@@ -258,5 +263,60 @@ class Configuration
     public function setConnector(\Cobweb\Svconnector\Service\ConnectorBase $connector)
     {
         $this->connector = $connector;
+    }
+
+    /**
+     * Updates the column configurations to the new transformation properties definition.
+     *
+     * TODO: this method is temporary for the deprecation period (remove in next major release).
+     *
+     * @return void
+     */
+    protected function updateTransformationConfiguration()
+    {
+        foreach ($this->columnConfiguration as $name => $configuration) {
+            // If the configuration is already using the new "transformations" property, use it as is
+            // (if old properties are also defined, they will be ignored)
+            if (isset($configuration['transformations'])) {
+                continue;
+            }
+
+            $transformationConfiguration = array();
+            foreach (TransformDataStep::$transformationProperties as $property) {
+                if (isset($configuration[$property])) {
+                    $transformationConfiguration[] = [
+                            $property => $configuration[$property]
+                    ];
+                }
+            }
+            if (count($transformationConfiguration) > 0) {
+                GeneralUtility::deprecationLog(
+                        sprintf(
+                                'Old transformation properties were found for column %1$s (in import configuration %2$s / %3$s. Please use the new "transformations" property.',
+                                $name,
+                                $this->table,
+                                $this->index
+                        )
+                );
+                $this->columnConfiguration[$name]['transformations'] = $transformationConfiguration;
+            }
+        }
+    }
+
+    /**
+     * Makes sure that the transformation properties are sorted.
+     *
+     * @return void
+     */
+    protected function sortTransformationProperties()
+    {
+        foreach ($this->columnConfiguration as $name => $configuration) {
+            if (isset($configuration['transformations'])) {
+                $transformations = $configuration['transformations'];
+                sort($transformations);
+                $this->columnConfiguration[$name]['transformations'] = $transformations;
+            }
+        }
+
     }
 }

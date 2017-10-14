@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Validator;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Step\TransformDataStep;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -52,6 +53,10 @@ class ColumnConfigurationValidator
                 $configuration->getCtrlConfiguration(),
                 $configuration->getConfigurationForColumn($column)
         );
+        // Check for deprecated transformation properties
+        $this->validateTransformationProperties(
+                $configuration->getConfigurationForColumn($column)
+        );
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
         $errorResults = $this->results->getForSeverity(AbstractMessage::ERROR);
@@ -63,14 +68,20 @@ class ColumnConfigurationValidator
      * Validates that the column configuration contains the appropriate properties for
      * choosing the value to import, depending on the data type (array or XML).
      *
+     * The "value" property has a particular influence on the import process. It is used to set a fixed value.
+     * This means that any data-setting property will in effect be overridden by the "value" property
+     * even if the "value" property is considered to be a transformation property.
+     * Users should be made aware of such potential conflicts.
+     *
      * @param array $ctrlConfiguration "ctrl" configuration to check
      * @param array $columnConfiguration Column configuration to check (unused when checking a "ctrl" configuration)
      */
     public function validateDataSettingProperties($ctrlConfiguration, $columnConfiguration)
     {
+        $hasValueProperty = $this->hasValueProperty($columnConfiguration);
         if ($ctrlConfiguration['data'] === 'array') {
             // For data of type "array", either a "field" or a "value" property are needed
-            if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value'])) {
+            if (!$hasValueProperty && !isset($columnConfiguration['field'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
                 $this->results->add(
                         'field',
@@ -81,7 +92,7 @@ class ColumnConfigurationValidator
                         AbstractMessage::ERROR
                 );
             // "value" property should not be set if another value-setting property is also defined
-            } elseif (isset($columnConfiguration['field'], $columnConfiguration['value'])) {
+            } elseif ($hasValueProperty && isset($columnConfiguration['field'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
                 $this->results->add(
                         'field',
@@ -94,7 +105,7 @@ class ColumnConfigurationValidator
             }
         } elseif ($ctrlConfiguration['data'] === 'xml') {
             // It is okay to have no configuration for a column. Just make sure this is really what the user wanted.
-            if (!isset($columnConfiguration['field']) && !isset($columnConfiguration['value']) && !isset($columnConfiguration['attribute']) && !isset($columnConfiguration['xpath'])) {
+            if (!$hasValueProperty && !isset($columnConfiguration['field']) && !isset($columnConfiguration['attribute']) && !isset($columnConfiguration['xpath'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
                 $this->results->add(
                         'field',
@@ -106,7 +117,7 @@ class ColumnConfigurationValidator
                 );
             // "value" property should not be set if another value-setting property is also defined
             } elseif (
-                isset($columnConfiguration['value'])
+                $hasValueProperty
                 && (isset($columnConfiguration['field']) || isset($columnConfiguration['attribute']) || isset($columnConfiguration['xpath']))
             ) {
                 // NOTE: validation result is arbitrarily added to the "field" property
@@ -115,11 +126,64 @@ class ColumnConfigurationValidator
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForXmlData',
                                 'external_import'
-                        ),
-                        AbstractMessage::WARNING
+                        )
                 );
             }
         }
+    }
+
+    /**
+     * Checks if there are deprecated transformation properties.
+     *
+     * @param array $columnConfiguration
+     */
+    public function validateTransformationProperties($columnConfiguration)
+    {
+        // Check if any transformation property is defined at column-level (rather than in the "transformations" property)
+        $properties = array_keys($columnConfiguration);
+        $transformationProperties = array_intersect($properties, TransformDataStep::$transformationProperties);
+        // If yes, issue deprecation notice
+        if (count($transformationProperties) > 0) {
+            $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedTransformationProperties';
+            if (count($transformationProperties) === 1) {
+                $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedTransformationProperty';
+            }
+            // NOTE: validation result is arbitrarily added to the "field" property
+            $this->results->add(
+                    'field',
+                    sprintf(
+                        LocalizationUtility::translate(
+                                $message,
+                                'external_import'
+                        ),
+                        implode(', ', $transformationProperties)
+                    ) . ' ' .
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:automaticTransformationPropertiesUpdate',
+                            'external_import'
+                    )
+                    ,
+                    AbstractMessage::NOTICE
+            );
+        }
+    }
+
+    /**
+     * Checks if the "transformations" properties contains the "value" property.
+     *
+     * @param array $columnConfiguration
+     * @return bool
+     */
+    public function hasValueProperty($columnConfiguration)
+    {
+        if (isset($columnConfiguration['transformations'])) {
+            foreach ($columnConfiguration['transformations'] as $transformation) {
+                if (array_key_exists('value', $transformation)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

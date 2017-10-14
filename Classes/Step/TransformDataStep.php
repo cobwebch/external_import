@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This step takes the structured data and transforms the values it contains according to whatever
@@ -29,6 +30,11 @@ class TransformDataStep extends AbstractStep
      * @var \Cobweb\ExternalImport\Utility\MappingUtility
      */
     protected $mappingUtility;
+
+    /**
+     * @var array List of transformation properties
+     */
+    static public $transformationProperties = array('trim', 'mapping', 'value', 'rteEnabled', 'userFunc');
 
     public function injectMappingUtility(\Cobweb\ExternalImport\Utility\MappingUtility $mappingUtility)
     {
@@ -47,62 +53,65 @@ class TransformDataStep extends AbstractStep
         $this->mappingUtility->setImporter($this->importer);
 
         $records = $this->getData()->getRecords();
-        $numRecords = count($records);
 
         $columnConfiguration = $this->getConfiguration()->getColumnConfiguration();
         // Loop on all tables to find any defined transformations. This might be mappings and/or user functions
         foreach ($columnConfiguration as $columnName => $columnData) {
-            // If the column's content must be trimmed, apply trim to all records
-            if (!empty($columnData['trim'])) {
-                for ($i = 0; $i < $numRecords; $i++) {
-                    $records[$i][$columnName] = trim($records[$i][$columnName]);
-                }
-            }
+            if (isset($columnData['transformations'])) {
+                foreach ($columnData['transformations'] as $transformationConfiguration) {
+                    foreach ($transformationConfiguration as $property => $configuration) {
+                        switch ($property) {
+                            case 'trim':
+                                $records = $this->applyTrim(
+                                        $columnName,
+                                        $configuration,
+                                        $records
+                                );
+                                break;
+                            case 'mapping':
+                                $records = $this->applyMapping(
+                                        $columnName,
+                                        $configuration,
+                                        $records
+                                );
+                                break;
+                            case 'value':
+                                $records = $this->applyValue(
+                                        $columnName,
+                                        $configuration,
+                                        $records
+                                );
+                                break;
+                            case 'rteEnabled':
+                                $records = $this->applyRteEnabledFlag(
+                                        $columnName,
+                                        $configuration,
+                                        $records
+                                );
+                                break;
+                            case 'userFunc':
+                                $records = $this->applyUserFunction(
+                                        $columnName,
+                                        $configuration,
+                                        $records
+                                );
+                                break;
+                            default:
+                                // Unknown property, log error
+                                $this->importer->debug(
+                                        sprintf(
+                                            LocalizationUtility::translate(
+                                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:unknownTransformationProperty',
+                                                    'external_import'
+                                            ),
+                                            $property
+                                        ),
+                                        2,
+                                        $configuration
+                                );
 
-            // Get existing mappings and apply them to records
-            if (isset($columnData['mapping'])) {
-                $records = $this->mappingUtility->mapData(
-                        $records,
-                        $this->importer->getTableName(),
-                        $columnName,
-                        $columnData['mapping']
-                );
-
-                // Otherwise apply constant value, if defined
-            } elseif (isset($columnData['value'])) {
-                for ($i = 0; $i < $numRecords; $i++) {
-                    $records[$i][$columnName] = $columnData['value'];
-                }
-            }
-
-            // Add field for RTE transformation to each record, if column has RTE enabled
-            // TODO: check if this is still relevant/correct with TYPO3 v8
-            if (!empty($columnData['rteEnabled'])) {
-                for ($i = 0; $i < $numRecords; $i++) {
-                    $records[$i]['_TRANSFORM_' . $columnName] = 'RTE';
-                }
-            }
-
-            // Apply defined user function
-            if (isset($columnData['userFunc'])) {
-                // Try to get the referenced class
-                try {
-                    $userObject = GeneralUtility::makeInstance($columnData['userFunc']['class']);
-                    $methodName = $columnData['userFunc']['method'];
-                    $parameters = isset($columnData['userFunc']['params']) ? $columnData['userFunc']['params'] : array();
-                    for ($i = 0; $i < $numRecords; $i++) {
-                        $records[$i][$columnName] = $userObject->$methodName($records[$i], $columnName, $parameters);
+                        }
                     }
-                }
-                catch (\Exception $e) {
-                    $this->importer->debug(
-                            sprintf(
-                                    $GLOBALS['LANG']->getLL('invalid_userfunc'),
-                                    $columnData['userFunc']['class']
-                            ),
-                            2,
-                            $columnData['userFunc']
-                    );
                 }
             }
         }
@@ -111,6 +120,112 @@ class TransformDataStep extends AbstractStep
         $records = $this->preprocessData($records);
 
         $this->getData()->setRecords($records);
+    }
+
+    /**
+     * Applies the "trim" transformation to the current set of records.
+     *
+     * @param string $name Name of the column being transformed
+     * @param mixed $configuration Transformation configuration
+     * @param array $records Data to transform
+     * @return array
+     */
+    public function applyTrim($name, $configuration, array $records)
+    {
+        if ((bool)$configuration) {
+            foreach ($records as $index => $record) {
+                $records[$index][$name] = trim($record[$name]);
+            }
+        }
+        return $records;
+    }
+
+    /**
+     * Applies the "mapping" transformation to the current set of records.
+     *
+     * @param string $name Name of the column being transformed
+     * @param array $configuration Transformation configuration
+     * @param array $records Data to transform
+     * @return array
+     */
+    public function applyMapping($name, $configuration, array $records)
+    {
+        return $this->mappingUtility->mapData(
+                $records,
+                $this->configuration->getTable(),
+                $name,
+                $configuration
+        );
+    }
+
+    /**
+     * Applies the "value" transformation to the current set of records.
+     *
+     * @param string $name Name of the column being transformed
+     * @param mixed $configuration Transformation configuration
+     * @param array $records Data to transform
+     * @return array
+     */
+    public function applyValue($name, $configuration, array $records)
+    {
+        foreach ($records as $index => $record) {
+            $records[$index][$name] = $configuration;
+        }
+        return $records;
+    }
+
+    /**
+     * Adds RTE flag to the current set of records, to mark the given column as containing rich-text data.
+     *
+     * @param string $name Name of the column being transformed
+     * @param mixed $configuration Transformation configuration
+     * @param array $records Data to transform
+     * @return array
+     */
+    public function applyRteEnabledFlag($name, $configuration, array $records)
+    {
+        // TODO: check if this is still relevant/correct with TYPO3 v8
+        if ((bool)$configuration) {
+            foreach ($records as $index => $record) {
+                $records[$index]['_TRANSFORM_' . $name] = 'RTE';
+            }
+        }
+        return $records;
+    }
+
+    /**
+     * Applies a user function to the current set of records.
+     *
+     * @param string $name Name of the column being transformed
+     * @param array $configuration Transformation configuration
+     * @param array $records Data to transform
+     * @return array
+     */
+    public function applyUserFunction($name, $configuration, array $records)
+    {
+            // Try to get the referenced class
+            try {
+                $userObject = GeneralUtility::makeInstance($configuration['class']);
+                $methodName = $configuration['method'];
+                $parameters = isset($configuration['params']) ? $configuration['params'] : array();
+                foreach ($records as $index => $record) {
+                    $records[$index][$name] = $userObject->$methodName($record, $name, $parameters);
+                }
+            }
+            catch (\Exception $e) {
+                $this->importer->debug(
+                        sprintf(
+                                LocalizationUtility::translate(
+                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalid_userfunc',
+                                        'external_import'
+                                ),
+                                $configuration['class']
+                        ),
+                        2,
+                        $configuration
+                );
+            }
+        return $records;
     }
 
     /**

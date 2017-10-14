@@ -101,6 +101,9 @@
 			<trans-unit id="invalid_userfunc" xml:space="preserve">
 				<source>Invalid user function %s</source>
 			</trans-unit>
+			<trans-unit id="unknownTransformationProperty" xml:space="preserve">
+				<source>Unknown transformation property %s</source>
+			</trans-unit>
 			<trans-unit id="timelimit" xml:space="preserve">
 				<source>PHP limit maximum execution time forced</source>
 			</trans-unit>

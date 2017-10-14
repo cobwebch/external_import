@@ -45,23 +45,19 @@ Properties
 
 .. container:: ts-properties
 
-	========================= ===================================================== =================
-	Property                  Data type                                             Scope
-	========================= ===================================================== =================
-	attribute_                string                                                Handle data (XML)
-	attributeNS_              string                                                Handle data (XML)
-	disabledOperations_       string                                                Store data
-	field_                    string                                                Handle data
-	fieldNS_                  string                                                Handle data (XML)
-	mapping_                  :ref:`Mapping configuration <administration-mapping>` Transform data
-	MM_                       :ref:`MM configuration <administration-mm>`           Transform data
-	rteEnabled_               boolean                                               Transform data
-	trim_                     boolean                                               Transform data
-	userFunc_                 array                                                 Transform data
-	value_                    simple type (string, integer, boolean)                Transform data
-	xmlValue_                 boolean                                               Handle data (XML)
-	xpath_                    string                                                Handle data (XML)
-	========================= ===================================================== =================
+	========================= ====================================================================== =================
+	Property                  Data type                                                              Step/Scope
+	========================= ====================================================================== =================
+	attribute_                string                                                                 Handle data (XML)
+	attributeNS_              string                                                                 Handle data (XML)
+	disabledOperations_       string                                                                 Store data
+	field_                    string                                                                 Handle data
+	fieldNS_                  string                                                                 Handle data (XML)
+	MM_                       :ref:`MM configuration <administration-mm>`                            Store data
+	transformations_          :ref:`Transformations configuration <administration-transformations>`  Transform data
+	xmlValue_                 boolean                                                                Handle data (XML)
+	xpath_                    string                                                                 Handle data (XML)
+	========================= ====================================================================== =================
 
 
 .. _administration-columns-properties-field:
@@ -211,52 +207,40 @@ Scope
   Transform data
 
 
-.. _administration-columns-properties-mapping:
+.. _administration-columns-properties-transformations:
 
-mapping
-~~~~~~~
-
-Type
-  :ref:`Mapping configuration <administration-mapping>`
-
-Description
-  This property can be used to map values from the external data to
-  values coming from some internal table. A typical example might be to
-  match 2-letter country ISO codes to the uid of the "static\_countries"
-  table.
-
-Scope
-  Transform data
-
-
-.. _administration-columns-properties-value:
-
-value
-~~~~~
+transformations
+~~~~~~~~~~~~~~~
 
 Type
-  Simple type (string, integer, boolean)
+  array (see :ref:`Transformations configuration <administration-transformations>`)
 
 Description
-  With this property, it is possible to set a fixed value for a given
-  field. For example, this might be used to set a flag for all imported
-  records.
+  Array of transformation properties. The transformations will be executed as ordered
+  by their array keys.
 
-Scope
-  Transform data
+  **Example:**
 
+  .. code-block:: php
 
-.. _administration-columns-properties-trim:
+		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
+				0 => array(
+						'field' => 'start_date',
+						'transformations => array(
+								20 => array(
+										'trim' => true
+								),
+								10 => array(
+										'userFunc' => array(
+												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+												'method' => 'parseDate'
+										)
+								)
+						)
+				)
+		);
 
-trim
-~~~~
-
-Type
-  boolean
-
-Description
-  If set to :code:`TRUE`, every value for this column will be trimmed during the
-  transformation step.
+  The "userFunc" will be executed first (:code:`10`) and the "trim" next (:code:`20`).
 
 Scope
   Transform data
@@ -273,85 +257,11 @@ Type
 Description
   When taking the value of a node inside a XML structure, the default behaviour
   is to retrieve this value as a string. If the node contained a XML sub-structure,
-  its tags will be stripped. When setting this value to :code:`TRUE`, the XML
+  its tags will be stripped. When setting this value to :code:`true`, the XML
   structure of the child nodes is preserved.
 
 Scope
   Handle data (XML)
-
-
-.. _administration-columns-properties-rteenabled:
-
-rteEnabled
-~~~~~~~~~~
-
-Type
-  boolean
-
-Description
-  If set to :code:`TRUE` when importing HTML data into a RTE-enable field, the
-  imported data will go through the usual RTE transformation process on
-  the way to the database.
-
-Scope
-  Transform data
-
-
-.. _administration-columns-properties-userfunc:
-
-userFunc
-~~~~~~~~
-
-Type
-  array
-
-Description
-  This property can be used to define a function that will be called on
-  each record to transform the data from the given field. See example
-  below.
-
-  .. important::
-
-     The user function is called **after** the mapping.
-
-  **Example**
-
-  Here is a sample setup referencing a user function:
-
-  .. code-block:: php
-
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
-				0 => array(
-						'field' => 'start_date',
-						'userFunc' => array(
-								'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
-								'method' => 'parseDate'
-						)
-				)
-		);
-
-  A user function requires three parameters:
-
-  class
-    *(string)* Name of the class to be instantiated.
-
-  method
-    *(string)* Defines which method of the class should be called.
-
-  params
-    *(array)* Optional. Can contain any number of data, which will be passed
-    to the method.
-
-  In the example above we are using a sample class provided by
-  External Import that can be used to parse a date and either return it
-  as a timestamp or format it using either of the PHP functions
-  :code:`date()` or :code:`strftime()` .
-
-  For more details about creating a user function, please refer to the
-  :ref:`Developer's Guide <developer>`.
-
-Scope
-  Transform data
 
 
 .. _administration-columns-properties-disabledoperations:

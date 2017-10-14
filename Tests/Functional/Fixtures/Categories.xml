@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+	<!-- Categories for mapping test -->
+	<sys_category>
+		<uid>1</uid>
+		<pid>0</pid>
+		<title>Useful products</title>
+		<external_key>USEFUL</external_key>
+	</sys_category>
+	<sys_category>
+		<uid>2</uid>
+		<pid>0</pid>
+		<title>Useless products</title>
+		<external_key>USELESS</external_key>
+	</sys_category>
+</dataset>

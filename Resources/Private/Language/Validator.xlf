@@ -65,6 +65,15 @@
 			<trans-unit id="renamedProperty" xml:space="preserve">
 				<source>Property "%1$s" was renamed to "%2$s". Please update your configuration.</source>
 			</trans-unit>
+			<trans-unit id="deprecatedTransformationProperty" xml:space="preserve">
+				<source>Property "%1$s" should be placed inside the "transformations" property.</source>
+			</trans-unit>
+			<trans-unit id="deprecatedTransformationProperties" xml:space="preserve">
+				<source>Properties "%1$s" should be placed inside the "transformations" property.</source>
+			</trans-unit>
+			<trans-unit id="automaticTransformationPropertiesUpdate" xml:space="preserve">
+				<source>A backwards-compatibility layer currently updates your configuration automatically, but it will be removed in the next major version. Please update your configuration.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

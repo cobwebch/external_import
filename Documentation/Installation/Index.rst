@@ -32,7 +32,58 @@ Compatibility issues
 Upgrade to 4.0.0
 """"""""""""""""
 
-(to be written)
+(to be completed)
+
+All column properties that are related to the "Transform data" scope have been grouped into a new
+property called :ref:`transformations <administration-columns-properties-transformations>`.
+This is an ordered array, which makes it possible to use transformation properties several times
+on the same field (e.g. calling several user functions) and to do that in a precise order.
+As an example, usage of such properties should be changed from:
+
+  .. code-block:: php
+
+		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
+				0 => array(
+						'field' => 'start_date',
+						'trim' => true
+						'userFunc' => array(
+								'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+								'method' => 'parseDate'
+						)
+				)
+		);
+
+
+to:
+
+  .. code-block:: php
+
+		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
+				0 => array(
+						'field' => 'start_date',
+						'transformations => array(
+								10 => array(
+										'trim' => true
+								),
+								20 => array(
+										'userFunc' => array(
+												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+												'method' => 'parseDate'
+										)
+								)
+						)
+				)
+		);
+
+
+If you want to preserve "old-style" order, the transformation properties were called in the
+following order up to version 3.0.x: "trim", "mapping", "value", "rteEnabled" and "userFunc".
+Also note that "value" was ignored if "mapping" was also defined. Now both will be taken into
+account if both exist (although that sounds rather like a configuration mistake).
+
+A compatibility layer ensures that old-style transformation properties are preserved, but
+this is a temporary convenience, which will be removed in the next version. So please upgrade
+your configurations.
 
 .. note::
 
