@@ -14,12 +14,14 @@ namespace Cobweb\ExternalImport\Tests\Unit\Validator;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\TestingFramework\Core\BaseTestCase;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-class ColumnConfigurationValidatorTest extends BaseTestCase
+class ColumnConfigurationValidatorTest extends FunctionalTestCase
 {
     /**
      * @var array List of globals to exclude (contain closures which cannot be serialized)
@@ -31,10 +33,16 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
      */
     protected $subject;
 
+    /**
+     * @var ObjectManager
+     */
+    protected $objectManager;
+
     public function setUp()
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->subject = $this->objectManager->get(ColumnConfigurationValidator::class);
     }
 
     public function validConfigurationProvider()
@@ -45,7 +53,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'array',
                         ),
                         array(
-                                'field' => 'foo'
+                                'col' => array(
+                                        'field' => 'foo'
+                                )
                         )
                 ),
                 'Data type "array": using property "field" (positive integer)' => array(
@@ -53,7 +63,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'array',
                         ),
                         array(
-                                'field' => 42
+                                'col' => array(
+                                        'field' => 42
+                                )
                         )
                 ),
                 'Data type "array": using property "field" (zero)' => array(
@@ -61,7 +73,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'array',
                         ),
                         array(
-                                'field' => 0
+                                'col' => array(
+                                        'field' => 0
+                                )
                         )
                 ),
                 'Data type "array": using property "value" (number)' => array(
@@ -69,7 +83,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'array',
                         ),
                         array(
-                                'value' => 17
+                                'col' => array(
+                                        'value' => 17
+                                )
                         )
                 ),
                 'Data type "array": using property "value" (string)' => array(
@@ -77,7 +93,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'array',
                         ),
                         array(
-                                'value' => 'bar'
+                                'col' => array(
+                                        'value' => 'bar'
+                                )
                         )
                 ),
                 'Data type "xml": using property "field" (string)' => array(
@@ -85,7 +103,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'xml',
                         ),
                         array(
-                                'field' => 'foo'
+                                'col' => array(
+                                        'field' => 'foo'
+                                )
                         )
                 ),
                 'Data type "xml": using property "value" (number)' => array(
@@ -93,7 +113,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'xml',
                         ),
                         array(
-                                'value' => 17
+                                'col' => array(
+                                        'value' => 17
+                                )
                         )
                 ),
                 'Data type "xml": using property "value" (string)' => array(
@@ -101,7 +123,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'xml',
                         ),
                         array(
-                                'value' => 'bar'
+                                'col' => array(
+                                        'value' => 'bar'
+                                )
                         )
                 ),
                 'Data type "xml": using property "attribute" (string)' => array(
@@ -109,7 +133,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'xml',
                         ),
                         array(
-                                'field' => 'baz'
+                                'col' => array(
+                                        'field' => 'baz'
+                                )
                         )
                 ),
                 'Data type "xml": using property "xpath" (string)' => array(
@@ -117,7 +143,9 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'xml',
                         ),
                         array(
-                                'field' => 'hello'
+                                'col' => array(
+                                        'field' => 'hello'
+                                )
                         )
                 ),
         );
@@ -131,11 +159,13 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
      */
     public function isValidReturnsTrueForValidConfiguration($controlConfiguration, $columnConfiguration)
     {
+        $configuration = $this->objectManager->get(Configuration::class);
+        $configuration->setCtrlConfiguration($controlConfiguration);
+        $configuration->setColumnConfiguration($columnConfiguration);
         self::assertTrue(
                 $this->subject->isValid(
-                        'tt_content',
-                        $controlConfiguration,
-                        $columnConfiguration
+                        $configuration,
+                        'col'
                 )
         );
     }
@@ -162,8 +192,10 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'array'
                         ),
                         array(
-                                'value' => 42,
-                                'field' => 'foo'
+                                'col' => array(
+                                        'value' => 42,
+                                        'field' => 'foo'
+                                )
                         ),
                         FlashMessage::WARNING
                 ),
@@ -172,8 +204,10 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
                                 'data' => 'xml'
                         ),
                         array(
-                                'value' => 42,
-                                'xpath' => 'item'
+                                'col' => array(
+                                        'value' => 42,
+                                        'xpath' => 'item'
+                                )
                         ),
                         FlashMessage::WARNING
                 ),
@@ -187,17 +221,19 @@ class ColumnConfigurationValidatorTest extends BaseTestCase
      * @test
      * @dataProvider invalidConfigurationProvider
      */
-    public function validateDataSettingPropertiesRaisesMessage($controlConfiguration, $columnConfiguration, $severity)
+    public function isValidRaisesMessageForInvalidConfiguration($controlConfiguration, $columnConfiguration, $severity)
     {
+        $configuration = $this->objectManager->get(Configuration::class);
+        $configuration->setCtrlConfiguration($controlConfiguration);
+        $configuration->setColumnConfiguration($columnConfiguration);
         $this->subject->isValid(
-                'tt_content',
-                $controlConfiguration,
-                $columnConfiguration
+                $configuration,
+                'col'
         );
-        $result = $this->subject->getResultForProperty('field');
+        $results = $this->subject->getResults();
         self::assertSame(
                 $severity,
-                $result['severity']
+                $results['field']['severity']
         );
     }
 }

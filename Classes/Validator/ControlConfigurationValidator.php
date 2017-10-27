@@ -78,7 +78,7 @@ class ControlConfigurationValidator
         $this->validateConnectorProperty($ctrlConfiguration['connector']);
         $this->validateDataHandlerProperty($ctrlConfiguration['dataHandler']);
         $this->validateReferenceUidProperty($ctrlConfiguration['referenceUid']);
-        $this->validatePidProperty($ctrlConfiguration['pid']);
+        $this->validatePidProperty($configuration->getStoragePid());
         $this->validateUseColumnIndexProperty(
                 $ctrlConfiguration['useColumnIndex'],
                 $configuration->getColumnConfiguration()

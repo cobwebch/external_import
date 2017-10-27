@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Tests\Unit;
  */
 
 use Cobweb\ExternalImport\Utility\MappingUtility;
+use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\BaseTestCase;
 
@@ -25,7 +26,7 @@ use TYPO3\TestingFramework\Core\BaseTestCase;
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class MappingUtilityTest extends BaseTestCase
+class MappingUtilityTest extends UnitTestCase
 {
     /**
      * @var array List of globals to exclude (contain closures which cannot be serialized)

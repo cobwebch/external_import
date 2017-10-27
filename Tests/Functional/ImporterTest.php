@@ -15,8 +15,8 @@ namespace Cobweb\ExternalImport\Tests\Functional;
  */
 
 use Cobweb\ExternalImport\Importer;
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
@@ -26,8 +26,16 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class ImporterTest extends \Tx_Phpunit_Database_TestCase
+class ImporterTest extends FunctionalTestCase
 {
+    protected $testExtensionsToLoad = [
+            'typo3conf/ext/svconnector',
+            'typo3conf/ext/svconnector_csv',
+            'typo3conf/ext/svconnector_feed',
+            'typo3conf/ext/external_import',
+            'typo3conf/ext/externalimport_test'
+    ];
+
     /**
      * @var Importer
      */
@@ -35,14 +43,8 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
 
     protected function setUp()
     {
-        if (!ExtensionManagementUtility::isLoaded('externalimport_test')) {
-            self::markTestSkipped('Test extension "externalimport_test" is not loaded.');
-        }
-        if (!$this->createDatabase()) {
-            self::markTestSkipped('Test database could not be created.');
-        }
-        $this->importExtensions(['core']);
-        $this->importExtensions(['externalimport_test']);
+        parent::setUp();
+        $this->setUpBackendUserFromFixture(1);
 
         $objectManager = new ObjectManager();
         $this->subject = $objectManager->get(Importer::class);
@@ -68,16 +70,16 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'tx_externalimporttest_tag',
                 0
         );
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countRecords = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'tx_externalimporttest_tag'
         );
-        $countRecords = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countRecords++;
-        }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(5, $countRecords, serialize($messages));
+        self::assertEquals(
+                5,
+                $countRecords,
+                serialize($messages)
+        );
     }
 
     /**
@@ -94,24 +96,17 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'sys_category',
                 'product_categories'
         );
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        // Count imported categories
+        $countRecords = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'sys_category'
         );
-        $countRecords = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countRecords++;
-        }
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        // Count records having a parent
+        $countChildren = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'sys_category',
                 'parent > 0'
         );
-        // Count records having a parent
-        $countChildren = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countChildren++;
-        }
 
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(4, $countRecords, serialize($messages));
@@ -128,8 +123,8 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
-        // Import tags categories first, so that relations can be created to them from products
-        $messages = $this->subject->synchronizeData(
+        // Import tags and categories first, so that relations can be created to them from products
+        $this->subject->synchronizeData(
                 'tx_externalimporttest_tag',
                 0
         );
@@ -142,7 +137,7 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'base'
         );
         // Get the number of products stored
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
                 'uid,tags',
                 'tx_externalimporttest_product',
                 '',
@@ -157,15 +152,11 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
             $tagRelations[] = $row['tags'];
         }
         // Get the number of categories relations created
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countRelations = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid_local',
                 'sys_category_record_mm',
                 'tablenames = \'tx_externalimporttest_product\''
         );
-        $countRelations = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countRelations++;
-        }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(2, $countProducts, serialize($messages));
         self::assertEquals(2, $countRelations);
@@ -193,14 +184,10 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'more'
         );
         // Get the number of products stored
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countProducts = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'tx_externalimporttest_product'
         );
-        $countProducts = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countProducts++;
-        }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(2, $countProducts, serialize($messages));
     }
@@ -222,14 +209,10 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'stable'
         );
         // Get the number of products stored
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countProducts = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'tx_externalimporttest_product'
         );
-        $countProducts = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countProducts++;
-        }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(2, $countProducts, serialize($messages));
     }
@@ -256,7 +239,7 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'tx_externalimporttest_product',
                 'stable'
         );
-        $messages = $this->subject->synchronizeData(
+        $this->subject->synchronizeData(
                 'tx_externalimporttest_store',
                 0
         );
@@ -266,7 +249,7 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'products_for_stores'
         );
         // Get the number of relations created
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
                 'uid_local,stock',
                 'tx_externalimporttest_store_product_mm',
                 '',
@@ -357,16 +340,12 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 0
         );
         // Get the number of products stored
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countBundles = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'tx_externalimporttest_bundle'
         );
-        $countBundles = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countBundles++;
-        }
         // Get the number of relations created
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
                 'uid_local,uid_foreign,sorting',
                 'tx_externalimporttest_bundle_product_mm',
                 '',
@@ -418,17 +397,13 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'tx_externalimporttest_order',
                 0
         );
-        // Get the number of products stored
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        // Get the number of orders stored
+        $countOrders = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'tx_externalimporttest_order'
         );
-        $countOrders = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countOrders++;
-        }
         // Get the number of relations created
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
                 'uid_local,quantity',
                 'tx_externalimporttest_order_items_mm',
                 '',
@@ -473,16 +448,12 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 0
         );
         // Get the number of products stored
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countStores = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'tx_externalimporttest_store'
         );
-        $countStores = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countStores++;
-        }
         // Get the number of relations created
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
                 'uid_local,stock',
                 'tx_externalimporttest_store_product_mm',
                 '',
@@ -519,21 +490,16 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'tx_externalimporttest_invoice',
                 0
         );
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countRecords = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'tx_externalimporttest_invoice'
         );
-        $countRecords = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countRecords++;
-        }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(3, $countRecords, serialize($messages));
     }
 
     /**
-     * Imports the "invoices" elements and checks whether we have the right count or not
-     * (3 expected).
+     * Imports the products as pages and checks whether the proper page tree has been created.
      *
      * NOTE: This test fails as this feature has actually never worked properly.
      * See: https://github.com/cobwebch/external_import/issues/11
@@ -549,15 +515,11 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 'product_pages'
         );
         // Three new pages should be attached to the storage page
-        $databaseResult = \Tx_Phpunit_Service_Database::select(
+        $countParentPages = $this->getDatabaseConnection()->exec_SELECTcountRows(
                 'uid',
                 'pages',
                 'pid = 1'
         );
-        $countParentPages = 0;
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countParentPages++;
-        }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(3, $countParentPages, serialize($messages));
 
@@ -577,15 +539,14 @@ class ImporterTest extends \Tx_Phpunit_Database_TestCase
                 )
         );
         foreach ($pageTree as $page) {
-            $databaseResult = \Tx_Phpunit_Service_Database::select(
+            $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
                     'COUNT(uid) AS total',
                     'pages',
                     'uid IN (SELECT uid FROM pages WHERE title = \'' . $page['title'] . '\')'
             );
+            $children = 0;
             if ($row = $databaseResult->fetch_assoc()) {
                 $children = $row['total'];
-            } else {
-                $children = 0;
             }
             self::assertEquals($page['children'], $children);
         }

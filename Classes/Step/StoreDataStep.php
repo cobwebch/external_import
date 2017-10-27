@@ -193,6 +193,7 @@ class StoreDataStep extends AbstractStep
         $handledUids = array();
         $tceData = array($table => array());
         $savedAdditionalFields = array();
+        $storagePid = $this->getConfiguration()->getStoragePid();
         foreach ($records as $theRecord) {
             $localAdditionalFields = array();
             $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
@@ -294,7 +295,7 @@ class StoreDataStep extends AbstractStep
                 // Make sure the record has a pid, but avoid overwriting an existing one
                 // (for example, when external data is imported into the pages table)
                 if (!isset($theRecord['pid'])) {
-                    $theRecord['pid'] = $this->importer->getPid();
+                    $theRecord['pid'] = $storagePid;
                 }
                 // If a temporary key was already defined, use it, otherwise create a new one.
                 // Temporary keys may exist if self-referential mapping was handled beforehand (see mapData())
