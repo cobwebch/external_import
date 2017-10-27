@@ -45,6 +45,11 @@ class Configuration
     protected $columnConfiguration;
 
     /**
+     * @var int ID of storage page
+     */
+    protected $storagePid;
+
+    /**
      * @var array List of fields that must be read from distant stored, but will not be stored to DB
      */
     protected $additionalFields = array();
@@ -142,6 +147,11 @@ class Configuration
             }
         }
         $this->steps = $steps;
+
+        // Store the storage pid from the configuration
+        // It is stored in a separate variable as it might be overridden
+        $this->storagePid = $ctrlConfiguration['pid'];
+
         // Perform extra processing for additional fields
         if (array_key_exists('additionalFields', $ctrlConfiguration)) {
             $additionalFields = GeneralUtility::trimExplode(
@@ -201,6 +211,22 @@ class Configuration
     }
 
     /**
+     * @return int
+     */
+    public function getStoragePid()
+    {
+        return $this->storagePid;
+    }
+
+    /**
+     * @param int $storagePid
+     */
+    public function setStoragePid($storagePid)
+    {
+        $this->storagePid = $storagePid;
+    }
+
+    /**
      * @return array
      */
     public function getAdditionalFields()
@@ -214,6 +240,7 @@ class Configuration
     public function setAdditionalFields(array $additionalFields)
     {
         $this->additionalFields = $additionalFields;
+        $this->countAdditionalFields = count($additionalFields);
     }
 
     /**

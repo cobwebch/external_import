@@ -80,14 +80,9 @@ class Importer
     protected $reportingUtility;
 
     /**
-     * @var int Uid of the page where the records will be stored
-     */
-    protected $pid = 0;
-
-    /**
      * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
      */
-    protected $forcedStoragePid = 0;
+    protected $forcedStoragePid = null;
 
     /**
      * @var array List of primary keys of records that already exist in the database
@@ -218,9 +213,12 @@ class Importer
                 $index,
                 $defaultSteps
         );
-        $this->pid = ($this->forcedStoragePid > 0) ? $this->forcedStoragePid : $this->externalConfiguration->getCtrlConfigurationProperty('pid');
+        if ($this->forcedStoragePid !== null)
+        {
+            $this->externalConfiguration->setStoragePid($this->forcedStoragePid);
+        }
         // Set the storage page as the related page for the devLog entries
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->pid;
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->externalConfiguration->getStoragePid();
     }
 
     /**
@@ -380,7 +378,7 @@ class Importer
         $ctrlConfiguration = $this->externalConfiguration->getCtrlConfiguration();
         $where = '1 = 1';
         if ($ctrlConfiguration['enforcePid']) {
-            $where = "pid = '" . $this->pid . "'";
+            $where = 'pid = ' . (int)$this->externalConfiguration->getStoragePid();
         }
         if (!empty($ctrlConfiguration['whereClause'])) {
             $where .= ' AND ' . $ctrlConfiguration['whereClause'];
@@ -509,16 +507,6 @@ class Importer
     public function getExtensionConfiguration()
     {
         return $this->extensionConfiguration;
-    }
-
-    /**
-     * Returns the storage pid for the current configuration.
-     *
-     * @return int
-     */
-    public function getPid()
-    {
-        return $this->pid;
     }
 
     /**

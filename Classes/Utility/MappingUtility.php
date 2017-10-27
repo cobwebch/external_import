@@ -179,7 +179,7 @@ class MappingUtility
                 if (strpos($mappingData['where_clause'], '###PID_IN_USE###') !== false) {
                     $whereClause = str_replace(
                             '###PID_IN_USE###',
-                            $this->importer->getPid(),
+                            $this->importer->getExternalConfiguration()->getStoragePid(),
                             $mappingData['where_clause']
                     );
                 } else {
