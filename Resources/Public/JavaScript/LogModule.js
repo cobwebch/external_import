@@ -17,9 +17,10 @@
  */
 define(['jquery',
 		'TYPO3/CMS/Backend/Icons',
+		'moment',
 		'datatables',
 		'TYPO3/CMS/Backend/jquery.clearable'
-	   ], function($, Icons) {
+	   ], function($, Icons, moment) {
 	'use strict';
 
 	var ExternalImportLogModule = {
@@ -83,21 +84,8 @@ define(['jquery',
 								if (type === 'sort') {
 									return data;
 								} else {
-									var lastModifiedDate = new Date(data * 1000);
-									var day = lastModifiedDate.getDate();
-									var month = lastModifiedDate.getMonth() + 1;
-									// Make sure day and month are formatted with 2 digits
-									if (day < 10) {
-										day = '0' + day.toString();
-									}
-									if (month < 10) {
-										month = '0' + month.toString();
-									}
-									var year = lastModifiedDate.getFullYear().toString().substr(2,2);
-									var hours = lastModifiedDate.getHours();
-									var minutes = lastModifiedDate.getMinutes();
-									var seconds = lastModifiedDate.getSeconds();
-									return day + '.' + month + '.' + year + ' ' + hours + ':' + minutes + ':' + seconds;
+									var lastModifiedDate = moment.unix(data);
+									return lastModifiedDate.format('DD.MM.YY HH:mm:ss');
 								}
 							}
 						},
