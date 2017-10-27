@@ -1,6 +1,7 @@
 2017-10-27 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Improved handling of storage pid, resolves #30
+	* Adapted all unit and functional tests to TYPO3 v8 and nimut/testing-framework
 
 2017-08-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

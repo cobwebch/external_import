@@ -141,6 +141,18 @@ class Importer
         $this->resetMessages();
     }
 
+    /**
+     * Returns the object as a string.
+     *
+     * NOTE: this seems pretty useless but somehow is needed when a functional test fails. Don't ask me why.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return __CLASS__;
+    }
+
     public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $manager)
     {
         $this->objectManager = $manager;
