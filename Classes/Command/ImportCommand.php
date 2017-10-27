@@ -113,7 +113,7 @@ class ImportCommand extends Command
                 foreach ($configurations as $tableList) {
                     foreach ($tableList as $configuration) {
                         $io->section('Importing: ' . $configuration['table'] . ' / ' . $configuration['index']);
-                        $messages = $importer->synchronizeData(
+                        $messages = $importer->synchronize(
                                 $configuration['table'],
                                 $configuration['index']
                         );
@@ -122,7 +122,7 @@ class ImportCommand extends Command
                 }
             // Launch selected synchronization
             } elseif ($table !== null && $index !== null) {
-                $messages = $importer->synchronizeData(
+                $messages = $importer->synchronize(
                         $table,
                         $index
                 );

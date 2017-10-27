@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
@@ -38,18 +39,14 @@ class ProcessedParametersViewHelper extends AbstractViewHelper implements Compil
     /**
      * Process parameters and set them as variable.
      *
-     * @param string $table Name of the table being displayed
-     * @param string $index Index of the configuration being displayed
-     * @param array $parameters Connector parameters
+     * @param Configuration $configuration Configuration object
      * @return string Rendered string
      */
-    public function render($table, $index, array $parameters)
+    public function render(Configuration $configuration)
     {
         return static::renderStatic(
             array(
-                    'table' => $table,
-                    'index' => $index,
-                    'parameters' => $parameters
+                    'configuration' => $configuration
             ),
             $this->buildRenderChildrenClosure(),
             $this->renderingContext
@@ -67,19 +64,16 @@ class ProcessedParametersViewHelper extends AbstractViewHelper implements Compil
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
+        /** @var Configuration $configuration */
+        $configuration = $arguments['configuration'];
         // Call any hook that may be declared to process parameters
         $processedParameters = array();
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'])) {
-            // The hook needs an instance of the importer class
-            /** @var Importer $importer */
-            $importer = GeneralUtility::makeInstance(Importer::class);
-            $importer->setTableName($arguments['table']);
-            $importer->setIndex($arguments['index']);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
                 $preProcessor = GeneralUtility::makeInstance($className);
                 $processedParameters = $preProcessor->processParameters(
-                        $arguments['parameters'],
-                        $importer
+                        $configuration->getCtrlConfigurationProperty('parameters'),
+                        $configuration
                 );
             }
         }

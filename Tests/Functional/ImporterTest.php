@@ -66,7 +66,7 @@ class ImporterTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_tag',
                 0
         );
@@ -92,7 +92,7 @@ class ImporterTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'sys_category',
                 'product_categories'
         );
@@ -124,15 +124,15 @@ class ImporterTest extends FunctionalTestCase
         $this->subject->setForcedStoragePid(1);
 
         // Import tags and categories first, so that relations can be created to them from products
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_tag',
                 0
         );
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'sys_category',
                 'product_categories'
         );
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'base'
         );
@@ -179,7 +179,7 @@ class ImporterTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'more'
         );
@@ -204,7 +204,7 @@ class ImporterTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'stable'
         );
@@ -231,20 +231,20 @@ class ImporterTest extends FunctionalTestCase
         $this->subject->setForcedStoragePid(1);
 
         // First import products and stores, so that relations can be created
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'base'
         );
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'stable'
         );
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_store',
                 0
         );
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'products_for_stores'
         );
@@ -296,7 +296,7 @@ class ImporterTest extends FunctionalTestCase
      * @dataProvider wrongConfigurationNames
      */
     public function importProductsWithErroneousConfigurationReturnsError($configuration) {
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 $configuration
         );
@@ -322,20 +322,20 @@ class ImporterTest extends FunctionalTestCase
         $this->subject->setForcedStoragePid(1);
 
         // First import all products, so that relations can be created
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'base'
         );
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'more'
         );
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'stable'
         );
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_bundle',
                 0
         );
@@ -380,20 +380,20 @@ class ImporterTest extends FunctionalTestCase
         $this->subject->setForcedStoragePid(1);
 
         // First import all products, so that relations can be created
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'base'
         );
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'more'
         );
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'stable'
         );
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_order',
                 0
         );
@@ -438,12 +438,12 @@ class ImporterTest extends FunctionalTestCase
         $this->subject->setForcedStoragePid(1);
 
         // First import products, so that relations can be created
-        $this->subject->synchronizeData(
+        $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'more'
         );
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_store',
                 0
         );
@@ -486,7 +486,7 @@ class ImporterTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'tx_externalimporttest_invoice',
                 0
         );
@@ -510,7 +510,7 @@ class ImporterTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
-        $messages = $this->subject->synchronizeData(
+        $messages = $this->subject->synchronize(
                 'pages',
                 'product_pages'
         );

@@ -2,6 +2,7 @@
 
 	* Improved handling of storage pid, resolves #30
 	* Adapted all unit and functional tests to TYPO3 v8 and nimut/testing-framework
+	* Cleaned up the Importer class, resolves #25
 
 2017-10-14 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

@@ -27,11 +27,11 @@ and storing features.
 It is very simple to use this feature. You just need
 to assemble data in a format that External Import can understand (XML structure or
 PHP array) and call the appropriate method. All you need is an
-instance of class :code:`\Cobweb\ExternalImport\Importer` and a single call.
+instance of class :class:`\Cobweb\ExternalImport\Importer` and a single call.
 
 .. warning::
 
-   Since version 4.0.0, the :code:`\Cobweb\ExternalImport\Importer` class must
+   Since version 4.0.0, the :class:`\Cobweb\ExternalImport\Importer` class must
    be instantiated using Extbase's :code:`ObjectManager` due to its usage of
    dependency injection.
 
@@ -40,7 +40,7 @@ instance of class :code:`\Cobweb\ExternalImport\Importer` and a single call.
 
 	$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
 	$importer = $objectManager->get(\Cobweb\ExternalImport\Importer::class);
-	$importer->importData($table, $index, $rawData);
+	$importer->import($table, $index, $rawData);
 
 
 The call parameters are as follows:
@@ -122,7 +122,7 @@ There are getters and setters for each of these.
 The Importer class
 """"""""""""""""""
 
-Beyond the :code:`importData()` mentioned above the :code:`\Cobweb\ExternalImport\Importer` class
+Beyond the :code:`import()` mentioned above the :code:`\Cobweb\ExternalImport\Importer` class
 also makes a number of internal elements available via getters:
 
 getExtensionConfiguration
@@ -134,7 +134,7 @@ getExternalConfiguration
 and a few more which are not as significant and can be explored by
 anyone interested straight in the source code.
 
-For reporting, the :code:`\Cobweb\ExternalImport\Importer` class also provides
+For reporting, the :class:`\Cobweb\ExternalImport\Importer` class also provides
 the :code:`addMessage()` method which takes as arguments a message and a severity
-(using the constants of the :code:`\TYPO3\CMS\Core\Messaging\AbstractMessage`
+(using the constants of the :class:`\TYPO3\CMS\Core\Messaging\AbstractMessage`
 class).

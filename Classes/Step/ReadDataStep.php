@@ -165,7 +165,7 @@ class ReadDataStep extends AbstractStep
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
                 try {
                     $preProcessor = GeneralUtility::makeInstance($className);
-                    $parameters = $preProcessor->processParameters($parameters, $this->importer);
+                    $parameters = $preProcessor->processParameters($parameters, $this->importer->getExternalConfiguration());
                 } catch (\Exception $e) {
                     $this->importer->debug(
                             sprintf(
@@ -185,8 +185,8 @@ class ReadDataStep extends AbstractStep
      * This method prepares a sample from the data to import, based on the preview limit
      * The process applied for this depends on the data type (array or XML)
      *
-     * @param    mixed $data : the input data as a XML string or a PHP array
-     * @return    array    The data sample, in same format as input (but written inside an array in case of XML data)
+     * @param mixed $data The input data as a XML string or a PHP array
+     * @return array The data sample, in same format as input (but written inside an array in case of XML data)
      */
     protected function prepareDataSample($data)
     {

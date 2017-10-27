@@ -30,7 +30,7 @@ class CheckPermissionsStep extends AbstractStep
      */
     public function run()
     {
-        $table = $this->importer->getTableName();
+        $table = $this->importer->getExternalConfiguration()->getTable();
         if (!$GLOBALS['BE_USER']->check('tables_modify', $table)) {
             $this->abortFlag = true;
             $userName = $GLOBALS['BE_USER']->user['username'];

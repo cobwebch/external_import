@@ -15,7 +15,7 @@
 					<tr>
 						<td><f:translate id="connector.details" /></td>
 						<td>
-							<ex:processedParameters table="{table}" index="{index}" parameters="{ctrlConfiguration.parameters}">
+							<ex:processedParameters configuration="{configuration}">
 								<ex:twinDump originalArray="{ctrlConfiguration.parameters}" modifiedArray="{processedParameters}" />
 							</ex:processedParameters>
 							<f:if condition="{results.connector}">

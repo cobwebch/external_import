@@ -32,7 +32,40 @@ Compatibility issues
 Upgrade to 4.0.0
 """"""""""""""""
 
-(to be completed)
+.. _installation-upgrade-400-importer-api:
+
+Importer API changes
+~~~~~~~~~~~~~~~~~~~~
+
+The External Import configuration is now fully centralized in a :class:`\Cobweb\ExternalImport\Domain\Model\Configuration`
+object. Every time you need some aspect of the configuration, you should get it via the instance
+of this class rather than through any other mean. The most current use case was getting the
+name of the current table and index from the :class:`\Cobweb\ExternalImport\Importer` class,
+using :code:`Importer::getTableName()` and :code:`Importer::getIndex()`. Such methods
+were deprecated and should not be used anymore. Use instead:
+
+  .. code-block:: php
+
+		$table = $importer->getExternalConfiguration()->getTable();
+		$index = $importer->getExternalConfiguration()->getIndex();
+
+
+The :code:`Importer::synchronizeData()` method was renamed to :code:`Importer::synchronize()` and
+the :code:`Importer::importData()` method was renamed to :code:`Importer::import()`. The old methods
+were kept, but are deprecated.
+
+The :code:`Importer::synchronizeAllTables()` method should not be used anymore as it does not allow
+for a satisfying reporting. Instead a loop should be done on all configurations and
+:code:`Importer::synchronize()` called inside the loop. See for example
+:code:`\Cobweb\ExternalImport\Command\ImportCommand::execute()`.
+
+Other deprecated methods are :code:`Importer::getColumnIndex()` and :code:`Importer::getExternalConfig()`.
+
+
+.. _installation-upgrade-400-transformation-properties:
+
+Transformation properties
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 All column properties that are related to the "Transform data" scope have been grouped into a new
 property called :ref:`transformations <administration-columns-properties-transformations>`.
@@ -90,6 +123,21 @@ your configurations.
    The upgrade wizard from version 3.0.0 has been removed. If you are upgrading from TYPO3
    6.2 to TYPO3 8.7, you must go through TYPO3 7.6 first and use the upgrade wizard from
    External Import 3.0.x before moving on to TYPO3 8.7.
+
+
+.. _installation-upgrade-400-breaking-changes:
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+While all hooks were preserved as is, in the sense that they still receive a back-reference
+to the :class:`Importer` object, the :code:`processParameters` hook was modified due to its
+particular usage (it is called in the backend module, so that processed parameters can be
+viewed when checking the configuration). It now receives a reference to the :class:`Configuration`
+object and not to the :class:`Importer` object anymore. Please update your hooks accordingly.
+
+
+(to be completed)
 
 
 .. _installation-upgrade-300:

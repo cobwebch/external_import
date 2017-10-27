@@ -55,21 +55,6 @@ class Importer
     protected $configurationRepository;
 
     /**
-     * @var string Name of the table being synchronised
-     */
-    protected $table;
-
-    /**
-     * @var mixed Index of the synchronisation configuration in use
-     */
-    protected $index;
-
-    /**
-     * @var mixed Index for the columns, may be different from $this->index
-     */
-    protected $columnIndex;
-
-    /**
      * @var \Cobweb\ExternalImport\Domain\Model\Configuration Full External Import configuration
      */
     protected $externalConfiguration;
@@ -170,10 +155,33 @@ class Importer
     }
 
     /**
+     * Stores information about the synchronized table into member variables.
+     *
+     * @param string $table Name of the table to synchronise
+     * @param mixed $index Index of the synchronisation configuration to use
+     * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
+     * @return void
+     */
+    protected function initialize($table, $index, $defaultSteps = null)
+    {
+        $this->externalConfiguration = $this->configurationRepository->findConfigurationObject(
+                $table,
+                $index,
+                $defaultSteps
+        );
+        if ($this->forcedStoragePid !== null)
+        {
+            $this->externalConfiguration->setStoragePid($this->forcedStoragePid);
+        }
+        // Set the storage page as the related page for the devLog entries
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->externalConfiguration->getStoragePid();
+    }
+
+    /**
      * Synchronises all the external tables, respecting the order of priority.
      *
      * @return array List of all messages
-     * @deprecated Will be removed in the next version. Use synchronizeData() in own loop instead (see usage in \Cobweb\ExternalImport\Command\ImportCommand::execute() for example).
+     * @deprecated since 4.0.0, will be removed in the next version. Use synchronize() in own loop instead (see usage in \Cobweb\ExternalImport\Command\ImportCommand::execute() for example).
      */
     public function synchronizeAllTables()
     {
@@ -198,7 +206,7 @@ class Importer
                         FlashMessage::WARNING => array(),
                         FlashMessage::OK => array()
                 ); // Reset error messages array
-                $messages = $this->synchronizeData($tableData['table'], $tableData['index']);
+                $messages = $this->synchronize($tableData['table'], $tableData['index']);
                 $key = $tableData['table'] . '/' . $tableData['index'];
                 $allMessages[$key] = $messages;
             }
@@ -209,28 +217,17 @@ class Importer
     }
 
     /**
-     * Stores information about the synchronized table into member variables.
+     * Calls on the distant data source and synchronizes the data into the TYPO3 database.
      *
      * @param string $table Name of the table to synchronise
      * @param mixed $index Index of the synchronisation configuration to use
-     * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
-     * @return void
+     * @return array List of error or success messages
+     * @deprecated since 4.0.0, was renamed to synchronize(), will be removed in the next version
      */
-    protected function initialize($table, $index, $defaultSteps = null)
+    public function synchronizeData($table, $index)
     {
-        $this->table = $table;
-        $this->index = $index;
-        $this->externalConfiguration = $this->configurationRepository->findConfigurationObject(
-                $table,
-                $index,
-                $defaultSteps
-        );
-        if ($this->forcedStoragePid !== null)
-        {
-            $this->externalConfiguration->setStoragePid($this->forcedStoragePid);
-        }
-        // Set the storage page as the related page for the devLog entries
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->externalConfiguration->getStoragePid();
+        GeneralUtility::logDeprecatedFunction();
+        return $this->synchronize($table, $index);
     }
 
     /**
@@ -240,7 +237,7 @@ class Importer
      * @param mixed $index Index of the synchronisation configuration to use
      * @return array List of error or success messages
      */
-    public function synchronizeData($table, $index)
+    public function synchronize($table, $index)
     {
         // Initialize message array
         $this->resetMessages();
@@ -319,8 +316,23 @@ class Importer
      * @param integer $index Index of the synchronisation configuration to use
      * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
      * @return array List of error or success messages
+     * @deprecated since 4.0.0, was renamed to import(), will be removed in the next version
      */
     public function importData($table, $index, $rawData)
+    {
+        GeneralUtility::logDeprecatedFunction();
+        return $this->import($table, $index, $rawData);
+    }
+
+    /**
+     * Receives raw data from some external source, transforms it and stores it into the TYPO3 database.
+     *
+     * @param string $table Name of the table to import into
+     * @param integer $index Index of the synchronisation configuration to use
+     * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
+     * @return array List of error or success messages
+     */
+    public function import($table, $index, $rawData)
     {
         // Initialize message array
         $this->resetMessages();
@@ -387,6 +399,7 @@ class Importer
     public function retrieveExistingUids()
     {
         $this->existingUids = array();
+        $table = $this->externalConfiguration->getTable();
         $ctrlConfiguration = $this->externalConfiguration->getCtrlConfiguration();
         $where = '1 = 1';
         if ($ctrlConfiguration['enforcePid']) {
@@ -395,11 +408,11 @@ class Importer
         if (!empty($ctrlConfiguration['whereClause'])) {
             $where .= ' AND ' . $ctrlConfiguration['whereClause'];
         }
-        $where .= BackendUtility::deleteClause($this->table);
+        $where .= BackendUtility::deleteClause($table);
         $referenceUidField = $ctrlConfiguration['referenceUid'];
         $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
                 $referenceUidField . ',uid',
-                $this->table,
+                $table,
                 $where
         );
         if ($res) {
@@ -426,19 +439,7 @@ class Importer
     public function getTableName()
     {
         GeneralUtility::logDeprecatedFunction();
-        return $this->table;
-    }
-
-    /**
-     * Sets the name of the table to be synchronized.
-     *
-     * This is used only in special cases, you should never need to call this.
-     *
-     * @param string $table Name of the table
-     */
-    public function setTableName($table)
-    {
-        $this->table = $table;
+        return $this->externalConfiguration->getTable();
     }
 
     /**
@@ -450,19 +451,7 @@ class Importer
     public function getIndex()
     {
         GeneralUtility::logDeprecatedFunction();
-        return $this->index;
-    }
-
-    /**
-     * Sets the index of the configuration to used for synchronization.
-     *
-     * This is used only in special cases, you should never need to call this.
-     *
-     * @param mixed $index Index to use
-     */
-    public function setIndex($index)
-    {
-        $this->index = $index;
+        return $this->externalConfiguration->getIndex();
     }
 
     /**
@@ -473,7 +462,8 @@ class Importer
      */
     public function getColumnIndex()
     {
-        return $this->columnIndex;
+        GeneralUtility::logDeprecatedFunction();
+        return $this->externalConfiguration->getIndex();
     }
 
     /**
@@ -740,7 +730,7 @@ class Importer
     /**
      * Forces the storage pid for imported records.
      *
-     * This is meant essentially for testing, but can also be useful when using Importer::importData().
+     * This is meant essentially for testing, but can also be useful when using Importer::import().
      *
      * @param $pid
      */

@@ -62,7 +62,7 @@ class AutomatedSyncTask extends AbstractTask
             $configurations = $importer->getConfigurationRepository()->findOrderedConfigurations();
             foreach ($configurations as $tableList) {
                 foreach ($tableList as $configuration) {
-                    $messages = $importer->synchronizeData(
+                    $messages = $importer->synchronize(
                             $configuration['table'],
                             $configuration['index']
                     );
@@ -88,7 +88,7 @@ class AutomatedSyncTask extends AbstractTask
                 $importer->sendMail($subject, $reportContent);
             }
         } else {
-            $messages = $importer->synchronizeData($this->table, $this->index);
+            $messages = $importer->synchronize($this->table, $this->index);
             // If necessary, prepare a report with all messages
             if (!empty($extensionConfiguration['reportEmail'])) {
                 $reportContent .= $importer->reportForTable($this->table, $this->index, $messages);

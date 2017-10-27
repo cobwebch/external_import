@@ -72,7 +72,7 @@ class StoreDataStep extends AbstractStep
         $fullMappings = array();
         $ctrlConfiguration = $this->getConfiguration()->getCtrlConfiguration();
         $columnConfiguration = $this->getConfiguration()->getColumnConfiguration();
-        $table = $this->importer->getTableName();
+        $table = $this->importer->getExternalConfiguration()->getTable();
         foreach ($columnConfiguration as $columnName => $columnData) {
             // Check if some fields are excluded from some operations
             // and add them to the relevant list
@@ -563,7 +563,7 @@ class StoreDataStep extends AbstractStep
         $existingUids = $this->importer->getExistingUids();
 
         // Loop on all columns that require a remapping
-        $tableTca = $GLOBALS['TCA'][$this->importer->getTableName()];
+        $tableTca = $GLOBALS['TCA'][$this->importer->getExternalConfiguration()->getTable()];
         foreach ($fullMappings as $columnName => $mappingData) {
             $columnTcaConfiguration = $tableTca['columns'][$columnName]['config'];
             $mmTable = $columnTcaConfiguration['MM'];
