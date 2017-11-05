@@ -17,7 +17,6 @@ namespace Cobweb\ExternalImport;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -85,6 +84,7 @@ class Importer
     const SYNCHRONYZE_DATA_STEPS = array(
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
+            Step\ValidateConnectorStep::class,
             Step\ReadDataStep::class,
             Step\HandleDataStep::class,
             Step\ValidateDataStep::class,
@@ -242,40 +242,35 @@ class Importer
         // Initialize message array
         $this->resetMessages();
         try {
-            $this->initialize($table, $index);
-            $ctrlConfiguration = $this->externalConfiguration->getCtrlConfiguration();
-            // If the selected configuration has no connector, it cannot be synchronized
-            if (empty($ctrlConfiguration['connector'])) {
-                $this->addMessage(
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_connector',
-                                'external_import'
-                        )
-                );
-            } else {
-                $data = $this->objectManager->get(Data::class);
-                $steps = $this->externalConfiguration->getSteps();
-                foreach ($steps as $stepClass) {
-                    /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
-                    $step = $this->objectManager->get($stepClass);
-                    $step->setImporter($this);
-                    $step->setConfiguration($this->externalConfiguration);
-                    $step->setData($data);
-                    $step->run();
-                    if ($step->isAbortFlag()) {
-                        // Report about aborting
-                        $this->addMessage(
-                                LocalizationUtility::translate(
-                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
-                                        'external_import'
-                                ),
-                                FlashMessage::WARNING
-                        );
-                        break;
-                    }
-                    $data = $step->getData();
+            $this->initialize(
+                    $table,
+                    $index,
+                    self::SYNCHRONYZE_DATA_STEPS
+            );
+
+            $data = $this->objectManager->get(Data::class);
+            $steps = $this->externalConfiguration->getSteps();
+            foreach ($steps as $stepClass) {
+                /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
+                $step = $this->objectManager->get($stepClass);
+                $step->setImporter($this);
+                $step->setConfiguration($this->externalConfiguration);
+                $step->setData($data);
+                $step->run();
+                if ($step->isAbortFlag()) {
+                    // Report about aborting
+                    $this->addMessage(
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
+                                    'external_import'
+                            ),
+                            FlashMessage::WARNING
+                    );
+                    break;
                 }
+                $data = $step->getData();
             }
+
             // Call connector's post-processing with a rough error status
             if ($this->externalConfiguration->getConnector() !== null) {
                 $errorStatus = false;
@@ -283,7 +278,7 @@ class Importer
                     $errorStatus = true;
                 }
                 $this->externalConfiguration->getConnector()->postProcessOperations(
-                        $ctrlConfiguration['parameters'],
+                        $this->externalConfiguration->getCtrlConfigurationProperty('parameters'),
                         $errorStatus
                 );
             }
@@ -340,7 +335,6 @@ class Importer
             $this->initialize(
                     $table,
                     $index,
-                    // Force steps for the "import data" process, as a synchronizable configuration could also be used
                     self::IMPORT_DATA_STEPS
             );
             // Initialize the Data object with the raw data

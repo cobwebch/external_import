@@ -132,6 +132,7 @@ class Configuration
     {
         $this->ctrlConfiguration = $ctrlConfiguration;
         // Define the process default steps, depending on process type or the predefined value
+        // NOTE: normally default steps should always be defined
         if ($defaultSteps === null) {
             if (array_key_exists('connector', $ctrlConfiguration)) {
                 $steps = Importer::SYNCHRONYZE_DATA_STEPS;

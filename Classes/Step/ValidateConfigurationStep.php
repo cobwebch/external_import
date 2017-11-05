@@ -16,7 +16,6 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
