@@ -9,20 +9,22 @@
 	<f:if condition="{configurations->f:count()}">
 		<p><f:translate id="external_tables_intro" /></p>
 
-		<f:if condition="{globalWriteAccess} == 'all'">
-			<f:be.infobox title="{f:translate(id: 'full_autosync')}" state="-2" disableIcon="true">
-				<f:if condition="{fullSynchronizationTask}">
-					<f:then>
-						<p><f:translate id="next_full_autosync" arguments="{0: fullSynchronizationTask.frequencyText, 1: fullSynchronizationTask.nextexecution}" /></p>
-						<f:render partial="DataModule/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid}" />
-						<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid}" />
-					</f:then>
-					<f:else>
-						<p><f:translate id="no_full_autosync" /></p>
-						<f:render partial="DataModule/Actions/AddButton" arguments="{table: 'all', index: ''}" />
-					</f:else>
-				</f:if>
-			</f:be.infobox>
+		<f:if condition="{hasScheduler}">
+			<f:if condition="{globalWriteAccess} == 'all'">
+				<f:be.infobox title="{f:translate(id: 'full_autosync')}" state="-2" disableIcon="true">
+					<f:if condition="{fullSynchronizationTask}">
+						<f:then>
+							<p><f:translate id="next_full_autosync" arguments="{0: fullSynchronizationTask.frequencyText, 1: fullSynchronizationTask.nextexecution}" /></p>
+							<f:render partial="DataModule/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid}" />
+							<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid}" />
+						</f:then>
+						<f:else>
+							<p><f:translate id="no_full_autosync" /></p>
+							<f:render partial="DataModule/Actions/AddButton" arguments="{table: 'all', index: ''}" />
+						</f:else>
+					</f:if>
+				</f:be.infobox>
+			</f:if>
 		</f:if>
 
 		<f:render partial="DataModule/SearchField" />
