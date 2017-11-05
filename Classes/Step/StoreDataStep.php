@@ -14,8 +14,10 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -25,6 +27,11 @@ class StoreDataStep extends AbstractStep
      * @var \Cobweb\ExternalImport\Utility\MappingUtility
      */
     protected $mappingUtility;
+
+    /**
+     * @var UidRepository
+     */
+    protected $uidRepository;
 
     public function injectMappingUtility(\Cobweb\ExternalImport\Utility\MappingUtility $mappingUtility)
     {
@@ -51,8 +58,8 @@ class StoreDataStep extends AbstractStep
         $fieldsExcludedFromUpdates = array();
 
         // Get the list of existing uids for the table
-        $this->importer->retrieveExistingUids();
-        $existingUids = $this->importer->getExistingUids();
+        $this->uidRepository = GeneralUtility::makeInstance(UidRepository::class, $this->getConfiguration());
+        $existingUids = $this->uidRepository->getExistingUids();
 
         // Check which columns are MM-relations and get mappings to foreign tables for each
         // NOTE: as it is now, it is assumed that the imported data is denormalised
@@ -193,7 +200,12 @@ class StoreDataStep extends AbstractStep
         $handledUids = array();
         $tceData = array($table => array());
         $savedAdditionalFields = array();
+        // Prepare some data before the loop
         $storagePid = $this->getConfiguration()->getStoragePid();
+        $configuredAdditionalFields = $this->getConfiguration()->getAdditionalFields();
+        $countConfiguredAdditionalFields = $this->getConfiguration()->getCountAdditionalFields();
+        $isUpdateAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'update');
+        $isInsertAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'insert');
         foreach ($records as $theRecord) {
             $localAdditionalFields = array();
             $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
@@ -219,8 +231,7 @@ class StoreDataStep extends AbstractStep
 
             // Remove additional fields data, if any. They must not be saved to database
             // They are saved locally however, for later use
-            if ($this->getConfiguration()->getCountAdditionalFields() > 0) {
-                $configuredAdditionalFields = $this->getConfiguration()->getAdditionalFields();
+            if ($countConfiguredAdditionalFields > 0) {
                 foreach ($configuredAdditionalFields as $fieldName) {
                     $localAdditionalFields[$fieldName] = $theRecord[$fieldName];
                     unset($theRecord[$fieldName]);
@@ -230,7 +241,7 @@ class StoreDataStep extends AbstractStep
             $theID = '';
             // Reference uid is found, perform an update (if not disabled)
             if (isset($existingUids[$externalUid])) {
-                if (!GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'update')) {
+                if ($isUpdateAllowed) {
                     // First call a pre-processing hook
                     if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'])) {
                         foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'] as $className) {
@@ -264,7 +275,7 @@ class StoreDataStep extends AbstractStep
                 }
 
                 // Reference uid not found, perform an insert (if not disabled)
-            } elseif (!GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'insert')) {
+            } elseif ($isInsertAllowed) {
 
                 // First call a pre-processing hook
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'])) {
@@ -312,6 +323,11 @@ class StoreDataStep extends AbstractStep
                 $savedAdditionalFields[$theID] = $localAdditionalFields;
             }
         }
+        // If the target table is pages, perform some special sorting to ensure that parent pages
+        // are created before their children
+        if (array_key_exists('pages', $tceData)) {
+            $tceData['pages'] = $this->sortPagesData($tceData['pages']);
+        }
         $this->importer->debug(
                 'TCEmain data',
                 0,
@@ -341,15 +357,14 @@ class StoreDataStep extends AbstractStep
                 0,
                 $tce->substNEWwithIDs
         );
-        // Store the number of new IDs created. This is used in error reporting later
-        $numberOfNewIDs = count($tce->substNEWwithIDs);
+        $inserts = count($tce->substNEWwithIDs);
 
         // Post-processing hook after data was saved
         $savedData = array();
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
             foreach ($tceData as $tableRecords) {
                 foreach ($tableRecords as $id => $record) {
-                    // Added status to record
+                    // Add status to record
                     // If operation was insert, match placeholder to actual id
                     $uid = $id;
                     if (isset($tce->substNEWwithIDs[$id])) {
@@ -450,69 +465,9 @@ class StoreDataStep extends AbstractStep
             $this->postProcessMmRelations($fullMappings);
         }
 
-        // Check if there were any errors reported by TCEmain
-        if (count($tce->errorLog) > 0) {
-            // If yes, get these messages from the sys_log table (assuming they are the latest ones)
-            $where = "tablename = '" . $table . "' AND error > '0'";
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-                    '*',
-                    'sys_log',
-                    $where, '',
-                    'tstamp DESC',
-                    count($tce->errorLog)
-            );
-            if ($res) {
-                while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-                    // Check if there's a label for the message
-                    $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
-                    $label = LocalizationUtility::translate(
-                            'LLL:EXT:belog/mod/locallang.xml:' . $labelCode,
-                            'belog'
-                    );
-                    // If not, use details field
-                    if (empty($label)) {
-                        $label = $row['details'];
-                    }
-                    // Substitute the first 5 items of extra data into the error message
-                    $message = $label;
-                    if (!empty($row['log_data'])) {
-                        $data = unserialize($row['log_data']);
-                        $message = sprintf(
-                                $label,
-                                htmlspecialchars($data[0]),
-                                htmlspecialchars($data[1]),
-                                htmlspecialchars($data[2]),
-                                htmlspecialchars($data[3]),
-                                htmlspecialchars($data[4])
-                        );
-                    }
-                    $this->importer->addMessage(
-                            $message,
-                            AbstractMessage::ERROR
-                    );
-                    $this->importer->debug(
-                            $message,
-                            3
-                    );
-                }
-                $GLOBALS['TYPO3_DB']->sql_free_result($res);
-            }
-            // Subtract the number of new IDs from the number of inserts,
-            // to get a realistic number of new records
-            $newKeysCount = count($this->importer->getTemporaryKeys());
-            // TODO: this is a really silly calculation!
-            $inserts = $newKeysCount + ($numberOfNewIDs - $newKeysCount);
-            // Add a warning that numbers reported (below) may not be accurate
-            $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:things_happened',
-                            'external_import'
-                    ),
-                    AbstractMessage::WARNING
-            );
-        } else {
-            $inserts = $numberOfNewIDs;
-        }
+        // Report any errors that might have been raised by the DataHandler
+        $this->reportTceErrors($tce->errorLog);
+        // Cleanup
         unset($tce);
 
         // Set informational messages
@@ -559,8 +514,8 @@ class StoreDataStep extends AbstractStep
         );
 
         // Refresh list of existing primary keys now that new records have been inserted
-        $this->importer->retrieveExistingUids();
-        $existingUids = $this->importer->getExistingUids();
+        $this->uidRepository->resetExistingUids();
+        $existingUids = $this->uidRepository->getExistingUids();
 
         // Loop on all columns that require a remapping
         $tableTca = $GLOBALS['TCA'][$this->importer->getExternalConfiguration()->getTable()];
@@ -632,5 +587,138 @@ class StoreDataStep extends AbstractStep
                 }
             }
         }
+    }
+
+    /**
+     * Reports about errors that happened during DataHandler operations.
+     *
+     * NOTE: this is rather approximate, as there's no way to know for sure
+     * that we are retrieving the right messages, not to decipher their meaning.
+     *
+     * @param array $errorLog
+     * @return void
+     */
+    protected function reportTceErrors($errorLog)
+    {
+        if (count($errorLog) > 0) {
+            // If there are errors, get these messages from the sys_log table (assuming they are the latest ones)
+            $where = "tablename = '" . $this->getConfiguration()->getTable() . "' AND error > '0'";
+            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
+                    '*',
+                    'sys_log',
+                    $where, '',
+                    'tstamp DESC',
+                    count($errorLog)
+            );
+            if ($res) {
+                while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+                    // Check if there's a label for the message
+                    $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
+                    $label = LocalizationUtility::translate(
+                            'LLL:EXT:belog/mod/locallang.xml:' . $labelCode,
+                            'belog'
+                    );
+                    // If not, use details field
+                    if (empty($label)) {
+                        $label = $row['details'];
+                    }
+                    // Substitute the first 5 items of extra data into the error message
+                    $message = $label;
+                    if (!empty($row['log_data'])) {
+                        $data = unserialize($row['log_data']);
+                        $message = sprintf(
+                                $label,
+                                htmlspecialchars($data[0]),
+                                htmlspecialchars($data[1]),
+                                htmlspecialchars($data[2]),
+                                htmlspecialchars($data[3]),
+                                htmlspecialchars($data[4])
+                        );
+                    }
+                    $this->importer->addMessage(
+                            $message,
+                            AbstractMessage::ERROR
+                    );
+                    $this->importer->debug(
+                            $message,
+                            3
+                    );
+                }
+                $GLOBALS['TYPO3_DB']->sql_free_result($res);
+            }
+            // Add a warning that number of operations reported may not be accurate
+            $this->importer->addMessage(
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:things_happened',
+                            'external_import'
+                    ),
+                    AbstractMessage::WARNING
+            );
+        }
+    }
+
+    /**
+     * Sorts the TCE data for pages, so that parent pages come before child pages.
+     *
+     * If this is not done, insertion of new pages into the database will fail as pids may be unresolved.
+     * Also, this needs to be done "in reverse", as DataHandler we later request DataHandler to reverse order
+     * for tables with a sorting field.
+     *
+     * @param array $data
+     * @return array
+     */
+    public function sortPagesData(array $data)
+    {
+        $originalData = $data;
+        $levelPages = array();
+        $sortedData = array();
+        // Extract pages which don't have a "NEW" pid
+        foreach ($data as $id => $fields) {
+            if (strpos($fields['pid'], 'NEW') === false) {
+                $levelPages[] = (strpos($id, 'NEW') === 0) ? $id : (int)$id;
+                $sortedData[$id] = $fields;
+                unset($data[$id]);
+            }
+        }
+        // If all pages have a non-NEW pid, no special sorting is needed. Exit early and return the original data set.
+        if (count($data) === 0) {
+            return $originalData;
+        }
+
+        // Recursively sort pages
+        while (count($levelPages) > 0) {
+            $levelPages = $this->extractLevelPages($levelPages, $data, $sortedData);
+        }
+        return $sortedData;
+    }
+
+    /**
+     * Checks which pages belong to the current level ("level" being a series of pids), sorts
+     * pages according to that and returns list of pages for next tree level.
+     *
+     * @param array $levelPages
+     * @param array $data
+     * @param array $sortedData
+     * @return array
+     */
+    public function extractLevelPages(array $levelPages, array &$data, array &$sortedData)
+    {
+        $nextLevelPages = array();
+        $pagesForLevel = array();
+        foreach ($data as $id => $fields) {
+            $pid = (strpos($fields['pid'], 'NEW') === 0) ? $fields['pid'] : (int)$fields['pid'];
+            if (in_array($pid, $levelPages, true)) {
+                $pagesForLevel[$id] = $fields;
+                $nextLevelPages[] = (strpos($id, 'NEW') === 0) ? $id : (int)$id;
+                unset($data[$id]);
+            }
+        }
+        // Put level pages "above" already sorted pages, to take into account a reversed usage later
+        ArrayUtility::mergeRecursiveWithOverrule(
+                $pagesForLevel,
+                $sortedData
+        );
+        $sortedData = $pagesForLevel;
+        return $nextLevelPages;
     }
 }

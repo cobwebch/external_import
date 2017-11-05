@@ -389,44 +389,6 @@ class Importer
         return $this->messages;
     }
 
-    /**
-     * Prepares a list of all existing primary keys in the table being synchronized.
-     *
-     * The result is a hash table of all external primary keys matched to internal primary keys.
-     *
-     * @return void
-     */
-    public function retrieveExistingUids()
-    {
-        $this->existingUids = array();
-        $table = $this->externalConfiguration->getTable();
-        $ctrlConfiguration = $this->externalConfiguration->getCtrlConfiguration();
-        $where = '1 = 1';
-        if ($ctrlConfiguration['enforcePid']) {
-            $where = 'pid = ' . (int)$this->externalConfiguration->getStoragePid();
-        }
-        if (!empty($ctrlConfiguration['whereClause'])) {
-            $where .= ' AND ' . $ctrlConfiguration['whereClause'];
-        }
-        $where .= BackendUtility::deleteClause($table);
-        $referenceUidField = $ctrlConfiguration['referenceUid'];
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-                $referenceUidField . ',uid',
-                $table,
-                $where
-        );
-        if ($res) {
-            while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-                // Don't consider records with empty references, as they can't be matched
-                // to external data anyway (but a real zero is acceptable)
-                if (!empty($row[$referenceUidField]) || $row[$referenceUidField] === '0' || $row[$referenceUidField] === 0) {
-                    $this->existingUids[$row[$referenceUidField]] = $row['uid'];
-                }
-            }
-            $GLOBALS['TYPO3_DB']->sql_free_result($res);
-        }
-    }
-
     // Getters and setters
 
 
@@ -509,18 +471,6 @@ class Importer
     public function getExtensionConfiguration()
     {
         return $this->extensionConfiguration;
-    }
-
-    /**
-     * Returns the list of primary keys of existing records in the database.
-     *
-     * This can be useful for steps or hooks called during the import process.
-     *
-     * @return array
-     */
-    public function getExistingUids()
-    {
-        return $this->existingUids;
     }
 
     /**

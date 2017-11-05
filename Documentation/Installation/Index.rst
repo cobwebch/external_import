@@ -61,6 +61,9 @@ for a satisfying reporting. Instead a loop should be done on all configurations 
 
 Other deprecated methods are :code:`Importer::getColumnIndex()` and :code:`Importer::getExternalConfig()`.
 
+The:code:`Importer::getExistingUids()` methods was moved to a new class called
+:class:`\Cobweb\ExternalImport\Domain\Repository\UidRepository` (which is a Singleton).
+
 
 .. _installation-upgrade-400-transformation-properties:
 

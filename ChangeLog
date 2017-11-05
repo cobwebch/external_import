@@ -1,3 +1,7 @@
+2017-11-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Fixed import of nested structures as pages, resolves #11
+
 2017-10-27 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Improved handling of storage pid, resolves #30
