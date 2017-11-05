@@ -26,7 +26,7 @@
 		</f:if>
 
 		<f:render partial="DataModule/SearchField" />
-		<table class="table table-striped table-hover" id="tx_externalimport_list" data-list-type="sync">
+		<table class="table table-striped table-hover" id="tx_externalimport_list" data-list-type="sync" data-has-scheduler="{hasScheduler}">
 			<thead>
 				<tr>
 					<th>&nbsp;</th>
@@ -40,10 +40,12 @@
 						<f:translate id="priority" />
 					</th>
 					<th>&nbsp;</th>
-					<th>
-						<f:translate id="autosync" />
-					</th>
-					<th>&nbsp;</th>
+					<f:if condition="{hasScheduler}">
+						<th>
+							<f:translate id="autosync" />
+						</th>
+						<th>&nbsp;</th>
+					</f:if>
 				</tr>
 			</thead>
 			<tbody>
@@ -74,34 +76,36 @@
 								</f:if>
 							</div>
 						</td>
-						<td>
-							<f:if condition="{configuration.automated}">
-								<f:then>
-									<f:translate id="next_autosync" arguments="{0: configuration.task.frequencyText, 1: configuration.task.nextexecution}" />
-								</f:then>
-								<f:else>
-									<f:translate id="no_autosync" />
-								</f:else>
-							</f:if>
-						</td>
-						<td class="tx_externalimport_actions">
-							<f:if condition="{configuration.writeAccess}">
-								<f:then>
-									<div class="btn-group">
-										<f:if condition="{configuration.automated}">
-											<f:then>
-												<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
-												<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
-											</f:then>
-											<f:else>
-												<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
-											</f:else>
-										</f:if>
-									</div>
-								</f:then>
-								<f:else>&nbsp;</f:else>
-							</f:if>
-						</td>
+						<f:if condition="{hasScheduler}">
+							<td>
+								<f:if condition="{configuration.automated}">
+									<f:then>
+										<f:translate id="next_autosync" arguments="{0: configuration.task.frequencyText, 1: configuration.task.nextexecution}" />
+									</f:then>
+									<f:else>
+										<f:translate id="no_autosync" />
+									</f:else>
+								</f:if>
+							</td>
+							<td class="tx_externalimport_actions">
+								<f:if condition="{configuration.writeAccess}">
+									<f:then>
+										<div class="btn-group">
+											<f:if condition="{configuration.automated}">
+												<f:then>
+													<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
+													<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
+												</f:then>
+												<f:else>
+													<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
+												</f:else>
+											</f:if>
+										</div>
+									</f:then>
+									<f:else>&nbsp;</f:else>
+								</f:if>
+							</td>
+						</f:if>
 					</tr>
 				</f:for>
 			</tbody>

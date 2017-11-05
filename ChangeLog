@@ -1,6 +1,7 @@
 2017-11-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fixed import of nested structures as pages, resolves #11
+	* Improved handling of Scheduler availability, resolves #33
 
 2017-10-27 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

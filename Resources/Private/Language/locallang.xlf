@@ -166,7 +166,7 @@
 				<source>The automatic synchronization information has been saved.</source>
 			</trans-unit>
 			<trans-unit id="autosync_save_failed" xml:space="preserve">
-				<source>The automatic synchronization information could not be saved.</source>
+				<source>The automatic synchronization information could not be saved (%1$s).</source>
 			</trans-unit>
 			<trans-unit id="no_autosync" xml:space="preserve">
 				<source>The automatic synchronization is not yet enabled.</source>
@@ -230,6 +230,12 @@
 			</trans-unit>
 			<trans-unit id="noColumnConfigurationError" xml:space="preserve">
 				<source>No column is defined for this configuration.</source>
+			</trans-unit>
+			<trans-unit id="schedulerNotLoaded" xml:space="preserve">
+				<source>The "scheduler" extension is not loaded.</source>
+			</trans-unit>
+			<trans-unit id="taskSaveFailed" xml:space="preserve">
+				<source>Creating or updating the task has failed (I know this is not very helpful, sorry).</source>
 			</trans-unit>
 
 			<trans-unit id="logList" xml:space="preserve">

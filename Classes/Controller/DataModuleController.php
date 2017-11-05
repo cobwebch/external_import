@@ -158,7 +158,8 @@ class DataModuleController extends ActionController
         $this->view->assignMultiple(
                 array(
                         'configurations' => $configurations,
-                        'fullSynchronizationTask' => $fullSynchronizationTask
+                        'fullSynchronizationTask' => $fullSynchronizationTask,
+                        'hasScheduler'  => ExtensionManagementUtility::isLoaded('scheduler')
                 )
         );
     }

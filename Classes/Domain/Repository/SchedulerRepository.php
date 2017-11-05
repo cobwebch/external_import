@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\SchedulerRepositoryException;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -200,13 +201,20 @@ class SchedulerRepository implements SingletonInterface
      * If no uid is given, a new task is created.
      *
      * @param array $taskData List of fields to save. Must include "uid" for an existing registered task
-     * @return boolean True or false depending on success or failure of action
+     * @return void
+     * @throws \Cobweb\ExternalImport\Exception\SchedulerRepositoryException
      */
     public function saveTask($taskData)
     {
         // Early exit if "scheduler" extension is not loaded
-        if (ExtensionManagementUtility::isLoaded('scheduler')) {
-            return false;
+        if (!ExtensionManagementUtility::isLoaded('scheduler')) {
+            throw new SchedulerRepositoryException(
+                    LocalizationUtility::translate(
+                            'schedulerNotLoaded',
+                            'external_import'
+                    ),
+                    1509896489
+            );
         }
 
         if ($taskData['uid'] === 0) {
@@ -239,7 +247,15 @@ class SchedulerRepository implements SingletonInterface
             $task->setTaskGroup($taskData['group']);
             $result = $task->save();
         }
-        return $result;
+        if ($result === false) {
+            throw new SchedulerRepositoryException(
+                    LocalizationUtility::translate(
+                            'taskSaveFailed',
+                            'external_import'
+                    ),
+                    1509896783
+            );
+        }
     }
 
     /**
