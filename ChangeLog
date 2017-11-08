@@ -1,3 +1,8 @@
+2017-11-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added possibility of default value for mapping configurations, resolves #35
+	* Moved Connector callback to own Step class, resolves #37
+
 2017-11-05 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fixed import of nested structures as pages, resolves #11

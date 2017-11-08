@@ -90,7 +90,8 @@ class Importer
             Step\ValidateDataStep::class,
             Step\TransformDataStep::class,
             Step\StoreDataStep::class,
-            Step\ClearCacheStep::class
+            Step\ClearCacheStep::class,
+            Step\ConnectorCallbackStep::class
     );
 
     /**
@@ -269,18 +270,6 @@ class Importer
                     break;
                 }
                 $data = $step->getData();
-            }
-
-            // Call connector's post-processing with a rough error status
-            if ($this->externalConfiguration->getConnector() !== null) {
-                $errorStatus = false;
-                if (count($this->messages[FlashMessage::ERROR]) > 0) {
-                    $errorStatus = true;
-                }
-                $this->externalConfiguration->getConnector()->postProcessOperations(
-                        $this->externalConfiguration->getCtrlConfigurationProperty('parameters'),
-                        $errorStatus
-                );
             }
         }
         catch (\Exception $e) {
