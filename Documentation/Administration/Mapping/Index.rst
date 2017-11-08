@@ -26,6 +26,7 @@ Properties
 	========================== =============
 	Property                   Data type
 	========================== =============
+    `default`                  mixed
 	`match\_method`_           string
 	`match\_symmetric`_        boolean
 	`multipleValuesSeparator`_ string
@@ -115,6 +116,21 @@ Description
   .. important::
 
      The clause must start with neither the "WHERE", nor the "AND" keyword.
+
+Scope
+  Transform data
+
+
+.. _administration-mapping-properties-default:
+
+default
+~~~~~~~
+
+Type
+  mixed
+
+Description
+  Default value that will be used when a value cannot be mapped. Otherwise the field is unset for the record.
 
 Scope
   Transform data

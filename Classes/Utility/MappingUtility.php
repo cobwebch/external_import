@@ -97,10 +97,16 @@ class MappingUtility
                             }
                         }
                     }
+                    // Map the values found
                     if (count($mappedExternalValues) > 0) {
                         $records[$i][$columnName] = implode(',', $mappedExternalValues);
                     } else {
-                        unset($records[$i][$columnName]);
+                        // If nothing was found, use the default value, if defined. Otherwise unset the record.
+                        if (array_key_exists('default', $mappingInformation)) {
+                            $records[$i][$columnName] = $mappingInformation['default'];
+                        } else {
+                            unset($records[$i][$columnName]);
+                        }
                     }
                 }
             }
@@ -137,10 +143,16 @@ class MappingUtility
                             // Ignore unmapped values
                         }
                     }
+                    // Map the values found
                     if (count($mappedExternalValues) > 0) {
                         $records[$i][$columnName] = implode(',', $mappedExternalValues);
                     } else {
-                        unset($records[$i][$columnName]);
+                        // If nothing was found, use the default value, if defined. Otherwise unset the record.
+                        if (array_key_exists('default', $mappingInformation)) {
+                            $records[$i][$columnName] = $mappingInformation['default'];
+                        } else {
+                            unset($records[$i][$columnName]);
+                        }
                     }
                 }
             }

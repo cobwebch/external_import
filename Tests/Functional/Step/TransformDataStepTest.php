@@ -136,7 +136,43 @@ class TransformDataStepTest extends FunctionalTestCase
     public function mappingDataProvider()
     {
         return [
-            'Map to sys_category' => [
+            'Map to sys_category with default value' => [
+                    'foo',
+                    [
+                            'table' => 'sys_category',
+                            'reference_field' => 'external_key',
+                            'default' => 19
+                    ],
+                    [
+                            0 => [
+                                    'foo' => 'USEFUL',
+                                    'bar' => 42
+                            ],
+                            1 => [
+                                    'foo' => 'USELESS',
+                                    'bar' => 17
+                            ],
+                            2 => [
+                                    'foo' => 'UNKNOWN',
+                                    'bar' => 24
+                            ],
+                    ],
+                    [
+                            0 => [
+                                    'foo' => '1',
+                                    'bar' => 42
+                            ],
+                            1 => [
+                                    'foo' => '2',
+                                    'bar' => 17
+                            ],
+                            2 => [
+                                    'foo' => 19,
+                                    'bar' => 24
+                            ]
+                    ]
+            ],
+            'Map to sys_category without default value' => [
                     'foo',
                     [
                             'table' => 'sys_category',
@@ -150,7 +186,11 @@ class TransformDataStepTest extends FunctionalTestCase
                             1 => [
                                     'foo' => 'USELESS',
                                     'bar' => 17
-                            ]
+                            ],
+                            2 => [
+                                    'foo' => 'UNKNOWN',
+                                    'bar' => 24
+                            ],
                     ],
                     [
                             0 => [
@@ -160,6 +200,9 @@ class TransformDataStepTest extends FunctionalTestCase
                             1 => [
                                     'foo' => '2',
                                     'bar' => 17
+                            ],
+                            2 => [
+                                    'bar' => 24
                             ]
                     ]
             ]
