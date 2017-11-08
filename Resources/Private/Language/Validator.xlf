@@ -57,10 +57,10 @@
 				<source>No configuration. The imported value will be that of the node directly targeted by the "nodetype" property.</source>
 			</trans-unit>
 			<trans-unit id="conflictingPropertiesForArrayData" xml:space="preserve">
-				<source>Do not set both the "value" and the "field" properties as they are conflicting. The "value" property takes precedence.</source>
+				<source>You should normally not set both the "value" and the "field" properties as they are conflicting. The "value" property takes precedence.</source>
 			</trans-unit>
 			<trans-unit id="conflictingPropertiesForXmlData" xml:space="preserve">
-				<source>Do not set both the "value" property and one of "field", "atribute" or "xpath", as they are conflicting. The "value" property takes precedence.</source>
+				<source>You should normally not set both the "value" property and one of "field", "atribute" or "xpath", as they are conflicting. The "value" property takes precedence.</source>
 			</trans-unit>
 			<trans-unit id="renamedProperty" xml:space="preserve">
 				<source>Property "%1$s" was renamed to "%2$s". Please update your configuration.</source>

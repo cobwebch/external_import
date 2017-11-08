@@ -126,7 +126,8 @@ class ColumnConfigurationValidator
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForXmlData',
                                 'external_import'
-                        )
+                        ),
+                        AbstractMessage::NOTICE
                 );
             }
         }
