@@ -60,6 +60,8 @@ class StoreDataStep extends AbstractStep
         // Get the list of existing uids for the table
         $this->uidRepository = GeneralUtility::makeInstance(UidRepository::class, $this->getConfiguration());
         $existingUids = $this->uidRepository->getExistingUids();
+        // Make sure this is list is an array (it may be null)
+        $existingUids = ($existingUids === null) ? [] : $existingUids;
 
         // Check which columns are MM-relations and get mappings to foreign tables for each
         // NOTE: as it is now, it is assumed that the imported data is denormalised
