@@ -91,7 +91,7 @@ class ColumnConfigurationValidator
                         ),
                         AbstractMessage::ERROR
                 );
-            // "value" property should not be set if another value-setting property is also defined
+            // "value" property should not be set if another value-setting property is also defined, except in special cases, so let's issue a notice
             } elseif ($hasValueProperty && isset($columnConfiguration['field'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
                 $this->results->add(
@@ -100,7 +100,7 @@ class ColumnConfigurationValidator
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForArrayData',
                                 'external_import'
                         ),
-                        AbstractMessage::WARNING
+                        AbstractMessage::NOTICE
                 );
             }
         } elseif ($ctrlConfiguration['data'] === 'xml') {

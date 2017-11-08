@@ -197,7 +197,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                         'field' => 'foo'
                                 )
                         ),
-                        FlashMessage::WARNING
+                        FlashMessage::NOTICE
                 ),
                 'Data type "xml": conflicting data-setting properties' => array(
                         array(
@@ -209,7 +209,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                         'xpath' => 'item'
                                 )
                         ),
-                        FlashMessage::WARNING
+                        FlashMessage::NOTICE
                 ),
         );
     }
