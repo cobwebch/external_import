@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../Includes.txt
+﻿.. include:: ../Includes.txt
 
 
 .. _configuration:
@@ -37,17 +32,16 @@ Email for reporting
   synchronization. Mails are not sent after synchronizations started
   manually from the BE module.Note that the mail reporting feature needs
   a valid e-mail address to be available for sending from. This will
-  either be the mail of the :code:`_cli_scheduler` user or the default mail
-  address of the TYPO3 installation (
-  :code:`$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']` ). If
+  either be the mail of the :code:`_cli_scheduler` (or :code:`_cli_`) user
+  or the default mail address of the TYPO3 installation
+  (:code:`$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']`). If
   neither of these mails are available, the report will not be sent and
-  an error will appear in the System > Log.
+  an error will appear in the **SYSTEM > Log**.
 
 Subject of email report
-  A label that will be prepended to the
-  subject of the reporting mail. It may be convenient – for example – to
-  use the server's name, in case you have several servers running the
-  same imports.
+  A label that will be prepended to the subject of the reporting mail.
+  It may be convenient – for example – to use the server's name, in case
+  you have several servers running the same imports.
 
 Preview/Debug limit
   This is the maximum number of rows that will
@@ -65,7 +59,7 @@ Disable logging
   touched by the import process. This may create quite a lot of log
   entries on large imports. Checking this box disables logging for
   **all** tables. It can be overridden at table-level by the
-  "disableLog" flag (see "General TCA configuration").
+  :ref:`disableLog <administration-general-tca-properties-disablelog>`.
 
   .. warning::
 

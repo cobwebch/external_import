@@ -1,3 +1,7 @@
+2017-11-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Updated documentation, resolves #26
+
 2017-11-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added possibility of default value for mapping configurations, resolves #35

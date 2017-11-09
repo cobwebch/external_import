@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _administration-general-tca:
@@ -53,11 +48,11 @@ Properties
 	===================================== ================= ========================
 	Property                              Data type         Scope/Step
 	===================================== ================= ========================
-	additionalFields_                     string            Fetch data
-	clearCache_                           string            Store data
-	connector_                            string            Fetch data
+	additionalFields_                     string            Read data
+	clearCache_                           string            Clear cache
+	connector_                            string            Read data
 	customSteps_                          array             Any step
-	data_                                 string            Fetch data
+	data_                                 string            Read data
 	dataHandler_                          string            Handle data
 	description_                          string            Display
 	disabledOperations_                   string            Store data
@@ -66,7 +61,7 @@ Properties
 	minimumRecords_                       integer           Validate data
 	namespaces_                           array             Handle data (XML)
 	nodetype_                             string            Handle data (XML)
-	parameters_                           array             Fetch data
+	parameters_                           array             Read data
 	pid_                                  integer           Store data
 	priority_                             integer           Display/automated import
 	referenceUid_                         string            Store data
@@ -89,7 +84,7 @@ Description
   Must be defined only for pulling data. Leave blank for pushing data.
 
 Scope
-  Fetch data
+  Read data
 
 
 .. _administration-general-tca-properties-parameters:
@@ -106,7 +101,7 @@ Description
   Not used when pushing data.
 
 Scope
-  Fetch data
+  Read data
 
 
 .. _administration-general-tca-properties-data:
@@ -122,7 +117,7 @@ Description
   be either :code:`xml` or :code:`array`.
 
 Scope
-  Fetch data
+  Read data
 
 
 .. _administration-general-tca-properties-datahandler:
@@ -177,12 +172,6 @@ Description
      This is the name of a field in the TYPO3 CMS database, not in
      the external data! It is the field where the reference
      (or primary) key of the external data is stored.
-
-  .. note::
-
-     This property was previously called :code:`reference_uid`.
-     Please update your configuration. Backwards compatibility with
-     old property name will be removed in the next major version.
 
 Scope
   Store data
@@ -338,12 +327,6 @@ Description
      make use of the :code:`whereClause` property you should therefore watch
      for an unexpectedly high number of inserts.
 
-  .. note::
-
-     This property was previously called :code:`where_clause`.
-     Please update your configuration. Backwards compatibility with
-     old property name will be removed in the next major version.
-
 Scope
   Store data
 
@@ -364,14 +347,8 @@ Description
   This is usually the case for fields which you want to use in the
   transformation step, but that will not be stored eventually.
 
-  .. note::
-
-     This property was previously called :code:`additional_fields`.
-     Please update your configuration. Backwards compatibility with
-     old property name will be removed in the next major version.
-
 Scope
-  Fetch data
+  Read data
 
 
 .. _administration-general-tca-properties-namespaces:
@@ -479,7 +456,7 @@ Scope
   Validate data
 
 
-.. _administration-general-tca-properties-disablelog:
+.. _:
 
 disableLog
 ~~~~~~~~~~
@@ -488,7 +465,7 @@ Type
   integer
 
 Description
-  Set to :code:`TRUE` to disable logging by TCEmain. This setting will override
+  Set to :code:`true` to disable logging by TCEmain. This setting will override
   the general "Disable logging" setting
   (see :ref:`Configuration for more details <configuration>`).
 
@@ -509,4 +486,4 @@ Description
   at the end of the import process. See :ref:`Clearing the cache <user-clear-cache>`.
 
 Scope
-  Store data
+  Clear cache

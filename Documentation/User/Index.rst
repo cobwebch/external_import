@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../Includes.txt
+﻿.. include:: ../Includes.txt
 
 
 .. _user:
@@ -19,6 +14,7 @@ User manual
 
    General/Index
    BackendModule/Index
+   Command/Index
    MappingData/Index
    Cache/Index
    Debugging/Index

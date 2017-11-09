@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _user-debugging:
@@ -14,8 +9,7 @@ Debugging
 There are many potential sources of error during synchronization, from
 wrong mapping configurations to missing user rights to PHP errors in
 user functions. When a synchronization is launched from the BE module
-an ExtDirect call is made to the import script. The response is read
-and displayed in the BE module.
+a status is displayed when the operation is finished.
 
 However if some other errors happen, like a PHP error, or any type of
 output produced by calls to debug methods will not be visible because

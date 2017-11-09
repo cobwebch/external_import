@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _user-backend-module:
@@ -41,9 +36,11 @@ various features are summarized in the picture below.
 
 Clicking on the information icon leads to a screen showing
 all the information about that particular configuration. The view
-consists of two tabs: the first one displays the configuration from
+consists of three tabs: the first one displays the configuration from
 the "ctrl" section of the TCA ("General information"), the second one
-displays the configuration for each column ("Columns mapping").
+displays the configuration for each column ("Columns mapping") and the
+third one displays the list of :ref:`steps that the process will go through <user-overview>`,
+including any :ref:`custom steps <developer-steps>`.
 
 .. figure:: ../../Images/InformationInspector.png
 	:alt: Inspecting TCA properties
@@ -64,6 +61,7 @@ detailed view.
    The configuration validator also runs right before an import.
    The import will abort if any critical error is found in the
    configuration. Notices do not block the import process.
+
 
 Clicking on the synchronize data button will immediately start
 the synchronization of the corresponding table. This may take quite

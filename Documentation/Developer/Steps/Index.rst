@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _developer-steps:
@@ -30,11 +25,11 @@ Parent class
 """"""""""""
 
 A custom step class **must** inherit from abstract class
-:code:`\Cobweb\ExternalImport\Step\AbstractStep`. If it does not,
+:class:`\\Cobweb\\ExternalImport\\Step\\AbstractStep`. If it does not,
 the step will be ignored during import. The parent class makes
 a lot of features available some of which are described below.
 
-All step class instances are created using the :code:`ObjectManager`,
+All step class instances are created using the :class:`\\TYPO3\\CMS\\Extbase\\Object\\ObjectManager`,
 so Extbase's injection mechanisms is available inside a custom step class.
 
 
@@ -47,21 +42,21 @@ A custom step class has access to the following member variables:
 
 configuration
   Instance of the current External Import configuration
-  (:code:`\Cobweb\ExternalImport\Domain\Model\Configuration`).
+  (:class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Configuration`).
 
 data
   Instance of the object model encapsulating the data being processed
-  (:code:`\Cobweb\ExternalImport\Domain\Model\Data`).
+  (:class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Data`).
 
 importer
-  Back-reference to the current instance of the :code:`\Cobweb\ExternalImport\Importer` class.
+  Back-reference to the current instance of the :class:`\\Cobweb\\ExternalImport\\Importer` class.
 
 See the :ref:`API chapter <developer-api>` for more information about these classes.
 
 Furthermore, the custom step class can access a member variable called :code:`abortFlag`.
 Setting this variable to :code:`true` will cause the import process to be aborted
 **after** the custom step. Any such interruption is logged by the
-:code:`\Cobweb\ExternalImport\Importer` class, albeit without any detail. If you feel
+:class:`\\Cobweb\\ExternalImport\\Importer` class, albeit without any detail. If you feel
 the need to report about the reason for interruption, do so from
 within the custom step class:
 

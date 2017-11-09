@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _user-troubleshooting:
@@ -25,7 +20,7 @@ example). If the previous synchronization has not finished, the
 Scheduler will prevent the new one from taking place. The symptom is a
 message like "[scheduler]: Event is already running and multiple
 executions are not allowed, skipping! CRID: xyz, UID: nn" in the
-system log (System > Log). In this case you should delete the
+system log (**SYSTEM > Log**). In this case you should delete the
 existing schedule and set up a new one.
 
 

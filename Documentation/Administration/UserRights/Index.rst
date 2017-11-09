@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _administration-user-rights:
@@ -12,7 +7,7 @@ User rights
 ^^^^^^^^^^^
 
 Before digging into the TCA specifics let's have a look at the topic
-of user rights. Since External Import relies on :code:`\TYPO3\CMS\Core\DataHandling\DataHandler`
+of user rights. Since External Import relies on :class:`\\TYPO3\\CMS\\Core\\DataHandling\\DataHandler`
 for storing data, the user rights on the synchronized tables will always be
 enforced. However additional checks are performed in both the BE
 module and the automated tasks to avoid displaying sensitive data or
@@ -51,8 +46,18 @@ particular:
   via a group the user belongs to.
 
 A good way to verify that the :code:`_cli_scheduler` use has enough right
-is to use the "User Admin" ("Backend Users" since TYPO3 CMS 6.2)
-module to switch to that user and perform
+is to use the **SYSTEM > Backend users** module to switch to that user and perform
 manual synchronizations from there (this means giving access to the
 "External Import" BE module to the :code:`_cli_scheduler` user).
 
+
+.. _administration-user-rights-typo3-8:
+
+User rights since TYPO3 CMS 8
+"""""""""""""""""""""""""""""
+
+The setup of user rights for the Scheduler has become much easier
+since TYPO3 CMS 8. Indeed all command-line calls are made with the
+generic :code:`_cli_` user, which has admin rights.
+
+The same is true for :ref:`command-line calls <user-command>`.

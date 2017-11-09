@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: Includes.txt
+﻿.. include:: Includes.txt
 
 
 .. _start:
@@ -21,7 +16,7 @@ External Import
 		|release|
 
 	:Description:
-		  Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task and an API.
+		  Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line interface and an API.
 
 	:Keywords:
 		  data import, fetch data, services

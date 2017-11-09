@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _administration-mapping:
@@ -23,19 +18,19 @@ Properties
 
 .. container:: ts-properties
 
-	========================== =============
-	Property                   Data type
-	========================== =============
-    `default`                  mixed
-	`match\_method`_           string
-	`match\_symmetric`_        boolean
-	`multipleValuesSeparator`_ string
-	`reference\_field`_        string
-	table_                     string
-	`value\_field`_            string
-	valueMap_                  array
-	`where\_clause`_           string
-	========================== =============
+   ========================== =============
+   Property                   Data type
+   ========================== =============
+   `default`                  mixed
+   `match\_method`_           string
+   `match\_symmetric`_        boolean
+   `multipleValuesSeparator`_ string
+   `reference\_field`_        string
+   table_                     string
+   `value\_field`_            string
+   valueMap_                  array
+   `where\_clause`_           string
+   ========================== =============
 
 
 .. _administration-mapping-properties-table:
@@ -223,7 +218,7 @@ Type
 
 Description
   This property complements :ref:`match_method <administration-mapping-properties-match-method>`.
-  If set to :code:`TRUE`, the import process will not only
+  If set to :code:`true`, the import process will not only
   try to match the external value inside the mapping values,
   but also the reverse, i.e. the mapping values
   inside the external value.

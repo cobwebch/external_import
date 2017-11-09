@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../Includes.txt
+﻿.. include:: ../Includes.txt
 
 
 .. _introduction:
@@ -17,6 +12,7 @@ between this external data and the TYPO3 CMS tables is done
 by extending the syntax of the :ref:`TCA <t3tca:start>`.
 A backend module provides a way to synchronize any table manually
 or to define a scheduling for all synchronizations.
+Synchronizations can also be run using the command-line interface.
 Automatic scheduling can be defined using a Scheduler task.
 
 The main idea of getting external data into the TYPO3 CMS database
@@ -53,8 +49,8 @@ https://github.com/fsuter/externalimport_test
 
    In this manual it is often referred to "TCEmain". This the storage
    engine of TYPO3 CMS. It is fully described in :ref:`Core APIs <t3api:introduction>`.
-   It used to correspond to class :code:`t3lib_TCEmain`. Since
-   TYPO3 CMS 6.0, it corresponds to class :code:`\TYPO3\CMS\Core\DataHandling\DataHandler`.
+   It used to correspond to class :class:`t3lib_TCEmain`. Since
+   TYPO3 CMS 6.0, it corresponds to class :class:`\\TYPO3\\CMS\\Core\\DataHandling\\DataHandler`.
 
 
 .. _suport:
@@ -64,9 +60,9 @@ Questions and support
 
 If you have any questions about this extension, please ask them in the
 TYPO3 English mailing list, so that others can benefit from the
-answers. Please use the bug tracker on forge.typo3.org to report
-problem or suggest features
-(http://forge.typo3.org/projects/extension-external\_import/issues).
+answers. Please use the bug tracker on GitHub to report
+problems or suggest features
+(https://github.com/cobwebch/external_import/issues).
 
 
 .. _happy-developer:
@@ -90,8 +86,8 @@ This tool can be used in a variety of situations and all use cases are
 certainly not covered by the current version. I will probably not have
 the time to implement any use case that I don't personally need.
 However you are welcome to join the development team if you want to
-bring in new features. If you are interested go to forge.typo3.org and
-apply to become a project member. I'll get in touch with you.
+bring in new features. If you are interested use GitHub to submit pull
+requests.
 
 
 .. _sponsoring:

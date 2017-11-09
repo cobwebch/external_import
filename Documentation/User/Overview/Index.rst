@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _user-overview:
@@ -19,44 +14,83 @@ The schema below provides an overview of the external import process:
 	The various steps of the external import process
 
 
-When the external import is started from a synchronization
-operation (pull), data is first gathered from the external source (if
-some problem happens during this stage, the whole import process is
-aborted). This does not happen when the API is used, since the data is
-pushed into the import process. The next step is called "handle data".
-This is where the data that will be stored into the internal tables is
-filtered from all the data available from the external source. After
-this step, the external data is available inside the process as an
-associative PHP array with the keys matching the names of the database
-fields where the data will be stored.
+The process is comprised of steps, each of which correspond to a
+PHP class (found in :code:`Classes/Step`). The steps are not the same
+when synchronizing (pulling) data or when using the API (pushing).
+In the above schema, the steps with a gradient background belong to
+both processes. The ones with a single color background are called
+only by the corresponding process.
 
-The preprocess raw data step is just a container to call a hook. The
-next step validates the data. The base test is to check whether the
-minimum number of records is present in the external data or not. A
-hook is available for introducing more specific checks. The first
-check to fail (including the base check) triggers the abortion of the
-import process.
+Each step may affect the raw data (the data provided by the external
+source) and the so-called "records" (the data as it is transformed by
+External Import along the various steps). A step can also set an
+"abort" flag, which will interrupt the import process after the step
+has completed.
 
-The transformation step is comprised of two important operations:
+This chapter gives an overview of what each step does:
 
-#. all simple (i.e. not MM) mappings are handled (or fixed values are
-   applied).
+Check permissions
+  :class:`\\Cobweb\\ExternalImport\\Step\\CheckPermissionsStep`
+  This step checks whether the current user has the rights to modify
+  the table into which data is being imported. If not, the process will
+  abort.
 
-#. declared user functions are called.
+Validate configuration
+  :class:`\\Cobweb\\ExternalImport\\Step\\ValidateConfigurationStep`
+  This step checks that the main configuration as well as each column
+  configuration are valid. If any of them is not, the process will
+  abort. The process will also abort if there is no general configuration
+  or not a single column configuration.
 
-The preprocess step does nothing by itself, but provides a hook for
-manipulating the complete recordset of imported data.
+Validate connector
+  :class:`\\Cobweb\\ExternalImport\\Step\\ValidateConnectorStep`
+  This steps checks if a Connector has been defined for the synchronize process.
+  In a sense, it is also a validation of the configuration, but restricted
+  to a property used only when pulling data.
 
-Finally the data is actually stored to the database. Before this
-happens the MM-relationships are handled and hooks are available
-before each type of operation happens (insert, update and delete).
+Read data
+  :class:`\\Cobweb\\ExternalImport\\Step\\ReadDataStep`
+  This step reads the data from the external source using the defined Connector.
+  It stores the result as the "raw data" of the :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Data`
+  object.
 
-As a last step the connector is called again in case one wishes to
-perform some clean up operations on the source from which the data was
-imported (for example, mark the source data as having been imported).
-The :code:`postProcessOperations()` method of the connector API is called.
-This will most probably just be a place for hooks as such post-
-processing operations are likely to be rather custom steps. Note that
-this step is not executed when the external import is started via an
-API call, as there is no connector involved in such a case.
+Handle data
+  :class:`\\Cobweb\\ExternalImport\\Step\\HandleDataStep`
+  This step takes the raw data, which may be a XML structure or a PHP array,
+  and makes it into an associative PHP array. The keys are the names of the
+  columns being mapped and any additional fields declared with the
+  :ref:`additionalFields property <administration-general-tca-properties-additional-fields>`.
+  The values are those of the external data. The results are stored in the
+  "records" of the :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Data` object.
+
+Validate data
+  :class:`\\Cobweb\\ExternalImport\\Step\\ValidateDataStep`
+  This steps checks that the external data passes whatever conditions have been
+  defined. If this is not the case, the process is aborted.
+
+Transform data
+  :class:`\\Cobweb\\ExternalImport\\Step\\TransformDataStep`
+  This step applies all the possible transformations to the external data,
+  in particular mapping it to other database tables.
+
+Store data
+  :class:`\\Cobweb\\ExternalImport\\Step\\StoreDataStep`
+  This is where data is finally stored to the database. Some operations related to MM
+  relations also happen during this step.
+
+Clear cache
+  :class:`\\Cobweb\\ExternalImport\\Step\\ClearCacheStep`
+  This step runs whatever cache clearing has been configured.
+
+Connector callback
+  :class:`\\Cobweb\\ExternalImport\\Step\\ConnectorCallbackStep`
+  In this step the connector is called again in case one wishes to
+  perform some clean up operations on the source from which the data was
+  imported (for example, mark the source data as having been imported).
+  The :code:`postProcessOperations()` method of the connector API is called.
+
+
+It is possible to add :ref:`custom Step classes <administration-general-tca-properties-customsteps>`
+at any point in the process. On top of this many steps contain
+:ref:`hooks <developer-hooks>` which allow for further interactions with the default process.
 

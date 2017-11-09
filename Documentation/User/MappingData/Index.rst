@@ -1,9 +1,4 @@
-﻿.. ==================================================
-.. FOR YOUR INFORMATION
-.. --------------------------------------------------
-.. -*- coding: utf-8 -*- with BOM.
-
-.. include:: ../../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
 .. _user-mapping-data:
@@ -11,7 +6,7 @@
 Mapping data
 ^^^^^^^^^^^^
 
-In the Administration chapter below, you will find explanations about
+In the :ref:`Administration chapter <administration>`, you will find explanations about
 how to map the data from the external source to existing or newly
 created tables in the TYPO3 CMS database. There are two mandatory
 conditions for this operation to succeed:
@@ -41,9 +36,9 @@ even more so. The explanation of the properties in the
 However there are some fundamental concepts to understand
 to be able to use those features in an optimal way.
 
-External Import saves the imported data using the TCEmain class
-(known as :code:`\TYPO3\CMS\Core\DataHandling\DataHandler` since
-the introduction of namespaces). This implies that the data is
+External Import saves the imported data using the
+:class:`\\TYPO3\\CMS\\Core\\DataHandling\\DataHandler` class
+This implies that the data is
 arranged in a particular structure that is later transformed
 into SQL statement by the TYPO3 CMS Core, but not by
 External Import itself. This is important to understand, because
@@ -51,10 +46,10 @@ it has an impact on how MM relations are handled.
 
 Whenever a record from a given table has relations to one or
 more records from another table, that list of records is
-described in the TCEmain structure as a simple comma-separated
+described in the DataHandler structure as a simple comma-separated
 list of identifiers. This means that External Import does not
 need to know about all the details of the MM relation. It
-can just send a comma-separated list of identifiers and TCEmain
+can just send a comma-separated list of identifiers and DataHandler
 will sort it out using the TCA configuration.
 
 This means that it is not absolutely necessary to use the
