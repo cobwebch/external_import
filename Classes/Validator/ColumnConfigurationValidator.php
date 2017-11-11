@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Validator;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Step\TransformDataStep;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -48,20 +49,93 @@ class ColumnConfigurationValidator
      */
     public function isValid(Configuration $configuration, $column)
     {
+        $columnConfiguration = $configuration->getConfigurationForColumn($column);
+        // Check for renamed/deprecated properties
+        $this->checkForRenamedProperties($columnConfiguration);
         // Validate properties used to choose the import value
         $this->validateDataSettingProperties(
                 $configuration->getCtrlConfiguration(),
-                $configuration->getConfigurationForColumn($column)
+                $columnConfiguration
         );
         // Check for deprecated transformation properties
         $this->validateTransformationProperties(
-                $configuration->getConfigurationForColumn($column)
+                $columnConfiguration
         );
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
         $errorResults = $this->results->getForSeverity(AbstractMessage::ERROR);
         $warningResults = $this->results->getForSeverity(AbstractMessage::WARNING);
         return count($errorResults) + count($warningResults) === 0;
+    }
+
+    /**
+     * Checks for usage of old properties and issues notice for each one found.
+     *
+     * @param array $configuration The column configuration to check
+     * @return void
+     */
+    public function checkForRenamedProperties($configuration)
+    {
+        $deprecatedProperties = array();
+        if (array_key_exists('mapping', $configuration)) {
+            $deprecatedProperties = array_merge(
+                    $deprecatedProperties,
+                    $this->findDeprecatedProperties($configuration['mapping'])
+            );
+        }
+        if (isset($configuration['transformations']) && is_array($configuration['transformations'])) {
+            foreach ($configuration['transformations'] as $index => $transformation) {
+                if (array_key_exists('mapping', $transformation)) {
+                    $deprecatedProperties = array_merge(
+                            $deprecatedProperties,
+                            $this->findDeprecatedProperties($transformation['mapping'])
+                    );
+                }
+            }
+        }
+        if (isset($configuration['MM']) && is_array($configuration['MM'])) {
+            $mmConfiguration = $configuration['MM'];
+            foreach ($mmConfiguration as $property => $value) {
+                if ($property === 'mapping') {
+                    $deprecatedProperties = array_merge(
+                            $deprecatedProperties,
+                            $this->findDeprecatedProperties($value)
+                    );
+                } else {
+                    if (array_key_exists($property, ConfigurationRepository::$renamedMMProperties[$property])) {
+                        $deprecatedProperties[] = $property;
+                    }
+                }
+            }
+        }
+        if (count($deprecatedProperties) > 0) {
+            $this->results->add(
+                    'field',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:renamedColumnProperty',
+                            'external_import',
+                            array(implode(', ', $deprecatedProperties))
+                    ),
+                    AbstractMessage::NOTICE
+            );
+        }
+    }
+
+    /**
+     * Processes a given mapping configuration and renames deprecated properties.
+     *
+     * @param array $configuration
+     * @return array
+     */
+    protected function findDeprecatedProperties($configuration)
+    {
+        $deprecatedProperties = array();
+        foreach ($configuration as $property => $value) {
+            if (array_key_exists($property, ConfigurationRepository::$renamedMappingProperties)) {
+                $deprecatedProperties[] = $property;
+            }
+        }
+        return $deprecatedProperties;
     }
 
     /**

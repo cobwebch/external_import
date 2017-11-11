@@ -65,6 +65,9 @@
 			<trans-unit id="renamedProperty" xml:space="preserve">
 				<source>Property "%1$s" was renamed to "%2$s". Please update your configuration.</source>
 			</trans-unit>
+			<trans-unit id="renamedColumnProperty" xml:space="preserve">
+				<source>The following properties were renamed to lowerCamelCase names: %s. Please update your configuration.</source>
+			</trans-unit>
 			<trans-unit id="deprecatedTransformationProperty" xml:space="preserve">
 				<source>Property "%1$s" should be placed inside the "transformations" property.</source>
 			</trans-unit>

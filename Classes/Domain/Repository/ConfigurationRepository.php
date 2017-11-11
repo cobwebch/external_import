@@ -37,14 +37,14 @@ class ConfigurationRepository
     protected $extensionConfiguration = array();
 
     /**
+     * @var int Number of deprecated column properties
+     */
+    protected $oldColumnProperties = 0;
+
+    /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
     protected $objectManager;
-
-    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager)
-    {
-        $this->objectManager = $objectManager;
-    }
 
     /**
      * @var array List of renamed properties and their new name, for the "ctrl" part of the configuration
@@ -54,6 +54,29 @@ class ConfigurationRepository
             'reference_uid' => 'referenceUid',
             'where_clause' => 'whereClause'
     );
+
+    /**
+     * @var array List of renamed mapping properties. Will be removed after the deprecation period.
+     */
+    static public $renamedMappingProperties = array(
+            'match_method' => 'matchMethod',
+            'match_symmetric' => 'matchSymmetric',
+            'reference_field' => 'referenceField',
+            'value_field' => 'valueField',
+            'where_clause' => 'whereClause'
+    );
+
+    /**
+     * @var array List of renamed MM properties. Will be removed after the deprecation period.
+     */
+    static public $renamedMMProperties = array(
+            'additional_fields' => 'additionalFields'
+    );
+
+    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager)
+    {
+        $this->objectManager = $objectManager;
+    }
 
     public function __construct()
     {
@@ -114,7 +137,7 @@ class ConfigurationRepository
                 }
             }
         }
-        return $columns;
+        return $this->processColumnConfiguration($columns);
     }
 
     /**
@@ -328,4 +351,65 @@ class ConfigurationRepository
 
         return $configuration;
     }
+
+    /**
+     * Processes the column configurations for deprecated properties.
+     *
+     * @return array
+     */
+    protected function processColumnConfiguration($columns)
+    {
+        foreach ($columns as $name => $configuration) {
+            if (isset($configuration['mapping'])) {
+                $updatedConfiguration = $this->renameDeprecatedProperties($configuration['mapping']);
+                $columns[$name]['mapping'] = $updatedConfiguration;
+            }
+            if (isset($configuration['transformations']) && is_array($configuration['transformations'])) {
+                foreach ($configuration['transformations'] as $index => $transformation) {
+                    if (array_key_exists('mapping', $transformation)) {
+                        $updatedConfiguration = $this->renameDeprecatedProperties($transformation['mapping']);
+                        $columns[$name]['transformations'][$index]['mapping'] = $updatedConfiguration;
+                    }
+                }
+            }
+            if (isset($configuration['MM']) && is_array($configuration['MM'])) {
+                $mmConfiguration = $configuration['MM'];
+                foreach ($mmConfiguration as $property => $value) {
+                    if ($property === 'mapping') {
+                        $updatedConfiguration = $this->renameDeprecatedProperties($value);
+                        $mmConfiguration['mapping'] = $updatedConfiguration;
+                    } else {
+                        if (array_key_exists($property, self::$renamedMMProperties[$property])) {
+                            $mmConfiguration[self::$renamedMMProperties[$property]] = $mmConfiguration[$property];
+                            $this->oldColumnProperties++;
+                        }
+                    }
+                }
+                $columns[$name]['MM'] = $mmConfiguration;
+            }
+        }
+        // If at least one old property was found, add an entry to the deprecation log
+        if ($this->oldColumnProperties > 0) {
+            GeneralUtility::deprecationLog('Some old External Import properties were found in your configurations. Please use the Data Import module to check out which ones.');
+        }
+        return $columns;
+    }
+
+    /**
+     * Processes a given mapping configuration and renames deprecated properties.
+     *
+     * @param array $configuration
+     * @return array
+     */
+    protected function renameDeprecatedProperties($configuration)
+    {
+        foreach ($configuration as $property => $value) {
+            if (array_key_exists($property, self::$renamedMappingProperties)) {
+                $configuration[self::$renamedMappingProperties[$property]] = $value;
+                $this->oldColumnProperties++;
+            }
+        }
+        return $configuration;
+    }
+
 }

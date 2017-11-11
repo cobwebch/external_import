@@ -345,6 +345,5 @@ class Configuration
                 $this->columnConfiguration[$name]['transformations'] = $transformations;
             }
         }
-
     }
 }

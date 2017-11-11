@@ -21,14 +21,19 @@ Properties
    ========================== =============
    Property                   Data type
    ========================== =============
-   `default`                  mixed
+   `default`_                 mixed
+   `matchMethod`_             string
    `match\_method`_           string
+   `matchSymmetric`_          boolean
    `match\_symmetric`_        boolean
    `multipleValuesSeparator`_ string
+   `referenceField`_          string
    `reference\_field`_        string
-   table_                     string
+   `table`_                   string
+   `valueField`_              string
    `value\_field`_            string
    valueMap_                  array
+   `whereClause`_             string
    `where\_clause`_           string
    ========================== =============
 
@@ -50,8 +55,8 @@ Scope
 
 .. _administration-mapping-properties-reference-field:
 
-reference\_field
-~~~~~~~~~~~~~~~~
+referenceField
+~~~~~~~~~~~~~~
 
 Type
   string
@@ -63,10 +68,16 @@ Scope
   Transform data
 
 
+reference\_field
+~~~~~~~~~~~~~~~~
+
+(Deprecated) Use :code:`referenceField` instead.
+
+
 .. _administration-mapping-properties-value-field:
 
-value\_field
-~~~~~~~~~~~~
+valueField
+~~~~~~~~~~
 
 Type
   string
@@ -79,10 +90,16 @@ Scope
   Transform data
 
 
+value\_field
+~~~~~~~~~~~~
+
+(Deprecated) Use :code:`valueField` instead.
+
+
 .. _administration-mapping-properties-where-clause:
 
-where\_clause
-~~~~~~~~~~~~~
+whereClause
+~~~~~~~~~~~
 
 Type
   string
@@ -106,7 +123,7 @@ Description
 
   .. code-block:: php
 
-     'where_clause' => 'pid = 42'
+     'whereClause' => 'pid = 42'
 
   .. important::
 
@@ -114,6 +131,12 @@ Description
 
 Scope
   Transform data
+
+
+where\_clause
+~~~~~~~~~~~~~
+
+(Deprecated) Use :code:`whereClause` instead.
 
 
 .. _administration-mapping-properties-default:
@@ -172,8 +195,8 @@ Scope
 
 .. _administration-mapping-properties-match-method:
 
-match\_method
-~~~~~~~~~~~~~
+matchMethod
+~~~~~~~~~~~
 
 Type
   array
@@ -184,7 +207,7 @@ Description
   Normally mapping values are matched based on a strict equality. This
   property can be used to match in a "softer" way. It will match if the
   external value is found inside the values pointed to by the
-  :ref:`reference_field <administration-mapping-properties-reference-field>`
+  :ref:`referenceField <administration-mapping-properties-reference-field>`
   property. "strpos" will perform a case-sensitive
   matching, while "stripos" is case-unsensitive.
 
@@ -194,13 +217,13 @@ Description
 
   .. note::
 
-     It is important to understand how the "match\_method" property
+     It is important to understand how the :code:`matchMethod` property
      influences the matching process. Consider trying to map freely input
-     country names to the :code:`static\_countries` table inside TYPO3 CMS.
+     country names to the :code:`static_countries` table inside TYPO3 CMS.
      This may not be so easy depending on how names were input in the
      external data. For example, "Australia" will not strictly match the
      official name, which is "Commonwealth of Australia". However setting
-     "match\_method" to "strpos" will generate a match, since "Australia"
+     :code:`matchMethod` to "strpos" will generate a match, since "Australia"
      can be found inside "Commonwealth of Australia"
 
 
@@ -208,16 +231,22 @@ Scope
   Transform data
 
 
+match\_method
+~~~~~~~~~~~~~
+
+(Deprecated) Use :code:`matchMethod` instead.
+
+
 .. _administration-mapping-properties-match-symmetric:
 
-match\_symmetric
-~~~~~~~~~~~~~~~~
+matchSymmetric
+~~~~~~~~~~~~~~
 
 Type
   boolean
 
 Description
-  This property complements :ref:`match_method <administration-mapping-properties-match-method>`.
+  This property complements :ref:`matchMethod <administration-mapping-properties-match-method>`.
   If set to :code:`true`, the import process will not only
   try to match the external value inside the mapping values,
   but also the reverse, i.e. the mapping values
@@ -225,6 +254,12 @@ Description
 
 Scope
   Transform data
+
+
+match\_symmetric
+~~~~~~~~~~~~~~~~
+
+(Deprecated) Use :code:`matchSymmetric` instead.
 
 
 .. _administration-mapping-example:
@@ -246,7 +281,7 @@ Here's an example TCA configuration.
 			'field' => 'department',
 			'mapping' => array(
 				'table' => 'tx_externalimporttut_departments',
-				'reference_field' => 'code'
+				'referenceField' => 'code'
 			)
 		)
 	);
@@ -289,16 +324,20 @@ and the external import configuration like:
 
 .. code-block:: php
 
-	$GLOBALS['TCA']['tx_externalimporttest_product']['columns']['tags']['external'] = array(
-		0 => array(
-			'xpath' => './self::*[@type="current"]/tags',
-			'mapping' => array(
-				'table' => 'tx_externalimporttest_tag',
-				'reference_field' => 'code',
-				'multipleValuesSeparator' => ','
-			)
-		)
-	)
+	$GLOBALS['TCA']['tx_externalimporttest_product']['columns']['tags']['external'] = [
+            'base' => [
+                    'xpath' => './self::*[@type="current"]/tags',
+                    'transformations' => [
+                            10 => [
+                                    'mapping' => [
+                                            'table' => 'tx_externalimporttest_tag',
+                                            'referenceField' => 'code',
+                                            'multipleValuesSeparator' => ','
+                                    ]
+                            ]
+                    ]
+            ]
+	];
 
 The values in the :code:`<tags>` nodes will be split on the
 comma and each will be matched to a tag from "tx_externalimporttest_tag"

@@ -43,7 +43,7 @@ class MappingUtility
         $mappings = $this->getMapping($mappingInformation);
         $numRecords = count($records);
         // If no particular matching method is defined, match exactly on the keys of the mapping table
-        if (empty($mappingInformation['match_method'])) {
+        if (empty($mappingInformation['matchMethod'])) {
             // Determine if mapping is self-referential
             // Self-referential mappings cause a problem, because they may refer to a record that is not yet
             // in the database, but is part of the import. In this case we need to create a temporary ID for that
@@ -115,7 +115,7 @@ class MappingUtility
         // NOTE: self-referential relations are not checked in this case, as it does not seem to make sense
         // to have weak-matching external keys
         } else {
-            if ($mappingInformation['match_method'] === 'strpos' || $mappingInformation['match_method'] === 'stripos') {
+            if ($mappingInformation['matchMethod'] === 'strpos' || $mappingInformation['matchMethod'] === 'stripos') {
                 for ($i = 0; $i < $numRecords; $i++) {
                     $externalValue = $records[$i][$columnName];
                     // The external field may contain multiple values
@@ -179,23 +179,23 @@ class MappingUtility
         } else {
             // Assemble query and get data
             $valueField = 'uid';
-            if (isset($mappingData['value_field'])) {
-                $valueField = $mappingData['value_field'];
+            if (isset($mappingData['valueField'])) {
+                $valueField = $mappingData['valueField'];
             }
-            $referenceField = $mappingData['reference_field'];
+            $referenceField = $mappingData['referenceField'];
             $fields = $referenceField . ', ' . $valueField;
             // Define where clause
             $whereClause = '1 = 1';
-            if (!empty($mappingData['where_clause'])) {
+            if (!empty($mappingData['whereClause'])) {
                 // If the where clause contains the ###PID_IN_USE### marker, replace it with current storage pid
-                if (strpos($mappingData['where_clause'], '###PID_IN_USE###') !== false) {
+                if (strpos($mappingData['whereClause'], '###PID_IN_USE###') !== false) {
                     $whereClause = str_replace(
                             '###PID_IN_USE###',
                             $this->importer->getExternalConfiguration()->getStoragePid(),
-                            $mappingData['where_clause']
+                            $mappingData['whereClause']
                     );
                 } else {
-                    $whereClause = $mappingData['where_clause'];
+                    $whereClause = $mappingData['whereClause'];
                 }
             }
             $whereClause .= BackendUtility::deleteClause($mappingData['table']);
@@ -230,12 +230,12 @@ class MappingUtility
     public function matchSingleField($externalValue, $mappingInformation, $mappingTable)
     {
         $returnValue = '';
-        $function = $mappingInformation['match_method'];
+        $function = $mappingInformation['matchMethod'];
         if (!empty($externalValue)) {
             $hasMatch = false;
             foreach ($mappingTable as $key => $value) {
                 $hasMatch = (call_user_func($function, $key, $externalValue) !== false);
-                if (!empty($mappingInformation['match_symmetric'])) {
+                if (!empty($mappingInformation['matchSymmetric'])) {
                     $hasMatch |= (call_user_func($function, $externalValue, $key) !== false);
                 }
                 if ($hasMatch) {

@@ -117,8 +117,8 @@ class StoreDataStep extends AbstractStep
 
                     // Get foreign value
                     // First try the "soft" matching method to mapping table
-                    if (!empty($mmData['mapping']['match_method'])) {
-                        if ($mmData['mapping']['match_method'] === 'strpos' || $mmData['mapping']['match_method'] === 'stripos') {
+                    if (!empty($mmData['mapping']['matchMethod'])) {
+                        if ($mmData['mapping']['matchMethod'] === 'strpos' || $mmData['mapping']['matchMethod'] === 'stripos') {
                             // Try matching the value. If matching fails, unset it.
                             try {
                                 $foreignValue = $this->mappingUtility->matchSingleField(

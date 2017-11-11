@@ -23,14 +23,15 @@ Properties
 
 .. container:: ts-properties
 
-	========================= =====================================================
-	Property                  Data type
-	========================= =====================================================
-	`additionalFields`_       array
-	mapping_                  :ref:`Mapping configuration <administration-mapping>`
-	multiple_                 boolean
-	sorting_                  string
-	========================= =====================================================
+   ========================= =====================================================
+   Property                  Data type
+   ========================= =====================================================
+   `additionalFields`_       array
+   `additional\_fields`_      array
+   mapping_                  :ref:`Mapping configuration <administration-mapping>`
+   multiple_                 boolean
+   sorting_                  string
+   ========================= =====================================================
 
 
 .. _administration-mm-properties-mapping:
@@ -65,6 +66,12 @@ Description
 
 Scope
   Store data
+
+
+additional\_fields
+~~~~~~~~~~~~~~~~~~
+
+(Deprecated) Use :code:`additionalFields` instead.
 
 
 .. _administration-mm-properties-multiple:
@@ -112,7 +119,7 @@ Scope
 Additional notes
 """"""""""""""""
 
-When the :ref:`additional_fields <administration-mm-properties-additional-fields>`
+When the :ref:`additionalFields <administration-mm-properties-additional-fields>`
 and/or :ref:`multiple <administration-mm-properties-multiple>`
 properties are used, additional database operations are performed to honour these
 settings, as it is not traditional behaviour for TYPO3 MM-relations.
@@ -154,7 +161,7 @@ in a team.
 				'MM' => array(
 					'mapping' => array(
 						'table' => 'fe_users',
-						'reference_field' => 'tx_externalimporttut_code',
+						'referenceField' => 'tx_externalimporttut_code',
 					),
 					'sorting' => 'rank'
 				)

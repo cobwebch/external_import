@@ -17,7 +17,9 @@ namespace Cobweb\ExternalImport\Tests\Functional;
 use Cobweb\ExternalImport\Importer;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * Testcase for the External Import importer
@@ -45,14 +47,11 @@ class ImporterTest extends FunctionalTestCase
     {
         parent::setUp();
         $this->setUpBackendUserFromFixture(1);
+        // Connector services need a global LanguageService object
+        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
         $objectManager = new ObjectManager();
         $this->subject = $objectManager->get(Importer::class);
-    }
-
-    protected function tearDown()
-    {
-//        $this->dropDatabase();
     }
 
     /**
