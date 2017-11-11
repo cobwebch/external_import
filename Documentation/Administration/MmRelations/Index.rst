@@ -162,6 +162,7 @@ in a team.
 					'mapping' => array(
 						'table' => 'fe_users',
 						'referenceField' => 'tx_externalimporttut_code',
+						'default' => ''
 					),
 					'sorting' => 'rank'
 				)

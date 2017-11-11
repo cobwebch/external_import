@@ -150,6 +150,30 @@ Type
 Description
   Default value that will be used when a value cannot be mapped. Otherwise the field is unset for the record.
 
+  .. note::
+
+     This is quite important when mapping MM relations. If an existing item has currently relations in the
+     TYPO3 database, but not any longer in the data to be imported, the existing MM relations will not be
+     removed if the field is unset. In such a case, make sure to use an empty string for the default value,
+     as this will tell the DataHandler that it has to remove the existing MM relations.
+
+     **Example**
+
+     .. code-block:: php
+
+          $GLOBALS['TCA']['tx_externalimporttest_product']['columns']['categories']['external']['base'] = [
+                  'xpath' => './self::*[@type="current"]/category',
+                  'transformations' => [
+                          10 => [
+                                  'mapping' => [
+                                          'table' => 'sys_category',
+                                          'referenceField' => 'external_key',
+                                          'default' => ''
+                                  ]
+                          ]
+                  ]
+          ];
+
 Scope
   Transform data
 

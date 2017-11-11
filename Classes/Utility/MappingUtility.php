@@ -55,9 +55,13 @@ class MappingUtility
 
             for ($i = 0; $i < $numRecords; $i++) {
                 $externalValue = $records[$i][$columnName];
-                // If the external value is empty, don't even try to map it. Otherwise, proceed.
+                // If the external value is empty, don't even try to map it, but use default value, if any. Otherwise, proceed.
                 if (empty($externalValue)) {
-                    unset($records[$i][$columnName]);
+                    if (array_key_exists('default', $mappingInformation)) {
+                        $records[$i][$columnName] = $mappingInformation['default'];
+                    } else {
+                        unset($records[$i][$columnName]);
+                    }
                 } else {
                     // The external field may contain multiple values
                     if (!empty($mappingInformation['multipleValuesSeparator'])) {

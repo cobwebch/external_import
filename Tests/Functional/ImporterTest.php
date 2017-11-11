@@ -193,14 +193,18 @@ class ImporterTest extends FunctionalTestCase
 
     /**
      * Imports the "products" with the "more" configuration and checks whether we have the right count or not
-     * (2 expected)
+     * (2 expected).
      *
-     * TODO: this configuration is supposed to test a "no update" scenario. Cannot be tested for now due to missing reporting.
+     * This test also checks that old MM relations are removed.
+     *
+     * TODO: this configuration is supposed to test a "no update" scenario. Cannot be fully tested for now due to missing reporting.
      *
      * @test
      */
-    public function importStableProductsWithImporterStoresTwoRecords() {
+    public function importStableProductsWithImporterStoresTwoRecordsAndRemovesOldRelations() {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
+        // Create 1 category and 1 relation to it. The relation should be removed by the import process.
+        $this->importDataSet(__DIR__ . '/Fixtures/CategoriesMM.xml');
         $this->subject->setForcedStoragePid(1);
 
         $messages = $this->subject->synchronize(
@@ -212,8 +216,25 @@ class ImporterTest extends FunctionalTestCase
                 'uid',
                 'tx_externalimporttest_product'
         );
+        $products = $this->getDatabaseConnection()->exec_SELECTgetRows(
+                'uid,name,categories',
+                'tx_externalimporttest_product',
+                ''
+        );
+        // Get the categories relations
+        $relations = $this->getDatabaseConnection()->exec_SELECTgetRows(
+                'uid_local, uid_foreign',
+                'sys_category_record_mm',
+                'tablenames = \'tx_externalimporttest_product\''
+        );
+        $countRelations = count($relations);
+        $firstRelation = array_pop($relations);
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(2, $countProducts, serialize($messages));
+        // There should be only 1 relation, because the one from the fixture is expected to have been deleted
+        self::assertEquals(1, $countRelations);
+        // The remaining relation should be with the second product (uid: 2)
+        self::assertEquals(2, $firstRelation['uid_foreign']);
     }
 
     /**

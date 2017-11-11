@@ -1,3 +1,7 @@
+2017-11-12 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added information about mapping MM relations, resolves #34
+
 2017-11-11 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added note about "requiring" fields, resolves #36
