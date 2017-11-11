@@ -1,3 +1,7 @@
+2017-11-11 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added note about "requiring" fields, resolves #36
+
 2017-11-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Updated documentation, resolves #26
