@@ -58,7 +58,8 @@ class StoreDataStep extends AbstractStep
         $fieldsExcludedFromUpdates = array();
 
         // Get the list of existing uids for the table
-        $this->uidRepository = GeneralUtility::makeInstance(UidRepository::class, $this->getConfiguration());
+        $this->uidRepository = GeneralUtility::makeInstance(UidRepository::class);
+        $this->uidRepository->setConfiguration($this->getConfiguration());
         $existingUids = $this->uidRepository->getExistingUids();
         // Make sure this is list is an array (it may be null)
         $existingUids = ($existingUids === null) ? [] : $existingUids;

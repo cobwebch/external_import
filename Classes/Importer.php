@@ -64,14 +64,14 @@ class Importer
     protected $reportingUtility;
 
     /**
+     * @var \Cobweb\ExternalImport\Domain\Repository\UidRepository
+     */
+    protected $uidRepository;
+
+    /**
      * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
      */
     protected $forcedStoragePid = null;
-
-    /**
-     * @var array List of primary keys of records that already exist in the database
-     */
-    protected $existingUids = array();
 
     /**
      * @var array List of temporary keys created on the fly for new records. Used in DataHandler data map.
@@ -153,6 +153,11 @@ class Importer
     {
         $this->reportingUtility = $utility;
         $this->reportingUtility->setImporter($this);
+    }
+
+    public function injectUidRepository(\Cobweb\ExternalImport\Domain\Repository\UidRepository $uidRepository)
+    {
+        $this->uidRepository = $uidRepository;
     }
 
     /**
@@ -248,6 +253,9 @@ class Importer
                     $index,
                     self::SYNCHRONYZE_DATA_STEPS
             );
+            // Initialize existing uids list
+            $this->uidRepository->setConfiguration($this->externalConfiguration);
+            $this->uidRepository->resetExistingUids();
 
             $data = $this->objectManager->get(Data::class);
             $steps = $this->externalConfiguration->getSteps();
@@ -326,6 +334,9 @@ class Importer
                     $index,
                     self::IMPORT_DATA_STEPS
             );
+            // Initialize existing uids list
+            $this->uidRepository->setConfiguration($this->externalConfiguration);
+            $this->uidRepository->resetExistingUids();
             // Initialize the Data object with the raw data
             $data = $this->objectManager->get(Data::class);
             $data->setRawData($rawData);

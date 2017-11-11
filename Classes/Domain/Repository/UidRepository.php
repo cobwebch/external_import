@@ -35,7 +35,12 @@ class UidRepository implements SingletonInterface
      */
     protected $existingUids = null;
 
-    public function __construct(Configuration $configuration)
+    /**
+     * Sets the Configuration object at run-time.
+     *
+     * @param Configuration $configuration
+     */
+    public function setConfiguration(Configuration $configuration)
     {
         $this->configuration = $configuration;
     }

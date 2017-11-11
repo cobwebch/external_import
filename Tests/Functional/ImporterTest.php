@@ -541,7 +541,7 @@ class ImporterTest extends FunctionalTestCase
             $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
                     'COUNT(uid) AS total',
                     'pages',
-                    'uid IN (SELECT uid FROM pages WHERE title = \'' . $page['title'] . '\')'
+                    'pid IN (SELECT uid FROM pages WHERE title = \'' . $page['title'] . '\')'
             );
             $children = 0;
             if ($row = $databaseResult->fetch_assoc()) {
