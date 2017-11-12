@@ -125,6 +125,19 @@ your configurations.
    External Import 3.0.x before moving on to TYPO3 8.7.
 
 
+.. _installation-upgrade-400-renamed-properties:
+
+Renamed prooperties
+~~~~~~~~~~~~~~~~~~~
+
+To continue the move to unified naming conventions for properties started in version 3.0,
+the mapping and MM properties which had underscores in their names were moved to
+lowerCamelCase name.
+
+The old properties are interpreted for backwards-compatibility, but this will be dropped
+in the next major version. The backend module will show you the deprecated properties.
+
+
 .. _installation-upgrade-400-breaking-changes:
 
 Breaking changes
