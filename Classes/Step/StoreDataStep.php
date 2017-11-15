@@ -47,6 +47,7 @@ class StoreDataStep extends AbstractStep
     public function run()
     {
         $records = $this->getData()->getRecords();
+        $storedRecords = $records;
         $this->importer->debug(
                 'Data received for storage',
                 0,
@@ -320,6 +321,10 @@ class StoreDataStep extends AbstractStep
                 }
                 $tceData[$table][$theID] = $theRecord;
             }
+            $storedRecords[] = array_merge(
+                    ['uid' => $theID],
+                    $theRecord
+            );
             // Store local additional fields into general additional fields array
             // keyed to proper id's (if the record was processed)
             if (!empty($theID)) {
@@ -361,6 +366,13 @@ class StoreDataStep extends AbstractStep
                 $tce->substNEWwithIDs
         );
         $inserts = count($tce->substNEWwithIDs);
+
+        // Substitute NEW temporary keys with actual IDs in the "stored records" array
+        foreach ($storedRecords as $index => $record) {
+            if (strpos($record['uid'], 'NEW') === 0 && isset($tce->substNEWwithIDs[$record['uid']])) {
+                $storedRecords[$index]['uid'] = $tce->substNEWwithIDs[$record['uid']];
+            }
+        }
 
         // Post-processing hook after data was saved
         $savedData = array();
@@ -498,6 +510,9 @@ class StoreDataStep extends AbstractStep
                 ),
                 AbstractMessage::OK
         );
+
+        // Set the "stored records" array as the new records of the Data object
+        $this->data->setRecords($storedRecords);
     }
 
     /**

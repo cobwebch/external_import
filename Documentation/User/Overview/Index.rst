@@ -48,6 +48,9 @@ Validate connector
   In a sense, it is also a validation of the configuration, but restricted
   to a property used only when pulling data.
 
+  Up to that point, the :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Data`
+  object contains no data at all.
+
 Read data
   :class:`\\Cobweb\\ExternalImport\\Step\\ReadDataStep`
   This step reads the data from the external source using the defined Connector.
@@ -71,12 +74,16 @@ Validate data
 Transform data
   :class:`\\Cobweb\\ExternalImport\\Step\\TransformDataStep`
   This step applies all the possible transformations to the external data,
-  in particular mapping it to other database tables.
+  in particular mapping it to other database tables. The "records" in the
+  :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Data` object are updated with
+  the transformed values.
 
 Store data
   :class:`\\Cobweb\\ExternalImport\\Step\\StoreDataStep`
   This is where data is finally stored to the database. Some operations related to MM
-  relations also happen during this step.
+  relations also happen during this step. The "records" in the
+  :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Data` object now contain the "uid"
+  field.
 
 Clear cache
   :class:`\\Cobweb\\ExternalImport\\Step\\ClearCacheStep`
