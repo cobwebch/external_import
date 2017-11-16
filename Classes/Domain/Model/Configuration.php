@@ -341,7 +341,7 @@ class Configuration
         foreach ($this->columnConfiguration as $name => $configuration) {
             if (isset($configuration['transformations'])) {
                 $transformations = $configuration['transformations'];
-                sort($transformations);
+                ksort($transformations);
                 $this->columnConfiguration[$name]['transformations'] = $transformations;
             }
         }

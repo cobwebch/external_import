@@ -166,62 +166,6 @@ class ConfigurationTest extends FunctionalTestCase
 
     /**
      * @test
-     */
-    public function setAdditionalFieldsSetsFieldsAndCount()
-    {
-        $additionalFields = ['foo', 'bar'];
-        $this->subject->setAdditionalFields($additionalFields);
-        self::assertSame(
-                $additionalFields,
-                $this->subject->getAdditionalFields()
-        );
-        self::assertEquals(
-                count($additionalFields),
-                $this->subject->getCountAdditionalFields()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function setColumnConfigurationSetsConfiguration()
-    {
-        $configuration = ['field' => 'foo'];
-        $this->subject->setColumnConfiguration($configuration);
-        self::assertSame(
-                $configuration,
-                $this->subject->getColumnConfiguration()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function setConnectorSetsConnector()
-    {
-        $connector = GeneralUtility::makeInstance(ConnectorFeed::class);
-        $this->subject->setConnector($connector);
-        self::assertSame(
-                $connector,
-                $this->subject->getConnector()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function setCountAdditionalFieldsSetsCount()
-    {
-        $countAdditionalFields = 2;
-        $this->subject->setCountAdditionalFields($countAdditionalFields);
-        self::assertEquals(
-                $countAdditionalFields,
-                $this->subject->getCountAdditionalFields()
-        );
-    }
-
-    /**
-     * @test
      * @param array $configuration
      * @param int $pid
      * @param array $additionalFields
@@ -247,6 +191,95 @@ class ConfigurationTest extends FunctionalTestCase
         );
         self::assertEquals(
                 count($additionalFields),
+                $this->subject->getCountAdditionalFields()
+        );
+    }
+
+    public function columnConfigurationProvider()
+    {
+        return [
+                'sample configuration' => [
+                        [
+                                'foo' => [
+                                        'field' => 'bar',
+                                        'transformations' => [
+                                                20 => [
+                                                        'value' => 3
+                                                ],
+                                                10 => [
+                                                        'value' => 4
+                                                ]
+                                        ]
+                                ]
+                        ],
+                        'foo',
+                        [
+                                'field' => 'bar',
+                                'transformations' => [
+                                        10 => [
+                                                'value' => 4
+                                        ],
+                                        20 => [
+                                                'value' => 3
+                                        ]
+                                ]
+                        ]
+                ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider columnConfigurationProvider
+     */
+    public function setColumnConfigurationSetsConfigurationAndSortsTransformations($configuration, $columnName, $processedConfiguration)
+    {
+        $this->subject->setColumnConfiguration($configuration);
+        self::assertSame(
+                $processedConfiguration,
+                $this->subject->getConfigurationForColumn($columnName)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setAdditionalFieldsSetsFieldsAndCount()
+    {
+        $additionalFields = ['foo', 'bar'];
+        $this->subject->setAdditionalFields($additionalFields);
+        self::assertSame(
+                $additionalFields,
+                $this->subject->getAdditionalFields()
+        );
+        self::assertEquals(
+                count($additionalFields),
+                $this->subject->getCountAdditionalFields()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setConnectorSetsConnector()
+    {
+        $connector = GeneralUtility::makeInstance(ConnectorFeed::class);
+        $this->subject->setConnector($connector);
+        self::assertSame(
+                $connector,
+                $this->subject->getConnector()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setCountAdditionalFieldsSetsCount()
+    {
+        $countAdditionalFields = 2;
+        $this->subject->setCountAdditionalFields($countAdditionalFields);
+        self::assertEquals(
+                $countAdditionalFields,
                 $this->subject->getCountAdditionalFields()
         );
     }
