@@ -36,7 +36,6 @@ class StoreDataStep extends AbstractStep
     public function injectMappingUtility(\Cobweb\ExternalImport\Utility\MappingUtility $mappingUtility)
     {
         $this->mappingUtility = $mappingUtility;
-        $this->mappingUtility->setImporter($this->importer);
     }
 
     /**
@@ -46,6 +45,7 @@ class StoreDataStep extends AbstractStep
      */
     public function run()
     {
+        $this->mappingUtility->setImporter($this->importer);
         $records = $this->getData()->getRecords();
         $storedRecords = $records;
         $this->importer->debug(

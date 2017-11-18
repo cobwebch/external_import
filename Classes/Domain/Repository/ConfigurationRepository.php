@@ -379,7 +379,7 @@ class ConfigurationRepository
                         $updatedConfiguration = $this->renameDeprecatedProperties($value);
                         $mmConfiguration['mapping'] = $updatedConfiguration;
                     } else {
-                        if (array_key_exists($property, self::$renamedMMProperties[$property])) {
+                        if (array_key_exists($property, self::$renamedMMProperties)) {
                             $mmConfiguration[self::$renamedMMProperties[$property]] = $mmConfiguration[$property];
                             $this->oldColumnProperties++;
                         }

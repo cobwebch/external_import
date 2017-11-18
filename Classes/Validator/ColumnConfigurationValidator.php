@@ -102,7 +102,7 @@ class ColumnConfigurationValidator
                             $this->findDeprecatedProperties($value)
                     );
                 } else {
-                    if (array_key_exists($property, ConfigurationRepository::$renamedMMProperties[$property])) {
+                    if (array_key_exists($property, ConfigurationRepository::$renamedMMProperties)) {
                         $deprecatedProperties[] = $property;
                     }
                 }
