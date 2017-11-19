@@ -300,9 +300,11 @@ class ImporterTest extends FunctionalTestCase
     {
         return array(
             'Wrong ctrl configuration' => array(
+                    'tx_externalimporttest_product',
                     'control_configuration_errors'
             ),
             'Wrong column configuration' => array(
+                    'sys_categories',
                     'column_configuration_errors'
             )
         );
@@ -311,13 +313,14 @@ class ImporterTest extends FunctionalTestCase
     /**
      * Checks that running an erroneous configuration exists early with a single error message.
      *
+     * @param string $table Name of the table to import into
      * @param string $configuration Name of the configuration to check
      * @test
      * @dataProvider wrongConfigurationNames
      */
-    public function importProductsWithErroneousConfigurationReturnsError($configuration) {
+    public function importWithErroneousConfigurationReturnsError($table, $configuration) {
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_product',
+                $table,
                 $configuration
         );
         $messageLevel = key($messages);
