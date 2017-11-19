@@ -76,12 +76,14 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
                     // Take only synchronized tables
                     if (!empty($externalConfig['connector'])) {
                         $code = $tableName . '/' . $index;
+                        $priority = $externalConfig['priority'];
                         $selected = '';
                         if ($taskInfo[self::$fieldName] == $code) {
                             $selected = ' selected="selected"';
                         }
                         $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') . ': ' . $tableName;
                         $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') . ': ' . $index;
+                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') . ': ' . $priority;
                         $fieldCode .= '<option value="' . $code . '"' . $selected . '>' . $label . '</option>';
                     }
                 }

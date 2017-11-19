@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Task;
 
 /*
@@ -14,6 +15,7 @@ namespace Cobweb\ExternalImport\Task;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -112,17 +114,24 @@ class AutomatedSyncTask extends AbstractTask
     }
 
     /**
-     * This method returns the synchronized table and index as additional information
+     * Returns the synchronized table, index and priority as additional information
      *
-     * @return    string    Information to display
+     * @return string Information to display
      */
     public function getAdditionalInformation()
     {
         if ($this->table === 'all') {
             $info = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables');
         } else {
-            $info = sprintf($GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableAndIndex'), $this->table,
-                    $this->index);
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            $configurationRepository = $objectManager->get(ConfigurationRepository::class);
+            $configuration = $configurationRepository->findConfigurationObject($this->table, $this->index);
+            $info = sprintf(
+                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'),
+                $this->table,
+                $this->index,
+                $configuration->getCtrlConfigurationProperty('priority')
+            );
         }
         return $info;
     }

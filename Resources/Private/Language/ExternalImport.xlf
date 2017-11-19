@@ -41,6 +41,9 @@
 			<trans-unit id="index" xml:space="preserve">
 				<source>Index</source>
 			</trans-unit>
+            <trans-unit id="priority" xml:space="preserve">
+				<source>Priority</source>
+			</trans-unit>
 			<trans-unit id="no_connector" xml:space="preserve">
 				<source>No connector defined. Cannot synchronize.</source>
 			</trans-unit>
@@ -149,8 +152,8 @@
 			<trans-unit id="allTables" xml:space="preserve">
 				<source>All tables</source>
 			</trans-unit>
-			<trans-unit id="tableAndIndex" xml:space="preserve">
-				<source>Table: %1$s, index: %2$s</source>
+			<trans-unit id="tableIndexAndPriority" xml:space="preserve">
+				<source>Table: %1$s, index: %2$s, priority: %3$s</source>
 			</trans-unit>
 			<trans-unit id="exceptionOccurred" xml:space="preserve">
 				<source>A problem occurred. The following error was returned: %1$s (Exception code: %2$d).</source>
