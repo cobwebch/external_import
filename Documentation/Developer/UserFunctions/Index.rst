@@ -41,8 +41,8 @@ field.
 .. note::
 
    When adding a new user function, you may suddenly be faced with an autoloading
-   error, which will not solved by a flushing of the cache. Indeed TYPO3 CMS builds
+   error, which is not solved by a flushing of the cache. Indeed TYPO3 CMS builds
    autoloading information which is not considered to use a cache. So flushing
    all the cache will not help TYPO3 CMS to detect your new class. You will need to
    either uninstall and reinstall the extension to which your class belongs
-   or recreate the autoloading cache using the Install Tool.
+   or recreate the autoloading information cache using the Install Tool.
