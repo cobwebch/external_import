@@ -10,6 +10,8 @@ Here is an example of a typical "ctrl" section syntax:
 
 .. code-block:: php
 
+        $extensionPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('externalimport_tut');
+	
 	$GLOBALS['TCA']['tx_externalimporttut_departments'] = array(
 		'ctrl' => array(
 			'title' => 'LLL:EXT:externalimport_tut/locallang_db.xml:tx_externalimporttut_departments',
