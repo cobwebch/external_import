@@ -22,12 +22,12 @@ Here is an example of a typical "ctrl" section syntax:
 						'delimiter' => "\t",
 						'text_qualifier' => '"',
 						'skip_rows' => 1,
-						'encoding' => 'latin1'
+						'encoding' => 'utf-8'
 					),
 					'data' => 'array',
 					'referenceUid' => 'code',
 					'priority' => 10,
-					'description' => 'Import of all company departments'
+					'description' => 'LLL:EXT:externalimport_tut/locallang_db.xml:tx_externalimporttut_departments.import_all_company_departments'
 				)
 			)
 		),
