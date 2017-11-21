@@ -31,7 +31,7 @@ also performed at the beginning, so that the synchronization can be
 skipped entirely if the CLI user does not have modify rights on the
 given table. This is reported in the mail report.
 
-An automated synchronization will be run that the Scheduler. This
+An automated synchronization will be run by the Scheduler. This
 means that the active user will be :code:`_cli_scheduler`, so this user
 needs to have enough rights to perform all expected operations, in
 particular:
@@ -40,12 +40,12 @@ particular:
   synchronized
 
 - give this user access to the page(s) where the records are stored,
-  i.e. pages must be in the DB Mounts of the user and user must enough
+  i.e. pages must be in the DB Mounts of the user and user must have enough
   rights on these pages, i.e. "Show page", "Edit content", "Edit page"
   and "Delete page" (Web > Access). Of course this can also be achieved
-  via a group the user belongs to.
+  via a BE group the user belongs to.
 
-A good way to verify that the :code:`_cli_scheduler` use has enough right
+A good way to verify that the :code:`_cli_scheduler` use has enough rights
 is to use the **SYSTEM > Backend users** module to switch to that user and perform
 manual synchronizations from there (this means giving access to the
 "External Import" BE module to the :code:`_cli_scheduler` user).
