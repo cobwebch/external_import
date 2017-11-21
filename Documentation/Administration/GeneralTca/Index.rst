@@ -82,6 +82,11 @@ Description
   Connector service subtype.
 
   Must be defined only for pulling data. Leave blank for pushing data.
+  You must install the related connector extension.
+  csv  ... svconnector_csv
+  json ... svconnector_json
+  sql  ... svconnector_sql
+  feed ... svconnector_feed
 
 Scope
   Read data
