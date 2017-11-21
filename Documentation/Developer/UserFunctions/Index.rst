@@ -23,9 +23,9 @@ Basically, the function receives three parameters:
 |          |         | transformed and returned.                                             |
 +----------+---------+-----------------------------------------------------------------------+
 | $params  | array   | Additional parameters passed to the function. This will be very       |
-|          |         | specific to each function and can even be complete omitted. External  |
-|          |         | import will pass an empty array to the user function if the "params"  |
-|          |         | property is not defined.                                              |
+|          |         | specific to each function and can even be completely omitted.         |
+|          |         | External import will pass an empty array to the user function if the  |
+|          |         | "params" property is not defined.                                     |
 +----------+---------+-----------------------------------------------------------------------+
 
 The function is expected to return only the value of the transformed
@@ -41,8 +41,8 @@ field.
 .. note::
 
    When adding a new user function, you may suddenly be faced with an autoloading
-   error, which flushing the cache will not solve. Indeed TYPO3 CMS builds
-   autoloading information which is not considered to be a cache. So flushing
-   all the cache will not help TYPO3 CMS detect your new class. You will need to
+   error, which is not solved by a flushing of the cache. Indeed TYPO3 CMS builds
+   autoloading information which is not considered to use a cache. So flushing
+   all the cache will not help TYPO3 CMS to detect your new class. You will need to
    either uninstall and reinstall the extension to which your class belongs
-   or recreate the autoloading cache using the Install Tool.
+   or recreate the autoloading information cache using the Install Tool.
