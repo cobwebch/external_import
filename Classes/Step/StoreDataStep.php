@@ -62,8 +62,10 @@ class StoreDataStep extends AbstractStep
         $this->uidRepository = GeneralUtility::makeInstance(UidRepository::class);
         $this->uidRepository->setConfiguration($this->getConfiguration());
         $existingUids = $this->uidRepository->getExistingUids();
+        $currentPids = $this->uidRepository->getCurrentPids();
         // Make sure this is list is an array (it may be null)
         $existingUids = ($existingUids === null) ? [] : $existingUids;
+        $currentPids = ($currentPids === null) ? [] : $currentPids;
 
         // Check which columns are MM-relations and get mappings to foreign tables for each
         // NOTE: as it is now, it is assumed that the imported data is denormalised
@@ -200,9 +202,11 @@ class StoreDataStep extends AbstractStep
 
         // Insert or update records depending on existing uids
         $updates = 0;
+        $moves = 0;
         $updatedUids = array();
         $handledUids = array();
         $tceData = array($table => array());
+        $tceCommands = array($table => array());
         $savedAdditionalFields = array();
         // Prepare some data before the loop
         $storagePid = $this->getConfiguration()->getStoragePid();
@@ -274,6 +278,11 @@ class StoreDataStep extends AbstractStep
 
                     $theID = $existingUids[$externalUid];
                     $tceData[$table][$theID] = $theRecord;
+                    // Check if some records have a changed "pid", in which case a "move" action is also needed
+                    if (array_key_exists('pid', $theRecord) && $theRecord['pid'] !== $currentPids[$externalUid]) {
+                        $tceCommands[$table][$theID] = array('move' => $theRecord['pid']);
+                        $moves++;
+                    }
                     $updatedUids[] = $theID;
                     $updates++;
                 }
@@ -341,6 +350,11 @@ class StoreDataStep extends AbstractStep
                 0,
                 $tceData
         );
+        $this->importer->debug(
+                'TCEmain commands',
+                0,
+                (count($tceCommands[$table]) > 0) ? $tceCommands : null
+        );
         // Create an instance of DataHandler and process the data
         /** @var $tce DataHandler */
         $tce = GeneralUtility::makeInstance(DataHandler::class);
@@ -358,8 +372,9 @@ class StoreDataStep extends AbstractStep
             $tce->reverseOrder = true;
         }
         // Load the data and process it
-        $tce->start($tceData, array());
+        $tce->start($tceData, $tceCommands);
         $tce->process_datamap();
+        $tce->process_cmdmap();
         $this->importer->debug(
                 'New IDs',
                 0,
@@ -507,6 +522,14 @@ class StoreDataStep extends AbstractStep
                         'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_deleted',
                         'external_import',
                         array($deletes)
+                ),
+                AbstractMessage::OK
+        );
+        $this->importer->addMessage(
+                LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_moved',
+                        'external_import',
+                        array($moves)
                 ),
                 AbstractMessage::OK
         );

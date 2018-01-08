@@ -83,6 +83,9 @@
 			<trans-unit id="records_deleted" xml:space="preserve">
 				<source>%d existing record(s) deleted</source>
 			</trans-unit>
+			<trans-unit id="records_moved" xml:space="preserve">
+				<source>%d existing record(s) moved</source>
+			</trans-unit>
 			<trans-unit id="records_relationships" xml:space="preserve">
 				<source>%s mm-relationships created</source>
 			</trans-unit>

@@ -1,3 +1,7 @@
+2018-01-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected handling of moved records, resolves #32
+
 2017-11-21 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Released version 4.0.0

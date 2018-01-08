@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Tests\Functional;
 
 /*
@@ -61,7 +62,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importTagsWithImporterStoresFiveRecords() {
+    public function importTagsWithImporterStoresFiveRecords()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -87,7 +89,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importCategoriesWithImporterStoresFourRecordsWithOneParentRelation() {
+    public function importCategoriesWithImporterStoresFourRecordsWithOneParentRelation()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -118,7 +121,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importBaseProductsWithImporterStoresTwoRecordsAndCreatesRelations() {
+    public function importBaseProductsWithImporterStoresTwoRecordsAndCreatesRelations()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -174,7 +178,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importMoreProductsWithImporterStoresTwoRecords() {
+    public function importMoreProductsWithImporterStoresTwoRecords()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -201,7 +206,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importStableProductsWithImporterStoresTwoRecordsAndRemovesOldRelations() {
+    public function importStableProductsWithImporterStoresTwoRecordsAndRemovesOldRelations()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         // Create 1 category and 1 relation to it. The relation should be removed by the import process.
         $this->importDataSet(__DIR__ . '/Fixtures/CategoriesMM.xml');
@@ -246,7 +252,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importProductsForStoresWithImporterCreatesSixRelations() {
+    public function importProductsForStoresWithImporterCreatesSixRelations()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -299,14 +306,14 @@ class ImporterTest extends FunctionalTestCase
     public function wrongConfigurationNames()
     {
         return array(
-            'Wrong ctrl configuration' => array(
-                    'tx_externalimporttest_product',
-                    'control_configuration_errors'
-            ),
-            'Wrong column configuration' => array(
-                    'sys_categories',
-                    'column_configuration_errors'
-            )
+                'Wrong ctrl configuration' => array(
+                        'tx_externalimporttest_product',
+                        'control_configuration_errors'
+                ),
+                'Wrong column configuration' => array(
+                        'sys_categories',
+                        'column_configuration_errors'
+                )
         );
     }
 
@@ -318,7 +325,8 @@ class ImporterTest extends FunctionalTestCase
      * @test
      * @dataProvider wrongConfigurationNames
      */
-    public function importWithErroneousConfigurationReturnsError($table, $configuration) {
+    public function importWithErroneousConfigurationReturnsError($table, $configuration)
+    {
         $messages = $this->subject->synchronize(
                 $table,
                 $configuration
@@ -340,7 +348,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importBundlesWithImporterStoresThreeRecordsAndCreatesOrderedRelations() {
+    public function importBundlesWithImporterStoresThreeRecordsAndCreatesOrderedRelations()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -398,7 +407,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelations() {
+    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelations()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -456,7 +466,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importStoresWithImporterStoresTwoRecordsAndCreatesRelations() {
+    public function importStoresWithImporterStoresTwoRecordsAndCreatesRelations()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -505,7 +516,8 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importInvoicesWithImporterStoresThreeRecords() {
+    public function importInvoicesWithImporterStoresThreeRecords()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -524,12 +536,10 @@ class ImporterTest extends FunctionalTestCase
     /**
      * Imports the products as pages and checks whether the proper page tree has been created.
      *
-     * NOTE: This test fails as this feature has actually never worked properly.
-     * See: https://github.com/cobwebch/external_import/issues/11
-     *
      * @test
      */
-    public function importProductsAsPagesWithImporterCreatesProperPageTree() {
+    public function importProductsAsPagesWithImporterCreatesProperPageTree()
+    {
         $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
@@ -573,5 +583,38 @@ class ImporterTest extends FunctionalTestCase
             }
             self::assertEquals($page['children'], $children);
         }
+    }
+
+    /**
+     * Imports a product to a different page, thus moving the product.
+     *
+     * @test
+     */
+    public function importUpdatedProductsWithImporterMovedProducts()
+    {
+        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
+        $this->subject->setForcedStoragePid(1);
+
+        // First import base products
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'base'
+        );
+        // Import "updated" products, which is supposed to move one product to a different page
+        $messages = $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'updated_products'
+        );
+        $countMovedProducts = $this->getDatabaseConnection()->exec_SELECTcountRows(
+                'uid',
+                'tx_externalimporttest_product',
+                'pid = 2'
+        );
+        // A single product should have been moved
+        self::assertEquals(
+                1,
+                $countMovedProducts,
+                serialize($messages)
+        );
     }
 }

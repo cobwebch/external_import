@@ -36,6 +36,11 @@ class UidRepository implements SingletonInterface
     protected $existingUids = null;
 
     /**
+     * @var array List of current PIDs
+     */
+    protected $currentPids = null;
+
+    /**
      * Sets the Configuration object at run-time.
      *
      * @param Configuration $configuration
@@ -49,6 +54,7 @@ class UidRepository implements SingletonInterface
      * Prepares a list of all existing primary keys in the table being synchronized.
      *
      * The result is a hash table of all external primary keys matched to internal primary keys.
+     * PIDs are also retrieved.
      *
      * @return void
      */
@@ -66,7 +72,7 @@ class UidRepository implements SingletonInterface
         $where .= BackendUtility::deleteClause($table);
         $referenceUidField = $ctrlConfiguration['referenceUid'];
         $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-                $referenceUidField . ',uid',
+                $referenceUidField . ',uid, pid',
                 $table,
                 $where
         );
@@ -76,6 +82,7 @@ class UidRepository implements SingletonInterface
                 // to external data anyway (but a real zero is acceptable)
                 if (!empty($row[$referenceUidField]) || $row[$referenceUidField] === '0' || $row[$referenceUidField] === 0) {
                     $this->existingUids[$row[$referenceUidField]] = $row['uid'];
+                    $this->currentPids[$row[$referenceUidField]] = $row['pid'];
                 }
             }
             $GLOBALS['TYPO3_DB']->sql_free_result($res);
@@ -104,5 +111,29 @@ class UidRepository implements SingletonInterface
     public function resetExistingUids()
     {
         $this->existingUids = null;
+    }
+
+    /**
+     * Returns the list of storage PIDs of existing records in the database.
+     *
+     * @return array
+     */
+    public function getCurrentPids()
+    {
+        // If the list is UIDs is null, assume it wasn't fetched yet and do so
+        if ($this->currentPids === null) {
+            $this->retrieveExistingUids();
+        }
+        return $this->currentPids;
+    }
+
+    /**
+     * Resets the list of primary keys.
+     *
+     * @return void
+     */
+    public function resetCurrentPids()
+    {
+        $this->currentPids = null;
     }
 }
