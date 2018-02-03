@@ -177,6 +177,7 @@ class SchedulerRepository implements SingletonInterface
                 'uid' => $taskObject->getTaskUid(),
                 'table' => $taskObject->table,
                 'index' => $taskObject->index,
+                'disabled' => $taskObject->isDisabled(),
                 // Format date as needed for display
                 'nextexecution' => date($displayFormat, $taskObject->getExecutionTime()),
                 'interval' => $interval,

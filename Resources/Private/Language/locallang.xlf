@@ -135,6 +135,9 @@
 			<trans-unit id="no_full_autosync" xml:space="preserve">
 				<source>It is possible to enable the automatic synchronization of all tables with an external synchronization configuration. Configurations will be handled in order of decreasing priority. It is currently not activated.</source>
 			</trans-unit>
+			<trans-unit id="disabled_full_autosync" xml:space="preserve">
+				<source>A Scheduler task exists for the automatic synchronization of all tables but it has been disabled. Only an administrator can enable it again.</source>
+			</trans-unit>
 			<trans-unit id="next_full_autosync" xml:space="preserve">
 				<source>The automatic synchronization of all tables is activated (frequency: %1$s). The next run will take place on %2$s.</source>
 			</trans-unit>
@@ -170,6 +173,9 @@
 			</trans-unit>
 			<trans-unit id="no_autosync" xml:space="preserve">
 				<source>The automatic synchronization is not yet enabled.</source>
+			</trans-unit>
+			<trans-unit id="disabled_autosync" xml:space="preserve">
+				<source>A Scheduler task exists but has been disabled. Only an administrator can enable it again.</source>
 			</trans-unit>
 			<trans-unit id="next_autosync" xml:space="preserve">
 				<source>Activated (frequency: %1$s). The next run will take place on %2$s.</source>

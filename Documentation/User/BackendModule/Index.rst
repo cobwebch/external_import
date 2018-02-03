@@ -92,6 +92,14 @@ a frequency, a task group and a start date (date of first execution;
 leave empty for immediate activation). The frequency can be entered
 as a number of seconds or using the same syntax as for cron jobs.
 
+.. note::
+
+   If a Scheduler task exists but has been disabled, it cannot be enabled
+   again from the External Import backend module. It is considered that an
+   administrator had a good reason to disable that task and it is up to that
+   person to enable it again.
+
+
 .. figure:: ../../Images/AutomationDialog.png
 	:alt: Automation input form
 

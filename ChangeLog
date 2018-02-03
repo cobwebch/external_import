@@ -1,3 +1,7 @@
+2018-02-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added handling of disabled Scheduler tasks, resolves #54
+
 2018-01-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected handling of moved records, resolves #32

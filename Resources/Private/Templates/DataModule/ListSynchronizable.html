@@ -14,9 +14,16 @@
 				<f:be.infobox title="{f:translate(id: 'full_autosync')}" state="-2" disableIcon="true">
 					<f:if condition="{fullSynchronizationTask}">
 						<f:then>
-							<p><f:translate id="next_full_autosync" arguments="{0: fullSynchronizationTask.frequencyText, 1: fullSynchronizationTask.nextexecution}" /></p>
-							<f:render partial="DataModule/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid}" />
-							<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid}" />
+							<f:if condition="{fullSynchronizationTask.disabled}">
+								<f:then>
+									<p><f:translate id="disabled_full_autosync" /></p>
+								</f:then>
+								<f:else>
+									<p><f:translate id="next_full_autosync" arguments="{0: fullSynchronizationTask.frequencyText, 1: fullSynchronizationTask.nextexecution}" /></p>
+									<f:render partial="DataModule/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid}" />
+									<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid}" />
+								</f:else>
+							</f:if>
 						</f:then>
 						<f:else>
 							<p><f:translate id="no_full_autosync" /></p>
@@ -82,7 +89,14 @@
 							<td>
 								<f:if condition="{configuration.automated}">
 									<f:then>
-										<f:translate id="next_autosync" arguments="{0: configuration.task.frequencyText, 1: configuration.task.nextexecution}" />
+										<f:if condition="{configuration.task.disabled}">
+											<f:then>
+												<f:translate id="disabled_autosync" />
+											</f:then>
+											<f:else>
+												<f:translate id="next_autosync" arguments="{0: configuration.task.frequencyText, 1: configuration.task.nextexecution}" />
+											</f:else>
+										</f:if>
 									</f:then>
 									<f:else>
 										<f:translate id="no_autosync" />
@@ -92,17 +106,26 @@
 							<td class="tx_externalimport_actions">
 								<f:if condition="{configuration.writeAccess}">
 									<f:then>
-										<div class="btn-group">
 											<f:if condition="{configuration.automated}">
 												<f:then>
-													<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
-													<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
+													<f:if condition="{configuration.task.disabled}">
+														<f:then>
+															<span class="label label-default">disabled</span>
+														</f:then>
+														<f:else>
+															<div class="btn-group">
+																<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
+																<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
+															</div>
+														</f:else>
+													</f:if>
 												</f:then>
 												<f:else>
-													<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
+													<div class="btn-group">
+														<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
+													</div>
 												</f:else>
 											</f:if>
-										</div>
 									</f:then>
 									<f:else>&nbsp;</f:else>
 								</f:if>
