@@ -592,7 +592,7 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importUpdatedProductsWithImporterMovedProducts()
     {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
+        $this->importDataSet(__DIR__ . '/Fixtures/ExtraStoragePage.xml');
         $this->subject->setForcedStoragePid(1);
 
         // First import base products

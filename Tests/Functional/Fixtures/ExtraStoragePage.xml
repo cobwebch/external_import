@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+	<!-- Storage page for imported data -->
+	<pages>
+		<uid>1</uid>
+		<pid>0</pid>
+		<title>External import storage</title>
+		<doktype>254</doktype>
+	</pages>
+	<!-- Extra page for testing moving of records -->
+	<pages>
+		<uid>2</uid>
+		<pid>0</pid>
+		<title>Additional import storage</title>
+		<doktype>254</doktype>
+		<!-- This refers to a "product page" from externalimport_test see EXT:externalimport_test/Resources/Private/ImportData/Test/ProductPages.csv -->
+		<product_sku>002</product_sku>
+	</pages>
+</dataset>
