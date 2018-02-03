@@ -113,10 +113,12 @@ class DataModuleController extends ActionController
             if ($view instanceof BackendTemplateView) {
                 parent::initializeView($view);
             }
-            $view->getModuleTemplate()->getPageRenderer()->addCssFile(
+            $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
+            $pageRenderer->addCssFile(
                     ExtensionManagementUtility::extRelPath('external_import') . 'Resources/Public/StyleSheet/ExternalImport.css'
             );
-            $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
+            $pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
+            $pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
 
             // Evaluate write access on all tables
             $globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();

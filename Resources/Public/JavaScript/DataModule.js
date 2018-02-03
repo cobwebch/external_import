@@ -17,9 +17,10 @@
  */
 define(['jquery',
 		'TYPO3/CMS/Backend/Modal',
+		'TYPO3/CMS/Backend/Notification',
 		'datatables',
 		'TYPO3/CMS/Backend/jquery.clearable'
-	   ], function($, Modal) {
+	   ], function($, Modal, Notification) {
 	'use strict';
 
 	var ExternalImportDataModule = {
@@ -175,6 +176,18 @@ define(['jquery',
 	};
 
 	/**
+	 * Initializes actions on some buttons.
+	 *
+	 * @param tableView
+	 */
+	ExternalImportDataModule.initializeActions = function(tableView) {
+		// Clicking the sync button should display a message warning not to leave the window
+		tableView.find('.sync-button').on('click', function () {
+			Notification.info(TYPO3.lang.syncRunning, TYPO3.lang.doNotLeaveWindow);
+		});
+	};
+
+	/**
 	 * Initialize this module
 	 */
 	$(function() {
@@ -187,6 +200,7 @@ define(['jquery',
 				ExternalImportDataModule.buildTableForNonSynchronizableList(tableView);
 			} else {
 				ExternalImportDataModule.buildTableForSynchronizableList(tableView);
+				ExternalImportDataModule.initializeActions(tableView);
 			}
 		}
 		if (detailView.length) {
