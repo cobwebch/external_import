@@ -37,7 +37,7 @@ However there are some fundamental concepts to understand
 to be able to use those features in an optimal way.
 
 External Import saves the imported data using the
-:class:`\\TYPO3\\CMS\\Core\\DataHandling\\DataHandler` class
+:php:`\TYPO3\CMS\Core\DataHandling\DataHandler` class
 This implies that the data is
 arranged in a particular structure that is later transformed
 into SQL statement by the TYPO3 CMS Core, but not by

@@ -41,7 +41,7 @@ processParameters
 
   The hook receives the parameters array as the first argument and a
   reference to the current configuration object (an instance of
-  class :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Configuration`)
+  class :php:`\Cobweb\ExternalImport\Domain\Model\Configuration`)
   as second argument. It is expected to return the full parameters
   array, even if not modified.
 
@@ -56,7 +56,7 @@ preprocessRawRecordset
   the data just after it was fetched from the remote source, but already
   transformed into a PHP array, no matter what the original format. The
   hook receives the full recordset and a back-reference to the calling
-  object (an instance of class :class:`\\Cobweb\\ExternalImport\\Importer`) as
+  object (an instance of class :php:`\Cobweb\ExternalImport\Importer`) as
   parameters. It is expected to return a full recordset too.
 
   .. note::
@@ -71,7 +71,7 @@ validateRawRecordset
   (it has only been through "preprocessRawRecordset") and decide whether
   to continue the import or not. The hook receives the full recordset
   and a back-reference to the calling object (an instance of class
-  :class:`\\Cobweb\\ExternalImport\\Importer`) as parameters. It is expected
+  :php:`\Cobweb\ExternalImport\Importer`) as parameters. It is expected
   to return a boolean, true if the import may continue, false if it must
   be aborted. Note the following: if the minimum number of records
   condition was not matched, the hooks will not be called at all. Import
@@ -91,7 +91,7 @@ preprocessRecordset
   after the transformation step, so just before it is stored to the
   database. The hook receives the full recordset and a back-reference to
   the calling object (an instance of class
-  :class:`\\Cobweb\\ExternalImport\\Importer`) as parameters. It is expected
+  :php:`\Cobweb\ExternalImport\Importer`) as parameters. It is expected
   to return a full recordset too.
 
   .. note::
@@ -105,7 +105,7 @@ updatePreProcess
   before it is updated in the database. The hook is called for each
   record that has to be updated. The hook receives the complete record
   and a back-reference to the calling object (an instance of class
-  :class:`\\Cobweb\\ExternalImport\\Importer`) as parameters. It is expected
+  :php:`\Cobweb\ExternalImport\Importer`) as parameters. It is expected
   to return the complete record.
 
 insertPreProcess
@@ -117,7 +117,7 @@ deletePreProcess
   records that will be deleted. As a first parameter it receives a list
   of primary key, corresponding to the records set for deletion. The
   second parameter is a reference to the calling object (again, an
-  instance of class :class:`\\Cobweb\\ExternalImport\\Importer`). The method invoked is
+  instance of class :php:`\Cobweb\ExternalImport\Importer`). The method invoked is
   expected to return a list of primary keys too.
 
 datamapPostProcess
@@ -126,7 +126,7 @@ datamapPostProcess
   up operation. It receives as parameters the name of the affected
   table, the list of records keyed to their uid (including the new uid's
   for the new records) and a back-reference to the calling object (an
-  instance of class :class:`\\Cobweb\\ExternalImport\\Importer`). Each record contains
+  instance of class :php:`\Cobweb\ExternalImport\Importer`). Each record contains
   an additional field called :code:`tx_externalimport:status` which contains
   either "insert" or "update" depending on what operation was performed
   on the record.
@@ -136,4 +136,4 @@ cmdmapPostProcess
   been deleted using TCEmain. It receives as parameters the name of the
   affected table, the list of uid's of the deleted records and a back-
   reference to the calling object (an instance of class
-  :class:`\\Cobweb\\ExternalImport\\Importer`).
+  :php:`\Cobweb\ExternalImport\Importer`).

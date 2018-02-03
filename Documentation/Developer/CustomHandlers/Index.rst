@@ -18,13 +18,13 @@ as a custom data handler:
 is a class name.
 
 The class itself **must** implement the
-:class:`\\Cobweb\\ExternalImport\\DataHandlerInterface` interface, which contains only
+:php:`\Cobweb\ExternalImport\DataHandlerInterface` interface, which contains only
 the :code:`handleData()` method. This method will receive two
 arguments:
 
 - an array containing the raw data returned by the connector service
 
-- a reference to the calling :class:`\\Cobweb\\ExternalImport\\Importer` object
+- a reference to the calling :php:`\Cobweb\ExternalImport\Importer` object
 
 The method is expected to return a simple PHP array, with indexed
 entries, like the standard methods (:code:`\Cobweb\ExternalImport\Importer::handleArray()` and

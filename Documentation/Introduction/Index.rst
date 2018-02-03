@@ -49,8 +49,8 @@ https://github.com/fsuter/externalimport_test
 
    In this manual it is often referred to "TCEmain". This the storage
    engine of TYPO3 CMS. It is fully described in :ref:`Core APIs <t3api:introduction>`.
-   It used to correspond to class :class:`t3lib_TCEmain`. Since
-   TYPO3 CMS 6.0, it corresponds to class :class:`\\TYPO3\\CMS\\Core\\DataHandling\\DataHandler`.
+   It used to correspond to class :php:`t3lib_TCEmain`. Since
+   TYPO3 CMS 6.0, it corresponds to class :php:`\TYPO3\CMS\Core\DataHandling\DataHandler`.
 
 
 .. _suport:

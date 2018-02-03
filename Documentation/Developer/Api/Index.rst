@@ -22,12 +22,12 @@ and storing features.
 It is very simple to use this feature. You just need
 to assemble data in a format that External Import can understand (XML structure or
 PHP array) and call the appropriate method. All you need is an
-instance of class :class:`\\Cobweb\\ExternalImport\\Importer` and a single call.
+instance of class :php:`\Cobweb\ExternalImport\Importer` and a single call.
 
 .. warning::
 
-   Since version 4.0.0, the :class:`\\Cobweb\\ExternalImport\\Importer` class must
-   be instantiated using Extbase's :class:`\\TYPO3\\CMS\\Extbase\\Object\\ObjectManager`
+   Since version 4.0.0, the :php:`\Cobweb\ExternalImport\Importer` class must
+   be instantiated using Extbase's :php:`\TYPO3\CMS\Extbase\Object\ObjectManager`
    due to its usage of dependency injection.
 
 
@@ -57,7 +57,7 @@ Data Model
 """"""""""
 
 The data that goes through the import process is encapsulated in the
-:class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Data` class. This class contains
+:php:`\Cobweb\ExternalImport\Domain\Model\Data` class. This class contains
 two member variables:
 
 rawData
@@ -77,7 +77,7 @@ Configuration Model
 """""""""""""""""""
 
 Whenever an import is run, the corresponding TCA configuration is loaded
-into an instance of the :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Configuration` class.
+into an instance of the :php:`\Cobweb\ExternalImport\Domain\Model\Configuration` class.
 The main member variables are:
 
 table
@@ -117,7 +117,7 @@ There are getters and setters for each of these.
 The Importer class
 """"""""""""""""""
 
-Beyond the :code:`import()` method mentioned above the :class:`\\Cobweb\\ExternalImport\\Importer` class
+Beyond the :code:`import()` method mentioned above the :php:`\Cobweb\ExternalImport\Importer` class
 also makes a number of internal elements available via getters:
 
 getExtensionConfiguration
@@ -129,7 +129,7 @@ getExternalConfiguration
 and a few more which are not as significant and can be explored by
 anyone interested straight in the source code.
 
-For reporting, the :class:`\\Cobweb\\ExternalImport\\Importer` class also provides
+For reporting, the :php:`\Cobweb\ExternalImport\Importer` class also provides
 the :code:`addMessage()` method which takes as arguments a message and a severity
-(using the constants of the :class:`\\TYPO3\\CMS\\Core\\Messaging\\AbstractMessage`
+(using the constants of the :php:`\TYPO3\CMS\Core\Messaging\AbstractMessage`
 class).

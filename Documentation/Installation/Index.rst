@@ -34,10 +34,10 @@ Upgrade to 4.0.0
 Importer API changes
 ~~~~~~~~~~~~~~~~~~~~
 
-The External Import configuration is now fully centralized in a :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Configuration`
+The External Import configuration is now fully centralized in a :php:`\Cobweb\ExternalImport\Domain\Model\Configuration`
 object. Every time you need some aspect of the configuration, you should get it via the instance
 of this class rather than through any other mean. The most current use case was getting the
-name of the current table and index from the :class:`\\Cobweb\\ExternalImport\\Importer` class,
+name of the current table and index from the :php:`\Cobweb\ExternalImport\Importer` class,
 using :code:`Importer::getTableName()` and :code:`Importer::getIndex()`. Such methods
 were deprecated and should not be used anymore. Use instead:
 
@@ -59,7 +59,7 @@ for a satisfying reporting. Instead a loop should be done on all configurations 
 Other deprecated methods are :code:`Importer::getColumnIndex()` and :code:`Importer::getExternalConfig()`.
 
 The :code:`Importer::getExistingUids()` method was moved to a new class called
-:class:`\\Cobweb\\ExternalImport\\Domain\\Repository\\UidRepository` (which is a Singleton).
+:php:`\Cobweb\ExternalImport\Domain\Repository\UidRepository` (which is a Singleton).
 
 
 .. _installation-upgrade-400-transformation-properties:
@@ -144,11 +144,11 @@ Breaking changes
 ~~~~~~~~~~~~~~~~
 
 While all hooks were preserved as is, in the sense that they still receive a back-reference
-to the :class:`\\Cobweb\\ExternalImport\\Importer` object, the :code:`processParameters`
+to the :php:`\Cobweb\ExternalImport\Importer` object, the :code:`processParameters`
 hook was modified due to its particular usage (it is called in the backend module,
 so that processed parameters can be viewed when checking the configuration).
-It now receives a reference to the :class:`\\Cobweb\\ExternalImport\\Domain\\Model\\Configuration`
-object and not to the :class:`\\Cobweb\\ExternalImport\\Importer` object anymore.
+It now receives a reference to the :php:`\Cobweb\ExternalImport\Domain\Model\Configuration`
+object and not to the :php:`\Cobweb\ExternalImport\Importer` object anymore.
 Please update your hooks accordingly.
 
 
@@ -161,8 +161,8 @@ The "excludedOperations" column configuration, which was deprecated since
 version 2.0.0, was entirely removed. The same goes for the "mappings.uid_foreign"
 configuration.
 
-More importantly the Scheduler task was renamed from :class:`tx_externalimport_autosync_scheduler_Task`
-to :class:`\\Cobweb\\ExternalImport\\Task\\AutomatedSyncTask`. As such, existing
+More importantly the Scheduler task was renamed from :php:`tx_externalimport_autosync_scheduler_Task`
+to :php:`\Cobweb\ExternalImport\Task\AutomatedSyncTask`. As such, existing
 Scheduler tasks need to be updated. An upgrade wizard is provided in the
 Install Tool. It will automatically migrate existing old tasks.
 
