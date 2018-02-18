@@ -1,3 +1,7 @@
+2018-02-18 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Made sync warning sticky, resolves #55
+
 2018-02-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added handling of disabled Scheduler tasks, resolves #54

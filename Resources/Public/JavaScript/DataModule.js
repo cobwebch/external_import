@@ -183,7 +183,7 @@ define(['jquery',
 	ExternalImportDataModule.initializeActions = function(tableView) {
 		// Clicking the sync button should display a message warning not to leave the window
 		tableView.find('.sync-button').on('click', function () {
-			Notification.info(TYPO3.lang.syncRunning, TYPO3.lang.doNotLeaveWindow);
+			Notification.info(TYPO3.lang.syncRunning, TYPO3.lang.doNotLeaveWindow, 0);
 		});
 	};
 
