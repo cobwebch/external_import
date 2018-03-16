@@ -54,12 +54,14 @@ class StepUtilityTest extends UnitTestCase
                                 Step\HandleDataStep::class,
                                 Step\CheckPermissionsStep::class,
                                 Step\ValidateConfigurationStep::class,
+                                Step\ValidateConnectorStep::class,
                                 Step\ReadDataStep::class,
                                 Step\HandleDataStep::class,
                                 Step\ValidateDataStep::class,
                                 Step\TransformDataStep::class,
                                 Step\StoreDataStep::class,
-                                Step\ClearCacheStep::class
+                                Step\ClearCacheStep::class,
+                                Step\ConnectorCallbackStep::class
                         ]
                 ],
                 'insert step after transform data' => [
@@ -74,13 +76,15 @@ class StepUtilityTest extends UnitTestCase
                         [
                                 Step\CheckPermissionsStep::class,
                                 Step\ValidateConfigurationStep::class,
+                                Step\ValidateConnectorStep::class,
                                 Step\ReadDataStep::class,
                                 Step\HandleDataStep::class,
                                 Step\ValidateDataStep::class,
                                 Step\TransformDataStep::class,
                                 Step\HandleDataStep::class,
                                 Step\StoreDataStep::class,
-                                Step\ClearCacheStep::class
+                                Step\ClearCacheStep::class,
+                                Step\ConnectorCallbackStep::class
                         ]
                 ],
                 'insert step before validate data step' => [
@@ -106,18 +110,20 @@ class StepUtilityTest extends UnitTestCase
                         // New step configuration
                         [
                                 'class' => Step\HandleDataStep::class,
-                                'position' => 'after:' . Step\ClearCacheStep::class
+                                'position' => 'after:' . Step\ConnectorCallbackStep::class
                         ],
                         // Resulting steps
                         [
                                 Step\CheckPermissionsStep::class,
                                 Step\ValidateConfigurationStep::class,
+                                Step\ValidateConnectorStep::class,
                                 Step\ReadDataStep::class,
                                 Step\HandleDataStep::class,
                                 Step\ValidateDataStep::class,
                                 Step\TransformDataStep::class,
                                 Step\StoreDataStep::class,
                                 Step\ClearCacheStep::class,
+                                Step\ConnectorCallbackStep::class,
                                 Step\HandleDataStep::class
                         ]
                 ]

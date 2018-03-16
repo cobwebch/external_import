@@ -19,16 +19,15 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Creates a link to the given in Web > List view.
  *
  * @package Cobweb\ExternalImport\ViewHelpers
  */
-class PageLinkViewHelper extends AbstractViewHelper implements CompilableInterface
+class PageLinkViewHelper extends AbstractViewHelper
 {
     /**
      * Do not escape output of child nodes.

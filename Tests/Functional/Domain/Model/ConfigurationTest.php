@@ -231,6 +231,9 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      * @dataProvider columnConfigurationProvider
+     * @param array $configuration
+     * @param string $columnName
+     * @param array $processedConfiguration
      */
     public function setColumnConfigurationSetsConfigurationAndSortsTransformations($configuration, $columnName, $processedConfiguration)
     {

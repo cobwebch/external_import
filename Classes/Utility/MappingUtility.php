@@ -14,7 +14,8 @@ namespace Cobweb\ExternalImport\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -187,7 +188,6 @@ class MappingUtility
                 $valueField = $mappingData['valueField'];
             }
             $referenceField = $mappingData['referenceField'];
-            $fields = $referenceField . ', ' . $valueField;
             // Define where clause
             $whereClause = '1 = 1';
             if (!empty($mappingData['whereClause'])) {
@@ -202,21 +202,29 @@ class MappingUtility
                     $whereClause = $mappingData['whereClause'];
                 }
             }
-            $whereClause .= BackendUtility::deleteClause($mappingData['table']);
             // Query the table
-            $databaseConnection = $this->getDatabaseConnection();
-            $res = $databaseConnection->exec_SELECTquery($fields, $mappingData['table'], $whereClause);
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($mappingData['table']);
+            $queryBuilder->getRestrictions()
+                    ->removeAll()
+                    ->add(
+                            GeneralUtility::makeInstance(
+                                    DeletedRestriction::class
+                            )
+                    );
+            $res = $queryBuilder->select($referenceField, $valueField)
+                    ->from($mappingData['table'])
+                    ->where($whereClause)
+                    ->execute();
 
             // Fill hash table
             if ($res) {
-                while ($row = $databaseConnection->sql_fetch_assoc($res)) {
+                while ($row = $res->fetch(\PDO::FETCH_ASSOC)) {
                     // Don't consider records with empty references, as they can't be matched
                     // to external data anyway (but a real zero is acceptable)
                     if (!empty($row[$referenceField]) || $mappingData[$referenceField] === '0' || $mappingData[$referenceField] === 0) {
                         $localMapping[$row[$referenceField]] = $row[$valueField];
                     }
                 }
-                $databaseConnection->sql_free_result($res);
             }
         }
         return $localMapping;
@@ -253,18 +261,6 @@ class MappingUtility
             }
         }
         return $returnValue;
-    }
-
-    /**
-     * Returns the global database connection object.
-     *
-     * // TODO: remove when dropping TYPO3 v7 compatibility
-     *
-     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 
     /**

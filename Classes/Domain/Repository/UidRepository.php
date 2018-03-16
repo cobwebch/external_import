@@ -16,7 +16,10 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class used for retrieving UIDs according to external configuration.
@@ -33,12 +36,12 @@ class UidRepository implements SingletonInterface
     /**
      * @var array List of retrieved UIDs
      */
-    protected $existingUids = null;
+    protected $existingUids;
 
     /**
      * @var array List of current PIDs
      */
-    protected $currentPids = null;
+    protected $currentPids;
 
     /**
      * Sets the Configuration object at run-time.
@@ -71,13 +74,20 @@ class UidRepository implements SingletonInterface
         }
         $where .= BackendUtility::deleteClause($table);
         $referenceUidField = $ctrlConfiguration['referenceUid'];
-        $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-                $referenceUidField . ',uid, pid',
-                $table,
-                $where
-        );
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()
+                ->removeAll()
+                ->add(
+                        GeneralUtility::makeInstance(
+                                DeletedRestriction::class
+                        )
+                );
+        $res = $queryBuilder->select($referenceUidField, 'uid', 'pid')
+                ->from($table)
+                ->where($where)
+                ->execute();
         if ($res) {
-            while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+            while ($row = $res->fetch(\PDO::FETCH_ASSOC)) {
                 // Don't consider records with empty references, as they can't be matched
                 // to external data anyway (but a real zero is acceptable)
                 if (!empty($row[$referenceUidField]) || $row[$referenceUidField] === '0' || $row[$referenceUidField] === 0) {
@@ -85,7 +95,6 @@ class UidRepository implements SingletonInterface
                     $this->currentPids[$row[$referenceUidField]] = $row['pid'];
                 }
             }
-            $GLOBALS['TYPO3_DB']->sql_free_result($res);
         }
     }
 

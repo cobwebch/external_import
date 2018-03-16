@@ -134,7 +134,7 @@ class ReportingUtility
                         new \DateTime('@' . $GLOBALS['EXEC_TIME'])
                 );
                 $logEntry->setCruserId(
-                        (isset($GLOBALS['BE_USER']->user['uid'])) ? $GLOBALS['BE_USER']->user['uid'] : 0
+                        $GLOBALS['BE_USER']->user['uid'] ?? 0
                 );
                 $logEntry->setConfiguration(
                         $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()

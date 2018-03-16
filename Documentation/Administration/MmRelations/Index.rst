@@ -26,8 +26,7 @@ Properties
    ========================= =====================================================
    Property                  Data type
    ========================= =====================================================
-   `additionalFields`_       array
-   `additional\_fields`_      array
+   additionalFields_         array
    mapping_                  :ref:`Mapping configuration <administration-mapping>`
    multiple_                 boolean
    sorting_                  string
@@ -66,12 +65,6 @@ Description
 
 Scope
   Store data
-
-
-additional\_fields
-~~~~~~~~~~~~~~~~~~
-
-(Deprecated) Use :code:`additionalFields` instead.
 
 
 .. _administration-mm-properties-multiple:

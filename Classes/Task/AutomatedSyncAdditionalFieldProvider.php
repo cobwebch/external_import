@@ -78,7 +78,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
                         $code = $tableName . '/' . $index;
                         $priority = $externalConfig['priority'];
                         $selected = '';
-                        if ($taskInfo[self::$fieldName] == $code) {
+                        if ($taskInfo[self::$fieldName] === $code) {
                             $selected = ' selected="selected"';
                         }
                         $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') . ': ' . $tableName;

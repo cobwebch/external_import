@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -15,6 +16,8 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
+use TYPO3\CMS\Core\Database\Connection;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
@@ -100,13 +103,13 @@ class StoreDataStep extends AbstractStep
             // Process MM-relations, if any
             if (array_key_exists('MM', $columnData)) {
                 $mmData = $columnData['MM'];
-                $sortingField = (isset($mmData['sorting'])) ? $mmData['sorting'] : false;
-                $additionalFields = (isset($mmData['additionalFields'])) ? $mmData['additionalFields'] : array();
+                $sortingField = $mmData['sorting'] ?? false;
+                $additionalFields = (isset($mmData['additionalFields'])) ? $mmData['additionalFields'] : [];
                 $hasAdditionalFields = count($additionalFields) > 0;
 
-                $mappings[$columnName] = array();
+                $mappings[$columnName] = [];
                 if ($additionalFields || $mmData['multiple']) {
-                    $fullMappings[$columnName] = array();
+                    $fullMappings[$columnName] = [];
                 }
 
                 // Get foreign mapping for column
@@ -135,7 +138,7 @@ class StoreDataStep extends AbstractStep
                             }
                         }
 
-                    // Then the "strict" matching method to mapping table
+                        // Then the "strict" matching method to mapping table
                     } elseif (isset($foreignMappings[$theRecord[$columnName]])) {
                         $foreignValue = $foreignMappings[$theRecord[$columnName]];
                     }
@@ -143,15 +146,15 @@ class StoreDataStep extends AbstractStep
                     // If a value was found, use it
                     if (isset($foreignValue)) {
                         if (!isset($mappings[$columnName][$externalUid])) {
-                            $mappings[$columnName][$externalUid] = array();
+                            $mappings[$columnName][$externalUid] = [];
                             // Initialise only if necessary
                             if ($hasAdditionalFields || $mmData['multiple']) {
-                                $fullMappings[$columnName][$externalUid] = array();
+                                $fullMappings[$columnName][$externalUid] = [];
                             }
                         }
 
                         // If additional fields are defined, store those values in an intermediate array
-                        $fields = array();
+                        $fields = [];
                         if ($hasAdditionalFields) {
                             foreach ($additionalFields as $localFieldName => $externalFieldName) {
                                 $fields[$localFieldName] = $theRecord[$externalFieldName];
@@ -203,11 +206,11 @@ class StoreDataStep extends AbstractStep
         // Insert or update records depending on existing uids
         $updates = 0;
         $moves = 0;
-        $updatedUids = array();
-        $handledUids = array();
-        $tceData = array($table => array());
-        $tceCommands = array($table => array());
-        $savedAdditionalFields = array();
+        $updatedUids = [];
+        $handledUids = [];
+        $tceData = array($table => []);
+        $tceCommands = array($table => []);
+        $savedAdditionalFields = [];
         // Prepare some data before the loop
         $storagePid = $this->getConfiguration()->getStoragePid();
         $configuredAdditionalFields = $this->getConfiguration()->getAdditionalFields();
@@ -215,7 +218,7 @@ class StoreDataStep extends AbstractStep
         $isUpdateAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'update');
         $isInsertAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'insert');
         foreach ($records as $theRecord) {
-            $localAdditionalFields = array();
+            $localAdditionalFields = [];
             $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
             // Skip handling of already handled records (this can happen with denormalized structures)
             // NOTE: using isset() on index instead of in_array() offers far better performance
@@ -230,7 +233,7 @@ class StoreDataStep extends AbstractStep
                     if (isset($columnMappings[$externalUid])) {
                         $theRecord[$columnName] = implode(',', $columnMappings[$externalUid]);
 
-                    // Make sure not to keep the original value if no mapping was found
+                        // Make sure not to keep the original value if no mapping was found
                     } else {
                         unset($theRecord[$columnName]);
                     }
@@ -390,7 +393,7 @@ class StoreDataStep extends AbstractStep
         }
 
         // Post-processing hook after data was saved
-        $savedData = array();
+        $savedData = [];
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
             foreach ($tceData as $tableRecords) {
                 foreach ($tableRecords as $id => $record) {
@@ -429,8 +432,7 @@ class StoreDataStep extends AbstractStep
             }
         }
         // Clean up
-        unset($tceData);
-        unset($savedData);
+        unset($tceData, $savedData);
 
         // Mark as deleted records with existing uids that were not in the import data anymore
         // (if automatic delete is activated)
@@ -458,7 +460,7 @@ class StoreDataStep extends AbstractStep
             }
             $deletes = count($absentUids);
             if ($deletes > 0) {
-                $tceCommands = array($table => array());
+                $tceCommands = array($table => []);
                 foreach ($absentUids as $id) {
                     $tceCommands[$table][$id] = array('delete' => 1);
                 }
@@ -467,7 +469,7 @@ class StoreDataStep extends AbstractStep
                         0,
                         $tceCommands
                 );
-                $tce->start(array(), $tceCommands);
+                $tce->start([], $tceCommands);
                 $tce->process_cmdmap();
                 // Call a post-processing hook
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
@@ -563,9 +565,13 @@ class StoreDataStep extends AbstractStep
         foreach ($fullMappings as $columnName => $mappingData) {
             $columnTcaConfiguration = $tableTca['columns'][$columnName]['config'];
             $mmTable = $columnTcaConfiguration['MM'];
+            // Prepare connection and query builder for the table
+            $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($mmTable);
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($mmTable);
             // Assemble extra condition if MM_insert_fields or MM_match_fields are defined
-            $additionalWhere = '';
-            $mmAdditionalFields = array();
+            $additionalWheres = [];
+            $additionalWhereTypes = [];
+            $mmAdditionalFields = [];
             // Merge all insert and match fields together
             if (isset($columnTcaConfiguration['MM_insert_fields']) && is_array($columnTcaConfiguration['MM_insert_fields'])) {
                 $mmAdditionalFields = $columnTcaConfiguration['MM_insert_fields'];
@@ -578,7 +584,8 @@ class StoreDataStep extends AbstractStep
             }
             // Assemble a condition with all these fields
             foreach ($mmAdditionalFields as $column => $value) {
-                $additionalWhere .= ' AND ' . $column . ' = ' . $GLOBALS['TYPO3_DB']->fullQuoteStr($value, $mmTable);
+                $additionalWheres[$column] = $value;
+                $additionalWhereTypes[] = Connection::PARAM_STR;
             }
             // Check if column is an opposite field
             if (!empty($columnTcaConfiguration['MM_opposite_field'])) {
@@ -595,9 +602,13 @@ class StoreDataStep extends AbstractStep
                 } else {
                     $referenceField = 'uid_local';
                 }
-                $GLOBALS['TYPO3_DB']->exec_DELETEquery(
+                $conditions = $additionalWheres;
+                $conditions[$referenceField] = (int)$uid;
+                $conditionTypes = $additionalWhereTypes;
+                $conditionTypes[] = Connection::PARAM_INT;
+                $connection->delete(
                         $mmTable,
-                        $referenceField . ' = ' . (int)$uid . $additionalWhere
+                        $conditions
                 );
 
                 // Recreate all MM-relations with additional fields, if any
@@ -621,10 +632,9 @@ class StoreDataStep extends AbstractStep
                     foreach ($mmAdditionalFields as $column => $value) {
                         $fields[$column] = $value;
                     }
-                    $GLOBALS['TYPO3_DB']->exec_INSERTquery(
-                            $mmTable,
-                            $fields
-                    );
+                    $queryBuilder->insert($mmTable)
+                            ->values($fields)
+                            ->execute();
                 }
             }
         }
@@ -643,16 +653,33 @@ class StoreDataStep extends AbstractStep
     {
         if (count($errorLog) > 0) {
             // If there are errors, get these messages from the sys_log table (assuming they are the latest ones)
-            $where = "tablename = '" . $this->getConfiguration()->getTable() . "' AND error > '0'";
-            $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
-                    '*',
-                    'sys_log',
-                    $where, '',
-                    'tstamp DESC',
-                    count($errorLog)
-            );
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_log');
+            $res = $queryBuilder->select('*')
+                    ->from('sys_log')
+                    ->where(
+                            $queryBuilder->expr()->eq(
+                                    'tablename',
+                                    $queryBuilder->createNamedParameter(
+                                            $this->getConfiguration()->getTable()
+                                    )
+                            )
+                    )
+                    ->andWhere(
+                            $queryBuilder->expr()->gt(
+                                    'error',
+                                    0
+                            )
+                    )
+                    ->orderBy(
+                            'tstamp',
+                            'DESC'
+                    )
+                    ->setMaxResults(
+                            count($errorLog)
+                    )
+                    ->execute();
             if ($res) {
-                while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+                while ($row = $res->fetch(\PDO::FETCH_ASSOC)) {
                     // Check if there's a label for the message
                     $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
                     $label = LocalizationUtility::translate(
@@ -685,7 +712,6 @@ class StoreDataStep extends AbstractStep
                             3
                     );
                 }
-                $GLOBALS['TYPO3_DB']->sql_free_result($res);
             }
             // Add a warning that number of operations reported may not be accurate
             $this->importer->addMessage(
@@ -711,8 +737,8 @@ class StoreDataStep extends AbstractStep
     public function sortPagesData(array $data)
     {
         $originalData = $data;
-        $levelPages = array();
-        $sortedData = array();
+        $levelPages = [];
+        $sortedData = [];
         // Extract pages which don't have a "NEW" pid
         foreach ($data as $id => $fields) {
             if (strpos($fields['pid'], 'NEW') === false) {
@@ -744,8 +770,8 @@ class StoreDataStep extends AbstractStep
      */
     public function extractLevelPages(array $levelPages, array &$data, array &$sortedData)
     {
-        $nextLevelPages = array();
-        $pagesForLevel = array();
+        $nextLevelPages = [];
+        $pagesForLevel = [];
         foreach ($data as $id => $fields) {
             $pid = (strpos($fields['pid'], 'NEW') === 0) ? $fields['pid'] : (int)$fields['pid'];
             if (in_array($pid, $levelPages, true)) {

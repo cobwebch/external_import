@@ -23,8 +23,8 @@ return array(
                         'config' => array(
                                 'readOnly' => true,
                                 'type' => 'input',
-                                'size' => '10',
-                                'max' => '5',
+                                'size' => 10,
+                                'max' => 5,
                                 'eval' => 'int',
                         )
                 ),
@@ -34,7 +34,7 @@ return array(
                         'config' => array(
                                 'readOnly' => true,
                                 'type' => 'input',
-                                'size' => '20',
+                                'size' => 20,
                                 'eval' => 'datetime',
                         )
                 ),

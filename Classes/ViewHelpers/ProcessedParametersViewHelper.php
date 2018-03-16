@@ -15,11 +15,9 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
-use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Processes the connector parameters of an external import configuration
@@ -27,7 +25,7 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
  *
  * @package Cobweb\ExternalImport\ViewHelpers
  */
-class ProcessedParametersViewHelper extends AbstractViewHelper implements CompilableInterface
+class ProcessedParametersViewHelper extends AbstractViewHelper
 {
     /**
      * Do not escape output of child nodes.

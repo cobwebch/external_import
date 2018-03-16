@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+	<pages>
+		<uid>1</uid>
+		<pid>0</pid>
+		<title>Mapping storage 1</title>
+	</pages>
+	<pages>
+		<uid>2</uid>
+		<pid>0</pid>
+		<title>Mapping storage 2</title>
+	</pages>
+	<sys_category>
+		<uid>1</uid>
+		<pid>1</pid>
+		<deleted>0</deleted>
+		<hidden>0</hidden>
+		<title>Category 1</title>
+		<external_key>CAT1</external_key>
+	</sys_category>
+	<sys_category>
+		<uid>2</uid>
+		<pid>2</pid>
+		<deleted>0</deleted>
+		<hidden>1</hidden>
+		<title>Category 2</title>
+		<external_key>CAT2</external_key>
+	</sys_category>
+	<sys_category>
+		<uid>3</uid>
+		<pid>2</pid>
+		<deleted>1</deleted>
+		<hidden>0</hidden>
+		<title>Category 3</title>
+		<external_key>CAT3</external_key>
+	</sys_category>
+</dataset>

@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Domain\Repository;
 
 /*
@@ -16,7 +17,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 
 use Cobweb\ExternalImport\Exception\SchedulerRepositoryException;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -138,17 +139,17 @@ class SchedulerRepository implements SingletonInterface
     public function fetchAllGroups()
     {
         $groups = array(
-            0 => ''
+                0 => ''
         );
         if (ExtensionManagementUtility::isLoaded('scheduler')) {
             try {
-                $rows = $this->getDatabaseConnection()->exec_SELECTgetRows(
-                        'uid, groupName',
-                        'tx_scheduler_task_group',
-                        '1 = 1' . BackendUtility::deleteClause('tx_scheduler_task_group') . BackendUtility::BEenableFields('tx_scheduler_task_group'),
-                        '',
-                        'groupName'
-                );
+                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+                        ->getQueryBuilderForTable('tx_scheduler_task_group');
+                $rows = $queryBuilder->select('uid', 'groupName')
+                        ->from('tx_scheduler_task_group')
+                        ->orderBy('groupName')
+                        ->execute()
+                        ->fetchAll(\PDO::FETCH_ASSOC);
                 foreach ($rows as $row) {
                     $groups[$row['uid']] = $row['groupName'];
                 }
@@ -184,14 +185,15 @@ class SchedulerRepository implements SingletonInterface
                 'croncmd' => $cronCommand,
                 'frequency' => ($cronCommand !== '') ? $cronCommand : $interval,
                 'frequencyText' => ($cronCommand !== '') ? $cronCommand : LocalizationUtility::translate(
-                                        'number_of_seconds',
-                                        'external_import',
-                                        array($interval)
-                                ),
+                        'number_of_seconds',
+                        'external_import',
+                        array($interval)
+                ),
                 'group' => $taskObject->getTaskGroup(),
                 // Format date and time as needed for form input
                 'startTimestamp' => $startTimestamp,
-                'startDate' => (empty($startTimestamp)) ? '' : date($editFormat, $taskObject->getExecution()->getStart())
+                'startDate' => (empty($startTimestamp)) ? '' : date($editFormat,
+                        $taskObject->getExecution()->getStart())
         );
         return $taskInformation;
     }
@@ -297,12 +299,12 @@ class SchedulerRepository implements SingletonInterface
     {
         // Assemble base data
         $taskData = array(
-            'uid' => (int)$uid,
-            'table' => $table,
-            'index' => $index,
-            'group' => (int)$group,
-            'interval' => 0,
-            'croncmd' => ''
+                'uid' => (int)$uid,
+                'table' => $table,
+                'index' => $index,
+                'group' => (int)$group,
+                'interval' => 0,
+                'croncmd' => ''
         );
         if (isset($startDate)) {
             $taskData['start'] = $startDate->format('U');
@@ -312,8 +314,7 @@ class SchedulerRepository implements SingletonInterface
         try {
             NormalizeCommand::normalize($frequency);
             $taskData['croncmd'] = $frequency;
-        }
-        // If the cron command was invalid, we may still have a valid frequency in seconds
+        } // If the cron command was invalid, we may still have a valid frequency in seconds
         catch (\Exception $e) {
             // Check if the frequency is a valid number
             // If yes, assume it is a frequency in seconds
@@ -322,15 +323,5 @@ class SchedulerRepository implements SingletonInterface
             }
         }
         return $taskData;
-    }
-
-    /**
-     * Returns the global database connection object.
-     *
-     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected function getDatabaseConnection()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 }

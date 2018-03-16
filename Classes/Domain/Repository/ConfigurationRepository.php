@@ -37,41 +37,9 @@ class ConfigurationRepository
     protected $extensionConfiguration = array();
 
     /**
-     * @var int Number of deprecated column properties
-     */
-    protected $oldColumnProperties = 0;
-
-    /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
      */
     protected $objectManager;
-
-    /**
-     * @var array List of renamed properties and their new name, for the "ctrl" part of the configuration
-     */
-    static public $renamedControlProperties = array(
-            'additional_fields' => 'additionalFields',
-            'reference_uid' => 'referenceUid',
-            'where_clause' => 'whereClause'
-    );
-
-    /**
-     * @var array List of renamed mapping properties. Will be removed after the deprecation period.
-     */
-    static public $renamedMappingProperties = array(
-            'match_method' => 'matchMethod',
-            'match_symmetric' => 'matchSymmetric',
-            'reference_field' => 'referenceField',
-            'value_field' => 'valueField',
-            'where_clause' => 'whereClause'
-    );
-
-    /**
-     * @var array List of renamed MM properties. Will be removed after the deprecation period.
-     */
-    static public $renamedMMProperties = array(
-            'additional_fields' => 'additionalFields'
-    );
 
     public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager)
     {
@@ -101,24 +69,6 @@ class ConfigurationRepository
     }
 
     /**
-     * Returns the "ctrl" part of all external import configurations for the given table.
-     *
-     * @param string $table Name of the table
-     * @return array The relevant TCA configurations
-     * @deprecated This method is deprecated without replacement. Do not use it anymore. It will be removed in version 4.1.0.
-     */
-    public function findByTable($table)
-    {
-        $configurations = array();
-        if (isset($GLOBALS['TCA'][$table]['ctrl']['external'])) {
-            foreach ($GLOBALS['TCA'][$table]['ctrl']['external'] as $index => $externalCtrlConfiguration) {
-                $configurations[$index] = $this->processCtrlConfiguration($externalCtrlConfiguration);
-            }
-        }
-        return $configurations;
-    }
-
-    /**
      * Returns the columns part of the external import configuration for the given table and index.
      *
      * @param string $table Name of the table
@@ -137,7 +87,7 @@ class ConfigurationRepository
                 }
             }
         }
-        return $this->processColumnConfiguration($columns);
+        return $columns;
     }
 
     /**
@@ -223,51 +173,47 @@ class ConfigurationRepository
 
         // Loop on all tables and extract external_import-related information from them
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-            // Check if table has external info
-            if (isset($sections['ctrl']['external'])) {
-                // Check if user has read rights on it
-                // If not, the table is skipped entirely
-                if ($GLOBALS['BE_USER']->check('tables_select', $tableName)) {
-                    $externalData = $sections['ctrl']['external'];
-                    $hasWriteAccess = $GLOBALS['BE_USER']->check('tables_modify', $tableName);
-                    foreach ($externalData as $index => $externalConfig) {
-                        // Synchronizable tables have a connector configuration
-                        // Non-synchronizable tables don't
-                        if (
-                                ($isSynchronizable && !empty($externalConfig['connector'])) ||
-                                (!$isSynchronizable && empty($externalConfig['connector']))
-                        ) {
-                            // If priority is not defined, set to very low
-                            // NOTE: the priority doesn't matter for non-synchronizable tables
-                            $priority = Importer::DEFAULT_PRIORITY;
-                            $description = '';
-                            if (isset($externalConfig['priority'])) {
-                                $priority = $externalConfig['priority'];
-                            }
-                            if (isset($externalConfig['description'])) {
-                                $description = $GLOBALS['LANG']->sL($externalConfig['description']);
-                            }
-                            // Store the base configuration
-                            $tableConfiguration = array(
-                                    'id' => $tableName . '-' . $index,
-                                    'table' => $tableName,
-                                    'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']),
-                                    'index' => $index,
-                                    'priority' => (int)$priority,
-                                    'description' => htmlspecialchars($description),
-                                    'writeAccess' => $hasWriteAccess
-                            );
-                            // Add Scheduler task information, if any
-                            $taskKey = $tableName . '/' . $index;
-                            if (array_key_exists($taskKey, $tasks)) {
-                                $tableConfiguration['automated'] = 1;
-                                $tableConfiguration['task'] = $tasks[$taskKey];
-                            } else {
-                                $tableConfiguration['automated'] = 0;
-                                $tableConfiguration['task'] = null;
-                            }
-                            $configurations[] = $tableConfiguration;
+            // Check if table has external info and user has at least read-access to it
+            if (isset($sections['ctrl']['external']) && $GLOBALS['BE_USER']->check('tables_select', $tableName)) {
+                $externalData = $sections['ctrl']['external'];
+                $hasWriteAccess = $GLOBALS['BE_USER']->check('tables_modify', $tableName);
+                foreach ($externalData as $index => $externalConfig) {
+                    // Synchronizable tables have a connector configuration
+                    // Non-synchronizable tables don't
+                    if (
+                            ($isSynchronizable && !empty($externalConfig['connector'])) ||
+                            (!$isSynchronizable && empty($externalConfig['connector']))
+                    ) {
+                        // If priority is not defined, set to very low
+                        // NOTE: the priority doesn't matter for non-synchronizable tables
+                        $priority = Importer::DEFAULT_PRIORITY;
+                        $description = '';
+                        if (isset($externalConfig['priority'])) {
+                            $priority = $externalConfig['priority'];
                         }
+                        if (isset($externalConfig['description'])) {
+                            $description = $GLOBALS['LANG']->sL($externalConfig['description']);
+                        }
+                        // Store the base configuration
+                        $tableConfiguration = [
+                                'id' => $tableName . '-' . $index,
+                                'table' => $tableName,
+                                'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']),
+                                'index' => $index,
+                                'priority' => (int)$priority,
+                                'description' => htmlspecialchars($description),
+                                'writeAccess' => $hasWriteAccess
+                        ];
+                        // Add Scheduler task information, if any
+                        $taskKey = $tableName . '/' . $index;
+                        if (array_key_exists($taskKey, $tasks)) {
+                            $tableConfiguration['automated'] = 1;
+                            $tableConfiguration['task'] = $tasks[$taskKey];
+                        } else {
+                            $tableConfiguration['automated'] = 0;
+                            $tableConfiguration['task'] = null;
+                        }
+                        $configurations[] = $tableConfiguration;
                     }
                 }
             }
@@ -336,79 +282,6 @@ class ConfigurationRepository
         }
         $configuration['pid'] = $pid;
 
-        // Map old properties to new ones, to preserve backwards compatibility
-        $oldPropertiesCount = 0;
-        foreach (self::$renamedControlProperties as $oldName => $newName) {
-            if (array_key_exists($oldName, $configuration)) {
-                $configuration[$newName] = $configuration[$oldName];
-                $oldPropertiesCount++;
-            }
-        }
-        // If at least one old property was found, add an entry to the deprecation log
-        if ($oldPropertiesCount > 0) {
-            GeneralUtility::deprecationLog('Some old External Import properties were found in your configurations. Please use the Data Import module to check out which ones.');
-        }
-
-        return $configuration;
-    }
-
-    /**
-     * Processes the column configurations for deprecated properties.
-     *
-     * @return array
-     */
-    protected function processColumnConfiguration($columns)
-    {
-        foreach ($columns as $name => $configuration) {
-            if (isset($configuration['mapping'])) {
-                $updatedConfiguration = $this->renameDeprecatedProperties($configuration['mapping']);
-                $columns[$name]['mapping'] = $updatedConfiguration;
-            }
-            if (isset($configuration['transformations']) && is_array($configuration['transformations'])) {
-                foreach ($configuration['transformations'] as $index => $transformation) {
-                    if (array_key_exists('mapping', $transformation)) {
-                        $updatedConfiguration = $this->renameDeprecatedProperties($transformation['mapping']);
-                        $columns[$name]['transformations'][$index]['mapping'] = $updatedConfiguration;
-                    }
-                }
-            }
-            if (isset($configuration['MM']) && is_array($configuration['MM'])) {
-                $mmConfiguration = $configuration['MM'];
-                foreach ($mmConfiguration as $property => $value) {
-                    if ($property === 'mapping') {
-                        $updatedConfiguration = $this->renameDeprecatedProperties($value);
-                        $mmConfiguration['mapping'] = $updatedConfiguration;
-                    } else {
-                        if (array_key_exists($property, self::$renamedMMProperties)) {
-                            $mmConfiguration[self::$renamedMMProperties[$property]] = $mmConfiguration[$property];
-                            $this->oldColumnProperties++;
-                        }
-                    }
-                }
-                $columns[$name]['MM'] = $mmConfiguration;
-            }
-        }
-        // If at least one old property was found, add an entry to the deprecation log
-        if ($this->oldColumnProperties > 0) {
-            GeneralUtility::deprecationLog('Some old External Import properties were found in your configurations. Please use the Data Import module to check out which ones.');
-        }
-        return $columns;
-    }
-
-    /**
-     * Processes a given mapping configuration and renames deprecated properties.
-     *
-     * @param array $configuration
-     * @return array
-     */
-    protected function renameDeprecatedProperties($configuration)
-    {
-        foreach ($configuration as $property => $value) {
-            if (array_key_exists($property, self::$renamedMappingProperties)) {
-                $configuration[self::$renamedMappingProperties[$property]] = $value;
-                $this->oldColumnProperties++;
-            }
-        }
         return $configuration;
     }
 

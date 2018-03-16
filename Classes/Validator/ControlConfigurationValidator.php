@@ -16,7 +16,6 @@ namespace Cobweb\ExternalImport\Validator;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
-use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
@@ -70,9 +69,6 @@ class ControlConfigurationValidator
         $this->table = $configuration->getTable();
         $ctrlConfiguration = $configuration->getCtrlConfiguration();
 
-        // Add notices about renamed properties
-        $this->checkForRenamedProperties($ctrlConfiguration);
-
         // Validate all properties on which conditions apply
         $this->validateDataProperty($ctrlConfiguration['data']);
         $this->validateConnectorProperty($ctrlConfiguration['connector']);
@@ -98,36 +94,6 @@ class ControlConfigurationValidator
         $errorResults = $this->results->getForSeverity(AbstractMessage::ERROR);
         $warningResults = $this->results->getForSeverity(AbstractMessage::WARNING);
         return count($errorResults) + count($warningResults) === 0;
-    }
-
-    /**
-     * Checks for usage of old properties and issues notice for each one found.
-     *
-     * @param array $configuration The configuration to check
-     * @return void
-     */
-    public function checkForRenamedProperties($configuration)
-    {
-        foreach (ConfigurationRepository::$renamedControlProperties as $oldName => $newName) {
-            // If the old property name is used, issue a notice about renaming
-            // NOTE: this is done *before* the rest of the validation. If the property value is wrong,
-            // the validation error will override the renaming notice, since there can be only one
-            // validation result per property.
-            if (array_key_exists($oldName, $configuration)) {
-                $this->results->add(
-                        $newName,
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:renamedProperty',
-                                'external_import',
-                                array(
-                                        $oldName,
-                                        $newName
-                                )
-                        ),
-                        AbstractMessage::NOTICE
-                );
-            }
-        }
     }
 
     /**
@@ -308,7 +274,7 @@ class ControlConfigurationValidator
     public function validatePidProperty($property)
     {
         // TCA property rootLevel defaults to 0
-        $rootLevelFlag = isset($GLOBALS['TCA'][$this->table]['ctrl']['rootLevel']) ? $GLOBALS['TCA'][$this->table]['ctrl']['rootLevel'] : 0;
+        $rootLevelFlag = $GLOBALS['TCA'][$this->table]['ctrl']['rootLevel'] ?? 0;
         // If the pid is 0, data will be stored on root page.
         if ($property === 0) {
             // Table is allowed on root page, just issue notice to make sure pid was not forgotten
@@ -432,10 +398,10 @@ class ControlConfigurationValidator
     /**
      * Returns all validation results.
      *
-     * @return array
+     * @return ValidationResult
      */
     public function getResults()
     {
-        return $this->results->getAll();
+        return $this->results;
     }
 }

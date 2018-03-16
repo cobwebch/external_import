@@ -207,7 +207,7 @@ class TransformDataStep extends AbstractStep
             try {
                 $userObject = GeneralUtility::makeInstance($configuration['class']);
                 $methodName = $configuration['method'];
-                $parameters = isset($configuration['params']) ? $configuration['params'] : array();
+                $parameters = $configuration['params'] ?? array();
                 foreach ($records as $index => $record) {
                     $records[$index][$name] = $userObject->$methodName($record, $name, $parameters);
                 }

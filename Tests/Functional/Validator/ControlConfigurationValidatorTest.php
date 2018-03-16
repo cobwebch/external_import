@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Tests\Unit\Validator;
 
 /*
@@ -14,30 +15,34 @@ namespace Cobweb\ExternalImport\Tests\Unit\Validator;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ControlConfigurationValidatorTest extends FunctionalTestCase
 {
-    /**
-     * @var array List of globals to exclude (contain closures which cannot be serialized)
-     */
-    protected $backupGlobalsBlacklist = array('TYPO3_LOADED_EXT', 'TYPO3_CONF_VARS');
 
     /**
      * @var ControlConfigurationValidator
      */
     protected $subject;
 
+    /**
+     * @var ObjectManager
+     */
+    protected $objectManager;
+
     public function setUp()
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(ControlConfigurationValidator::class);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->subject = $this->objectManager->get(ControlConfigurationValidator::class);
     }
 
-    public function validConfigurationProvider()
+    public function validConfigurationProvider(): array
     {
         return array(
                 'Typical configuration for array type' => array(
@@ -67,8 +72,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     {
         self::assertTrue(
                 $this->subject->isValid(
-                        'tt_content',
-                        $configuration
+                        $this->prepareConfigurationObject(
+                                'tt_content',
+                                $configuration
+                        )
                 )
         );
     }
@@ -111,8 +118,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     {
         self::assertFalse(
                 $this->subject->isValid(
-                        'tt_content',
-                        $configuration
+                        $this->prepareConfigurationObject(
+                                'tt_content',
+                                $configuration
+                        )
                 )
         );
     }
@@ -139,10 +148,12 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validateDataPropertyWithInvalidValueRaisesError($configuration)
     {
         $this->subject->isValid(
-                'tt_content',
-                $configuration
+                $this->prepareConfigurationObject(
+                        'tt_content',
+                        $configuration
+                )
         );
-        $result = $this->subject->getResultForProperty('data');
+        $result = $this->subject->getResults()->getForProperty('data');
         self::assertSame(
                 FlashMessage::ERROR,
                 $result['severity']
@@ -155,13 +166,15 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validateConnectorPropertyWithInvalidValueRaisesError()
     {
         $this->subject->isValid(
-                'tt_content',
-                array(
-                    // Some random connector name
-                    'connector' => time()
+                $this->prepareConfigurationObject(
+                        'tt_content',
+                        [
+                            // Some random connector name
+                            'connector' => time()
+                        ]
                 )
         );
-        $result = $this->subject->getResultForProperty('connector');
+        $result = $this->subject->getResults()->getForProperty('connector');
         self::assertSame(
                 FlashMessage::ERROR,
                 $result['severity']
@@ -192,10 +205,12 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validateDataHandlerPropertyWithInvalidValueRaisesNotice($configuration)
     {
         $this->subject->isValid(
-                'tt_content',
-                $configuration
+                $this->prepareConfigurationObject(
+                        'tt_content',
+                        $configuration
+                )
         );
-        $result = $this->subject->getResultForProperty('dataHandler');
+        $result = $this->subject->getResults()->getForProperty('dataHandler');
         self::assertSame(
                 FlashMessage::NOTICE,
                 $result['severity']
@@ -208,12 +223,14 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validateNodetypePropertyForXmlDataWithEmptyValueRaisesError()
     {
         $this->subject->isValid(
-                'tt_content',
-                array(
-                        'data' => 'xml'
+                $this->prepareConfigurationObject(
+                        'tt_content',
+                        [
+                                'data' => 'xml'
+                        ]
                 )
         );
-        $result = $this->subject->getResultForProperty('nodetype');
+        $result = $this->subject->getResults()->getForProperty('nodetype');
         self::assertSame(
                 FlashMessage::ERROR,
                 $result['severity']
@@ -226,10 +243,12 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validateReferenceUidPropertyWithEmptyValueRaisesError()
     {
         $this->subject->isValid(
-                'tt_content',
-                array()
+                $this->prepareConfigurationObject(
+                        'tt_content',
+                        []
+                )
         );
-        $result = $this->subject->getResultForProperty('referenceUid');
+        $result = $this->subject->getResults()->getForProperty('referenceUid');
         self::assertSame(
                 FlashMessage::ERROR,
                 $result['severity']
@@ -242,12 +261,14 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validatePriorityPropertyWithEmptyValueRaisesNotice()
     {
         $this->subject->isValid(
-                'tt_content',
-                array(
-                        'connector' => 'foo'
+                $this->prepareConfigurationObject(
+                        'tt_content',
+                        [
+                                'connector' => 'foo'
+                        ]
                 )
         );
-        $result = $this->subject->getResultForProperty('priority');
+        $result = $this->subject->getResults()->getForProperty('priority');
         self::assertSame(
                 FlashMessage::NOTICE,
                 $result['severity']
@@ -260,14 +281,16 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validatePidPropertyWithEmptyValueForRootTableRaisesNotice()
     {
         $this->subject->isValid(
-                'be_users',
-                array(
-                    // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
-                    // be set to 0 if missing from configuration
-                    'pid' => 0
+                $this->prepareConfigurationObject(
+                        'be_users',
+                        [
+                            // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
+                            // be set to 0 if missing from configuration
+                            'pid' => 0
+                        ]
                 )
         );
-        $result = $this->subject->getResultForProperty('pid');
+        $result = $this->subject->getResults()->getForProperty('pid');
         self::assertSame(
                 FlashMessage::NOTICE,
                 $result['severity']
@@ -309,10 +332,12 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validatePidPropertyWithInvalidValueRaisesError($table, $configuration)
     {
         $this->subject->isValid(
-                $table,
-                $configuration
+                $this->prepareConfigurationObject(
+                        $table,
+                        $configuration
+                )
         );
-        $result = $this->subject->getResultForProperty('pid');
+        $result = $this->subject->getResults()->getForProperty('pid');
         self::assertSame(
                 FlashMessage::ERROR,
                 $result['severity']
@@ -325,12 +350,14 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     public function validateUseColumnIndexPropertyWithInvalidValueRaisesError()
     {
         $this->subject->isValid(
-                'tt_content',
-                array(
-                        'useColumnIndex' => 'foo'
+                $this->prepareConfigurationObject(
+                        'tt_content',
+                        [
+                                'useColumnIndex' => 'foo'
+                        ]
                 )
         );
-        $result = $this->subject->getResultForProperty('useColumnIndex');
+        $result = $this->subject->getResults()->getForProperty('useColumnIndex');
         self::assertSame(
                 FlashMessage::ERROR,
                 $result['severity']
@@ -348,13 +375,13 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         'message' => 'Something went wrong'
                 )
         );
-        $this->subject->addResult(
+        $this->subject->getResults()->add(
                 'foo',
                 $results['foo']['message']
         );
         self::assertSame(
                 $results,
-                $this->subject->getAllResults()
+                $this->subject->getResults()->getAll()
         );
     }
 
@@ -369,11 +396,11 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         'message' => 'Something went wrong'
                 )
         );
-        $this->subject->addResult(
+        $this->subject->getResults()->add(
                 'foo',
                 $results['foo']['message']
         );
-        $resultForProperty = $this->subject->getResultForProperty('foo');
+        $resultForProperty = $this->subject->getResults()->getForProperty('foo');
         self::assertSame(
                 $results['foo'],
                 $resultForProperty
@@ -385,22 +412,37 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      */
     public function addResultForSeverityAddsResultsForSeverity()
     {
-        $results = array(
-                'foo' => array(
+        $results = [
+                'foo' => [
                         'severity' => FlashMessage::WARNING,
                         'message' => 'Something went wrong'
-                )
-        );
-        $this->subject->addResult(
+                ]
+        ];
+        $this->subject->getResults()->add(
                 'foo',
                 $results['foo']['message']
         );
-        $resultForProperty = $this->subject->getResultsForSeverity(FlashMessage::WARNING);
+        $resultForProperty = $this->subject->getResults()->getForSeverity(FlashMessage::WARNING);
         self::assertSame(
-                array(
+                [
                         'foo' => $results['foo']['message']
-                ),
+                ],
                 $resultForProperty
         );
+    }
+
+    /**
+     * Prepares a configuration object with the usual parameters used in this test suite.
+     *
+     * @param string $table
+     * @param array $configuration
+     * @return Configuration
+     */
+    protected function prepareConfigurationObject($table, $configuration)
+    {
+        $configurationObject = $this->objectManager->get(Configuration::class);
+        $configurationObject->setTable($table);
+        $configurationObject->setCtrlConfiguration($configuration);
+        return $configurationObject;
     }
 }

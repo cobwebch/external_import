@@ -114,9 +114,7 @@ class DataModuleController extends ActionController
                 parent::initializeView($view);
             }
             $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
-            $pageRenderer->addCssFile(
-                    ExtensionManagementUtility::extRelPath('external_import') . 'Resources/Public/StyleSheet/ExternalImport.css'
-            );
+            $pageRenderer->addCssFile('EXT:external_import/Resources/Public/StyleSheet/ExternalImport.css');
             $pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
             $pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
 

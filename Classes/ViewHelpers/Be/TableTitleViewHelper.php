@@ -15,11 +15,10 @@ namespace Cobweb\ExternalImport\ViewHelpers\Be;
  */
 
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
-class TableTitleViewHelper extends AbstractViewHelper implements CompilableInterface
+class TableTitleViewHelper extends AbstractViewHelper
 {
     /**
      * Prints out the name of the given table.

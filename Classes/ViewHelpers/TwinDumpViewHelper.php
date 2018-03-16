@@ -15,16 +15,15 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  */
 
 use Cobweb\ExternalImport\Utility\DebugUtility;
-use TYPO3\CMS\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3\CMS\Fluid\Core\ViewHelper\Facets\CompilableInterface;
 
 /**
  * Dumps an array in a formatted way, comparing it with a second, modified array.
  *
  * @package Cobweb\ExternalImport\ViewHelpers
  */
-class TwinDumpViewHelper extends AbstractViewHelper implements CompilableInterface
+class TwinDumpViewHelper extends AbstractViewHelper
 {
     /**
      * Do not escape output of child nodes.

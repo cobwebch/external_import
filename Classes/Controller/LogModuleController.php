@@ -77,9 +77,7 @@ class LogModuleController extends ActionController
         if ($view instanceof BackendTemplateView) {
             parent::initializeView($view);
         }
-        $view->getModuleTemplate()->getPageRenderer()->addCssFile(
-                ExtensionManagementUtility::extRelPath('external_import') . 'Resources/Public/StyleSheet/ExternalImport.css'
-        );
+        $view->getModuleTemplate()->getPageRenderer()->addCssFile('EXT:external_import/Resources/Public/StyleSheet/ExternalImport.css');
         $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/ExternalImport/LogModule');
     }
 

@@ -21,20 +21,15 @@ Properties
    ========================== =============
    Property                   Data type
    ========================== =============
-   `default`_                 mixed
-   `matchMethod`_             string
-   `match\_method`_           string
-   `matchSymmetric`_          boolean
-   `match\_symmetric`_        boolean
-   `multipleValuesSeparator`_ string
-   `referenceField`_          string
-   `reference\_field`_        string
-   `table`_                   string
-   `valueField`_              string
-   `value\_field`_            string
+   default_                   mixed
+   matchMethod_               string
+   matchSymmetric_            boolean
+   multipleValuesSeparator_   string
+   referenceField_            string
+   table_                     string
+   valueField_                string
    valueMap_                  array
-   `whereClause`_             string
-   `where\_clause`_           string
+   whereClause_               string
    ========================== =============
 
 
@@ -68,12 +63,6 @@ Scope
   Transform data
 
 
-reference\_field
-~~~~~~~~~~~~~~~~
-
-(Deprecated) Use :code:`referenceField` instead.
-
-
 .. _administration-mapping-properties-value-field:
 
 valueField
@@ -88,12 +77,6 @@ Description
 
 Scope
   Transform data
-
-
-value\_field
-~~~~~~~~~~~~
-
-(Deprecated) Use :code:`valueField` instead.
 
 
 .. _administration-mapping-properties-where-clause:
@@ -131,12 +114,6 @@ Description
 
 Scope
   Transform data
-
-
-where\_clause
-~~~~~~~~~~~~~
-
-(Deprecated) Use :code:`whereClause` instead.
 
 
 .. _administration-mapping-properties-default:
@@ -255,12 +232,6 @@ Scope
   Transform data
 
 
-match\_method
-~~~~~~~~~~~~~
-
-(Deprecated) Use :code:`matchMethod` instead.
-
-
 .. _administration-mapping-properties-match-symmetric:
 
 matchSymmetric
@@ -278,12 +249,6 @@ Description
 
 Scope
   Transform data
-
-
-match\_symmetric
-~~~~~~~~~~~~~~~~
-
-(Deprecated) Use :code:`matchSymmetric` instead.
 
 
 .. _administration-mapping-example:

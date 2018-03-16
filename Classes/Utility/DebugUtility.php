@@ -22,7 +22,7 @@ class DebugUtility
      * @param array $array Array to display
      * @return string HTML table assembled from array
      */
-    static public function dumpArray($array)
+    public static function dumpArray($array)
     {
         $table = '<table>';
         foreach ($array as $key => $value) {
@@ -40,7 +40,7 @@ class DebugUtility
         $table .= '</table>';
         return $table;
     }
-    
+
     /**
      * Dumps two related PHP arrays to a HTML table.
      *
@@ -52,7 +52,7 @@ class DebugUtility
      * @param array $copyArray Related array
      * @return string HTML table assembled from array
      */
-    static public function dumpTwinArrays($referenceArray, $copyArray)
+    public static function dumpTwinArrays($referenceArray, $copyArray)
     {
         $table = '<table>';
         foreach ($referenceArray as $key => $value) {
@@ -78,5 +78,5 @@ class DebugUtility
         $table .= '</table>';
         return $table;
     }
-    
+
 }

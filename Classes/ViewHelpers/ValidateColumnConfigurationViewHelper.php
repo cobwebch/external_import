@@ -45,7 +45,7 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
         $configurationValidator = $this->objectManager->get(ColumnConfigurationValidator::class);
         $configurationValidator->isValid($configuration, $column);
         $templateVariableContainer = $this->renderingContext->getTemplateVariableContainer();
-        $templateVariableContainer->add($as, $configurationValidator->getResults());
+        $templateVariableContainer->add($as, $configurationValidator->getResults()->getAll());
         $output = $this->renderChildren();
         $templateVariableContainer->remove($as);
         return $output;

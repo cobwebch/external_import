@@ -44,7 +44,7 @@ class ValidateControlConfigurationViewHelper extends AbstractViewHelper
         $configurationValidator = $this->objectManager->get(ControlConfigurationValidator::class);
         $configurationValidator->isValid($configuration);
         $templateVariableContainer = $this->renderingContext->getTemplateVariableContainer();
-        $templateVariableContainer->add($as, $configurationValidator->getResults());
+        $templateVariableContainer->add($as, $configurationValidator->getResults()->getAll());
         $output = $this->renderChildren();
         $templateVariableContainer->remove($as);
         return $output;

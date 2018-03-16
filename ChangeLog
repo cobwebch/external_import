@@ -1,3 +1,7 @@
+2018-03-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Removed all deprecated properties and API, dropped TYPO3 7 compatibility, resolves #57
+
 2018-03-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected extension dependencies, resolves #56

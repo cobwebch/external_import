@@ -31,7 +31,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class Importer
 {
-    const DEFAULT_PRIORITY = 1000;
+    public const DEFAULT_PRIORITY = 1000;
 
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -71,7 +71,7 @@ class Importer
     /**
      * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
      */
-    protected $forcedStoragePid = null;
+    protected $forcedStoragePid;
 
     /**
      * @var array List of temporary keys created on the fly for new records. Used in DataHandler data map.
@@ -81,7 +81,7 @@ class Importer
     /**
      * @var array List of default steps for the synchronize data process
      */
-    const SYNCHRONYZE_DATA_STEPS = array(
+    public const SYNCHRONYZE_DATA_STEPS = array(
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\ValidateConnectorStep::class,
@@ -97,7 +97,7 @@ class Importer
     /**
      * @var array List of default steps for the import data process
      */
-    const IMPORT_DATA_STEPS = array(
+    public const IMPORT_DATA_STEPS = array(
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\HandleDataStep::class,
@@ -184,59 +184,6 @@ class Importer
     }
 
     /**
-     * Synchronises all the external tables, respecting the order of priority.
-     *
-     * @return array List of all messages
-     * @deprecated since 4.0.0, will be removed in the next version. Use synchronize() in own loop instead (see usage in \Cobweb\ExternalImport\Command\ImportCommand::execute() for example).
-     */
-    public function synchronizeAllTables()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        $externalTables = $this->configurationRepository->findOrderedConfigurations();
-
-        $this->debug(
-                LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:sync_all',
-                        'external_import'
-                ),
-                0,
-                $externalTables
-        );
-
-        // Synchronise all tables
-        $allMessages = array();
-        foreach ($externalTables as $tables) {
-            foreach ($tables as $tableData) {
-                $this->messages = array(
-                        FlashMessage::ERROR => array(),
-                        FlashMessage::WARNING => array(),
-                        FlashMessage::OK => array()
-                ); // Reset error messages array
-                $messages = $this->synchronize($tableData['table'], $tableData['index']);
-                $key = $tableData['table'] . '/' . $tableData['index'];
-                $allMessages[$key] = $messages;
-            }
-        }
-
-        // Return compiled array of messages for all imports
-        return $allMessages;
-    }
-
-    /**
-     * Calls on the distant data source and synchronizes the data into the TYPO3 database.
-     *
-     * @param string $table Name of the table to synchronise
-     * @param mixed $index Index of the synchronisation configuration to use
-     * @return array List of error or success messages
-     * @deprecated since 4.0.0, was renamed to synchronize(), will be removed in the next version
-     */
-    public function synchronizeData($table, $index)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->synchronize($table, $index);
-    }
-
-    /**
      * Calls on the distant data source and synchronizes the data into the TYPO3 database.
      *
      * @param string $table Name of the table to synchronise
@@ -308,21 +255,6 @@ class Importer
      * @param integer $index Index of the synchronisation configuration to use
      * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
      * @return array List of error or success messages
-     * @deprecated since 4.0.0, was renamed to import(), will be removed in the next version
-     */
-    public function importData($table, $index, $rawData)
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->import($table, $index, $rawData);
-    }
-
-    /**
-     * Receives raw data from some external source, transforms it and stores it into the TYPO3 database.
-     *
-     * @param string $table Name of the table to import into
-     * @param integer $index Index of the synchronisation configuration to use
-     * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
-     * @return array List of error or success messages
      */
     public function import($table, $index, $rawData)
     {
@@ -384,56 +316,6 @@ class Importer
     }
 
     // Getters and setters
-
-
-    /**
-     * Returns the name of the table being synchronised
-     *
-     * @return string Name of the table
-     * @deprecated since 4.0.0, will be removed in the next major version - use getExternalConfiguration()->getTable() instead
-     */
-    public function getTableName()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->externalConfiguration->getTable();
-    }
-
-    /**
-     * Returns the index of the configuration used in the current synchronisation.
-     *
-     * @return mixed
-     * @deprecated since 4.0.0, will be removed in the next major version - use getExternalConfiguration()->getIndex() instead
-     */
-    public function getIndex()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->externalConfiguration->getIndex();
-    }
-
-    /**
-     * Returns the index of the configuration used for the columns.
-     *
-     * @return mixed
-     * @deprecated since 4.0.0, this method is not used and will be dropped without replacement
-     */
-    public function getColumnIndex()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->externalConfiguration->getIndex();
-    }
-
-    /**
-     * Returns the external configuration found in the ctrl section of the TCA
-     * of the table being synchronised.
-     *
-     * @return \Cobweb\ExternalImport\Domain\Model\Configuration External configuration from the TCA ctrl section
-     * @deprecated since 4.0.0, will be removed in the next major version - use getExternalConfiguration() instead
-     */
-    public function getExternalConfig()
-    {
-        GeneralUtility::logDeprecatedFunction();
-        return $this->externalConfiguration;
-    }
 
     /**
      * Returns the model object containing the whole External Import configuration.
@@ -587,7 +469,7 @@ class Importer
         $report = sprintf($GLOBALS['LANG']->getLL('synchronizeTableX'), $table, $index) . "\n\n";
         foreach ($messages as $type => $messageList) {
             $report .= $GLOBALS['LANG']->getLL('label.' . $type) . "\n";
-            if (count($messageList) == 0) {
+            if (count($messageList) === 0) {
                 $report .= "\t" . $GLOBALS['LANG']->getLL('no.' . $type) . "\n";
             } else {
                 foreach ($messageList as $aMessage) {

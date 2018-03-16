@@ -23,10 +23,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ColumnConfigurationValidatorTest extends FunctionalTestCase
 {
-    /**
-     * @var array List of globals to exclude (contain closures which cannot be serialized)
-     */
-    protected $backupGlobalsBlacklist = array('TYPO3_LOADED_EXT', 'TYPO3_CONF_VARS');
 
     /**
      * @var ColumnConfigurationValidator
@@ -230,7 +226,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 $configuration,
                 'col'
         );
-        $results = $this->subject->getResults();
+        $results = $this->subject->getResults()->getAll();
         self::assertSame(
                 $severity,
                 $results['field']['severity']
