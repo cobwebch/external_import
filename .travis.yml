@@ -5,6 +5,7 @@ php:
 before_script:
   - composer require nimut/testing-framework
   - composer require cobweb/svconnector_feed
+  - composer require cobweb/svconnector_csv
 script:
   - phpunit --colors -c vendor/nimut/testing-framework/res/Configuration/UnitTests.xml Tests/Unit/
   - >
