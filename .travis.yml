@@ -1,1 +1,6 @@
 language: php
+php:
+  - 7.0
+  - 7.1
+script:
+  - phpunit --colors -c .Build/vendor/nimut/testing-framework/res/Configuration/UnitTests.xml Tests/Unit/
