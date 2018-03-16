@@ -38,6 +38,9 @@ class StepUtilityTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(StepUtility::class);
     }
 
+    /**
+     * @return array
+     */
     public function customStepsGoodConfigurationProvider()
     {
         return [
@@ -148,6 +151,9 @@ class StepUtilityTest extends UnitTestCase
         );
     }
 
+    /**
+     * @return array
+     */
     public function customStepsWrongConfigurationProvider()
     {
         return [

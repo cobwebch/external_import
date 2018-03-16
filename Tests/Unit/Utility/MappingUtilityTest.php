@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Tests\Unit;
 
 /*
@@ -28,11 +29,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class MappingUtilityTest extends UnitTestCase
 {
     /**
-     * @var array List of globals to exclude (contain closures which cannot be serialized)
-     */
-//    protected $backupGlobalsBlacklist = array('TYPO3_LOADED_EXT', 'TYPO3_CONF_VARS');
-
-    /**
      * Local instance for testing
      *
      * @var MappingUtility
@@ -52,21 +48,20 @@ class MappingUtilityTest extends UnitTestCase
      */
     public function mappingTestWithStrposProvider()
     {
-        $data = array(
-                'australia' => array(
+        return [
+                'australia' => [
                         'inputData' => 'Australia',
-                        'mappingTable' => array(
+                        'mappingTable' => [
                                 'Commonwealth of Australia' => 'AU',
                                 'Kingdom of Spain' => 'ES'
-                        ),
-                        'mappingConfiguration' => array(
+                        ],
+                        'mappingConfiguration' => [
                                 'matchMethod' => 'strpos',
                                 'matchSymmetric' => false
-                        ),
+                        ],
                         'result' => 'AU'
-                )
-        );
-        return $data;
+                ]
+        ];
     }
 
     /**
@@ -93,21 +88,20 @@ class MappingUtilityTest extends UnitTestCase
      */
     public function mappingTestWithStrposSymmetricProvider()
     {
-        $data = array(
-                'australia' => array(
+        return [
+                'australia' => [
                         'inputData' => 'Commonwealth of Australia',
-                        'mappingTable' => array(
+                        'mappingTable' => [
                                 'Australia' => 'AU',
                                 'Spain' => 'ES'
-                        ),
-                        'mappingConfiguration' => array(
+                        ],
+                        'mappingConfiguration' => [
                                 'matchMethod' => 'strpos',
                                 'matchSymmetric' => true
-                        ),
+                        ],
                         'result' => 'AU'
-                )
-        );
-        return $data;
+                ]
+        ];
     }
 
     /**
@@ -133,32 +127,31 @@ class MappingUtilityTest extends UnitTestCase
      */
     public function mappingTestWithStrposWithBadMappingTableProvider()
     {
-        $data = array(
+        return [
             // Case doesn't match in this data set
-            'wrong case' => array(
+            'wrong case' => [
                     'inputData' => 'australia',
-                    'mappingTable' => array(
+                    'mappingTable' => [
                             'Commonwealth of Australia' => 'AU',
                             'Kingdom of Spain' => 'ES'
-                    ),
-                    'mappingConfiguration' => array(
+                    ],
+                    'mappingConfiguration' => [
                             'matchMethod' => 'strpos',
                             'matchSymmetric' => false
-                    )
-            ),
-            'no matching data' => array(
+                    ]
+            ],
+            'no matching data' => [
                     'inputData' => 'Swaziland',
-                    'mappingTable' => array(
+                    'mappingTable' => [
                             'Commonwealth of Australia' => 'AU',
                             'Kingdom of Spain' => 'ES'
-                    ),
-                    'mappingConfiguration' => array(
+                    ],
+                    'mappingConfiguration' => [
                             'matchMethod' => 'strpos',
                             'matchSymmetric' => false
-                    )
-            )
-        );
-        return $data;
+                    ]
+            ]
+        ];
     }
 
     /**
@@ -181,20 +174,20 @@ class MappingUtilityTest extends UnitTestCase
      */
     public function mappingTestWithStriposProvider()
     {
-        $data = array(
-                'australia' => array(
+        $data = [
+                'australia' => [
                         'inputData' => 'australia',
-                        'mappingTable' => array(
+                        'mappingTable' => [
                                 'Commonwealth of Australia' => 'AU',
                                 'Kingdom of Spain' => 'ES'
-                        ),
-                        'mappingConfiguration' => array(
+                        ],
+                        'mappingConfiguration' => [
                                 'matchMethod' => 'stripos',
                                 'matchSymmetric' => false
-                        ),
+                        ],
                         'result' => 'AU'
-                )
-        );
+                ]
+        ];
         return $data;
     }
 
@@ -222,21 +215,20 @@ class MappingUtilityTest extends UnitTestCase
      */
     public function mappingTestWithStriposWithBadMappingTableProvider()
     {
-        $data = array(
+        return [
             // Case doesn't match in this data set
-            'no matching data' => array(
+            'no matching data' => [
                     'inputData' => 'Swaziland',
-                    'mappingTable' => array(
+                    'mappingTable' => [
                             'Commonwealth of Australia' => 'AU',
                             'Kingdom of Spain' => 'ES'
-                    ),
-                    'mappingConfiguration' => array(
+                    ],
+                    'mappingConfiguration' => [
                             'matchMethod' => 'strpos',
                             'matchSymmetric' => false
-                    )
-            )
-        );
-        return $data;
+                    ]
+            ]
+        ];
     }
 
     /**
