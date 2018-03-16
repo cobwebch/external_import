@@ -2,6 +2,8 @@ language: php
 php:
   - 7.0
   - 7.1
-before_script: composer require nimut/testing-framework
+before_script:
+  - composer require nimut/testing-framework
+  - ls
 script:
   - phpunit --colors -c .Build/vendor/nimut/testing-framework/res/Configuration/UnitTests.xml Tests/Unit/
