@@ -181,6 +181,9 @@ class Importer
         }
         // Set the storage page as the related page for the devLog entries
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->externalConfiguration->getStoragePid();
+        // Initialize existing uids list
+        $this->uidRepository->setConfiguration($this->externalConfiguration);
+        $this->uidRepository->resetExistingUids();
     }
 
     /**
@@ -200,9 +203,6 @@ class Importer
                     $index,
                     self::SYNCHRONYZE_DATA_STEPS
             );
-            // Initialize existing uids list
-            $this->uidRepository->setConfiguration($this->externalConfiguration);
-            $this->uidRepository->resetExistingUids();
 
             $data = $this->objectManager->get(Data::class);
             $steps = $this->externalConfiguration->getSteps();
@@ -266,9 +266,7 @@ class Importer
                     $index,
                     self::IMPORT_DATA_STEPS
             );
-            // Initialize existing uids list
-            $this->uidRepository->setConfiguration($this->externalConfiguration);
-            $this->uidRepository->resetExistingUids();
+
             // Initialize the Data object with the raw data
             $data = $this->objectManager->get(Data::class);
             $data->setRawData($rawData);

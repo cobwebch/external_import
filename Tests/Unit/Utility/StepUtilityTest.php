@@ -1,5 +1,5 @@
 <?php
-namespace Cobweb\ExternalImport\Tests\Unit;
+namespace Cobweb\ExternalImport\Tests\Unit\Utility;
 
 /*
  * This file is part of the TYPO3 CMS project.

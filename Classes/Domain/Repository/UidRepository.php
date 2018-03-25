@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -57,12 +58,22 @@ class UidRepository implements SingletonInterface
      * Prepares a list of all existing primary keys in the table being synchronized.
      *
      * The result is a hash table of all external primary keys matched to internal primary keys.
-     * PIDs are also retrieved.
+     * PIDs are also retrieved. This method is internal, its usage is triggered when using the getter
+     * methods.
      *
      * @return void
+     * @throws MissingConfigurationException
      */
     protected function retrieveExistingUids()
     {
+        // If no configuration was defined, exit early with exception
+        if ($this->configuration === null) {
+            throw new MissingConfigurationException(
+                    'No configuration object defined',
+                    1521972733
+            );
+        }
+
         $table = $this->configuration->getTable();
         $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
         $where = '1 = 1';
@@ -102,6 +113,7 @@ class UidRepository implements SingletonInterface
      * Returns the list of primary keys of existing records in the database.
      *
      * @return array
+     * @throws MissingConfigurationException
      */
     public function getExistingUids()
     {
@@ -126,6 +138,7 @@ class UidRepository implements SingletonInterface
      * Returns the list of storage PIDs of existing records in the database.
      *
      * @return array
+     * @throws MissingConfigurationException
      */
     public function getCurrentPids()
     {
@@ -137,7 +150,7 @@ class UidRepository implements SingletonInterface
     }
 
     /**
-     * Resets the list of primary keys.
+     * Resets the list of storage PIDs.
      *
      * @return void
      */

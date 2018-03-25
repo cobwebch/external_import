@@ -41,10 +41,16 @@ class StoreDataStep extends AbstractStep
         $this->mappingUtility = $mappingUtility;
     }
 
+    public function injectUidRepository(\Cobweb\ExternalImport\Domain\Repository\UidRepository $uidRepository)
+    {
+        $this->uidRepository = $uidRepository;
+    }
+
     /**
      * Stores the data to the database using DataHandler.
      *
      * @return void
+     * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
     public function run()
     {
@@ -62,13 +68,12 @@ class StoreDataStep extends AbstractStep
         $fieldsExcludedFromUpdates = array();
 
         // Get the list of existing uids for the table
-        $this->uidRepository = GeneralUtility::makeInstance(UidRepository::class);
         $this->uidRepository->setConfiguration($this->getConfiguration());
         $existingUids = $this->uidRepository->getExistingUids();
         $currentPids = $this->uidRepository->getCurrentPids();
-        // Make sure this is list is an array (it may be null)
-        $existingUids = ($existingUids === null) ? [] : $existingUids;
-        $currentPids = ($currentPids === null) ? [] : $currentPids;
+        // Make sure this list is an array (it may be null)
+        $existingUids = $existingUids ?? [];
+        $currentPids = $currentPids ?? [];
 
         // Check which columns are MM-relations and get mappings to foreign tables for each
         // NOTE: as it is now, it is assumed that the imported data is denormalised
