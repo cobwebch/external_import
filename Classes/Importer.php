@@ -79,6 +79,11 @@ class Importer
     protected $temporaryKeys = array();
 
     /**
+     * @var string
+     */
+    protected $context = 'manual';
+
+    /**
      * @var array List of default steps for the synchronize data process
      */
     public const SYNCHRONYZE_DATA_STEPS = array(
@@ -260,6 +265,8 @@ class Importer
     {
         // Initialize message array
         $this->resetMessages();
+        // Set context to API no matter what
+        $this->setContext('api');
         try {
             $this->initialize(
                     $table,
@@ -561,5 +568,25 @@ class Importer
     public function setForcedStoragePid($pid)
     {
         $this->forcedStoragePid = (int)$pid;
+    }
+
+    /**
+     * Returns the current execution context.
+     *
+     * @return string
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * Sets the execution context.
+     *
+     * @param $context
+     */
+    public function setContext($context)
+    {
+        $this->context = $context;
     }
 }

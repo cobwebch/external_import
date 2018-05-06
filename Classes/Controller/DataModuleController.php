@@ -208,6 +208,7 @@ class DataModuleController extends ActionController
         // Synchronize the chosen data
         /** @var Importer $importer */
         $importer = $this->objectManager->get(Importer::class);
+        $importer->setContext('manual');
         $messages = $importer->synchronize($table, $index);
 
         // Perform reporting

@@ -47,6 +47,11 @@ class Log extends AbstractEntity
     protected $configuration;
 
     /**
+     * @var string Execution context
+     */
+    protected $context;
+
+    /**
      * @var string The log message
      */
     protected $message;
@@ -113,6 +118,22 @@ class Log extends AbstractEntity
     public function setConfiguration($configuration)
     {
         $this->configuration = $configuration;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    /**
+     * @param string $context
+     */
+    public function setContext(string $context)
+    {
+        $this->context = $context;
     }
 
     /**

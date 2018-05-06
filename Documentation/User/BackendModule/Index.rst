@@ -155,6 +155,10 @@ Logs
 
 As its name implies, the "Log" module displays a list of all log entries
 generated during External Import runs. The list is sortable and searchable.
+Each entry has a context, which gives an idea on how the run took place,
+either triggered manually (via the backend module), run via the Scheduler
+or the command line, or called using the API. Any other status will appear
+as "Other".
 
 There is not much more to it for now. It may gain new features in the future.
 

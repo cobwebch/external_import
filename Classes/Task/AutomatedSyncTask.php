@@ -55,6 +55,7 @@ class AutomatedSyncTask extends AbstractTask
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         /** @var $importer Importer */
         $importer = $objectManager->get(Importer::class);
+        $importer->setContext('scheduler');
         // Get the extension's configuration from the importer object
         $extensionConfiguration = $importer->getExtensionConfiguration();
         // Synchronize all tables

@@ -98,6 +98,32 @@ define(['jquery',
 							data: 'configuration'
 						},
 						{
+							targets: 'log-context',
+							data: 'context',
+							render:  function(data, type, row, meta) {
+								var label = '';
+								if (data) {
+									switch (data) {
+										case 'manual':
+											label = TYPO3.lang.contextManual;
+											break;
+										case 'cli':
+											label = TYPO3.lang.contextCli;
+											break;
+										case 'scheduler':
+											label = TYPO3.lang.contextScheduler;
+											break;
+										case 'api':
+											label = TYPO3.lang.contextApi;
+											break;
+										default:
+											label = TYPO3.lang.contextOther;
+									}
+								}
+								return label;
+							}
+						},
+						{
 							targets: 'log-message',
 							data: 'message'
 						}

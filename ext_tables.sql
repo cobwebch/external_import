@@ -5,6 +5,7 @@ CREATE TABLE tx_externalimport_domain_model_log (
 	cruser_id int(11) DEFAULT '0' NOT NULL,
 	status tinyint(4) DEFAULT '0' NOT NULL,
 	configuration varchar(255) DEFAULT '' NOT NULL,
+	context varchar(50) DEFAULT '' NOT NULL,
 	message text,
 	PRIMARY KEY (uid)
 );

@@ -120,10 +120,12 @@ class ReportingUtility
      * Stores the messages to the external_import log.
      *
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
     public function writeToLog()
     {
         $messages = $this->importer->getMessages();
+        $context = $this->importer->getContext();
         foreach ($messages as $status => $messageList) {
             foreach ($messageList as $message) {
                 /** @var Log $logEntry */
@@ -139,6 +141,7 @@ class ReportingUtility
                 $logEntry->setConfiguration(
                         $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()
                 );
+                $logEntry->setContext($context);
                 $logEntry->setMessage($message);
                 $this->logRepository->add($logEntry);
             }

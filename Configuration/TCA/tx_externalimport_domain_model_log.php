@@ -58,6 +58,16 @@ return array(
                                 'eval' => 'trim, required'
                         )
                 ),
+                'context' => array(
+                        'exclude' => 0,
+                        'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.configuration',
+                        'config' => array(
+                                'readOnly' => true,
+                                'type' => 'input',
+                                'max' => 50,
+                                'eval' => 'trim, required'
+                        )
+                ),
                 'message' => array(
                         'exclude' => 0,
                         'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.message',

@@ -104,6 +104,7 @@ class ImportCommand extends Command
             $this->printConfigurationList($io);
         } else {
             $importer = $this->objectManager->get(Importer::class);
+            $importer->setContext('cli');
             $all = $input->getOption('all');
             $table = $input->getOption('table');
             $index = $input->getOption('index');

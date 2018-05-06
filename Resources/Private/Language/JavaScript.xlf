@@ -8,6 +8,21 @@
 			<trans-unit id="doNotLeaveWindow" xml:space="preserve">
 				<source>Do not leave the current window until it reloads.</source>
 			</trans-unit>
+			<trans-unit id="contextManual" xml:space="preserve">
+				<source>Manual</source>
+			</trans-unit>
+			<trans-unit id="contextCli" xml:space="preserve">
+				<source>Command line</source>
+			</trans-unit>
+			<trans-unit id="contextScheduler" xml:space="preserve">
+				<source>Scheduler</source>
+			</trans-unit>
+			<trans-unit id="contextApi" xml:space="preserve">
+				<source>API call</source>
+			</trans-unit>
+			<trans-unit id="contextOther" xml:space="preserve">
+				<source>Other</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -17,6 +17,9 @@
 			<trans-unit id="tx_externalimport_domain_model_log.configuration" xml:space="preserve">
 				<source>Configuration</source>
 			</trans-unit>
+			<trans-unit id="tx_externalimport_domain_model_log.context" xml:space="preserve">
+				<source>Context</source>
+			</trans-unit>
 			<trans-unit id="tx_externalimport_domain_model_log.message" xml:space="preserve">
 				<source>Message</source>
 			</trans-unit>

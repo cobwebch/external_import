@@ -259,6 +259,9 @@
 			<trans-unit id="logConfiguration" xml:space="preserve">
 				<source>Configuration</source>
 			</trans-unit>
+			<trans-unit id="logContext" xml:space="preserve">
+				<source>Context</source>
+			</trans-unit>
 			<trans-unit id="logMessage" xml:space="preserve">
 				<source>Message</source>
 			</trans-unit>

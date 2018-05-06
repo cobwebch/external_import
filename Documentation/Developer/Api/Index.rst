@@ -126,6 +126,12 @@ getExtensionConfiguration
 getExternalConfiguration
   Get the current instance of the :ref:`Configuration model <developer-api-configuration-model>`.
 
+setContext/getContext
+  Define or retrieve the execution context. This is mostly informative and is used to set a
+  context for the log entries. Expected values are "manual", "cli", "scheduler" and "api".
+  Any other value can be set, but will not be interpreted by the External Import extension.
+  In the Log module, such values will be displayed as "Other".
+
 and a few more which are not as significant and can be explored by
 anyone interested straight in the source code.
 
