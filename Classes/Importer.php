@@ -31,7 +31,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class Importer
 {
-    public const DEFAULT_PRIORITY = 1000;
+    const DEFAULT_PRIORITY = 1000;
 
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -86,7 +86,7 @@ class Importer
     /**
      * @var array List of default steps for the synchronize data process
      */
-    public const SYNCHRONYZE_DATA_STEPS = array(
+    const SYNCHRONYZE_DATA_STEPS = array(
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\ValidateConnectorStep::class,
@@ -102,7 +102,7 @@ class Importer
     /**
      * @var array List of default steps for the import data process
      */
-    public const IMPORT_DATA_STEPS = array(
+    const IMPORT_DATA_STEPS = array(
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\HandleDataStep::class,
