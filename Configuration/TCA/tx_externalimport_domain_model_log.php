@@ -78,6 +78,6 @@ return array(
                 ),
         ),
         'types' => array(
-                '0' => array('showitem' => 'status, crdate, cruser_id, configuration, message')
+                '0' => array('showitem' => 'status, crdate, cruser_id, configuration, context, message')
         )
 );
