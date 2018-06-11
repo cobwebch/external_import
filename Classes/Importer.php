@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Context\AbstractCallContext;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
@@ -79,9 +80,24 @@ class Importer
     protected $temporaryKeys = array();
 
     /**
-     * @var string
+     * @var string Context in which the import run is executed
      */
     protected $context = 'manual';
+
+    /**
+     * @var AbstractCallContext
+     */
+    protected $callContext = null;
+
+    /**
+     * @var bool Whether debugging is turned on or off
+     */
+    protected $debug = false;
+
+    /**
+     * @var bool Whether the output should be verbose or not (currently only affects calls made via the command line)
+     */
+    protected $verbose = false;
 
     /**
      * @var array List of default steps for the synchronize data process
@@ -115,6 +131,7 @@ class Importer
     public function __construct()
     {
         $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
+        $this->setDebug((bool)$this->extensionConfiguration['debug']);
 
         // Force PHP limit execution time if set
         if (isset($this->extensionConfiguration['timelimit']) && ($this->extensionConfiguration['timelimit'] > -1)) {
@@ -403,20 +420,28 @@ class Importer
     /**
      * Writes debug messages to the devlog, depending on debug flag.
      *
-     * @param $message
-     * @param int $severity
-     * @param null $data
+     * @param string $message The debug message
+     * @param int $severity The severity of the issue
+     * @param null $data Data associated with the debugging information
      * @return void
      */
     public function debug($message, $severity = 0, $data = null)
     {
-        if ($this->extensionConfiguration['debug'] || TYPO3_DLOG) {
+        if ($this->isDebug()) {
             GeneralUtility::devLog(
                     $message,
                     'external_import',
                     $severity,
                     $data
             );
+            // Push the debug data to the call context for special display, if needed (e.g. the command-line controller)
+            if ($this->callContext !== null) {
+                $this->callContext->outputDebug(
+                        $message,
+                        $severity,
+                        $data
+                );
+            }
         }
     }
 
@@ -588,5 +613,61 @@ class Importer
     public function setContext($context)
     {
         $this->context = $context;
+    }
+
+    /**
+     * @return AbstractCallContext
+     */
+    public function getCallContext()
+    {
+        return $this->callContext;
+    }
+
+    /**
+     * @param AbstractCallContext $callContext
+     */
+    public function setCallContext(AbstractCallContext $callContext)
+    {
+        $this->callContext = $callContext;
+    }
+
+    /**
+     * Returns true if debugging is turned on.
+     *
+     * @return bool
+     */
+    public function isDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * Sets the debug flag.
+     *
+     * @param bool $debug
+     */
+    public function setDebug(bool $debug)
+    {
+        $this->debug = $debug;
+    }
+
+    /**
+     * Returns true if output should be extensive.
+     *
+     * @return bool
+     */
+    public function isVerbose()
+    {
+        return $this->verbose;
+    }
+
+    /**
+     * Sets the verbose flag.
+     *
+     * @param bool $verbose
+     */
+    public function setVerbose(bool $verbose)
+    {
+        $this->verbose = $verbose;
     }
 }

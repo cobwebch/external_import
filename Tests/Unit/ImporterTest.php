@@ -60,4 +60,34 @@ class ImporterTest extends UnitTestCase
                 $this->subject->getContext()
         );
     }
+
+    /**
+     * @test
+     */
+    public function isDebugInitiallyReturnsFalse() {
+        self::assertFalse($this->subject->isDebug());
+    }
+
+    /**
+     * @test
+     */
+    public function setDebugSetsDebugFlag() {
+        $this->subject->setDebug(true);
+        self::assertTrue($this->subject->isDebug());
+    }
+
+    /**
+     * @test
+     */
+    public function isVerboseInitiallyReturnsFalse() {
+        self::assertFalse($this->subject->isVerbose());
+    }
+
+    /**
+     * @test
+     */
+    public function setVerboseSetsVerboseFlag() {
+        $this->subject->setVerbose(true);
+        self::assertTrue($this->subject->isVerbose());
+    }
 }

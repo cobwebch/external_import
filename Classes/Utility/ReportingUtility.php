@@ -89,7 +89,7 @@ class ReportingUtility
      */
     public function writeToDevLog()
     {
-        if ($this->extensionConfiguration['debug']) {
+        if ($this->importer->isDebug()) {
             $messages = $this->importer->getMessages();
 
             // Define a global severity based on the highest issue level reported

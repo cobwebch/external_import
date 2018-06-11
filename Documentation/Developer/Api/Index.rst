@@ -132,6 +132,14 @@ setContext/getContext
   Any other value can be set, but will not be interpreted by the External Import extension.
   In the Log module, such values will be displayed as "Other".
 
+setDebug/getDebug
+  Define or retrieve the debug flag. This makes it possible to programatically turn
+  debugging on or off.
+
+setVerbose/getVerbose
+  Define or retrieve the verbosity flag. This is currently used only by the command-line
+  utility for debugging output.
+
 and a few more which are not as significant and can be explored by
 anyone interested straight in the source code.
 
@@ -139,3 +147,34 @@ For reporting, the :php:`\Cobweb\ExternalImport\Importer` class also provides
 the :code:`addMessage()` method which takes as arguments a message and a severity
 (using the constants of the :php:`\TYPO3\CMS\Core\Messaging\AbstractMessage`
 class).
+
+
+.. _developer-api-call-context:
+
+The call context
+""""""""""""""""
+
+External Import may be called in various contexts (command line, Scheduler task,
+manual call in the backend or API call). While the code tries to be as generic as possible,
+it is possible to hit some limits in some circumstances. The "call context" classes
+have been designed for such situations.
+
+A call context class must inherit from :php:`\Cobweb\ExternalImport\Context\AbstractCallContext`
+and implement the necessary methods. There is currently a single method called
+:code:`outputDebug()` which is supposed to display some debug output. A specific
+call context exists only the command line and makes it possible to display (somehow)
+debug output despite being all tied up in the Symfony console.
+
+Since the call context is attached to the instance of the :php:`\Cobweb\ExternalImport\Importer`
+class, it makes it possible to react to some actions at points where the usual handlers
+are not available. In the case of the debug output to the command line,
+this architecture makes it possible to display debug output anytime the
+:code:`\Cobweb\ExternalImport\Importer::debug()` method is called
+by just dumping the data to standard output, even though the
+:php:`\Cobweb\ExternalImport\Importer` has no reference to the current
+Symfony console (the limit being that the debug output does not take
+place nicely along the rest of the console output, but is instead
+dumped at the end).
+
+This may not be entirely clear, but I needed to write it down somewhere
+to try and pass on what I was trying to achieve.

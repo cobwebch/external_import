@@ -35,6 +35,11 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class ImportCommand extends Command
 {
     /**
+     * @var SymfonyStyle
+     */
+    protected $io;
+
+    /**
      * @var ObjectManager
      */
     protected $objectManager;
@@ -43,6 +48,11 @@ class ImportCommand extends Command
      * @var ConfigurationRepository
      */
     protected $configurationRepository;
+
+    /**
+     * @var Importer
+     */
+    protected $importer;
 
     /**
      * Configures the command by setting its name, description and options.
@@ -76,6 +86,12 @@ class ImportCommand extends Command
                         'l',
                         InputOption::VALUE_NONE,
                         'Print a list of all existing External Import configurations available for synchronization.'
+                )
+                ->addOption(
+                        'debug',
+                        'd',
+                        InputOption::VALUE_NONE,
+                        'Turns on debugging. Debug output goes to the devlog unless verbose mode is also turned on.'
                 );
     }
 
@@ -92,8 +108,8 @@ class ImportCommand extends Command
         // Make sure the _cli_ user is loaded
         Bootstrap::getInstance()->initializeBackendAuthentication();
 
-        $io = new SymfonyStyle($input, $output);
-        $io->title($this->getDescription());
+        $this->io = new SymfonyStyle($input, $output);
+        $this->io->title($this->getDescription());
 
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->configurationRepository = $this->objectManager->get(ConfigurationRepository::class);
@@ -101,36 +117,51 @@ class ImportCommand extends Command
         $list = $input->getOption('list');
         // Call up the list and print it out
         if ($list) {
-            $this->printConfigurationList($io);
+            $this->printConfigurationList();
         } else {
-            $importer = $this->objectManager->get(Importer::class);
-            $importer->setContext('cli');
+            $this->importer = $this->objectManager->get(Importer::class);
+            $this->importer->setContext('cli');
+            $callContext = $this->objectManager->get(
+                    \Cobweb\ExternalImport\Context\CommandLineCallContext::class,
+                    $this->importer
+            );
+            $this->importer->setCallContext($callContext);
+
             $all = $input->getOption('all');
             $table = $input->getOption('table');
             $index = $input->getOption('index');
+
+            // Check output options
+            $debug = $input->getOption('debug');
+            // Set the debug flag only if true
+            if ($debug) {
+                $this->importer->setDebug((bool)$debug);
+            }
+            $this->importer->setVerbose($output->isVerbose());
+
             // Launch full synchronization
             if ($all) {
                 $configurations = $this->configurationRepository->findOrderedConfigurations();
                 foreach ($configurations as $tableList) {
                     foreach ($tableList as $configuration) {
-                        $io->section('Importing: ' . $configuration['table'] . ' / ' . $configuration['index']);
-                        $messages = $importer->synchronize(
+                        $this->io->section('Importing: ' . $configuration['table'] . ' / ' . $configuration['index']);
+                        $messages = $this->importer->synchronize(
                                 $configuration['table'],
                                 $configuration['index']
                         );
-                        $this->reportResults($io, $messages);
+                        $this->reportResults($messages);
                     }
                 }
             // Launch selected synchronization
             } elseif ($table !== null && $index !== null) {
-                $messages = $importer->synchronize(
+                $messages = $this->importer->synchronize(
                         $table,
                         $index
                 );
-                $this->reportResults($io, $messages);
+                $this->reportResults($messages);
             } else {
                 // Report erroneous arguments
-                $io->warning('The command was called with invalid arguments. Please use "typo3 help externalimport:sync" for help.');
+                $this->io->warning('The command was called with invalid arguments. Please use "typo3 help externalimport:sync" for help.');
             }
         }
     }
@@ -138,22 +169,21 @@ class ImportCommand extends Command
     /**
      * Outputs messages returned by the import process.
      *
-     * @param SymfonyStyle $io
      * @param array $messages
      */
-    protected function reportResults(SymfonyStyle $io, $messages)
+    protected function reportResults($messages)
     {
         foreach ($messages as $severity => $messageList) {
             foreach ($messageList as $message) {
                 switch ($severity) {
                     case AbstractMessage::ERROR:
-                        $io->error($message);
+                        $this->io->error($message);
                         break;
                     case AbstractMessage::WARNING:
-                        $io->warning($message);
+                        $this->io->warning($message);
                         break;
                     case AbstractMessage::OK:
-                        $io->success($message);
+                        $this->io->success($message);
                 }
             }
         }
@@ -162,10 +192,9 @@ class ImportCommand extends Command
     /**
      * Prints the list of synchronizable configurations as a table.
      *
-     * @param SymfonyStyle $io
      * @return void
      */
-    protected function printConfigurationList(SymfonyStyle $io)
+    protected function printConfigurationList()
     {
         $configurations = $this->configurationRepository->findOrderedConfigurations();
         $outputTable = array();
@@ -174,7 +203,7 @@ class ImportCommand extends Command
                 $outputTable[] = array($priority, $configuration['table'], $configuration['index']);
             }
         }
-        $io->table(
+        $this->io->table(
                 array('Priority', 'Table', 'Index'),
                 $outputTable
         );
