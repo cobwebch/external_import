@@ -12,7 +12,7 @@
 				<source>Manual</source>
 			</trans-unit>
 			<trans-unit id="contextCli" xml:space="preserve">
-				<source>Command line</source>
+				<source>Command line (CLI)</source>
 			</trans-unit>
 			<trans-unit id="contextScheduler" xml:space="preserve">
 				<source>Scheduler</source>

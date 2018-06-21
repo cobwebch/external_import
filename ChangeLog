@@ -1,3 +1,7 @@
+2018-06-21 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Changed Log module logic to load data from the server, resolves #53
+
 2018-06-11 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added debugging on the command-line, resolves #59

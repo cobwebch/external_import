@@ -50,92 +50,100 @@ define(['jquery',
 	};
 
 	/**
-	 * Loads log data dynamically and initializes DataTables.
+	 * Initializes DataTables and loads data from the server-side.
 	 *
 	 * @param tableView
 	 */
 	ExternalImportLogModule.buildDynamicTable = function(tableView) {
-		$.ajax({
-			url: TYPO3.settings.ajaxUrls['tx_externalimport_loglist'],
-			success: function (data, status, xhr) {
-				ExternalImportLogModule.table = tableView.DataTable({
-					data: data,
-					dom: 'tp',
-					// Default ordering is "date" column
-					order: [
-						[1, 'desc']
-					],
-					columnDefs: [
-						{
-							targets: 'log-status',
-							data: 'status',
-							render:  function(data, type, row, meta) {
-								if (type === 'display') {
-									return ExternalImportLogModule.icons[data];
-								} else {
-									return data;
-								}
-							}
-						},
-						{
-							targets: 'log-date',
-							data: 'date',
-							render:  function(data, type, row, meta) {
-								if (type === 'sort') {
-									return data;
-								} else {
-									var lastModifiedDate = moment.unix(data);
-									return lastModifiedDate.format('DD.MM.YY HH:mm:ss');
-								}
-							}
-						},
-						{
-							targets: 'log-user',
-							data: 'user'
-						},
-						{
-							targets: 'log-configuration',
-							data: 'configuration'
-						},
-						{
-							targets: 'log-context',
-							data: 'context',
-							render:  function(data, type, row, meta) {
-								var label = '';
-								if (data) {
-									switch (data) {
-										case 'manual':
-											label = TYPO3.lang.contextManual;
-											break;
-										case 'cli':
-											label = TYPO3.lang.contextCli;
-											break;
-										case 'scheduler':
-											label = TYPO3.lang.contextScheduler;
-											break;
-										case 'api':
-											label = TYPO3.lang.contextApi;
-											break;
-										default:
-											label = TYPO3.lang.contextOther;
-									}
-								}
-								return label;
-							}
-						},
-						{
-							targets: 'log-message',
-							data: 'message'
+		ExternalImportLogModule.table = tableView.DataTable({
+			serverSide: true,
+			processing: true,
+			ajax: TYPO3.settings.ajaxUrls['tx_externalimport_loglist'],
+			dom: 'tp',
+			// Default ordering is "date" column
+			order: [
+				[1, 'desc']
+			],
+			// NOTE: the "name" attribute is used to define column names that match Extbase naming conventions
+			// when column data is passed in the AJAX request and used server-side
+			// (see \Cobweb\ExternalImport\Domain\Repository\LogRepository)
+			columnDefs: [
+				{
+					targets: 'log-status',
+					data: 'status',
+					name: 'status',
+					searchable: false,
+					render:  function(data, type, row, meta) {
+						if (type === 'display') {
+							return ExternalImportLogModule.icons[data];
+						} else {
+							return data;
 						}
-					],
-					initComplete: function() {
-						ExternalImportLogModule.initializeSearchField();
-
-						// Hide the loading mask and show the table
-						$('#tx_externalimport_loglist_loader').addClass('hidden');
-						$('#tx_externalimport_loglist_wrapper').removeClass('hidden');
 					}
-				});
+				},
+				{
+					targets: 'log-crdate',
+					data: 'crdate',
+					name: 'crdate',
+					searchable: false,
+					render:  function(data, type, row, meta) {
+						if (type === 'sort') {
+							return data;
+						} else {
+							var lastModifiedDate = moment.unix(data);
+							return lastModifiedDate.format('DD.MM.YY HH:mm:ss');
+						}
+					}
+				},
+				{
+					targets: 'log-username',
+					data: 'username',
+					name: 'cruserId.username'
+				},
+				{
+					targets: 'log-configuration',
+					data: 'configuration',
+					name: 'configuration'
+				},
+				{
+					targets: 'log-context',
+					data: 'context',
+					name: 'context',
+					render:  function(data, type, row, meta) {
+						var label = '';
+						if (data) {
+							switch (data) {
+								case 'manual':
+									label = TYPO3.lang.contextManual;
+									break;
+								case 'cli':
+									label = TYPO3.lang.contextCli;
+									break;
+								case 'scheduler':
+									label = TYPO3.lang.contextScheduler;
+									break;
+								case 'api':
+									label = TYPO3.lang.contextApi;
+									break;
+								default:
+									label = TYPO3.lang.contextOther;
+							}
+						}
+						return label;
+					}
+				},
+				{
+					targets: 'log-message',
+					data: 'message',
+					name: 'message'
+				}
+			],
+			initComplete: function() {
+				ExternalImportLogModule.initializeSearchField();
+
+				// Hide the loading mask and show the table
+				$('#tx_externalimport_loglist_loader').addClass('hidden');
+				$('#tx_externalimport_loglist_wrapper').removeClass('hidden');
 			}
 		});
 	};
