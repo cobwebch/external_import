@@ -81,7 +81,7 @@ class QueryParameters
      *
      * @param array $parameters Query parameters from the AJAX query
      */
-    public function setAllParameters($parameters): void
+    public function setAllParameters($parameters)
     {
         // Set simple parameters
         $this->setDraw((int)$parameters['draw']);
@@ -105,7 +105,7 @@ class QueryParameters
     /**
      * @return int
      */
-    public function getDraw(): int
+    public function getDraw()
     {
         return $this->draw;
     }
@@ -113,7 +113,7 @@ class QueryParameters
     /**
      * @param int $draw
      */
-    public function setDraw(int $draw): void
+    public function setDraw(int $draw)
     {
         $this->draw = $draw;
     }
@@ -121,7 +121,7 @@ class QueryParameters
     /**
      * @return string
      */
-    public function getSearch(): string
+    public function getSearch()
     {
         return $this->search;
     }
@@ -129,7 +129,7 @@ class QueryParameters
     /**
      * @param string $search
      */
-    public function setSearch(string $search): void
+    public function setSearch(string $search)
     {
         $this->search = $search;
     }
@@ -137,7 +137,7 @@ class QueryParameters
     /**
      * @return array
      */
-    public function getSearchColumns(): array
+    public function getSearchColumns()
     {
         return $this->searchColumns;
     }
@@ -145,7 +145,7 @@ class QueryParameters
     /**
      * @param array $searchColumns
      */
-    public function setSearchColumns(array $searchColumns): void
+    public function setSearchColumns(array $searchColumns)
     {
         $this->searchColumns = [];
         foreach ($searchColumns as $columnData) {
@@ -158,7 +158,7 @@ class QueryParameters
     /**
      * @return int
      */
-    public function getLimit(): int
+    public function getLimit()
     {
         return $this->limit;
     }
@@ -166,7 +166,7 @@ class QueryParameters
     /**
      * @param int $limit
      */
-    public function setLimit(int $limit): void
+    public function setLimit(int $limit)
     {
         $this->limit = $limit;
     }
@@ -174,7 +174,7 @@ class QueryParameters
     /**
      * @return int
      */
-    public function getOffset(): int
+    public function getOffset()
     {
         return $this->offset;
     }
@@ -182,7 +182,7 @@ class QueryParameters
     /**
      * @param int $offset
      */
-    public function setOffset(int $offset): void
+    public function setOffset(int $offset)
     {
         $this->offset = $offset;
     }
@@ -190,7 +190,7 @@ class QueryParameters
     /**
      * @return string
      */
-    public function getOrder(): string
+    public function getOrder()
     {
         return $this->order;
     }
@@ -198,7 +198,7 @@ class QueryParameters
     /**
      * @param string $order
      */
-    public function setOrder(string $order): void
+    public function setOrder(string $order)
     {
         $this->order = $order;
     }
@@ -206,7 +206,7 @@ class QueryParameters
     /**
      * @return string
      */
-    public function getDirection(): string
+    public function getDirection()
     {
         return $this->direction;
     }
@@ -214,7 +214,7 @@ class QueryParameters
     /**
      * @param string $direction
      */
-    public function setDirection(string $direction): void
+    public function setDirection(string $direction)
     {
         // Ordering direction is either explicitly "asc", or "desc" by default
         if ($direction !== QueryInterface::ORDER_ASCENDING) {

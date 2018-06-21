@@ -123,7 +123,7 @@ class LogRepositoryTest extends FunctionalTestCase
      * @param int $filteredCount The filtered number of records
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function countBySearchReturnsExpectedNumberOfRecords($parameters, $fullCount, $filteredCount): void
+    public function countBySearchReturnsExpectedNumberOfRecords($parameters, $fullCount, $filteredCount)
     {
         $this->queryParameters->setAllParameters($parameters);
         $count = $this->subject->countBySearch($this->queryParameters);
@@ -142,7 +142,7 @@ class LogRepositoryTest extends FunctionalTestCase
      * @param int $filteredCount The filtered number of records
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function findBySearchReturnsExpectedRecords($parameters, $fullCount, $filteredCount): void
+    public function findBySearchReturnsExpectedRecords($parameters, $fullCount, $filteredCount)
     {
         $this->queryParameters->setAllParameters($parameters);
         $records = $this->subject->findBySearch($this->queryParameters);
