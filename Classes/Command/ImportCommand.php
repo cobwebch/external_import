@@ -125,6 +125,7 @@ class ImportCommand extends Command
                     \Cobweb\ExternalImport\Context\CommandLineCallContext::class,
                     $this->importer
             );
+            $callContext->setInputOutput($this->io);
             $this->importer->setCallContext($callContext);
 
             $all = $input->getOption('all');

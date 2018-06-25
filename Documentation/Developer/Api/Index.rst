@@ -35,21 +35,25 @@ instance of class :php:`\Cobweb\ExternalImport\Importer` and a single call.
 
 	$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
 	$importer = $objectManager->get(\Cobweb\ExternalImport\Importer::class);
-	$importer->import($table, $index, $rawData);
+	$messages = $importer->import($table, $index, $rawData);
 
 
 The call parameters are as follows:
 
-+----------+---------+------------------------------------------------+
-| Name     | Type    | Description                                    |
-+==========+=========+================================================+
-| $table   | string  | Name of the table to store the data into.      |
-+----------+---------+------------------------------------------------+
-| $index   | integer | Index of the relevant external configuration.  |
-+----------+---------+------------------------------------------------+
-| $rawData | mixed   | The data to store, either as XML or PHP array. |
-+----------+---------+------------------------------------------------+
++----------+---------+---------------------------------------------------------+
+| Name     | Type    | Description                                             |
++==========+=========+=========================================================+
+| $table   | string  | Name of the table to store the data into.               |
++----------+---------+---------------------------------------------------------+
+| $index   | integer | Index of the relevant external configuration.           |
++----------+---------+---------------------------------------------------------+
+| $rawData | mixed   | The data to store, either as XML (string) or PHP array. |
++----------+---------+---------------------------------------------------------+
 
+The result is a multidimensional array of messages. The first dimension is a status and corresponds to
+the :code:`\TYPO3\CMS\Core\Messaging\AbstractMessage::ERROR`, :code:`\TYPO3\CMS\Core\Messaging\AbstractMessage::WARNING`
+and :code:`\TYPO3\CMS\Core\Messaging\AbstractMessage::OK` constants. The second dimension is a list
+of messages. Your code should handle these messages as needed.
 
 .. _developer-api-data-model:
 
@@ -162,8 +166,7 @@ have been designed for such situations.
 A call context class must inherit from :php:`\Cobweb\ExternalImport\Context\AbstractCallContext`
 and implement the necessary methods. There is currently a single method called
 :code:`outputDebug()` which is supposed to display some debug output. A specific
-call context exists only the command line and makes it possible to display (somehow)
-debug output despite being all tied up in the Symfony console.
+call context exists only the command line and makes it possible to display in the Symfony console.
 
 Since the call context is attached to the instance of the :php:`\Cobweb\ExternalImport\Importer`
 class, it makes it possible to react to some actions at points where the usual handlers
@@ -171,10 +174,5 @@ are not available. In the case of the debug output to the command line,
 this architecture makes it possible to display debug output anytime the
 :code:`\Cobweb\ExternalImport\Importer::debug()` method is called
 by just dumping the data to standard output, even though the
-:php:`\Cobweb\ExternalImport\Importer` has no reference to the current
-Symfony console (the limit being that the debug output does not take
-place nicely along the rest of the console output, but is instead
-dumped at the end).
-
-This may not be entirely clear, but I needed to write it down somewhere
-to try and pass on what I was trying to achieve.
+:php:`\Cobweb\ExternalImport\Importer` has no direct reference to the current
+Symfony console.

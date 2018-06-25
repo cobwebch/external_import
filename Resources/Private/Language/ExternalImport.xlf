@@ -134,22 +134,22 @@
 			<trans-unit id="field.syncItem" xml:space="preserve">
 				<source>Item to synchronize</source>
 			</trans-unit>
-			<trans-unit id="label.warning" xml:space="preserve">
+			<trans-unit id="label.1" xml:space="preserve">
 				<source>Warnings</source>
 			</trans-unit>
-			<trans-unit id="label.error" xml:space="preserve">
+			<trans-unit id="label.2" xml:space="preserve">
 				<source>Errors</source>
 			</trans-unit>
-			<trans-unit id="label.success" xml:space="preserve">
+			<trans-unit id="label.0" xml:space="preserve">
 				<source>Success messages</source>
 			</trans-unit>
-			<trans-unit id="no.warning" xml:space="preserve">
+			<trans-unit id="no.1" xml:space="preserve">
 				<source>No warnings</source>
 			</trans-unit>
-			<trans-unit id="no.error" xml:space="preserve">
+			<trans-unit id="no.2" xml:space="preserve">
 				<source>No errors</source>
 			</trans-unit>
-			<trans-unit id="no.success" xml:space="preserve">
+			<trans-unit id="no.0" xml:space="preserve">
 				<source>No success messages</source>
 			</trans-unit>
 			<trans-unit id="allTables" xml:space="preserve">

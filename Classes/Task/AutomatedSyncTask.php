@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Task;
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Importer;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
@@ -60,7 +61,8 @@ class AutomatedSyncTask extends AbstractTask
         $extensionConfiguration = $importer->getExtensionConfiguration();
         // Synchronize all tables
         $globalStatus = 'OK';
-        $allMessages = array();
+        $errorCount = 0;
+        $warningCount = 0;
         if ($this->table === 'all') {
             $configurations = $importer->getConfigurationRepository()->findOrderedConfigurations();
             foreach ($configurations as $tableList) {
@@ -69,42 +71,47 @@ class AutomatedSyncTask extends AbstractTask
                             $configuration['table'],
                             $configuration['index']
                     );
-                    $key = $configuration['table'] . '/' . $configuration['index'];
-                    $allMessages[$key] = $messages;
+                    if (!empty($extensionConfiguration['reportEmail'])) {
+                        $reportContent .= $importer->getReportingUtility()->reportForTable(
+                                $configuration['table'],
+                                $configuration['index'],
+                                $messages
+                        );
+                        $errorCount += count($messages[AbstractMessage::ERROR]);
+                        $warningCount += count($messages[AbstractMessage::WARNING]);
+                    }
                 }
             }
             // If necessary, prepare a report with all messages
             if (!empty($extensionConfiguration['reportEmail'])) {
-                foreach ($allMessages as $key => $messages) {
-                    list($table, $index) = explode('/', $key);
-                    $reportContent .= $importer->reportForTable($table, $index, $messages);
-                    $reportContent .= "\n\n";
-                    if (count($messages['error']) > 0) {
-                        $globalStatus = 'ERROR';
-                    } elseif (count($messages['warning']) > 0) {
-                        $globalStatus = 'WARNING';
-                    }
+                if ($errorCount > 0) {
+                    $globalStatus = 'ERROR';
+                } elseif ($warningCount > 0) {
+                    $globalStatus = 'WARNING';
                 }
                 // Assemble the subject and send the mail
                 $subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
                 $subject .= ' [' . $globalStatus . '] ' . 'Full synchronization';
-                $importer->sendMail($subject, $reportContent);
+                $importer->getReportingUtility()->sendMail($subject, $reportContent);
             }
         } else {
             $messages = $importer->synchronize($this->table, $this->index);
             // If necessary, prepare a report with all messages
             if (!empty($extensionConfiguration['reportEmail'])) {
-                $reportContent .= $importer->reportForTable($this->table, $this->index, $messages);
-                $reportContent .= "\n\n";
-                if (count($messages['error']) > 0) {
+                $reportContent .= $importer->getReportingUtility()->reportForTable(
+                        $this->table,
+                        $this->index,
+                        $messages
+                );
+                if (count($messages[AbstractMessage::ERROR]) > 0) {
                     $globalStatus = 'ERROR';
-                } elseif (count($messages['warning']) > 0) {
+                } elseif (count($messages[AbstractMessage::WARNING]) > 0) {
                     $globalStatus = 'WARNING';
                 }
                 // Assemble the subject and send the mail
                 $subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
                 $subject .= ' [' . $globalStatus . '] ' . 'Synchronization of table ' . $this->table . ', index ' . $this->index;
-                $importer->sendMail($subject, $reportContent);
+                $importer->getReportingUtility()->sendMail($subject, $reportContent);
             }
         }
         // If any warning or error happened, throw an exception

@@ -14,6 +14,8 @@ namespace Cobweb\ExternalImport\Context;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Symfony\Component\Console\Style\SymfonyStyle;
+
 /**
  * This is a concrete implementation of the call context for the CLI context.
  *
@@ -21,6 +23,21 @@ namespace Cobweb\ExternalImport\Context;
  */
 class CommandLineCallContext extends AbstractCallContext
 {
+    /**
+     * @var SymfonyStyle
+     */
+    protected $io;
+
+    /**
+     * Sets the SymfonyStyle component for formatted output.
+     *
+     * @param SymfonyStyle $io
+     */
+    public function setInputOutput(SymfonyStyle $io)
+    {
+        $this->io = $io;
+    }
+
     /**
      * Outputs the debug data in the terminal.
      *
@@ -48,10 +65,10 @@ class CommandLineCallContext extends AbstractCallContext
                 default:
                     $status = 'INFO';
             }
-            echo("-------------------------------------------------------------------\n");
-            echo('DEBUG [' . $status . ']: ' . $message . "\n");
-            var_dump($data);
-            echo("-------------------------------------------------------------------\n");
+            $this->io->writeln('-------------------------------------------------------------------');
+            $this->io->writeln('DEBUG [' . $status . ']: ' . $message);
+            $this->io->writeln(var_export($data, true));
+            $this->io->writeln('-------------------------------------------------------------------');
         }
     }
 }

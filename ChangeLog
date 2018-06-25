@@ -1,6 +1,7 @@
 2018-06-25 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Used ConfigurationRepository in Scheduler task list of additional fields, resolves #40
+	* Improved the reporting utility, resolves #31
 
 2018-06-21 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

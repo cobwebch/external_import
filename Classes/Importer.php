@@ -18,7 +18,6 @@ use Cobweb\ExternalImport\Context\AbstractCallContext;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
-use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -483,104 +482,15 @@ class Importer
                 FlashMessage::OK => array()
         );
     }
-    // Reporting utilities
-
 
     /**
-     * This method assembles a report for a given table/index
+     * Returns the current instance of the reporting utility.
      *
-     * @param string $table Name of the table
-     * @param integer $index Number of the synchronisation configuration
-     * @param array $messages List of messages for the given table
-     * @return string Formatted text of the report
+     * @return ReportingUtility
      */
-    public function reportForTable($table, $index, $messages)
+    public function getReportingUtility()
     {
-        $report = sprintf($GLOBALS['LANG']->getLL('synchronizeTableX'), $table, $index) . "\n\n";
-        foreach ($messages as $type => $messageList) {
-            $report .= $GLOBALS['LANG']->getLL('label.' . $type) . "\n";
-            if (count($messageList) === 0) {
-                $report .= "\t" . $GLOBALS['LANG']->getLL('no.' . $type) . "\n";
-            } else {
-                foreach ($messageList as $aMessage) {
-                    $report .= "\t- " . $aMessage . "\n";
-                }
-            }
-        }
-        $report .= "\n";
-        return $report;
-    }
-
-    /**
-     * Sends a reporting mail to the configured e-mail address
-     *
-     * @param string $subject Subject of the mail
-     * @param string $body Text body of the mail
-     * @return void
-     */
-    public function sendMail($subject, $body)
-    {
-        $result = 0;
-        // Define sender mail and name
-        $senderMail = '';
-        $senderName = '';
-        if (!empty($GLOBALS['BE_USER']->user['email'])) {
-            $senderMail = $GLOBALS['BE_USER']->user['email'];
-            if (empty($GLOBALS['BE_USER']->user['realName'])) {
-                $senderName = $GLOBALS['BE_USER']->user['username'];
-            } else {
-                $senderName = $GLOBALS['BE_USER']->user['realName'];
-            }
-        } elseif (!empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'])) {
-            $senderMail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
-            if (empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'])) {
-                $senderName = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
-            } else {
-                $senderName = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'];
-            }
-        }
-        // If no mail could be found, avoid sending the mail
-        // The message will be logged as an error
-        if (empty($senderMail)) {
-            $message = 'No sender mail defined. Please check the manual.';
-
-            // Proceed with sending the mail
-        } else {
-            // Instantiate and initialize the mail object
-            /** @var $mailObject MailMessage */
-            $mailObject = GeneralUtility::makeInstance(MailMessage::class);
-            try {
-                $sender = array(
-                        $senderMail => $senderName
-                );
-                $mailObject->setFrom($sender);
-                $mailObject->setReplyTo($sender);
-                $mailObject->setTo(array($this->extensionConfiguration['reportEmail']));
-                $mailObject->setSubject($subject);
-                $mailObject->setBody($body);
-                // Send mail
-                $result = $mailObject->send();
-                $message = '';
-            } catch (\Exception $e) {
-                $message = $e->getMessage() . '[' . $e->getCode() . ']';
-            }
-        }
-
-        // Report error in log, if any
-        if ($result === 0) {
-            $comment = 'Reporting mail could not be sent to ' . $this->extensionConfiguration['reportEmail'];
-            if (!empty($message)) {
-                $comment .= ' (' . $message . ')';
-            }
-            $GLOBALS['BE_USER']->writelog(
-                    4,
-                    0,
-                    1,
-                    'external_import',
-                    $comment,
-                    array()
-            );
-        }
+        return $this->reportingUtility;
     }
 
     /**
