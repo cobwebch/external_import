@@ -14,6 +14,9 @@ namespace Cobweb\ExternalImport\Task;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
@@ -56,7 +59,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
                 $taskInfo[self::$fieldName] = 'all';
             } elseif ($parentObject->CMD === 'edit') {
                 // In case of edit, set to internal value if no data was submitted already
-                $taskInfo[self::$fieldName] = $task->table . '/' . $task->index;
+                $taskInfo[self::$fieldName] = $task->table . '-' . $task->index;
             }
         }
 
@@ -68,26 +71,21 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $selected = ' selected="selected"';
         }
         $fieldCode .= '<option value="all"' . $selected . '>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') . '</option>';
+        // Get all external import configurations
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $configurationRepository = $objectManager->get(ConfigurationRepository::class);
+        $configurations = $configurationRepository->findBySync(true);
         // Loop on the TCA of all tables to find those with an external import configuration
-        foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-            if (isset($sections['ctrl']['external'])) {
-                $externalData = $sections['ctrl']['external'];
-                foreach ($externalData as $index => $externalConfig) {
-                    // Take only synchronized tables
-                    if (!empty($externalConfig['connector'])) {
-                        $code = $tableName . '/' . $index;
-                        $priority = $externalConfig['priority'];
+        foreach ($configurations as $configuration) {
+                        $id = $configuration['id'];
                         $selected = '';
-                        if ($taskInfo[self::$fieldName] === $code) {
+                        if ($taskInfo[self::$fieldName] === $id) {
                             $selected = ' selected="selected"';
                         }
-                        $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') . ': ' . $tableName;
-                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') . ': ' . $index;
-                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') . ': ' . $priority;
-                        $fieldCode .= '<option value="' . $code . '"' . $selected . '>' . $label . '</option>';
-                    }
-                }
-            }
+                        $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') . ': ' . $configuration['table'];
+                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') . ': ' . $configuration['index'];
+                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') . ': ' . $configuration['priority'];
+                        $fieldCode .= '<option value="' . $id . '"' . $selected . '>' . $label . '</option>';
         }
         $fieldCode .= '</select>';
         $additionalFields = array();

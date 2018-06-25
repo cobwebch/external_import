@@ -81,7 +81,7 @@ class SchedulerRepository implements SingletonInterface
         $taskList = array();
         /** @var $taskObject AutomatedSyncTask */
         foreach ($this->tasks as $taskObject) {
-            $key = $taskObject->table . '/' . $taskObject->index;
+            $key = $taskObject->table . '-' . $taskObject->index;
             $taskList[$key] = $this->assembleTaskInformation($taskObject);
         }
         return $taskList;

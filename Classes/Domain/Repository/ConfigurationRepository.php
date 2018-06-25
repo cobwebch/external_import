@@ -189,26 +189,26 @@ class ConfigurationRepository
                         $priority = Importer::DEFAULT_PRIORITY;
                         $description = '';
                         if (isset($externalConfig['priority'])) {
-                            $priority = $externalConfig['priority'];
+                            $priority = (int)$externalConfig['priority'];
                         }
                         if (isset($externalConfig['description'])) {
                             $description = $GLOBALS['LANG']->sL($externalConfig['description']);
                         }
                         // Store the base configuration
+                        $taskId = $tableName . '-' . $index;
                         $tableConfiguration = [
-                                'id' => $tableName . '-' . $index,
+                                'id' => $taskId,
                                 'table' => $tableName,
                                 'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']),
                                 'index' => $index,
-                                'priority' => (int)$priority,
+                                'priority' => $priority,
                                 'description' => htmlspecialchars($description),
                                 'writeAccess' => $hasWriteAccess
                         ];
                         // Add Scheduler task information, if any
-                        $taskKey = $tableName . '/' . $index;
-                        if (array_key_exists($taskKey, $tasks)) {
+                        if (array_key_exists($taskId, $tasks)) {
                             $tableConfiguration['automated'] = 1;
-                            $tableConfiguration['task'] = $tasks[$taskKey];
+                            $tableConfiguration['task'] = $tasks[$taskId];
                         } else {
                             $tableConfiguration['automated'] = 0;
                             $tableConfiguration['task'] = null;
