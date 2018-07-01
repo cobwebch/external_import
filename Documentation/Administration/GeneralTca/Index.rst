@@ -11,7 +11,7 @@ Here is an example of a typical "ctrl" section syntax:
 .. code-block:: php
 
         $extensionPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('externalimport_tut');
-	
+
 	$GLOBALS['TCA']['tx_externalimporttut_departments'] = array(
 		'ctrl' => array(
 			'title' => 'LLL:EXT:externalimport_tut/locallang_db.xml:tx_externalimporttut_departments',
@@ -60,6 +60,7 @@ Properties
 	disabledOperations_                   string            Store data
 	disableLog_                           boolean           Store data
 	enforcePid_                           boolean           Store data
+	group_                                string            Sync process
 	minimumRecords_                       integer           Validate data
 	namespaces_                           array             Handle data (XML)
 	nodetype_                             string            Handle data (XML)
@@ -147,6 +148,26 @@ Description
 
 Scope
   Handle data
+
+
+.. _administration-general-tca-properties-group:
+
+group
+~~~~~
+
+Type
+  string
+
+Description
+  This can be any arbitrary string of characters. All External Import
+  configurations having the same value for the "group" property will
+  form a group of configurations. It is then possible to execute the
+  synchronization of all configurations in the group in one go, in
+  order of priority. Group synchronization is available on the command
+  line and in the Scheduler task.
+
+Scope
+  Sync process
 
 
 .. _administration-general-tca-properties-nodetype:

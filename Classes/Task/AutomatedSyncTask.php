@@ -20,6 +20,7 @@ use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 /**
@@ -63,8 +64,21 @@ class AutomatedSyncTask extends AbstractTask
         $globalStatus = 'OK';
         $errorCount = 0;
         $warningCount = 0;
-        if ($this->table === 'all') {
-            $configurations = $importer->getConfigurationRepository()->findOrderedConfigurations();
+        if ($this->table === 'all' || strpos($this->table, 'group:') === 0) {
+            if ($this->table === 'all') {
+                $configurations = $importer->getConfigurationRepository()->findOrderedConfigurations();
+            } else {
+                $group = substr($this->table, 6);
+                $configurations = $importer->getConfigurationRepository()->findByGroup($group);
+            }
+            // Exit early if no configuration was found
+            if (count($configurations) === 0) {
+                throw new \Cobweb\ExternalImport\Exception\NoConfigurationException(
+                        'No configuration was found for synchronization. Please check your task settings or your configuration via the BE module.',
+                        1530390188
+                );
+            }
+            // Loop on all found configurations
             foreach ($configurations as $tableList) {
                 foreach ($tableList as $configuration) {
                     $messages = $importer->synchronize(
@@ -116,29 +130,38 @@ class AutomatedSyncTask extends AbstractTask
         }
         // If any warning or error happened, throw an exception
         if ($globalStatus !== 'OK') {
-            throw new \Exception('One or more errors or warnings happened. Please consult the log.', 1258116760);
+            throw new \Exception(
+                    'One or more errors or warnings happened. Please consult the log.',
+                    1258116760
+            );
         }
         return $result;
     }
 
     /**
-     * Returns the synchronized table, index and priority as additional information
+     * Returns additional information for display in the Scheduler BE module.
      *
      * @return string Information to display
      */
     public function getAdditionalInformation()
     {
         if ($this->table === 'all') {
-            $info = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables');
+            $info = LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables');
+        } elseif (strpos($this->table, 'group:') === 0) {
+            $group = substr($this->table, 6);
+            $info = sprintf(
+                    LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:selectedGroup'),
+                    $group
+            );
         } else {
             $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             $configurationRepository = $objectManager->get(ConfigurationRepository::class);
             $configuration = $configurationRepository->findConfigurationObject($this->table, $this->index);
             $info = sprintf(
-                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'),
-                $this->table,
-                $this->index,
-                $configuration->getCtrlConfigurationProperty('priority')
+                    LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'),
+                    $this->table,
+                    $this->index,
+                    $configuration->getCtrlConfigurationProperty('priority')
             );
         }
         return $info;

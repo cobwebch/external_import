@@ -38,22 +38,25 @@
 		<table class="table table-striped table-hover" id="tx_externalimport_list" data-list-type="sync" data-has-scheduler="{hasScheduler}">
 			<thead>
 				<tr>
-					<th>&nbsp;</th>
-					<th>
+					<th class="column-icon">&nbsp;</th>
+					<th class="column-table">
 						<f:translate id="table" />
 					</th>
-					<th>
+					<th class="column-description">
 						<f:translate id="description" />
 					</th>
-					<th>
+					<th class="column-priority">
 						<f:translate id="priority" />
 					</th>
-					<th>&nbsp;</th>
+					<th class="column-group">
+						<f:translate id="group" />
+					</th>
+					<th class="column-actions">&nbsp;</th>
 					<f:if condition="{hasScheduler}">
-						<th>
+						<th class="column-autosync">
 							<f:translate id="autosync" />
 						</th>
-						<th>&nbsp;</th>
+						<th class="column-autosync-actions">&nbsp;</th>
 					</f:if>
 				</tr>
 			</thead>
@@ -66,6 +69,14 @@
 						<td>{configuration.tableName} ({configuration.table})</td>
 						<td>[{configuration.index}] {configuration.description}</td>
 						<td>{configuration.priority}</td>
+						<td>
+							<f:if condition="{configuration.group}">
+								<f:then>
+									<f:translate id="{configuration.group}" default="{configuration.group}" />
+								</f:then>
+								<f:else>-</f:else>
+							</f:if>
+						</td>
 						<td>
 							<div class="btn-group">
 								<f:link.action action="viewConfiguration" arguments="{table: configuration.table, index: configuration.index}" title="{f:translate(key: 'view_details')}" class="btn btn-default">

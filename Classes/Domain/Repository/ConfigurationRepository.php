@@ -34,7 +34,7 @@ class ConfigurationRepository
     /**
      * @var array Extension configuration
      */
-    protected $extensionConfiguration = array();
+    protected $extensionConfiguration = [];
 
     /**
      * @var \TYPO3\CMS\Extbase\Object\ObjectManager
@@ -65,7 +65,7 @@ class ConfigurationRepository
                     $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
             );
         }
-        return array();
+        return [];
     }
 
     /**
@@ -77,7 +77,7 @@ class ConfigurationRepository
      */
     protected function findColumnsByTableAndIndex($table, $index)
     {
-        $columns = array();
+        $columns = [];
         if (isset($GLOBALS['TCA'][$table]['columns'])) {
             $columnsConfiguration = $GLOBALS['TCA'][$table]['columns'];
             ksort($columnsConfiguration);
@@ -97,7 +97,7 @@ class ConfigurationRepository
      */
     public function findOrderedConfigurations()
     {
-        $externalTables = array();
+        $externalTables = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             if (isset($sections['ctrl']['external'])) {
                 foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
@@ -108,9 +108,13 @@ class ConfigurationRepository
                             $priority = $externalConfig['priority'];
                         }
                         if (!isset($externalTables[$priority])) {
-                            $externalTables[$priority] = array();
+                            $externalTables[$priority] = [];
                         }
-                        $externalTables[$priority][] = array('table' => $tableName, 'index' => $index);
+                        $externalTables[$priority][] = [
+                                'table' => $tableName,
+                                'index' => $index,
+                                'group' => $externalConfig['group'] ?? '-'
+                        ];
                     }
                 }
             }
@@ -119,6 +123,58 @@ class ConfigurationRepository
         ksort($externalTables);
 
         return $externalTables;
+    }
+
+    /**
+     * Finds all synchronizable configurations belonging to the given group and returns them ordered by priority.
+     *
+     * @param string $group Name of the group to look up
+     * @return array
+     */
+    public function findByGroup($group)
+    {
+        $externalTables = [];
+        foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+            if (isset($sections['ctrl']['external'])) {
+                foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
+                    if (!empty($externalConfig['connector']) && $externalConfig['group'] === $group) {
+                        // Default priority if not defined, set to very low
+                        $priority = Importer::DEFAULT_PRIORITY;
+                        if (isset($externalConfig['priority'])) {
+                            $priority = $externalConfig['priority'];
+                        }
+                        if (!isset($externalTables[$priority])) {
+                            $externalTables[$priority] = [];
+                        }
+                        $externalTables[$priority][] = [
+                                'table' => $tableName,
+                                'index' => $index
+                        ];
+                    }
+                }
+            }
+        }
+        // Sort tables by priority (lower number is highest priority)
+        ksort($externalTables);
+
+        return $externalTables;
+    }
+
+    public function findAllGroups()
+    {
+        $groups = [];
+        foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+            if (isset($sections['ctrl']['external'])) {
+                foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
+                    if (!empty($externalConfig['connector']) && !empty($externalConfig['group'])) {
+                        $groups[] = $externalConfig['group'];
+                    }
+                }
+            }
+        }
+        $groups = array_unique($groups);
+        sort($groups);
+        return $groups;
     }
 
     /**
@@ -161,10 +217,10 @@ class ConfigurationRepository
     public function findBySync($isSynchronizable)
     {
         $isSynchronizable = (bool)$isSynchronizable;
-        $configurations = array();
+        $configurations = [];
 
         // Get a list of all external import Scheduler tasks, if Scheduler is active
-        $tasks = array();
+        $tasks = [];
         if (ExtensionManagementUtility::isLoaded('scheduler')) {
             /** @var $schedulerRepository SchedulerRepository */
             $schedulerRepository = GeneralUtility::makeInstance(SchedulerRepository::class);
@@ -187,21 +243,31 @@ class ConfigurationRepository
                         // If priority is not defined, set to very low
                         // NOTE: the priority doesn't matter for non-synchronizable tables
                         $priority = Importer::DEFAULT_PRIORITY;
-                        $description = '';
                         if (isset($externalConfig['priority'])) {
                             $priority = (int)$externalConfig['priority'];
                         }
+                        $description = '';
                         if (isset($externalConfig['description'])) {
-                            $description = $GLOBALS['LANG']->sL($externalConfig['description']);
+                            if (strpos($externalConfig['description'], 'LLL:') === 0) {
+                                $description = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($externalConfig['description']);
+                            } else {
+                                $description = $externalConfig['description'];
+                            }
+                        }
+                        if (strpos($sections['ctrl']['title'], 'LLL:') === 0) {
+                            $tableTitle = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($sections['ctrl']['title']);
+                        } else {
+                            $tableTitle = $sections['ctrl']['title'];
                         }
                         // Store the base configuration
                         $taskId = $tableName . '-' . $index;
                         $tableConfiguration = [
                                 'id' => $taskId,
                                 'table' => $tableName,
-                                'tableName' => $GLOBALS['LANG']->sL($sections['ctrl']['title']),
+                                'tableName' => $tableTitle,
                                 'index' => $index,
                                 'priority' => $priority,
+                                'group' => $externalConfig['group'],
                                 'description' => htmlspecialchars($description),
                                 'writeAccess' => $hasWriteAccess
                         ];

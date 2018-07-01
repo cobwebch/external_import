@@ -25,6 +25,19 @@
 					</tr>
 				</f:if>
 				<tr>
+					<td><f:translate id="group" /></td>
+					<td>
+						<f:if condition="{ctrlConfiguration.group}">
+							<f:then>
+								<f:translate id="{ctrlConfiguration.group}" default="{ctrlConfiguration.group}" />
+							</f:then>
+							<f:else>
+								<f:translate id="none" />
+							</f:else>
+						</f:if>
+					</td>
+				</tr>
+				<tr>
 					<td><f:translate id="data_type" /></td>
 					<td>
 						{ctrlConfiguration.data}

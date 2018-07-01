@@ -35,6 +35,12 @@
 			<trans-unit id="all" xml:space="preserve">
 				<source>All</source>
 			</trans-unit>
+			<trans-unit id="options.groups" xml:space="preserve">
+				<source>Groups</source>
+			</trans-unit>
+			<trans-unit id="options.configurations" xml:space="preserve">
+				<source>Configurations</source>
+			</trans-unit>
 			<trans-unit id="table" xml:space="preserve">
 				<source>Table</source>
 			</trans-unit>
@@ -154,6 +160,9 @@
 			</trans-unit>
 			<trans-unit id="allTables" xml:space="preserve">
 				<source>All tables</source>
+			</trans-unit>
+			<trans-unit id="selectedGroup" xml:space="preserve">
+				<source>Group: %s</source>
 			</trans-unit>
 			<trans-unit id="tableIndexAndPriority" xml:space="preserve">
 				<source>Table: %1$s, index: %2$s, priority: %3$s</source>

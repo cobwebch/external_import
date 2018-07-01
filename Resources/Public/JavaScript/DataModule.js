@@ -37,27 +37,32 @@ define(['jquery',
 		var columns = [
 			// Icon
 			{
-				targets: 0,
+				targets: 'column-icon',
 				orderable: false
 			},
 			// Table
 			{
-				targets: 1,
+				targets: 'column-table',
 				orderable: true
 			},
 			// Description
 			{
-				targets: 2,
+				targets: 'column-description',
 				orderable: true
 			},
 			// Priority
 			{
-				targets: 3,
+				targets: 'column-priority',
+				orderable: true
+			},
+			// Group
+			{
+				targets: 'column-group',
 				orderable: true
 			},
 			// Action icons
 			{
-				targets: 4,
+				targets: 'column-actions',
 				orderable: false
 			}
 		];
@@ -66,14 +71,14 @@ define(['jquery',
 			// Information
 			columns.push(
 					{
-						targets: 5,
+						targets: 'column-autosync',
 						orderable: true
 					}
 			);
 			// Action icons
 			columns.push(
 					{
-						targets: 6,
+						targets: 'column-autosync-actions',
 						orderable: false
 					}
 			);
@@ -100,22 +105,22 @@ define(['jquery',
 		var columns = [
 			// Icon
 			{
-				targets: 0,
+				targets: 'column-icon',
 				orderable: false
 			},
 			// Table
 			{
-				targets: 1,
+				targets: 'column-table',
 				orderable: true
 			},
 			// Description
 			{
-				targets: 2,
+				targets: 'column-description',
 				orderable: true
 			},
 			// Action icons
 			{
-				targets: 3,
+				targets: 'column-actions',
 				orderable: false
 			}
 		];

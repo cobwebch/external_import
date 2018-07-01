@@ -82,6 +82,12 @@ class ImportCommand extends Command
                         'Use this option to synchronize all existing configurations, in order of priority (other options are ignored).'
                 )
                 ->addOption(
+                        'group',
+                        'g',
+                        InputOption::VALUE_REQUIRED,
+                        'Use this option to synchronize all configurations from a given group, in order of priority ("all" comes first, other options are ignored).'
+                )
+                ->addOption(
                         'list',
                         'l',
                         InputOption::VALUE_NONE,
@@ -129,6 +135,7 @@ class ImportCommand extends Command
             $this->importer->setCallContext($callContext);
 
             $all = $input->getOption('all');
+            $group = $input->getOption('group');
             $table = $input->getOption('table');
             $index = $input->getOption('index');
 
@@ -143,16 +150,11 @@ class ImportCommand extends Command
             // Launch full synchronization
             if ($all) {
                 $configurations = $this->configurationRepository->findOrderedConfigurations();
-                foreach ($configurations as $tableList) {
-                    foreach ($tableList as $configuration) {
-                        $this->io->section('Importing: ' . $configuration['table'] . ' / ' . $configuration['index']);
-                        $messages = $this->importer->synchronize(
-                                $configuration['table'],
-                                $configuration['index']
-                        );
-                        $this->reportResults($messages);
-                    }
-                }
+                $this->runSynchronization($configurations);
+            // Launch group synchronization
+            } elseif ($group) {
+                $configurations = $this->configurationRepository->findByGroup($group);
+                $this->runSynchronization($configurations);
             // Launch selected synchronization
             } elseif ($table !== null && $index !== null) {
                 $messages = $this->importer->synchronize(
@@ -163,6 +165,55 @@ class ImportCommand extends Command
             } else {
                 // Report erroneous arguments
                 $this->io->warning('The command was called with invalid arguments. Please use "typo3 help externalimport:sync" for help.');
+            }
+        }
+    }
+
+    /**
+     * Prints the list of synchronizable configurations as a table.
+     *
+     * @return void
+     */
+    protected function printConfigurationList()
+    {
+        $configurations = $this->configurationRepository->findOrderedConfigurations();
+        $outputTable = [];
+        foreach ($configurations as $priority => $tableList) {
+            foreach ($tableList as $configuration) {
+                $outputTable[] = [
+                        $priority,
+                        $configuration['table'],
+                        $configuration['index'],
+                        $configuration['group']
+                ];
+            }
+        }
+        $this->io->table(
+                ['Priority', 'Table', 'Index', 'Group'],
+                $outputTable
+        );
+    }
+
+    /**
+     * Runs the synchronization of the given list of configurations.
+     *
+     * @param array $configurations List of External Import configurations
+     * @return void
+     */
+    protected function runSynchronization(array $configurations)
+    {
+        if (count($configurations) === 0) {
+            $this->io->warning('No configuration to synchronize.');
+        } else {
+            foreach ($configurations as $tableList) {
+                foreach ($tableList as $configuration) {
+                    $this->io->section('Importing: ' . $configuration['table'] . ' / ' . $configuration['index']);
+                    $messages = $this->importer->synchronize(
+                            $configuration['table'],
+                            $configuration['index']
+                    );
+                    $this->reportResults($messages);
+                }
             }
         }
     }
@@ -188,25 +239,5 @@ class ImportCommand extends Command
                 }
             }
         }
-    }
-
-    /**
-     * Prints the list of synchronizable configurations as a table.
-     *
-     * @return void
-     */
-    protected function printConfigurationList()
-    {
-        $configurations = $this->configurationRepository->findOrderedConfigurations();
-        $outputTable = array();
-        foreach ($configurations as $priority => $tableList) {
-            foreach ($tableList as $configuration) {
-                $outputTable[] = array($priority, $configuration['table'], $configuration['index']);
-            }
-        }
-        $this->io->table(
-                array('Priority', 'Table', 'Index'),
-                $outputTable
-        );
     }
 }

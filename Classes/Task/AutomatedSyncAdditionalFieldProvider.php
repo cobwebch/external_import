@@ -17,12 +17,13 @@ namespace Cobweb\ExternalImport\Task;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 /**
- * Aditional fields provider class for the Scheduler
+ * Additional fields provider class for the Scheduler.
  *
  * @author Francois Suter <typo3@cobweb.ch>
  * @package TYPO3
@@ -70,28 +71,49 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         if ($taskInfo[self::$fieldName] === 'all') {
             $selected = ' selected="selected"';
         }
+        // Add "all" selector
         $fieldCode .= '<option value="all"' . $selected . '>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') . '</option>';
-        // Get all external import configurations
+        // Get configuration repository for fetching values
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $configurationRepository = $objectManager->get(ConfigurationRepository::class);
+
+        // Add groups selection
+        $groups = $configurationRepository->findAllGroups();
+        if (count($groups) > 0) {
+            $fieldCode .= '<optgroup label="' . LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.groups') . '">';
+            foreach ($groups as $group) {
+                $id = 'group:' . $group;
+                $selected = '';
+                if ($taskInfo[self::$fieldName] === $id) {
+                    $selected = ' selected="selected"';
+                }
+                $fieldCode .= '<option value="' . $id . '"' . $selected . '>' . $group . '</option>';
+            }
+            $fieldCode .= '</optgroup>';
+        }
+
+        // Add individual configurations
         $configurations = $configurationRepository->findBySync(true);
-        // Loop on the TCA of all tables to find those with an external import configuration
-        foreach ($configurations as $configuration) {
-                        $id = $configuration['id'];
-                        $selected = '';
-                        if ($taskInfo[self::$fieldName] === $id) {
-                            $selected = ' selected="selected"';
-                        }
-                        $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') . ': ' . $configuration['table'];
-                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') . ': ' . $configuration['index'];
-                        $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') . ': ' . $configuration['priority'];
-                        $fieldCode .= '<option value="' . $id . '"' . $selected . '>' . $label . '</option>';
+        if (count($configurations) > 0) {
+            $fieldCode .= '<optgroup label="' . LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.configurations') . '">';
+            foreach ($configurations as $configuration) {
+                $id = $configuration['id'];
+                $selected = '';
+                if ($taskInfo[self::$fieldName] === $id) {
+                    $selected = ' selected="selected"';
+                }
+                $label = LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') . ': ' . $configuration['table'];
+                $label .= ', ' . LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') . ': ' . $configuration['index'];
+                $label .= ', ' . LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') . ': ' . $configuration['priority'];
+                $fieldCode .= '<option value="' . $id . '"' . $selected . '>' . $label . '</option>';
+            }
+            $fieldCode .= '</optgroup>';
         }
         $fieldCode .= '</select>';
         $additionalFields = array();
         $additionalFields[$fieldID] = array(
                 'code' => $fieldCode,
-                'label' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:field.' . self::$fieldName,
+                'label' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:field.syncItem',
                 'cshKey' => '_MOD_user_txexternalimportM1',
                 'cshLabel' => $fieldID
         );
@@ -123,11 +145,12 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      */
     public function saveAdditionalFields(array $submittedData, AbstractTask $task)
     {
-        if ($submittedData[self::$fieldName] === 'all') {
-            $task->table = 'all';
-            $task->index = 0;
+        $fieldValue = $submittedData[self::$fieldName];
+        if ($fieldValue === 'all' || strpos($fieldValue, 'group:') === 0) {
+                $task->table = $fieldValue;
+                $task->index = 0;
         } else {
-            list($table, $index) = explode('/', $submittedData[self::$fieldName]);
+            list($table, $index) = explode('/', $fieldValue);
             $task->table = $table;
             $task->index = $index;
         }
