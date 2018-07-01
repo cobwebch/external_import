@@ -47,12 +47,25 @@ class ImporterTest extends FunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->setUpBackendUserFromFixture(1);
-        // Connector services need a global LanguageService object
-        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+        try {
+            $this->setUpBackendUserFromFixture(1);
+            // Connector services need a global LanguageService object
+            $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
-        $objectManager = new ObjectManager();
-        $this->subject = $objectManager->get(Importer::class);
+            $objectManager = new ObjectManager();
+            $this->subject = $objectManager->get(Importer::class);
+            $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
+            $this->subject->setForcedStoragePid(1);
+        }
+        catch (\Exception $e) {
+            self::markTestSkipped(
+                    sprintf(
+                            'Some initializations could not be performed (Exception: %s [%d])',
+                            $e->getMessage(),
+                            $e->getCode()
+                    )
+            );
+        }
     }
 
     /**
@@ -64,14 +77,11 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importTagsWithImporterStoresFiveRecords()
     {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_tag',
                 0
         );
-        $countRecords = $this->getDatabaseConnection()->exec_SELECTcountRows(
+        $countRecords = $this->getDatabaseConnection()->selectCount(
                 'uid',
                 'tx_externalimporttest_tag'
         );
@@ -91,20 +101,17 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importCategoriesWithImporterStoresFourRecordsWithOneParentRelation()
     {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
         $messages = $this->subject->synchronize(
                 'sys_category',
                 'product_categories'
         );
         // Count imported categories
-        $countRecords = $this->getDatabaseConnection()->exec_SELECTcountRows(
+        $countRecords = $this->getDatabaseConnection()->selectCount(
                 'uid',
                 'sys_category'
         );
         // Count records having a parent
-        $countChildren = $this->getDatabaseConnection()->exec_SELECTcountRows(
+        $countChildren = $this->getDatabaseConnection()->selectCount(
                 'uid',
                 'sys_category',
                 'parent > 0'
@@ -123,9 +130,6 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importBaseProductsWithImporterStoresTwoRecordsAndCreatesRelations()
     {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
         // Import tags and categories first, so that relations can be created to them from products
         $this->subject->synchronize(
                 'tx_externalimporttest_tag',
@@ -139,23 +143,22 @@ class ImporterTest extends FunctionalTestCase
                 'tx_externalimporttest_product',
                 'base'
         );
-        // Get the number of products stored
-        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
-                'uid,tags',
-                'tx_externalimporttest_product',
-                '',
-                '',
+        // Get the number of products stored and their tag relations
+        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
+        $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
+                ->select('uid', 'tags')
+                ->from('tx_externalimporttest_product')
                 // Ensure consistent order for safe comparison
-                'uid ASC'
-        );
+                ->orderBy('uid', 'ASC')
+                ->execute();
         $countProducts = 0;
-        $tagRelations = array();
-        while ($row = $databaseResult->fetch_assoc()) {
+        $tagRelations = [];
+        while ($row = $databaseResult->fetch()) {
             $countProducts++;
-            $tagRelations[] = $row['tags'];
+            $tagRelations[$row['uid']] = $row['tags'];
         }
         // Get the number of categories relations created
-        $countRelations = $this->getDatabaseConnection()->exec_SELECTcountRows(
+        $countRelations = $this->getDatabaseConnection()->selectCount(
                 'uid_local',
                 'sys_category_record_mm',
                 'tablenames = \'tx_externalimporttest_product\''
@@ -164,10 +167,10 @@ class ImporterTest extends FunctionalTestCase
         self::assertEquals(2, $countProducts, serialize($messages));
         self::assertEquals(2, $countRelations);
         self::assertSame(
-                array(
-                        '1,3',
-                        '2,3'
-                ),
+                [
+                        1 => '1,3',
+                        2 => '2,3'
+                ],
                 $tagRelations
         );
     }
@@ -180,15 +183,12 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importMoreProductsWithImporterStoresTwoRecords()
     {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_product',
                 'more'
         );
         // Get the number of products stored
-        $countProducts = $this->getDatabaseConnection()->exec_SELECTcountRows(
+        $countProducts = $this->getDatabaseConnection()->selectCount(
                 'uid',
                 'tx_externalimporttest_product'
         );
@@ -208,39 +208,52 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importStableProductsWithImporterStoresTwoRecordsAndRemovesOldRelations()
     {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        // Create 1 category and 1 relation to it. The relation should be removed by the import process.
-        $this->importDataSet(__DIR__ . '/Fixtures/CategoriesMM.xml');
-        $this->subject->setForcedStoragePid(1);
+        try {
+            // Create 1 category and 1 relation to it. The relation should be removed by the import process.
+            $this->importDataSet(__DIR__ . '/Fixtures/CategoriesMM.xml');
 
-        $messages = $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'stable'
-        );
-        // Get the number of products stored
-        $countProducts = $this->getDatabaseConnection()->exec_SELECTcountRows(
-                'uid',
-                'tx_externalimporttest_product'
-        );
-        $products = $this->getDatabaseConnection()->exec_SELECTgetRows(
-                'uid,name,categories',
-                'tx_externalimporttest_product',
-                ''
-        );
-        // Get the categories relations
-        $relations = $this->getDatabaseConnection()->exec_SELECTgetRows(
-                'uid_local, uid_foreign',
-                'sys_category_record_mm',
-                'tablenames = \'tx_externalimporttest_product\''
-        );
-        $countRelations = count($relations);
-        $firstRelation = array_pop($relations);
-        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(2, $countProducts, serialize($messages));
-        // There should be only 1 relation, because the one from the fixture is expected to have been deleted
-        self::assertEquals(1, $countRelations);
-        // The remaining relation should be with the second product (uid: 2)
-        self::assertEquals(2, $firstRelation['uid_foreign']);
+            $messages = $this->subject->synchronize(
+                    'tx_externalimporttest_product',
+                    'stable'
+            );
+            // Get the number of products stored
+            $countProducts = $this->getDatabaseConnection()->selectCount(
+                    'uid',
+                    'tx_externalimporttest_product'
+            );
+/*
+ * Commented out while waiting for the possibility to check updates count (which should be 0)
+            $products = $this->getDatabaseConnection()->getDatabaseInstance()
+                    ->select('uid', 'name', 'categories')
+                    ->from('tx_externalimporttest_product')
+                    ->execute()
+                    ->fetchAll();
+*/
+            // Get the categories relations
+            $relations = $this->getDatabaseConnection()->getDatabaseInstance()
+                    ->select('uid_local', 'uid_foreign')
+                    ->from('sys_category_record_mm')
+                    ->where('tablenames = \'tx_externalimporttest_product\'')
+                    ->execute()
+                    ->fetchAll();
+            $countRelations = count($relations);
+            $firstRelation = array_pop($relations);
+            // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
+            self::assertEquals(2, $countProducts, serialize($messages));
+            // There should be only 1 relation, because the one from the fixture is expected to have been deleted
+            self::assertEquals(1, $countRelations);
+            // The remaining relation should be with the second product (uid: 2)
+            self::assertEquals(2, $firstRelation['uid_foreign']);
+        }
+        catch (\Exception $e) {
+            self::markTestSkipped(
+                    sprintf(
+                            'Categories relations fixture could not be loaded (Exception: %s [%d])',
+                            $e->getMessage(),
+                            $e->getCode()
+                    )
+            );
+        }
     }
 
     /**
@@ -254,9 +267,6 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importProductsForStoresWithImporterCreatesSixRelations()
     {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
         // First import products and stores, so that relations can be created
         $this->subject->synchronize(
                 'tx_externalimporttest_product',
@@ -276,26 +286,297 @@ class ImporterTest extends FunctionalTestCase
                 'products_for_stores'
         );
         // Get the number of relations created
-        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
-                'uid_local,stock',
-                'tx_externalimporttest_store_product_mm',
-                '',
-                '',
+        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
+        $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
+                ->select('uid_local', 'stock')
+                ->from('tx_externalimporttest_store_product_mm')
                 // Ensure consistent order for safe comparison
-                'stock ASC'
-        );
+                ->orderBy('stock', 'ASC')
+                ->execute();
         $countRelations = 0;
-        $stocks = array();
-        while ($row = $databaseResult->fetch_assoc()) {
+        $stocks = [];
+        while ($row = $databaseResult->fetch()) {
             $countRelations++;
             $stocks[] = $row['stock'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(6, $countRelations, serialize($messages));
         self::assertSame(
-                array('5', '6', '8', '10', '12', '20'),
+                [5, 6, 8, 10, 12, 20],
                 $stocks
         );
+    }
+
+    /**
+     * Imports the "stores" and checks whether we have the right count or not
+     * (2 expected). Also checks relations between products and stores,
+     * including the "stock" additional field.
+     *
+     * @test
+     */
+    public function importBundlesWithImporterStoresThreeRecordsAndCreatesOrderedRelations()
+    {
+        // First import all products, so that relations can be created
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'base'
+        );
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'more'
+        );
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'stable'
+        );
+
+        $messages = $this->subject->synchronize(
+                'tx_externalimporttest_bundle',
+                0
+        );
+        // Get the number of products stored
+        $countBundles = $this->getDatabaseConnection()->selectCount(
+                'uid',
+                'tx_externalimporttest_bundle'
+        );
+        // Get the number of relations created
+        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
+        $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
+                ->select('uid_local', 'uid_foreign', 'sorting')
+                ->from('tx_externalimporttest_bundle_product_mm')
+                // Ensure consistent order for safe comparison
+                ->orderBy('uid_local', 'ASC')
+                ->addOrderBy('sorting', 'ASC')
+                ->execute();
+        $countRelations = 0;
+        $sortedProducts = [];
+        while ($row = $databaseResult->fetch()) {
+            $countRelations++;
+            $sortedProducts[] = $row['uid_foreign'];
+        }
+        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
+        self::assertEquals(3, $countBundles, serialize($messages));
+        self::assertEquals(8, $countRelations);
+        self::assertSame(
+                [3, 4, 1, 2, 6, 1, 5, 2],
+                $sortedProducts
+        );
+    }
+
+    /**
+     * Imports the "stores" and checks whether we have the right count or not
+     * (2 expected). Also checks relations between products and stores,
+     * including the "stock" additional field.
+     *
+     * @test
+     */
+    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelations()
+    {
+        // First import all products, so that relations can be created
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'base'
+        );
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'more'
+        );
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'stable'
+        );
+
+        $messages = $this->subject->synchronize(
+                'tx_externalimporttest_order',
+                0
+        );
+        // Get the number of orders stored
+        $countOrders = $this->getDatabaseConnection()->selectCount(
+                'uid',
+                'tx_externalimporttest_order'
+        );
+        // Get the number of relations created
+        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
+        $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
+                ->select('uid_local', 'quantity')
+                ->from('tx_externalimporttest_order_items_mm')
+                // Ensure consistent order for safe comparison
+                ->orderBy('uid_local', 'ASC')
+                ->addOrderBy('sorting', 'ASC')
+                ->execute();
+        $countRelations = 0;
+        $quantities = [];
+        while ($row = $databaseResult->fetch()) {
+            $countRelations++;
+            $quantities[] = $row['quantity'];
+        }
+        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
+        self::assertEquals(2, $countOrders, serialize($messages));
+        self::assertEquals(7, $countRelations);
+        self::assertSame(
+                [3, 1, 10, 2, 1, 2, 1],
+                $quantities
+        );
+    }
+
+    /**
+     * Imports the "stores" and checks whether we have the right count or not
+     * (2 expected). Also checks relations between products and stores,
+     * including the "stock" additional field.
+     *
+     * @test
+     */
+    public function importStoresWithImporterStoresTwoRecordsAndCreatesRelations()
+    {
+        // First import products, so that relations can be created
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'more'
+        );
+
+        $messages = $this->subject->synchronize(
+                'tx_externalimporttest_store',
+                0
+        );
+        // Get the number of products stored
+        $countStores = $this->getDatabaseConnection()->selectCount(
+                'uid',
+                'tx_externalimporttest_store'
+        );
+        // Get the number of relations created
+        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
+        $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
+                ->select('uid_local', 'stock')
+                ->from('tx_externalimporttest_store_product_mm')
+                // Ensure consistent order for safe comparison
+                ->orderBy('stock', 'ASC')
+                ->execute();
+        $countRelations = 0;
+        $stocks = [];
+        while ($row = $databaseResult->fetch()) {
+            $countRelations++;
+            $stocks[] = $row['stock'];
+        }
+        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
+        self::assertEquals(2, $countStores, serialize($messages));
+        self::assertEquals(3, $countRelations);
+        self::assertSame(
+                [5, 6, 10],
+                $stocks
+        );
+    }
+
+    /**
+     * Imports the "invoices" elements and checks whether we have the right count or not
+     * (3 expected).
+     *
+     * @test
+     */
+    public function importInvoicesWithImporterStoresThreeRecords()
+    {
+        $messages = $this->subject->synchronize(
+                'tx_externalimporttest_invoice',
+                0
+        );
+        $countRecords = $this->getDatabaseConnection()->selectCount(
+                'uid',
+                'tx_externalimporttest_invoice'
+        );
+        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
+        self::assertEquals(3, $countRecords, serialize($messages));
+    }
+
+    /**
+     * Imports the products as pages and checks whether the proper page tree has been created.
+     *
+     * @test
+     */
+    public function importProductsAsPagesWithImporterCreatesProperPageTree()
+    {
+        $messages = $this->subject->synchronize(
+                'pages',
+                'product_pages'
+        );
+        // Three new pages should be attached to the storage page
+        $parentPages = $this->getDatabaseConnection()->getDatabaseInstance()
+                ->select('uid', 'title')
+                ->from('pages')
+                ->where('pid = 1')
+                ->execute()
+                ->fetchAll();
+        $countParentPages = $this->getDatabaseConnection()->selectCount(
+                'uid',
+                'pages',
+                'pid = 1'
+        );
+        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
+        self::assertEquals(3, $countParentPages, serialize($messages));
+
+        // Next, the page called "Product 1" should have 2 child pages, "Product 2" none and "Product 3" 1 child page
+        $pageTree = array(
+                array(
+                        'title' => 'Product 1',
+                        'children' => 2
+                ),
+                array(
+                        'title' => 'Product 2',
+                        'children' => 0
+                ),
+                array(
+                        'title' => 'Product 3',
+                        'children' => 1
+                )
+        );
+        foreach ($pageTree as $page) {
+            $children = $this->getDatabaseConnection()->selectCount(
+                    'uid',
+                    'pages',
+                    'pid IN (SELECT uid FROM pages WHERE title = \'' . $page['title'] . '\')'
+            );
+            self::assertEquals($page['children'], $children);
+        }
+    }
+
+    /**
+     * Imports a product to a different page, thus moving the product.
+     *
+     * @test
+     */
+    public function importUpdatedProductsWithImporterMovesProducts()
+    {
+        try {
+            $this->importDataSet(__DIR__ . '/Fixtures/ExtraStoragePage.xml');
+            // First import base products
+            $this->subject->synchronize(
+                    'tx_externalimporttest_product',
+                    'base'
+            );
+            // Import "updated" products, which is supposed to move one product to a different page
+            $messages = $this->subject->synchronize(
+                    'tx_externalimporttest_product',
+                    'updated_products'
+            );
+            $countMovedProducts = $this->getDatabaseConnection()->selectCount(
+                    'uid',
+                    'tx_externalimporttest_product',
+                    'pid = 2'
+            );
+            // A single product should have been moved
+            self::assertEquals(
+                    1,
+                    $countMovedProducts,
+                    serialize($messages)
+            );
+        }
+        catch (\Exception $e) {
+            self::markTestSkipped(
+                    sprintf(
+                            'Extra storage page fixture could not be loaded (Exception: %s [%d])',
+                            $e->getMessage(),
+                            $e->getCode()
+                    )
+            );
+        }
     }
 
     /**
@@ -339,282 +620,5 @@ class ImporterTest extends FunctionalTestCase
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(FlashMessage::ERROR, $messageLevel, serialize($messages));
         self::assertCount(1, $messagesForLevel);
-    }
-
-    /**
-     * Imports the "stores" and checks whether we have the right count or not
-     * (2 expected). Also checks relations between products and stores,
-     * including the "stock" additional field.
-     *
-     * @test
-     */
-    public function importBundlesWithImporterStoresThreeRecordsAndCreatesOrderedRelations()
-    {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
-        // First import all products, so that relations can be created
-        $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
-        );
-        $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'more'
-        );
-        $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'stable'
-        );
-
-        $messages = $this->subject->synchronize(
-                'tx_externalimporttest_bundle',
-                0
-        );
-        // Get the number of products stored
-        $countBundles = $this->getDatabaseConnection()->exec_SELECTcountRows(
-                'uid',
-                'tx_externalimporttest_bundle'
-        );
-        // Get the number of relations created
-        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
-                'uid_local,uid_foreign,sorting',
-                'tx_externalimporttest_bundle_product_mm',
-                '',
-                '',
-                // Ensure consistent order for safe comparison
-                'uid_local ASC,sorting ASC'
-        );
-        $countRelations = 0;
-        $sortedProducts = array();
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countRelations++;
-            $sortedProducts[] = $row['uid_foreign'];
-        }
-        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(3, $countBundles, serialize($messages));
-        self::assertEquals(8, $countRelations);
-        self::assertSame(
-                array('3', '4', '1', '2', '6', '1', '5', '2'),
-                $sortedProducts
-        );
-    }
-
-    /**
-     * Imports the "stores" and checks whether we have the right count or not
-     * (2 expected). Also checks relations between products and stores,
-     * including the "stock" additional field.
-     *
-     * @test
-     */
-    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelations()
-    {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
-        // First import all products, so that relations can be created
-        $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
-        );
-        $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'more'
-        );
-        $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'stable'
-        );
-
-        $messages = $this->subject->synchronize(
-                'tx_externalimporttest_order',
-                0
-        );
-        // Get the number of orders stored
-        $countOrders = $this->getDatabaseConnection()->exec_SELECTcountRows(
-                'uid',
-                'tx_externalimporttest_order'
-        );
-        // Get the number of relations created
-        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
-                'uid_local,quantity',
-                'tx_externalimporttest_order_items_mm',
-                '',
-                '',
-                // Ensure consistent order for safe comparison
-                'uid_local ASC,sorting ASC'
-        );
-        $countRelations = 0;
-        $quantities = array();
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countRelations++;
-            $quantities[] = $row['quantity'];
-        }
-        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(2, $countOrders, serialize($messages));
-        self::assertEquals(7, $countRelations);
-        self::assertSame(
-                array('3', '1', '10', '2', '1', '2', '1'),
-                $quantities
-        );
-    }
-
-    /**
-     * Imports the "stores" and checks whether we have the right count or not
-     * (2 expected). Also checks relations between products and stores,
-     * including the "stock" additional field.
-     *
-     * @test
-     */
-    public function importStoresWithImporterStoresTwoRecordsAndCreatesRelations()
-    {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
-        // First import products, so that relations can be created
-        $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'more'
-        );
-
-        $messages = $this->subject->synchronize(
-                'tx_externalimporttest_store',
-                0
-        );
-        // Get the number of products stored
-        $countStores = $this->getDatabaseConnection()->exec_SELECTcountRows(
-                'uid',
-                'tx_externalimporttest_store'
-        );
-        // Get the number of relations created
-        $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
-                'uid_local,stock',
-                'tx_externalimporttest_store_product_mm',
-                '',
-                '',
-                // Ensure consistent order for safe comparison
-                'stock ASC'
-        );
-        $countRelations = 0;
-        $stocks = array();
-        while ($row = $databaseResult->fetch_assoc()) {
-            $countRelations++;
-            $stocks[] = $row['stock'];
-        }
-        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(2, $countStores, serialize($messages));
-        self::assertEquals(3, $countRelations);
-        self::assertSame(
-                array('5', '6', '10'),
-                $stocks
-        );
-    }
-
-    /**
-     * Imports the "invoices" elements and checks whether we have the right count or not
-     * (3 expected).
-     *
-     * @test
-     */
-    public function importInvoicesWithImporterStoresThreeRecords()
-    {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
-        $messages = $this->subject->synchronize(
-                'tx_externalimporttest_invoice',
-                0
-        );
-        $countRecords = $this->getDatabaseConnection()->exec_SELECTcountRows(
-                'uid',
-                'tx_externalimporttest_invoice'
-        );
-        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(3, $countRecords, serialize($messages));
-    }
-
-    /**
-     * Imports the products as pages and checks whether the proper page tree has been created.
-     *
-     * @test
-     */
-    public function importProductsAsPagesWithImporterCreatesProperPageTree()
-    {
-        $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
-        $messages = $this->subject->synchronize(
-                'pages',
-                'product_pages'
-        );
-        // Three new pages should be attached to the storage page
-        $countParentPages = $this->getDatabaseConnection()->exec_SELECTcountRows(
-                'uid',
-                'pages',
-                'pid = 1'
-        );
-        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(3, $countParentPages, serialize($messages));
-
-        // Next, the page called "Product 1" should have 2 child pages, "Product 2" none and "Product 3" 1 child page
-        $pageTree = array(
-                array(
-                        'title' => 'Product 1',
-                        'children' => 2
-                ),
-                array(
-                        'title' => 'Product 2',
-                        'children' => 0
-                ),
-                array(
-                        'title' => 'Product 3',
-                        'children' => 1
-                )
-        );
-        foreach ($pageTree as $page) {
-            $databaseResult = $this->getDatabaseConnection()->exec_SELECTquery(
-                    'COUNT(uid) AS total',
-                    'pages',
-                    'pid IN (SELECT uid FROM pages WHERE title = \'' . $page['title'] . '\')'
-            );
-            $children = 0;
-            if ($row = $databaseResult->fetch_assoc()) {
-                $children = $row['total'];
-            }
-            self::assertEquals($page['children'], $children);
-        }
-    }
-
-    /**
-     * Imports a product to a different page, thus moving the product.
-     *
-     * @test
-     */
-    public function importUpdatedProductsWithImporterMovedProducts()
-    {
-        $this->importDataSet(__DIR__ . '/Fixtures/ExtraStoragePage.xml');
-        $this->subject->setForcedStoragePid(1);
-
-        // First import base products
-        $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
-        );
-        // Import "updated" products, which is supposed to move one product to a different page
-        $messages = $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'updated_products'
-        );
-        $countMovedProducts = $this->getDatabaseConnection()->exec_SELECTcountRows(
-                'uid',
-                'tx_externalimporttest_product',
-                'pid = 2'
-        );
-        // A single product should have been moved
-        self::assertEquals(
-                1,
-                $countMovedProducts,
-                serialize($messages)
-        );
     }
 }

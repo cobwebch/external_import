@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataset>
-	<!-- Storage page for imported data -->
-	<pages>
-		<uid>1</uid>
-		<pid>0</pid>
-		<title>External import storage</title>
-		<doktype>254</doktype>
-	</pages>
 	<!-- Extra page for testing moving of records -->
 	<pages>
 		<uid>2</uid>
