@@ -202,8 +202,6 @@ class ImporterTest extends FunctionalTestCase
      *
      * This test also checks that old MM relations are removed.
      *
-     * TODO: this configuration is supposed to test a "no update" scenario. Cannot be fully tested for now due to missing reporting.
-     *
      * @test
      */
     public function importStableProductsWithImporterStoresTwoRecordsAndRemovesOldRelations()
@@ -221,14 +219,11 @@ class ImporterTest extends FunctionalTestCase
                     'uid',
                     'tx_externalimporttest_product'
             );
-/*
- * Commented out while waiting for the possibility to check updates count (which should be 0)
             $products = $this->getDatabaseConnection()->getDatabaseInstance()
                     ->select('uid', 'name', 'categories')
                     ->from('tx_externalimporttest_product')
                     ->execute()
                     ->fetchAll();
-*/
             // Get the categories relations
             $relations = $this->getDatabaseConnection()->getDatabaseInstance()
                     ->select('uid_local', 'uid_foreign')
@@ -239,11 +234,29 @@ class ImporterTest extends FunctionalTestCase
             $countRelations = count($relations);
             $firstRelation = array_pop($relations);
             // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-            self::assertEquals(2, $countProducts, serialize($messages));
+            self::assertEquals(
+                    2,
+                    $countProducts,
+                    serialize($messages)
+            );
+            // There should have been no updates (operation is disabled)
+            self::assertEquals(
+                    0,
+                    $this->subject->getReportingUtility()->getValueForStep(
+                            \Cobweb\ExternalImport\Step\StoreDataStep::class,
+                            'updates'
+                    )
+            );
             // There should be only 1 relation, because the one from the fixture is expected to have been deleted
-            self::assertEquals(1, $countRelations);
+            self::assertEquals(
+                    1,
+                    $countRelations
+            );
             // The remaining relation should be with the second product (uid: 2)
-            self::assertEquals(2, $firstRelation['uid_foreign']);
+            self::assertEquals(
+                    2,
+                    $firstRelation['uid_foreign']
+            );
         }
         catch (\Exception $e) {
             self::markTestSkipped(
@@ -260,8 +273,6 @@ class ImporterTest extends FunctionalTestCase
      * Imports the "products" with the "products for stores" configuration and checks whether we have
      * the right number of relations or not (6 expected). Also checks the "stock" which used the
      * "additionalFields" mechanism for MM relations.
-     *
-     * TODO: this configuration is supposed to test a "no update" scenario. Cannot be tested for now due to missing reporting.
      *
      * @test
      */
@@ -300,7 +311,11 @@ class ImporterTest extends FunctionalTestCase
             $stocks[] = $row['stock'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(6, $countRelations, serialize($messages));
+        self::assertEquals(
+                6,
+                $countRelations,
+                serialize($messages)
+        );
         self::assertSame(
                 [5, 6, 8, 10, 12, 20],
                 $stocks
@@ -513,20 +528,20 @@ class ImporterTest extends FunctionalTestCase
         self::assertEquals(3, $countParentPages, serialize($messages));
 
         // Next, the page called "Product 1" should have 2 child pages, "Product 2" none and "Product 3" 1 child page
-        $pageTree = array(
-                array(
+        $pageTree = [
+                [
                         'title' => 'Product 1',
                         'children' => 2
-                ),
-                array(
+                ],
+                [
                         'title' => 'Product 2',
                         'children' => 0
-                ),
-                array(
+                ],
+                [
                         'title' => 'Product 3',
                         'children' => 1
-                )
-        );
+                ]
+        ];
         foreach ($pageTree as $page) {
             $children = $this->getDatabaseConnection()->selectCount(
                     'uid',
@@ -586,16 +601,16 @@ class ImporterTest extends FunctionalTestCase
      */
     public function wrongConfigurationNames()
     {
-        return array(
-                'Wrong ctrl configuration' => array(
+        return [
+                'Wrong ctrl configuration' => [
                         'tx_externalimporttest_product',
                         'control_configuration_errors'
-                ),
-                'Wrong column configuration' => array(
+                ],
+                'Wrong column configuration' => [
                         'sys_categories',
                         'column_configuration_errors'
-                )
-        );
+                ]
+        ];
     }
 
     /**

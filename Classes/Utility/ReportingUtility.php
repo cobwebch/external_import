@@ -43,6 +43,11 @@ class ReportingUtility
     protected $extensionConfiguration = [];
 
     /**
+     * @var array List of arbitrary values reported by different steps in the process
+     */
+    protected $reportingValues = [];
+
+    /**
      * @var ObjectManager
      */
     protected $objectManager;
@@ -259,6 +264,42 @@ class ReportingUtility
                     []
             );
         }
+    }
+
+    /**
+     * @param string $step Name of the step (class)
+     * @param string $key Name of the key
+     * @param mixed $value Value to store
+     * @return void
+     */
+    public function setValueForStep(string $step, string $key, $value)
+    {
+        if (!array_key_exists($step, $this->reportingValues)) {
+            $this->reportingValues[$step] = [];
+        }
+        $this->reportingValues[$step][$key] = $value;
+    }
+
+    /**
+     * @param string $step Name of the step (class)
+     * @param string $key Name of the key
+     * @return mixed
+     * @throws \Cobweb\ExternalImport\Exception\UnknownReportingKeyException
+     */
+    public function getValueForStep(string $step, string $key)
+    {
+        if (isset($this->reportingValues[$step][$key])) {
+            return $this->reportingValues[$step][$key];
+        }
+        throw new \Cobweb\ExternalImport\Exception\UnknownReportingKeyException(
+                sprintf(
+                        'No value found for step "%1$s" and key "%2$s"',
+                        $step,
+                        $key
+                ),
+                1530635849
+
+        );
     }
 
     /**

@@ -540,6 +540,27 @@ class StoreDataStep extends AbstractStep
                 ),
                 AbstractMessage::OK
         );
+        // Store the number of operations in the reporting utility
+        $this->importer->getReportingUtility()->setValueForStep(
+                self::class,
+                'inserts',
+                $inserts
+        );
+        $this->importer->getReportingUtility()->setValueForStep(
+                self::class,
+                'updates',
+                $updates
+        );
+        $this->importer->getReportingUtility()->setValueForStep(
+                self::class,
+                'deletes',
+                $deletes
+        );
+        $this->importer->getReportingUtility()->setValueForStep(
+                self::class,
+                'moves',
+                $moves
+        );
 
         // Set the "stored records" array as the new records of the Data object
         $this->data->setRecords($storedRecords);

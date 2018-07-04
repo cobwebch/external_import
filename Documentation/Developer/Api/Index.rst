@@ -165,14 +165,26 @@ have been designed for such situations.
 
 A call context class must inherit from :php:`\Cobweb\ExternalImport\Context\AbstractCallContext`
 and implement the necessary methods. There is currently a single method called
-:code:`outputDebug()` which is supposed to display some debug output. A specific
-call context exists only the command line and makes it possible to display in the Symfony console.
+:code:`outputDebug()` which is supposed to display some debug output. Currently a specific
+call context exists only for the command line and makes it possible to display
+debugging information in the Symfony console.
 
-Since the call context is attached to the instance of the :php:`\Cobweb\ExternalImport\Importer`
-class, it makes it possible to react to some actions at points where the usual handlers
-are not available. In the case of the debug output to the command line,
-this architecture makes it possible to display debug output anytime the
-:code:`\Cobweb\ExternalImport\Importer::debug()` method is called
-by just dumping the data to standard output, even though the
-:php:`\Cobweb\ExternalImport\Importer` has no direct reference to the current
-Symfony console.
+
+.. _developer-api-reporting:
+
+The reporting utility
+"""""""""""""""""""""
+
+The :php:`\Cobweb\ExternalImport\Utility\ReportingUtility` class is in charge
+of giving feedback in various contexts, lik sending an email once a synchronization
+is finished.
+
+It provides a generic API for storing values from :php:`Step` classes that could
+make sense in terms of reporting. Currently this is used only by the
+:php:`\Cobweb\ExternalImport\Step\StoreDataStep` class which reports on the number
+of operations performed (inserts, updates, deletes and moves).
+
+.. note::
+
+   These values are not used for any reporting for now. The number of updates is used
+   in functional tests. Improved reporting could ensue in the future.
