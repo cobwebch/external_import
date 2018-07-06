@@ -40,9 +40,11 @@ Properties
 
 .. container:: ts-properties
 
-	========================= ====================================================================== =================
+	========================= ====================================================================== ===================
 	Property                  Data type                                                              Step/Scope
-	========================= ====================================================================== =================
+	========================= ====================================================================== ===================
+	arrayPath_                string                                                                 Handle data (array)
+	arrayPathSeparator_       string                                                                 Handle data (array)
 	attribute_                string                                                                 Handle data (XML)
 	attributeNS_              string                                                                 Handle data (XML)
 	disabledOperations_       string                                                                 Store data
@@ -52,7 +54,7 @@ Properties
 	transformations_          :ref:`Transformations configuration <administration-transformations>`  Transform data
 	xmlValue_                 boolean                                                                Handle data (XML)
 	xpath_                    string                                                                 Handle data (XML)
-	========================= ====================================================================== =================
+	========================= ====================================================================== ===================
 
 
 .. _administration-columns-properties-field:
@@ -75,6 +77,67 @@ Description
 
 Scope
   Handle data
+
+
+.. _administration-columns-properties-array-path:
+
+arrayPath
+~~~~~~~~~
+
+Type
+  string
+
+Description
+  Replaces the :ref:`field <administration-columns-properties-field>` property for pointing
+  to a field in a "deeper" position inside a multidimensional array. The value is a string
+  comprised of the keys for pointing into the array, separated by some character (:code:`/`
+  by default; can be changed using the :ref:`arrayPathSeparator <administration-columns-properties-array-path-separator>`
+  property). Consider the following structure to import:
+
+  .. code:: php
+
+		[
+				'name' => 'Zaphod Beeblebrox',
+				'book' => [
+						'title' => 'Hitchiker\'s Guide to the Galaxy'
+				]
+		]
+
+  To import the title of the book, use a configuration like:
+
+  .. code:: php
+
+		[
+				'arrayPath' => 'book/title'
+		]
+
+  Works only for array-type data.
+
+  .. note::
+
+     Using :code:`'arrayPath' => 'book'` is equivalent to using :code:`'field' => 'book'`,
+     but the "field" property should be preferred in such a case.
+
+     If both "field" and "arrayPath" are defined, the latter takes precedence.
+
+Scope
+  Handle data (array)
+
+
+.. _administration-columns-properties-array-path-separator:
+
+arrayPathSeparator
+~~~~~~~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+  Separator to use in the :ref:`arrayPath <administration-columns-properties-array-path>` property.
+  Defaults to :code:`/` if this property is not defined.
+
+Scope
+  Handle data (array)
 
 
 .. _administration-columns-properties-attribute:

@@ -81,8 +81,8 @@ class ColumnConfigurationValidator
     {
         $hasValueProperty = $this->hasValueProperty($columnConfiguration);
         if ($ctrlConfiguration['data'] === 'array') {
-            // For data of type "array", either a "field" or a "value" property are needed
-            if (!$hasValueProperty && !isset($columnConfiguration['field'])) {
+            // For data of type "array", either a "field", "value" or a "arrayPath" property are needed
+            if (!$hasValueProperty && !isset($columnConfiguration['field']) && !isset($columnConfiguration['arrayPath'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
                 $this->results->add(
                         'field',

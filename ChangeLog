@@ -1,3 +1,7 @@
+2018-07-06 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added property for fetching value from multi-dimensional array, resolves #52
+
 2018-07-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added possibility to group configurations, resolves #48

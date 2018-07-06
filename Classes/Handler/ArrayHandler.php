@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Handler;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Importer;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 
 /**
  * Remaps data from a "raw" PHP array to an array mapped to TCA columns.
@@ -44,7 +45,13 @@ class ArrayHandler implements DataHandlerInterface
 
                 // Loop on the database columns and get the corresponding value from the import data
                 foreach ($columnConfiguration as $columnName => $columnData) {
-                    if (isset($columnData['field'], $theRecord[$columnData['field']])) {
+                    if (isset($columnData['arrayPath'])) {
+                        $theData[$columnName] = ArrayUtility::getValueByPath(
+                                $theRecord,
+                                $columnData['arrayPath'],
+                                $columnData['arrayPathSeparator'] ?? '/'
+                        );
+                    } elseif (isset($columnData['field'], $theRecord[$columnData['field']])) {
                         $theData[$columnName] = $theRecord[$columnData['field']];
                     }
                 }

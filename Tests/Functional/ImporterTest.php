@@ -35,6 +35,7 @@ class ImporterTest extends FunctionalTestCase
             'typo3conf/ext/svconnector',
             'typo3conf/ext/svconnector_csv',
             'typo3conf/ext/svconnector_feed',
+            'typo3conf/ext/svconnector_json',
             'typo3conf/ext/external_import',
             'typo3conf/ext/externalimport_test'
     ];
@@ -323,9 +324,9 @@ class ImporterTest extends FunctionalTestCase
     }
 
     /**
-     * Imports the "stores" and checks whether we have the right count or not
-     * (2 expected). Also checks relations between products and stores,
-     * including the "stock" additional field.
+     * Imports the "bundles" and checks whether we have the right count or not
+     * (2 expected). Also checks relations between products and bundles,
+     * including the order of the products inside the bundles.
      *
      * @test
      */
@@ -349,7 +350,7 @@ class ImporterTest extends FunctionalTestCase
                 'tx_externalimporttest_bundle',
                 0
         );
-        // Get the number of products stored
+        // Get the number of bundles stored
         $countBundles = $this->getDatabaseConnection()->selectCount(
                 'uid',
                 'tx_externalimporttest_bundle'

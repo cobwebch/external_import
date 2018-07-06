@@ -43,108 +43,118 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
 
     public function validConfigurationProvider()
     {
-        return array(
-                'Data type "array": using property "field" (string)' => array(
-                        array(
+        return [
+                'Data type "array": using property "field" (string)' => [
+                        [
                                 'data' => 'array',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'field' => 'foo'
-                                )
-                        )
-                ),
-                'Data type "array": using property "field" (positive integer)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "array": using property "field" (positive integer)' => [
+                        [
                                 'data' => 'array',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'field' => 42
-                                )
-                        )
-                ),
-                'Data type "array": using property "field" (zero)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "array": using property "field" (zero)' => [
+                        [
                                 'data' => 'array',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'field' => 0
-                                )
-                        )
-                ),
-                'Data type "array": using property "value" (number)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "array": using property "value" (number)' => [
+                        [
                                 'data' => 'array',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'value' => 17
-                                )
-                        )
-                ),
-                'Data type "array": using property "value" (string)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "array": using property "value" (string)' => [
+                        [
                                 'data' => 'array',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'value' => 'bar'
-                                )
-                        )
-                ),
-                'Data type "xml": using property "field" (string)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "array": using property "arrayPath"' => [
+                        [
+                                'data' => 'array',
+                        ],
+                        [
+                                'col' => [
+                                        'arrayPath' => 'foo/bar'
+                                ]
+                        ]
+                ],
+                'Data type "xml": using property "field" (string)' => [
+                        [
                                 'data' => 'xml',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'field' => 'foo'
-                                )
-                        )
-                ),
-                'Data type "xml": using property "value" (number)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "xml": using property "value" (number)' => [
+                        [
                                 'data' => 'xml',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'value' => 17
-                                )
-                        )
-                ),
-                'Data type "xml": using property "value" (string)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "xml": using property "value" (string)' => [
+                        [
                                 'data' => 'xml',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'value' => 'bar'
-                                )
-                        )
-                ),
-                'Data type "xml": using property "attribute" (string)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "xml": using property "attribute" (string)' => [
+                        [
                                 'data' => 'xml',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'field' => 'baz'
-                                )
-                        )
-                ),
-                'Data type "xml": using property "xpath" (string)' => array(
-                        array(
+                                ]
+                        ]
+                ],
+                'Data type "xml": using property "xpath" (string)' => [
+                        [
                                 'data' => 'xml',
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'field' => 'hello'
-                                )
-                        )
-                ),
-        );
+                                ]
+                        ]
+                ]
+        ];
     }
 
     /**
@@ -168,46 +178,46 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
 
     public function invalidConfigurationProvider()
     {
-        return array(
-                'Data type "array": missing data-setting properties' => array(
-                        array(
+        return [
+                'Data type "array": missing data-setting properties' => [
+                        [
                                 'data' => 'array'
-                        ),
-                        array(),
+                        ],
+                        [],
                         FlashMessage::ERROR
-                ),
-                'Data type "xml": missing data-setting properties' => array(
-                        array(
+                ],
+                'Data type "xml": missing data-setting properties' => [
+                        [
                                 'data' => 'xml'
-                        ),
-                        array(),
+                        ],
+                        [],
                         FlashMessage::NOTICE
-                ),
-                'Data type "array": conflicting data-setting properties' => array(
-                        array(
+                ],
+                'Data type "array": conflicting data-setting properties' => [
+                        [
                                 'data' => 'array'
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'value' => 42,
                                         'field' => 'foo'
-                                )
-                        ),
+                                ]
+                        ],
                         FlashMessage::NOTICE
-                ),
-                'Data type "xml": conflicting data-setting properties' => array(
-                        array(
+                ],
+                'Data type "xml": conflicting data-setting properties' => [
+                        [
                                 'data' => 'xml'
-                        ),
-                        array(
-                                'col' => array(
+                        ],
+                        [
+                                'col' => [
                                         'value' => 42,
                                         'xpath' => 'item'
-                                )
-                        ),
+                                ]
+                        ],
                         FlashMessage::NOTICE
-                ),
-        );
+                ]
+        ];
     }
 
     /**

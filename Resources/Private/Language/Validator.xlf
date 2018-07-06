@@ -51,7 +51,7 @@
 				<source>Property "field" is mandatory for "array"-type data.</source>
 			</trans-unit>
 			<trans-unit id="missingPropertiesForArrayData" xml:space="preserve">
-				<source>Array-type data must have either a "field" or a "value" property.</source>
+				<source>Array-type data must have either a "field", "value" or a "arrayPath" property.</source>
 			</trans-unit>
 			<trans-unit id="missingPropertiesForXmlData" xml:space="preserve">
 				<source>No configuration. The imported value will be that of the node directly targeted by the "nodetype" property.</source>
