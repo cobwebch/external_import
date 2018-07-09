@@ -34,23 +34,28 @@ class ArrayHandler implements DataHandlerInterface
      */
     public function handleData($rawData, Importer $importer)
     {
-        $data = array();
+        $data = [];
         $configuration = $importer->getExternalConfiguration();
         $columnConfiguration = $configuration->getColumnConfiguration();
 
         // Loop on all entries
         if (is_array($rawData) && count($rawData) > 0) {
             foreach ($rawData as $theRecord) {
-                $theData = array();
+                $theData = [];
 
                 // Loop on the database columns and get the corresponding value from the import data
                 foreach ($columnConfiguration as $columnName => $columnData) {
                     if (isset($columnData['arrayPath'])) {
-                        $theData[$columnName] = ArrayUtility::getValueByPath(
-                                $theRecord,
-                                $columnData['arrayPath'],
-                                $columnData['arrayPathSeparator'] ?? '/'
-                        );
+                        try {
+                            $theData[$columnName] = ArrayUtility::getValueByPath(
+                                    $theRecord,
+                                    $columnData['arrayPath'],
+                                    $columnData['arrayPathSeparator'] ?? '/'
+                            );
+                        }
+                        catch (\Exception $e) {
+                            // Nothing to do, just ignore values that are not found
+                        }
                     } elseif (isset($columnData['field'], $theRecord[$columnData['field']])) {
                         $theData[$columnName] = $theRecord[$columnData['field']];
                     }
