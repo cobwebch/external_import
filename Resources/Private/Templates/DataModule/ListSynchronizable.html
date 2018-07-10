@@ -82,7 +82,7 @@
 								<f:link.action action="viewConfiguration" arguments="{table: configuration.table, index: configuration.index}" title="{f:translate(key: 'view_details')}" class="btn btn-default">
 									<core:icon identifier="actions-document-info" />
 								</f:link.action>
-								<f:if condition="{configuration.writeAccess}">
+								<f:if condition="{configuration.writeAccess} && {rights.sync}">
 									<f:then>
 										<f:link.action action="synchronize" arguments="{table: configuration.table, index: configuration.index}" title="{f:translate(key: 'synchronise')}" class="btn btn-default sync-button">
 											<core:icon identifier="actions-refresh" />
@@ -90,7 +90,7 @@
 									</f:then>
 									<f:else>
 										<span class="btn btn-default disabled">
-											<core:icon identifier="actions-refresh" />
+											<core:icon identifier="empty-empty" />
 										</span>
 									</f:else>
 								</f:if>
@@ -115,7 +115,7 @@
 								</f:if>
 							</td>
 							<td class="tx_externalimport_actions">
-								<f:if condition="{configuration.writeAccess}">
+								<f:if condition="{configuration.writeAccess} && {rights.scheduler}">
 									<f:then>
 											<f:if condition="{configuration.automated}">
 												<f:then>

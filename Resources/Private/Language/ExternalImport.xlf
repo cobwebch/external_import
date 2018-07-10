@@ -179,6 +179,21 @@
 			<trans-unit id="noConfigurationFound" xml:space="preserve">
 				<source>The requested configuration was not found (table: %1$s, index: %2$s). Message: %3$s [%4$d]</source>
 			</trans-unit>
+			<trans-unit id="bemodulePermissions" xml:space="preserve">
+				<source>External Import: Backend module permissions</source>
+			</trans-unit>
+			<trans-unit id="bemodulePermissions.runSync" xml:space="preserve">
+				<source>Run synchronizations</source>
+			</trans-unit>
+			<trans-unit id="bemodulePermissions.runSync.description" xml:space="preserve">
+				<source>Allow user to run manual synchronizations from the Backend module.</source>
+			</trans-unit>
+			<trans-unit id="bemodulePermissions.scheduler" xml:space="preserve">
+				<source>Define Scheduler tasks</source>
+			</trans-unit>
+			<trans-unit id="bemodulePermissions.scheduler.description" xml:space="preserve">
+				<source>Allow the user to create, modify and delete Scheduler tasks in the Backend module.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Controller;
 
 /*
@@ -156,11 +157,21 @@ class DataModuleController extends ActionController
             $fullSynchronizationTask = null;
         }
         $this->view->assignMultiple(
-                array(
+                [
                         'configurations' => $configurations,
                         'fullSynchronizationTask' => $fullSynchronizationTask,
-                        'hasScheduler'  => ExtensionManagementUtility::isLoaded('scheduler')
-                )
+                        'hasScheduler' => ExtensionManagementUtility::isLoaded('scheduler'),
+                        'rights' => [
+                                'sync' => $this->getBackendUser()->check(
+                                        'custom_options',
+                                        'tx_externalimport_bemodule_actions:sync'
+                                ),
+                                'scheduler' => $this->getBackendUser()->check(
+                                        'custom_options',
+                                        'tx_externalimport_bemodule_actions:scheduler'
+                                )
+                        ]
+                ]
         );
     }
 
@@ -190,9 +201,9 @@ class DataModuleController extends ActionController
             }
         }
         $this->view->assignMultiple(
-                array(
+                [
                         'configurations' => $configurations
-                )
+                ]
         );
     }
 
@@ -265,11 +276,11 @@ class DataModuleController extends ActionController
         $this->prepareCloseButton($returnAction);
 
         $this->view->assignMultiple(
-                array(
+                [
                         'table' => $table,
                         'index' => $index,
                         'configuration' => $configuration
-                )
+                ]
         );
     }
 
@@ -287,11 +298,11 @@ class DataModuleController extends ActionController
         $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
 
         $this->view->assignMultiple(
-                array(
+                [
                         'table' => $table,
                         'index' => $index,
                         'groups' => $this->schedulerRepository->fetchAllGroups()
-                )
+                ]
         );
     }
 
@@ -329,9 +340,9 @@ class DataModuleController extends ActionController
                     LocalizationUtility::translate(
                             'autosync_save_failed',
                             'external_import',
-                            array(
+                            [
                                     $e->getMessage()
-                            )
+                            ]
                     ),
                     '',
                     FlashMessage::ERROR
@@ -355,10 +366,10 @@ class DataModuleController extends ActionController
         try {
             $task = $this->schedulerRepository->fetchTaskByUid($uid);
             $this->view->assignMultiple(
-                    array(
+                    [
                             'task' => $task,
                             'groups' => $this->schedulerRepository->fetchAllGroups()
-                    )
+                    ]
             );
         } catch (\Exception $e) {
             $this->addFlashMessage(
@@ -407,9 +418,9 @@ class DataModuleController extends ActionController
                     LocalizationUtility::translate(
                             'autosync_save_failed',
                             'external_import',
-                            array(
+                            [
                                     $e->getMessage()
-                            )
+                            ]
                     ),
                     '',
                     FlashMessage::ERROR
@@ -439,9 +450,9 @@ class DataModuleController extends ActionController
                     LocalizationUtility::translate(
                             'delete_failed',
                             'external_import',
-                            array(
+                            [
                                     $e->getMessage()
-                            )
+                            ]
                     ),
                     '',
                     FlashMessage::ERROR
@@ -477,7 +488,7 @@ class DataModuleController extends ActionController
         );
         $uri = $uriBuilder->reset()->uriFor(
                 $action,
-                array(),
+                [],
                 'DataModule'
         );
         $synchronizationMenuItem->setHref($uri)->setActive($isActive);
@@ -495,7 +506,7 @@ class DataModuleController extends ActionController
         );
         $uri = $uriBuilder->reset()->uriFor(
                 $action,
-                array(),
+                [],
                 'DataModule'
         );
         $noSynchronizationMenuItem->setHref($uri)->setActive($isActive);
@@ -534,5 +545,15 @@ class DataModuleController extends ActionController
     protected function getErrorFlashMessage()
     {
         return false;
+    }
+
+    /**
+     * Returns the global BE user object.
+     *
+     * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+     */
+    protected function getBackendUser()
+    {
+        return $GLOBALS['BE_USER'];
     }
 }

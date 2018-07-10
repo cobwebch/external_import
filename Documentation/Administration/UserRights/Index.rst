@@ -22,42 +22,20 @@ that:
 - a user must have modify rights on a table to be allowed to synchronize
   it manually or define an automated synchronization for it.
 
-DB mount points are not checked for at this point, so the user may be
+Furthermore explicit permissions must be set in the BE user group for
+allowing a user to run synchronizations from the BE module and to define
+Scheduler tasks. This is found at the bottom of the "Access Lists" tab.
+
+.. figure:: ../../Images/UserPermissions.png
+	:alt: Specific user permissions
+
+	Setting specific permissions for the BE module
+
+
+DB mount points are not checked at this point, so the user may be
 able to start a synchronization and still get error messages if not
 allowed to write to the page where the imported data should be stored.
 
-When a synchronization runs automatically a check on user rights is
-also performed at the beginning, so that the synchronization can be
-skipped entirely if the CLI user does not have modify rights on the
-given table. This is reported in the mail report.
-
 An automated synchronization will be run by the Scheduler. This
-means that the active user will be :code:`_cli_scheduler`, so this user
-needs to have enough rights to perform all expected operations, in
-particular:
-
-- authorize this user to list and modify the tables that are going to be
-  synchronized
-
-- give this user access to the page(s) where the records are stored,
-  i.e. pages must be in the DB Mounts of the user and user must have enough
-  rights on these pages, i.e. "Show page", "Edit content", "Edit page"
-  and "Delete page" (Web > Access). Of course this can also be achieved
-  via a BE group the user belongs to.
-
-A good way to verify that the :code:`_cli_scheduler` use has enough rights
-is to use the **SYSTEM > Backend users** module to switch to that user and perform
-manual synchronizations from there (this means giving access to the
-"External Import" BE module to the :code:`_cli_scheduler` user).
-
-
-.. _administration-user-rights-typo3-8:
-
-User rights since TYPO3 CMS 8
-"""""""""""""""""""""""""""""
-
-The setup of user rights for the Scheduler has become much easier
-since TYPO3 CMS 8. Indeed all command-line calls are made with the
-generic :code:`_cli_` user, which has admin rights.
-
-The same is true for :ref:`command-line calls <user-command>`.
+means that the active user will be :code:`_cli_`, who is an admin user.
+Thus no special setup is needed. The same is true for :ref:`command-line calls <user-command>`.

@@ -24,6 +24,18 @@ Compatibility issues
 ^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-410:
+
+Upgrade to 4.1.0
+""""""""""""""""
+
+Version 4.1.0 introduces one **breaking change**. There now exist custom permissions
+for backend users regarding usage of the backend module. On top of table-related
+permissions, users must have been given explicit rights (via the user groups they
+belong to) to perform synchronizations or define Scheduler tasks. See the
+:ref:`User rights chapter <administration-user-rights>` for more information.
+
+
 .. _installation-upgrade-400:
 
 Upgrade to 4.0.0
