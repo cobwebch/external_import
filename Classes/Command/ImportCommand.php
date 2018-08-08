@@ -227,13 +227,15 @@ class ImportCommand extends Command
                             $configuration['table'],
                             $configuration['index']
                     );
-                    $this->io->section('Preview data');
-                    $this->io->section(
-                            var_export(
-                                    $this->importer->getPreviewData(),
-                                    true
-                            )
-                    );
+                    if ($this->importer->isPreview()) {
+                        $this->io->section('Preview data');
+                        $this->io->section(
+                                var_export(
+                                        $this->importer->getPreviewData(),
+                                        true
+                                )
+                        );
+                    }
                     $this->reportResults($messages);
                 }
             }
