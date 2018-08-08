@@ -1,7 +1,11 @@
 language: php
 php:
-  - 7.0
   - 7.1
+  - 7.2
+branches:
+  only:
+  - master
+  - quokka
 before_script:
   - composer require nimut/testing-framework
   - composer require cobweb/svconnector_feed
