@@ -53,7 +53,7 @@ class Configuration
     /**
      * @var array List of fields that must be read from distant stored, but will not be stored to DB
      */
-    protected $additionalFields = array();
+    protected $additionalFields = [];
 
     /**
      * @var int Number of additional fields (cached to avoid counting too often)
@@ -63,7 +63,7 @@ class Configuration
     /**
      * @var array List of steps that the process will go through (depends on process type)
      */
-    protected $steps = array();
+    protected $steps = [];
 
     /**
      * @var \Cobweb\Svconnector\Service\ConnectorBase Reference to the connector object
@@ -212,7 +212,7 @@ class Configuration
         if (array_key_exists($column, $this->columnConfiguration)) {
             return $this->columnConfiguration[$column];
         }
-        return array();
+        return [];
     }
 
     /**

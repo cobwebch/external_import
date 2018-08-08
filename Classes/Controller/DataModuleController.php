@@ -221,35 +221,50 @@ class DataModuleController extends ActionController
         $importer = $this->objectManager->get(Importer::class);
         $importer->setContext('manual');
         $messages = $importer->synchronize($table, $index);
+        $this->prepareMessages($messages);
 
-        // Perform reporting
-        // Check if there are too many messages, to avoid cluttering the interface
-        // Remove extra messages and add warning about it
-        foreach ($messages as $severity => $messageList) {
-            $numMessages = count($messageList);
-            if ($numMessages > 5) {
-                array_splice($messageList, 5);
-                $messageList[] = sprintf(
-                        LocalizationUtility::translate('moreMessages', 'external_import'),
-                        $numMessages
-                );
-                $messages[$severity] = $messageList;
-            }
-            // Output the messages
-            foreach ($messageList as $aMessage) {
-                try {
-                    $this->addFlashMessage(
-                            $aMessage,
-                            '',
-                            $severity
-                    );
-                } catch (\Exception $e) {
-                    // Do nothing, just avoid crashing for failing to display a flash message
-                }
-            }
-        }
         // Redirect to the list of synchronizable tables
         $this->redirect('listSynchronizable');
+    }
+
+    /**
+     * Runs a preview of a given configuration.
+     *
+     * @param string $table The name of the table to synchronize
+     * @param string $index Key of the external configuration
+     * @param string $stepClass Name of the Step class to preview
+     */
+    public function previewAction($table, $index, $stepClass = '')
+    {
+        // Add a close button to the toolbar
+        $this->prepareCloseButton('listSynchronizable');
+
+        $previewData = null;
+        if ($stepClass !== '') {
+            // Synchronize the chosen configuration in preview mode
+            /** @var Importer $importer */
+            $importer = $this->objectManager->get(Importer::class);
+            $importer->setContext('manual');
+            $importer->setPreviewStep($stepClass);
+            $messages = $importer->synchronize($table, $index);
+            $this->prepareMessages($messages, false);
+            $previewData = $importer->getPreviewData();
+        }
+        // The step list should use the class names also as keys
+        $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+        $stepList = [];
+        foreach ($steps as $step) {
+            $stepList[$step] = $step;
+        }
+        $this->view->assignMultiple(
+                [
+                        'table' => $table,
+                        'index' => $index,
+                        'steps' => $stepList,
+                        'stepClass' => $stepClass,
+                        'previewData' => $previewData
+                ]
+        );
     }
 
     /**
@@ -537,6 +552,43 @@ class DataModuleController extends ActionController
         );
     }
 
+    /**
+     * Stores the messages returned by External Import as flash messages.
+     *
+     * The list is trimmed if there are too many messages.
+     *
+     * @param array $messages List of messages from an External Import run
+     * @param bool $storeInSession Whether to store the flash messages in session or not
+     */
+    protected function prepareMessages($messages, $storeInSession = true)
+    {
+        // If there are too many messages, Remove extra messages and add warning about it
+        // to avoid cluttering the interface
+        foreach ($messages as $severity => $messageList) {
+            $numMessages = count($messageList);
+            if ($numMessages > 5) {
+                array_splice($messageList, 5);
+                $messageList[] = sprintf(
+                        LocalizationUtility::translate('moreMessages', 'external_import'),
+                        $numMessages
+                );
+                $messages[$severity] = $messageList;
+            }
+            // Store the  messages as Flash messages
+            foreach ($messageList as $aMessage) {
+                try {
+                    $this->addFlashMessage(
+                            $aMessage,
+                            '',
+                            $severity,
+                            $storeInSession
+                    );
+                } catch (\Exception $e) {
+                    // Do nothing, just avoid crashing for failing to display a flash message
+                }
+            }
+        }
+    }
     /**
      * Overrides parent method to avoid displaying default error message.
      *

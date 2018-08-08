@@ -119,7 +119,9 @@ class TransformDataStep extends AbstractStep
         // Apply any existing pre-processing hook to the transformed data
         $records = $this->preprocessData($records);
 
+        // Set the records in the Data object (and also as preview, if activated)
         $this->getData()->setRecords($records);
+        $this->setPreviewData($records);
     }
 
     /**

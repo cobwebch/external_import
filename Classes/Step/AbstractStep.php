@@ -53,6 +53,19 @@ abstract class AbstractStep
     abstract public function run();
 
     /**
+     * Sets the preview data for the Importer class.
+     *
+     * @param mixed $data
+     * @return void
+     */
+    public function setPreviewData($data)
+    {
+        if ($this->importer->isPreview()) {
+            $this->importer->setPreviewData($data);
+        }
+    }
+
+    /**
      * @return Data
      */
     public function getData()

@@ -171,16 +171,19 @@ class XmlHandler implements DataHandlerInterface
      * Extracts the value of the node as structured XML.
      *
      * @param \DOMNode $node Currently handled XML node
-     * @throws \Exception
      * @return string Code inside the node
      */
-
     protected function getXmlValue($node)
     {
         $innerHTML = '';
         $children = $node->childNodes;
         foreach ($children as $child) {
-            $innerHTML .= $child->ownerDocument->saveXML($child);
+            try {
+                $innerHTML .= $child->ownerDocument->saveXML($child);
+            }
+            catch (\Exception $e) {
+                // Nothing to do
+            }
         }
         return $innerHTML;
     }

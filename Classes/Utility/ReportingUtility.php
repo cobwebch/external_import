@@ -127,36 +127,39 @@ class ReportingUtility
      */
     public function writeToLog()
     {
-        $messages = $this->importer->getMessages();
-        $context = $this->importer->getContext();
-        foreach ($messages as $status => $messageList) {
-            foreach ($messageList as $message) {
-                /** @var Log $logEntry */
-                $logEntry = $this->objectManager->get(Log::class);
-                $logEntry->setPid($this->extensionConfiguration['logStorage']);
-                $logEntry->setStatus($status);
-                $logEntry->setCrdate(
-                        new \DateTime('@' . $GLOBALS['EXEC_TIME'])
-                );
-                $logEntry->setCruserId(
-                        $this->getBackendUser()->user['uid'] ?? 0
-                );
-                $logEntry->setConfiguration(
-                        $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()
-                );
-                $logEntry->setContext($context);
-                $logEntry->setMessage($message);
-                try {
-                    $this->logRepository->add($logEntry);
-                }
-                catch (\Exception $e) {
-                    // Nothing to do
+        // Don't log in preview mode
+        if (!$this->importer->isPreview()) {
+            $messages = $this->importer->getMessages();
+            $context = $this->importer->getContext();
+            foreach ($messages as $status => $messageList) {
+                foreach ($messageList as $message) {
+                    /** @var Log $logEntry */
+                    $logEntry = $this->objectManager->get(Log::class);
+                    $logEntry->setPid($this->extensionConfiguration['logStorage']);
+                    $logEntry->setStatus($status);
+                    $logEntry->setCrdate(
+                            new \DateTime('@' . $GLOBALS['EXEC_TIME'])
+                    );
+                    $logEntry->setCruserId(
+                            $this->getBackendUser()->user['uid'] ?? 0
+                    );
+                    $logEntry->setConfiguration(
+                            $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()
+                    );
+                    $logEntry->setContext($context);
+                    $logEntry->setMessage($message);
+                    try {
+                        $this->logRepository->add($logEntry);
+                    }
+                    catch (\Exception $e) {
+                        // Nothing to do
+                    }
                 }
             }
+            // Make sure the entries are persisted (this will not happen automatically
+            // when called from the command line)
+            $this->persistenceManager->persistAll();
         }
-        // Make sure the entries are persisted (this will not happen automatically
-        // when called from the command line)
-        $this->persistenceManager->persistAll();
     }
 
     /**

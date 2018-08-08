@@ -29,7 +29,7 @@ class Data
     /**
      * @var array Array of data being imported
      */
-    protected $records = array();
+    protected $records = [];
 
     /**
      * @return mixed

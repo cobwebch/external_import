@@ -113,7 +113,9 @@ class HandleDataStep extends AbstractStep
         // Apply any existing pre-processing hook to the raw data
         $records = $this->preprocessRawData($records);
 
+        // Set the records in the Data object (and also as preview, if activated)
         $this->getData()->setRecords($records);
+        $this->setPreviewData($records);
     }
 
     /**

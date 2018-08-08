@@ -64,8 +64,8 @@ class StoreDataStep extends AbstractStep
         );
 
         // Initialize some variables
-        $fieldsExcludedFromInserts = array();
-        $fieldsExcludedFromUpdates = array();
+        $fieldsExcludedFromInserts = [];
+        $fieldsExcludedFromUpdates = [];
 
         // Get the list of existing uids for the table
         $this->uidRepository->setConfiguration($this->getConfiguration());
@@ -89,8 +89,8 @@ class StoreDataStep extends AbstractStep
         //		not be able to handle it. We thus need to store all that data now and rework the MM-relations when TCEmain is done.
         // 2.b	if a pair of records is related to each other several times (because the additional fields vary), this will be filtered out
         //		by TCEmain. So we must preserve also these additional relations.
-        $mappings = array();
-        $fullMappings = array();
+        $mappings = [];
+        $fullMappings = [];
         $ctrlConfiguration = $this->getConfiguration()->getCtrlConfiguration();
         $columnConfiguration = $this->getConfiguration()->getColumnConfiguration();
         $table = $this->importer->getExternalConfiguration()->getTable();
@@ -171,18 +171,18 @@ class StoreDataStep extends AbstractStep
                             $sortingValue = $theRecord[$sortingField];
                             $mappings[$columnName][$externalUid][$sortingValue] = $foreignValue;
                             if ($hasAdditionalFields || $mmData['multiple']) {
-                                $fullMappings[$columnName][$externalUid][$sortingValue] = array(
+                                $fullMappings[$columnName][$externalUid][$sortingValue] = [
                                         'value' => $foreignValue,
                                         'additionalFields' => $fields
-                                );
+                                ];
                             }
                         } else {
                             $mappings[$columnName][$externalUid][] = $foreignValue;
                             if ($hasAdditionalFields || $mmData['multiple']) {
-                                $fullMappings[$columnName][$externalUid][] = array(
+                                $fullMappings[$columnName][$externalUid][] = [
                                         'value' => $foreignValue,
                                         'additionalFields' => $fields
-                                );
+                                ];
                             }
                         }
                     }
@@ -213,8 +213,12 @@ class StoreDataStep extends AbstractStep
         $moves = 0;
         $updatedUids = [];
         $handledUids = [];
-        $tceData = array($table => []);
-        $tceCommands = array($table => []);
+        $tceData = [
+                $table => []
+        ];
+        $tceCommands = [
+                $table => []
+        ];
         $savedAdditionalFields = [];
         // Prepare some data before the loop
         $storagePid = $this->getConfiguration()->getStoragePid();
@@ -288,7 +292,9 @@ class StoreDataStep extends AbstractStep
                     $tceData[$table][$theID] = $theRecord;
                     // Check if some records have a changed "pid", in which case a "move" action is also needed
                     if (array_key_exists('pid', $theRecord) && $theRecord['pid'] !== $currentPids[$externalUid]) {
-                        $tceCommands[$table][$theID] = array('move' => $theRecord['pid']);
+                        $tceCommands[$table][$theID] = [
+                                'move' => $theRecord['pid']
+                        ];
                         $moves++;
                     }
                     $updatedUids[] = $theID;
@@ -334,7 +340,7 @@ class StoreDataStep extends AbstractStep
                 if ($this->importer->hasTemporaryKey($externalUid)) {
                     $theID = $this->importer->getTemporaryKeyForValue($externalUid);
                 } else {
-                    $theID = uniqid('NEW', true);
+                    $theID = $this->importer->generateTemporaryKey();
                 }
                 $tceData[$table][$theID] = $theRecord;
             }
@@ -363,6 +369,7 @@ class StoreDataStep extends AbstractStep
                 0,
                 (count($tceCommands[$table]) > 0) ? $tceCommands : null
         );
+
         // Create an instance of DataHandler and process the data
         /** @var $tce DataHandler */
         $tce = GeneralUtility::makeInstance(DataHandler::class);
@@ -379,65 +386,66 @@ class StoreDataStep extends AbstractStep
         if (!empty($GLOBALS['TCA'][$table]['ctrl']['sortby'])) {
             $tce->reverseOrder = true;
         }
-        // Load the data and process it
-        $tce->start($tceData, $tceCommands);
-        $tce->process_datamap();
-        $tce->process_cmdmap();
-        $this->importer->debug(
-                'New IDs',
-                0,
-                $tce->substNEWwithIDs
-        );
-        $inserts = count($tce->substNEWwithIDs);
-
-        // Substitute NEW temporary keys with actual IDs in the "stored records" array
-        foreach ($storedRecords as $index => $record) {
-            if (strpos($record['uid'], 'NEW') === 0 && isset($tce->substNEWwithIDs[$record['uid']])) {
-                $storedRecords[$index]['uid'] = $tce->substNEWwithIDs[$record['uid']];
-            }
-        }
-
-        // Post-processing hook after data was saved
         $savedData = [];
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
-            foreach ($tceData as $tableRecords) {
-                foreach ($tableRecords as $id => $record) {
-                    // Add status to record
-                    // If operation was insert, match placeholder to actual id
-                    $uid = $id;
-                    if (isset($tce->substNEWwithIDs[$id])) {
-                        $uid = $tce->substNEWwithIDs[$id];
-                        $record['tx_externalimport:status'] = 'insert';
-                    } else {
-                        $record['tx_externalimport:status'] = 'update';
-                    }
-                    // Restore additional fields, if any
-                    if ($this->getConfiguration()->getCountAdditionalFields() > 0) {
-                        foreach ($savedAdditionalFields[$id] as $fieldName => $fieldValue) {
-                            $record[$fieldName] = $fieldValue;
-                        }
-                    }
-                    $savedData[$uid] = $record;
+
+        // Load the data and process it, if not in preview mode
+        if (!$this->importer->isPreview()) {
+            $tce->start($tceData, $tceCommands);
+            $tce->process_datamap();
+            $tce->process_cmdmap();
+            $this->importer->debug(
+                    'New IDs',
+                    0,
+                    $tce->substNEWwithIDs
+            );
+            $inserts = count($tce->substNEWwithIDs);
+
+            // Substitute NEW temporary keys with actual IDs in the "stored records" array
+            foreach ($storedRecords as $index => $record) {
+                if (strpos($record['uid'], 'NEW') === 0 && isset($tce->substNEWwithIDs[$record['uid']])) {
+                    $storedRecords[$index]['uid'] = $tce->substNEWwithIDs[$record['uid']];
                 }
             }
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] as $className) {
-                try {
-                    $postProcessor = GeneralUtility::makeInstance($className);
-                    $postProcessor->datamapPostProcess($table, $savedData, $this->importer);
-                } catch (\Exception $e) {
-                    $this->importer->debug(
-                            sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'datamapPostProcess'
-                            ),
-                            1
-                    );
+
+            // Post-processing hook after data was saved
+            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
+                foreach ($tceData as $tableRecords) {
+                    foreach ($tableRecords as $id => $record) {
+                        // Add status to record
+                        // If operation was insert, match placeholder to actual id
+                        $uid = $id;
+                        if (isset($tce->substNEWwithIDs[$id])) {
+                            $uid = $tce->substNEWwithIDs[$id];
+                            $record['tx_externalimport:status'] = 'insert';
+                        } else {
+                            $record['tx_externalimport:status'] = 'update';
+                        }
+                        // Restore additional fields, if any
+                        if ($this->getConfiguration()->getCountAdditionalFields() > 0) {
+                            foreach ($savedAdditionalFields[$id] as $fieldName => $fieldValue) {
+                                $record[$fieldName] = $fieldValue;
+                            }
+                        }
+                        $savedData[$uid] = $record;
+                    }
+                }
+                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] as $className) {
+                    try {
+                        $postProcessor = GeneralUtility::makeInstance($className);
+                        $postProcessor->datamapPostProcess($table, $savedData, $this->importer);
+                    } catch (\Exception $e) {
+                        $this->importer->debug(
+                                sprintf(
+                                        'Could not instantiate class %s for hook %s',
+                                        $className,
+                                        'datamapPostProcess'
+                                ),
+                                1
+                        );
+                    }
                 }
             }
         }
-        // Clean up
-        unset($tceData, $savedData);
 
         // Mark as deleted records with existing uids that were not in the import data anymore
         // (if automatic delete is activated)
@@ -465,105 +473,125 @@ class StoreDataStep extends AbstractStep
             }
             $deletes = count($absentUids);
             if ($deletes > 0) {
-                $tceCommands = array($table => []);
+                $tceDeleteCommands = [
+                        $table => []
+                ];
                 foreach ($absentUids as $id) {
-                    $tceCommands[$table][$id] = array('delete' => 1);
+                    $tceDeleteCommands[$table][$id] = [
+                            'delete' => 1
+                    ];
                 }
                 $this->importer->debug(
                         'TCEmain commands',
                         0,
-                        $tceCommands
+                        $tceDeleteCommands
                 );
-                $tce->start([], $tceCommands);
-                $tce->process_cmdmap();
-                // Call a post-processing hook
-                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
-                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
-                        try {
-                            $postProcessor = GeneralUtility::makeInstance($className);
-                            $absentUids = $postProcessor->cmdmapPostProcess($table, $absentUids, $this->importer);
-                        } catch (\Exception $e) {
-                            $this->importer->debug(
-                                    sprintf(
-                                            'Could not instantiate class %s for hook %s',
-                                            $className,
-                                            'cmdmapPostProcess'
-                                    ),
-                                    1
-                            );
+                // Actually delete the records, if not in preview mode
+                if (!$this->importer->isPreview()) {
+                    $tce->start([], $tceDeleteCommands);
+                    $tce->process_cmdmap();
+                    // Call a post-processing hook
+                    if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
+                        foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
+                            try {
+                                $postProcessor = GeneralUtility::makeInstance($className);
+                                $absentUids = $postProcessor->cmdmapPostProcess($table, $absentUids, $this->importer);
+                            } catch (\Exception $e) {
+                                $this->importer->debug(
+                                        sprintf(
+                                                'Could not instantiate class %s for hook %s',
+                                                $className,
+                                                'cmdmapPostProcess'
+                                        ),
+                                        1
+                                );
+                            }
                         }
                     }
                 }
             }
         }
 
-        // Perform post-processing of MM-relations if necessary
-        if (count($fullMappings) > 0) {
+        // Perform post-processing of MM-relations if necessary and if not in preview mode
+        if (count($fullMappings) > 0 && !$this->importer->isPreview()) {
             $this->postProcessMmRelations($fullMappings);
         }
 
         // Report any errors that might have been raised by the DataHandler
         $this->reportTceErrors($tce->errorLog);
-        // Cleanup
-        unset($tce);
 
-        // Set informational messages
-        $this->importer->addMessage(
-                LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_inserted',
-                        'external_import',
-                        array($inserts)
-                ),
-                AbstractMessage::OK
-        );
-        $this->importer->addMessage(
-                LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_updated',
-                        'external_import',
-                        array($updates)
-                ),
-                AbstractMessage::OK
-        );
-        $this->importer->addMessage(
-                LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_deleted',
-                        'external_import',
-                        array($deletes)
-                ),
-                AbstractMessage::OK
-        );
-        $this->importer->addMessage(
-                LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_moved',
-                        'external_import',
-                        array($moves)
-                ),
-                AbstractMessage::OK
-        );
-        // Store the number of operations in the reporting utility
-        $this->importer->getReportingUtility()->setValueForStep(
-                self::class,
-                'inserts',
-                $inserts
-        );
-        $this->importer->getReportingUtility()->setValueForStep(
-                self::class,
-                'updates',
-                $updates
-        );
-        $this->importer->getReportingUtility()->setValueForStep(
-                self::class,
-                'deletes',
-                $deletes
-        );
-        $this->importer->getReportingUtility()->setValueForStep(
-                self::class,
-                'moves',
-                $moves
-        );
+        // Set informational messages (not in preview mode)
+        if (!$this->importer->isPreview()) {
+            $this->importer->addMessage(
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_inserted',
+                            'external_import',
+                            [$inserts]
+                    ),
+                    AbstractMessage::OK
+            );
+            $this->importer->addMessage(
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_updated',
+                            'external_import',
+                            [$updates]
+                    ),
+                    AbstractMessage::OK
+            );
+            $this->importer->addMessage(
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_deleted',
+                            'external_import',
+                            [$deletes]
+                    ),
+                    AbstractMessage::OK
+            );
+            $this->importer->addMessage(
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_moved',
+                            'external_import',
+                            [$moves]
+                    ),
+                    AbstractMessage::OK
+            );
+            // Store the number of operations in the reporting utility
+            $this->importer->getReportingUtility()->setValueForStep(
+                    self::class,
+                    'inserts',
+                    $inserts
+            );
+            $this->importer->getReportingUtility()->setValueForStep(
+                    self::class,
+                    'updates',
+                    $updates
+            );
+            $this->importer->getReportingUtility()->setValueForStep(
+                    self::class,
+                    'deletes',
+                    $deletes
+            );
+            $this->importer->getReportingUtility()->setValueForStep(
+                    self::class,
+                    'moves',
+                    $moves
+            );
+        }
 
         // Set the "stored records" array as the new records of the Data object
         $this->data->setRecords($storedRecords);
+        // Use the TCE data and commands as preview data
+        // NOTE: both sets of commands are presented separately and not merged, because array_merge_recursive()
+        // renumbers numerical indices, which is wrong (numerical indices in TCE structures correspond to uids)
+        $this->importer->setPreviewData(
+                [
+                        'data' => $tceData,
+                        'commands-delete' => $tceDeleteCommands ?? [],
+                        'commands-move' => $tceCommands
+                ]
+        );
+
+        // Free some memory
+        unset($tce, $tceData, $savedData, $tceCommands, $tceDeleteCommands);
     }
 
     /**
@@ -719,7 +747,7 @@ class StoreDataStep extends AbstractStep
                     // Substitute the first 5 items of extra data into the error message
                     $message = $label;
                     if (!empty($row['log_data'])) {
-                        $data = unserialize($row['log_data']);
+                        $data = unserialize($row['log_data'], ['allowed_classes' => false]);
                         $message = sprintf(
                                 $label,
                                 htmlspecialchars($data[0]),

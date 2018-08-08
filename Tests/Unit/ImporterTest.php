@@ -43,6 +43,27 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
+    public function getExtensionConfigurationInitiallyReturnsEmptyArray()
+    {
+        self::assertSame(
+                [],
+                $this->subject->getExtensionConfiguration()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getExternalConfigurationInitiallyReturnsNull()
+    {
+        self::assertNull(
+                $this->subject->getExternalConfiguration()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function getContextInitiallyReturnsManualContext() {
         self::assertSame(
                 'manual',
@@ -89,5 +110,116 @@ class ImporterTest extends UnitTestCase
     public function setVerboseSetsVerboseFlag() {
         $this->subject->setVerbose(true);
         self::assertTrue($this->subject->isVerbose());
+    }
+
+    /**
+     * @test
+     */
+    public function isTestModeInitiallyReturnsFalse()
+    {
+        self::assertFalse(
+                $this->subject->isTestMode()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setTestModeSetsTestMode()
+    {
+        $this->subject->setTestMode(true);
+        self::assertTrue(
+                $this->subject->isTestMode()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function isPreviewInitiallyReturnsFalse() {
+        self::assertFalse($this->subject->isPreview());
+    }
+
+    /**
+     * @test
+     */
+    public function getPreviewStepInitiallyReturnsEmptyString()
+    {
+        self::assertSame(
+                '',
+                $this->subject->getPreviewStep()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setPreviewStepSetsPreviewStep()
+    {
+        $this->subject->setPreviewStep('foo');
+        self::assertSame(
+                'foo',
+                $this->subject->getPreviewStep()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getPreviewDataInitiallyReturnsNull()
+    {
+        self::assertNull($this->subject->getPreviewData());
+    }
+
+    public function previewDataProvider()
+    {
+        return [
+                'string' => [
+                        '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><node>foo</node>'
+                ],
+                'array' => [
+                        [
+                                'name' => 'Foo',
+                                'title' => 'Bar'
+                        ]
+                ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider previewDataProvider
+     * @param mixed $data
+     */
+    public function setPreviewDataSetsPreviewData($data)
+    {
+        $this->subject->setPreviewData($data);
+        self::assertSame(
+                $data,
+                $this->subject->getPreviewData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function resetPreviewDataSetsPreviewDataToNull()
+    {
+        $this->subject->resetPreviewData();
+        self::assertNull(
+                $this->subject->getPreviewData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function generateTemporaryKeyInTestModeGeneratesPredictableKey() {
+        // NOTE: any step will do
+        $this->subject->setTestMode(true);
+        self::assertEquals(
+                'NEW1',
+                $this->subject->generateTemporaryKey()
+        );
     }
 }

@@ -139,8 +139,8 @@ your configurations.
 
 .. _installation-upgrade-400-renamed-properties:
 
-Renamed prooperties
-~~~~~~~~~~~~~~~~~~~
+Renamed properties
+~~~~~~~~~~~~~~~~~~
 
 To continue the move to unified naming conventions for properties started in version 3.0,
 the mapping and MM properties which had underscores in their names were moved to

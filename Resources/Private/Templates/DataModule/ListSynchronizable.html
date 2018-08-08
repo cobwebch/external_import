@@ -78,7 +78,7 @@
 							</f:if>
 						</td>
 						<td>
-							<div class="btn-group">
+							<div class="btn-group input-group-btn">
 								<f:link.action action="viewConfiguration" arguments="{table: configuration.table, index: configuration.index}" title="{f:translate(key: 'view_details')}" class="btn btn-default">
 									<core:icon identifier="actions-document-info" />
 								</f:link.action>
@@ -86,6 +86,9 @@
 									<f:then>
 										<f:link.action action="synchronize" arguments="{table: configuration.table, index: configuration.index}" title="{f:translate(key: 'synchronise')}" class="btn btn-default sync-button">
 											<core:icon identifier="actions-refresh" />
+										</f:link.action>
+										<f:link.action action="preview" arguments="{table: configuration.table, index: configuration.index}" title="{f:translate(key: 'preview')}" class="btn btn-default">
+											<core:icon identifier="actions-version-workspace-preview" />
 										</f:link.action>
 									</f:then>
 									<f:else>
@@ -124,7 +127,7 @@
 															<span class="label label-default">disabled</span>
 														</f:then>
 														<f:else>
-															<div class="btn-group">
+															<div class="btn-group input-group-btn">
 																<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
 																<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
 															</div>

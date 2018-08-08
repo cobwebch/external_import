@@ -122,6 +122,36 @@ In general the many existing :code:`Step` classes provide many examples
 of API usage and should help when creating a custom process step.
 
 
+.. _developer-steps-preview:
+
+Preview mode
+""""""""""""
+
+It is very important that your custom step respects the
+:ref:`preview mode <user-backend-module-synchronizable-preview>`.
+This has two implications:
+
+#. If relevant, you should return some preview data. For example,
+   the :code:`TransformDataStep` class returns the import data once
+   transformations have been applied to it, the :code:`StoreDataStep`
+   class returns the TCE structure, and so on. There's an API for returning
+   preview data:
+
+   .. code-block:: php
+
+		$this->importer->setPreviewData(...);
+
+   The preview data can be of any type.
+
+#. **Most importantly**, you must respect the preview mode and not make
+   any persistent changes, like saving stuff to the database. Use the API
+   to know whether preview mode is on or not:
+
+   .. code-block:: php
+
+		$this->importer->isPreview();
+
+
 .. _developer-steps-example:
 
 Example

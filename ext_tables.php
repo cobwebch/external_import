@@ -29,7 +29,7 @@ if (!defined('TYPO3_MODE')) {
         '',
         [
                 // An array holding the controller-action-combinations that are accessible
-                'DataModule' => 'listSynchronizable, listNonSynchronizable, synchronize, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
+                'DataModule' => 'listSynchronizable, listNonSynchronizable, synchronize, preview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
         ],
         [
                 'access' => 'user,group',

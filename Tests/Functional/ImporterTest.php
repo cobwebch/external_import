@@ -17,7 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Functional;
 
 use Cobweb\ExternalImport\Importer;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Lang\LanguageService;
@@ -634,7 +634,7 @@ class ImporterTest extends FunctionalTestCase
         // With a wrong configuration, we expect the import process to abort with a single message
         // of level "ERROR"
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(FlashMessage::ERROR, $messageLevel, serialize($messages));
+        self::assertEquals(AbstractMessage::ERROR, $messageLevel, serialize($messages));
         self::assertCount(1, $messagesForLevel);
     }
 }

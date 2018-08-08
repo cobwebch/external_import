@@ -6,21 +6,48 @@
 The command-line interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Since version 4.0 and using TYPO3 CMS 8 and above, a command-line
-interface to External Import is available. It can be used to
-run a single synchronization, all of them or a group of them.
+The External Import process can be called from the command line.
+It can be used to run a single synchronization, all of them or a group of them.
 When several synchronizations are run, they happen in order of
-increasing priority.
+increasing priority. The following operations are possible:
 
-Calling :code:`path/to/php path/to/bin/typo3 externalimport:sync --list` will
-output a list of all configurations available for synchronization.
+List all configurations available for synchronization
+  :code:`path/to/php path/to/bin/typo3 externalimport:sync --list`
 
-Synchronizing everything is achieved by calling: :code:`path/to/php path/to/bin/typo3 externalimport:sync --all`.
-It is also possible to synchronize a :ref:`group of configurations <administration-general-tca-properties-group>`,
-by running :code:`path/to/php path/to/bin/typo3 externalimport:sync --group=(group name)`.
+Synchronize everything
+  :code:`path/to/php path/to/bin/typo3 externalimport:sync --all`.
 
-Finally a single configuration can be synchronized by calling:
-:code:`path/to/php path/to/bin/typo3 externalimport:sync --table=foo --index=bar`.
+Synchronize a :ref:`group of configurations <administration-general-tca-properties-group>`
+  :code:`path/to/php path/to/bin/typo3 externalimport:sync --group=(group name)`.
+
+Synchronize a single configuration
+  :code:`path/to/php path/to/bin/typo3 externalimport:sync --table=foo --index=bar`.
+
+
+.. _user-command-preview:
+
+Running in preview mode
+"""""""""""""""""""""""
+
+Preview mode can be activated by using the :code:`preview` flag and a :code:`Step`
+class name as argument. The import process will stop after the given step and return
+some preview data (or not; that depends on the step). No permanent changes are made
+(e.g. nothing is saved to the database).
+
+A typical command will look like:
+
+.. code-block:: text
+
+	path/to/php path/to/bin/typo3 externalimport:sync --table=foo --index=bar --preview='Cobweb\ExternalImport\Step\TransformDataStep'
+
+This will stop the process after the :code:`TransformDataStep` and dump the transformed
+data in the standard output. Mind the correct syntax for defining the :code:`Step` class
+(quote with no opening backslash).
+
+.. note::
+
+   If running a full or group synchronization, the preview mode will apply to each
+   configuration.
 
 
 .. _user-command-debug:

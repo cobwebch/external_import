@@ -7,7 +7,9 @@ Hooks
 ^^^^^
 
 The external import process contains many hooks for improved
-flexibility. They are described below.
+flexibility. They are described below. When running in
+:ref:`preview mode <user-backend-module-synchronizable-preview>`
+some hooks are not called.
 
 .. note::
 
@@ -131,9 +133,17 @@ datamapPostProcess
   either "insert" or "update" depending on what operation was performed
   on the record.
 
+  .. note::
+
+     This hook is not called in preview mode.
+
 cmdmapPostProcess
   This hook is called after all records have
   been deleted using TCEmain. It receives as parameters the name of the
   affected table, the list of uid's of the deleted records and a back-
   reference to the calling object (an instance of class
   :php:`\Cobweb\ExternalImport\Importer`).
+
+  .. note::
+
+     This hook is not called in preview mode.

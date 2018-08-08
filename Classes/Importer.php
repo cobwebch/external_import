@@ -17,8 +17,9 @@ namespace Cobweb\ExternalImport;
 use Cobweb\ExternalImport\Context\AbstractCallContext;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -41,12 +42,12 @@ class Importer
     /**
      * @var array Extension configuration
      */
-    protected $extensionConfiguration = array();
+    protected $extensionConfiguration = [];
 
     /**
      * @var array List of result messages
      */
-    protected $messages = array();
+    protected $messages = [];
 
     /**
      * @var ConfigurationRepository
@@ -76,7 +77,12 @@ class Importer
     /**
      * @var array List of temporary keys created on the fly for new records. Used in DataHandler data map.
      */
-    protected $temporaryKeys = array();
+    protected $temporaryKeys = [];
+
+    /**
+     * @var int Incremental number to be used for temporary keys during test mode (used for unit testing)
+     */
+    static protected $forcedTemporaryKeySerial = 0;
 
     /**
      * @var string Context in which the import run is executed
@@ -99,9 +105,24 @@ class Importer
     protected $verbose = false;
 
     /**
+     * @var string Name of the Step class at which the process should stop when running in preview mode
+     */
+    protected $previewStep = '';
+
+    /**
+     * @var string|array Data to be returned as preview data
+     */
+    protected $previewData;
+
+    /**
+     * @var bool Set to true to trigger testing mode (used only for unit testing)
+     */
+    protected $testMode = false;
+
+    /**
      * @var array List of default steps for the synchronize data process
      */
-    const SYNCHRONYZE_DATA_STEPS = array(
+    const SYNCHRONYZE_DATA_STEPS = [
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\ValidateConnectorStep::class,
@@ -112,12 +133,12 @@ class Importer
             Step\StoreDataStep::class,
             Step\ClearCacheStep::class,
             Step\ConnectorCallbackStep::class
-    );
+    ];
 
     /**
      * @var array List of default steps for the import data process
      */
-    const IMPORT_DATA_STEPS = array(
+    const IMPORT_DATA_STEPS = [
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\HandleDataStep::class,
@@ -125,11 +146,13 @@ class Importer
             Step\TransformDataStep::class,
             Step\StoreDataStep::class,
             Step\ClearCacheStep::class
-    );
+    ];
 
     public function __construct()
     {
-        $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
+        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import'])) {
+            $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import'], ['allowed_classes' => false]);
+        }
         $this->setDebug((bool)$this->extensionConfiguration['debug']);
 
         // Force PHP limit execution time if set
@@ -226,39 +249,31 @@ class Importer
             );
 
             $data = $this->objectManager->get(Data::class);
-            $steps = $this->externalConfiguration->getSteps();
-            foreach ($steps as $stepClass) {
-                /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
-                $step = $this->objectManager->get($stepClass);
-                $step->setImporter($this);
-                $step->setConfiguration($this->externalConfiguration);
-                $step->setData($data);
-                $step->run();
-                if ($step->isAbortFlag()) {
-                    // Report about aborting
-                    $this->addMessage(
-                            LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
-                                    'external_import'
-                            ),
-                            FlashMessage::WARNING
-                    );
-                    break;
-                }
-                $data = $step->getData();
-            }
+            $this->runSteps($data);
+        }
+        catch (InvalidPreviewStepException $e) {
+            $this->addMessage(
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
+                            'external_import',
+                            [
+                                    $e->getMessage()
+                            ]
+                    ),
+                    AbstractMessage::WARNING
+            );
         }
         catch (\Exception $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
                             'external_import',
-                            array(
+                            [
                                     $table,
                                     $index,
                                     $e->getMessage(),
                                     $e->getCode()
-                            )
+                            ]
                     )
             );
         }
@@ -293,40 +308,30 @@ class Importer
             // Initialize the Data object with the raw data
             $data = $this->objectManager->get(Data::class);
             $data->setRawData($rawData);
-            // Loop on all the process steps
-            $steps = $this->externalConfiguration->getSteps();
-            foreach ($steps as $stepClass) {
-                /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
-                $step = $this->objectManager->get($stepClass);
-                $step->setImporter($this);
-                $step->setConfiguration($this->externalConfiguration);
-                $step->setData($data);
-                $step->run();
-                if ($step->isAbortFlag()) {
-                    // Report about aborting
-                    $this->addMessage(
-                            LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
-                                    'external_import'
-                            ),
-                            FlashMessage::WARNING
-                    );
-                    break;
-                }
-                $data = $step->getData();
-            }
+            $this->runSteps($data);
+        }
+        catch (InvalidPreviewStepException $e) {
+            $this->addMessage(
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
+                            'external_import',
+                            [
+                                    $e->getMessage()
+                            ]
+                    )
+            );
         }
         catch (\Exception $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
                             'external_import',
-                            array(
+                            [
                                     $table,
                                     $index,
                                     $e->getMessage(),
                                     $e->getCode()
-                            )
+                            ]
                     )
             );
         }
@@ -334,6 +339,55 @@ class Importer
         $this->reportingUtility->writeToDevLog();
         $this->reportingUtility->writeToLog();
         return $this->messages;
+    }
+
+    /**
+     * Runs the process through the defined steps.
+     *
+     * @param Data $data Initialized data object
+     * @return void
+     * @throws Exception\InvalidPreviewStepException
+     */
+    public function runSteps(Data $data)
+    {
+        // Get the process steps
+        $steps = $this->externalConfiguration->getSteps();
+        // If preview is defined, but step is not part of the process, issue exception
+        // NOTE: this cannot be checked during a setPreviewStep() call as the configuration is not yet loaded
+        if ($this->isPreview() && !in_array($this->getPreviewStep(), $steps, true)) {
+            throw new InvalidPreviewStepException(
+                    $this->getPreviewStep(),
+                    1532072718
+            );
+        }
+        // Loop on all the process steps
+        foreach ($steps as $stepClass) {
+            $this->resetPreviewData();
+            /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
+            $step = $this->objectManager->get($stepClass);
+            $step->setImporter($this);
+            $step->setConfiguration($this->externalConfiguration);
+            $step->setData($data);
+            $step->run();
+            // Abort process if step required it
+            if ($step->isAbortFlag()) {
+                // Report about aborting
+                $this->addMessage(
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
+                                'external_import'
+                        ),
+                        AbstractMessage::WARNING
+                );
+                break;
+            }
+            // If preview is on and the step is matched, exit process
+            // NOTE: this happens after abort, as aborting means there's an underlying problem, which should be reported no matter what
+            if ($this->isPreview() && $this->getPreviewStep() === $stepClass) {
+                break;
+            }
+            $data = $step->getData();
+        }
     }
 
     // Getters and setters
@@ -417,6 +471,24 @@ class Importer
     }
 
     /**
+     * Generates a random key and returns it.
+     *
+     * The keys are used for new records in the TCE structures used for storing new records.
+     * A random key is recommended. Controlled keys are generated in test mode in order
+     * to have predictable results for functional testing.
+     *
+     * @return string
+     */
+    public function generateTemporaryKey()
+    {
+        if ($this->isTestMode()) {
+            self::$forcedTemporaryKeySerial++;
+            return 'NEW' . self::$forcedTemporaryKeySerial;
+        }
+        return uniqid('NEW', true);
+    }
+
+    /**
      * Writes debug messages to the devlog, depending on debug flag.
      *
      * @param string $message The debug message
@@ -452,7 +524,7 @@ class Importer
      * @param integer $status Status of the message. Expected is "success", "warning" or "error"
      * @return void
      */
-    public function addMessage($text, $status = FlashMessage::ERROR)
+    public function addMessage($text, $status = AbstractMessage::ERROR)
     {
         if (!empty($text)) {
             $this->messages[$status][] = $text;
@@ -476,11 +548,11 @@ class Importer
      */
     public function resetMessages()
     {
-        $this->messages = array(
-                FlashMessage::ERROR => array(),
-                FlashMessage::WARNING => array(),
-                FlashMessage::OK => array()
-        );
+        $this->messages = [
+                AbstractMessage::ERROR => [],
+                AbstractMessage::WARNING => [],
+                AbstractMessage::OK => []
+        ];
     }
 
     /**
@@ -579,5 +651,89 @@ class Importer
     public function setVerbose(bool $verbose)
     {
         $this->verbose = $verbose;
+    }
+
+    /**
+     * Returns true if a preview step is defined.
+     *
+     * @return bool
+     */
+    public function isPreview()
+    {
+        return $this->previewStep !== '';
+    }
+
+    /**
+     * Returns the preview step.
+     *
+     * @return string
+     */
+    public function getPreviewStep()
+    {
+        return $this->previewStep;
+    }
+
+    /**
+     * Sets the preview step.
+     *
+     * @param string $step
+     */
+    public function setPreviewStep(string $step)
+    {
+        $this->previewStep = $step;
+    }
+
+    /**
+     * Gets the preview data.
+     *
+     * @return mixed
+     */
+    public function getPreviewData()
+    {
+        return $this->previewData;
+    }
+
+    /**
+     * Sets the preview data.
+     *
+     * @param mixed $previewData
+     */
+    public function setPreviewData($previewData): void
+    {
+        $this->previewData = $previewData;
+    }
+
+    /**
+     * Resets the preview data to null.
+     *
+     * @return void
+     */
+    public function resetPreviewData(): void
+    {
+        $this->previewData = null;
+    }
+
+    /**
+     * Sets the test mode flag.
+     *
+     * Don't use this unless you are really sure that it is what you want.
+     * This is meant for unit testing only.
+     *
+     * @param bool $mode Set to true for test mode
+     * @return void
+     */
+    public function setTestMode(bool $mode)
+    {
+        $this->testMode = $mode;
+    }
+
+    /**
+     * Returns the value of the test mode flag.
+     *
+     * @return bool
+     */
+    public function isTestMode()
+    {
+        return $this->testMode;
     }
 }

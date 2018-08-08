@@ -9,7 +9,7 @@ General considerations
 The purpose of this extension is to take data from somewhere else
 (called the "*external source*") than the local TYPO3 CMS database and store
 it into that local database. Data from the external source is matched
-to local tables and fields using information stored in the TCA, using
+to local tables and fields, using information stored in the TCA with
 the extended syntax provided by this extension.
 
 The extension can either fetch the data from some external source or
@@ -39,3 +39,4 @@ Note that it is perfectly possible to also push data towards
 synchronizable tables. The reverse is not true (non-synchronizable
 tables cannot pull data).
 
+Synchornizations can be run in preview mode

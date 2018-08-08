@@ -139,16 +139,9 @@ class ReadDataStep extends AbstractStep
                         break;
                 }
 
-                // Debug a sample of the handled data
-                // TODO: replace with preview feature
-                $debugData = $this->prepareDataSample($data);
-                $this->importer->debug(
-                        'Data received (sample)',
-                        -1,
-                        $debugData
-                );
-
+                // Set the data as raw data (and also as preview, if activated)
                 $this->getData()->setRawData($data);
+                $this->setPreviewData($data);
             }
         }
     }
@@ -179,49 +172,5 @@ class ReadDataStep extends AbstractStep
             }
         }
         return $parameters;
-    }
-
-    /**
-     * This method prepares a sample from the data to import, based on the preview limit
-     * The process applied for this depends on the data type (array or XML)
-     *
-     * @param mixed $data The input data as a XML string or a PHP array
-     * @return array The data sample, in same format as input (but written inside an array in case of XML data)
-     */
-    protected function prepareDataSample($data)
-    {
-        $extensionConfiguration = $this->importer->getExtensionConfiguration();
-        $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
-        $dataSample = $data;
-        if (!empty($extensionConfiguration['previewLimit'])) {
-            switch ($ctrlConfiguration['data']) {
-                case 'xml':
-
-                    // Load the XML into a DOM object
-                    $dom = new \DOMDocument();
-                    $dom->loadXML($data, LIBXML_PARSEHUGE);
-                    // Prepare an empty DOM object for the sample data
-                    $domSample = new \DOMDocument();
-                    // Define a root node
-                    $element = $domSample->createElement('sample');
-                    $domSample->appendChild($element);
-                    // Get the desired nodes
-                    $selectedNodes = $dom->getElementsByTagName($ctrlConfiguration['nodetype']);
-                    // Loop until the preview limit and import selected nodes into the sample XML object
-                    $loopLimit = min($selectedNodes->length, $extensionConfiguration['previewLimit']);
-                    for ($i = 0; $i < $loopLimit; $i++) {
-                        $newNode = $domSample->importNode($selectedNodes->item($i), true);
-                        $domSample->documentElement->appendChild($newNode);
-                    }
-                    // Store the XML sample in an array, to have a common return format
-                    $dataSample = array();
-                    $dataSample[] = $domSample->saveXML();
-                    break;
-                case 'array':
-                    $dataSample = array_slice($data, 0, $extensionConfiguration['previewLimit']);
-                    break;
-            }
-        }
-        return $dataSample;
     }
 }

@@ -1,3 +1,7 @@
+2018-08-08 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Added preview feature, resolves #61
+
 2018-07-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added custom permissions for BE module, resolves #49

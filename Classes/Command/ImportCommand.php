@@ -98,6 +98,12 @@ class ImportCommand extends Command
                         'd',
                         InputOption::VALUE_NONE,
                         'Turns on debugging. Debug output goes to the devlog unless verbose mode is also turned on.'
+                )
+                ->addOption(
+                        'preview',
+                        'p',
+                        InputOption::VALUE_REQUIRED,
+                        'Turns on preview mode. Process will stop at the given step (class name) and will output relevant data. No data is saved to the database.'
                 );
     }
 
@@ -134,6 +140,10 @@ class ImportCommand extends Command
             $callContext->setInputOutput($this->io);
             $this->importer->setCallContext($callContext);
 
+            $preview = $input->getOption('preview');
+            if ($preview) {
+                $this->importer->setPreviewStep($preview);
+            }
             $all = $input->getOption('all');
             $group = $input->getOption('group');
             $table = $input->getOption('table');
@@ -157,11 +167,16 @@ class ImportCommand extends Command
                 $this->runSynchronization($configurations);
             // Launch selected synchronization
             } elseif ($table !== null && $index !== null) {
-                $messages = $this->importer->synchronize(
-                        $table,
-                        $index
-                );
-                $this->reportResults($messages);
+                // Assemble fake configuration array, for calling the same method as above
+                $configurations = [
+                    Importer::DEFAULT_PRIORITY => [
+                            [
+                                    'table' => $table,
+                                    'index' => $index
+                            ]
+                    ]
+                ];
+                $this->runSynchronization($configurations);
             } else {
                 // Report erroneous arguments
                 $this->io->warning('The command was called with invalid arguments. Please use "typo3 help externalimport:sync" for help.');
@@ -211,6 +226,13 @@ class ImportCommand extends Command
                     $messages = $this->importer->synchronize(
                             $configuration['table'],
                             $configuration['index']
+                    );
+                    $this->io->section('Preview data');
+                    $this->io->section(
+                            var_export(
+                                    $this->importer->getPreviewData(),
+                                    true
+                            )
                     );
                     $this->reportResults($messages);
                 }

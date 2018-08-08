@@ -36,6 +36,21 @@
 			<trans-unit id="configuration_details" xml:space="preserve">
 				<source>Configuration details for table &quot;%1$s&quot; (index: %2$s)</source>
 			</trans-unit>
+			<trans-unit id="preview_configuration" xml:space="preserve">
+				<source>Run preview for table &quot;%1$s&quot; (index: %2$s)</source>
+			</trans-unit>
+			<trans-unit id="choose_preview_step" xml:space="preserve">
+				<source>Choose process step to preview</source>
+			</trans-unit>
+			<trans-unit id="preview" xml:space="preserve">
+				<source>Preview</source>
+			</trans-unit>
+			<trans-unit id="preview_data" xml:space="preserve">
+				<source>Preview data</source>
+			</trans-unit>
+			<trans-unit id="run_preview" xml:space="preserve">
+				<source>Run</source>
+			</trans-unit>
 			<trans-unit id="back_to_list" xml:space="preserve">
 				<source>Back to list</source>
 			</trans-unit>

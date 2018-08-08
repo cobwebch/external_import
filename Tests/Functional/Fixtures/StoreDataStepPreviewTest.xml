@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+	<!-- Extra tag for testing the deletion of existing records during import -->
+	<tx_externalimporttest_tag>
+		<uid>2</uid>
+		<pid>1</pid>
+		<code>unknown</code>
+		<name>Dead record</name>
+	</tx_externalimporttest_tag>
+</dataset>

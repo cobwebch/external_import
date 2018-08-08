@@ -1,0 +1,38 @@
+<html data-namespace-typo3-fluid="true"
+	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
+	<f:flashMessages />
+
+	<h1><f:translate id="preview_configuration" arguments="{0: '{ex:be.tableTitle(table: table)}', 1: index}" /></h1>
+
+	<div id="tx_externalimport_preview">
+		<f:form name="previewForm" action="preview" method="post">
+			<f:form.hidden name="table" value="{table}" />
+			<f:form.hidden name="index" value="{index}" />
+			<div class="typo3-TCEforms">
+				<div class="tab-pane">
+					<fieldset class="form-section">
+						<div class="form-group">
+							<label>
+								<f:translate id="choose_preview_step" />
+							</label>
+							<div class="field-control-wrap">
+								<f:form.select class="form-control" name="stepClass" value="{stepClass}" options="{steps}" />
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="field-control-wrap">
+								<f:form.submit name="runPreview" value="{f:translate(id: 'run_preview')}" class="btn btn-default" />
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+		</f:form>
+		<f:if condition="{stepClass}">
+			<hr>
+			<h2><f:translate id="preview_data" /></h2>
+			<f:debug inline="true">{previewData}</f:debug>
+		</f:if>
+	</div>
+</html>

@@ -30,9 +30,15 @@ various features are summarized in the picture below.
 
 .. note::
 
-   Icons may vary depending on user rights.
-   For users without write access to a given table the synchronize button
-   will be disabled. They will also not see any of the actions related to the Scheduler.
+   Icons may vary depending on user rights. Users without the proper rights
+   or without write access to a given table will not see the synchronize and preview buttons,
+   nor the actions related to the Scheduler.
+
+
+.. _user-backend-module-synchronizable-details:
+
+Viewing configuration details
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Clicking on the information icon leads to a screen showing
 all the information about that particular configuration. The view
@@ -63,6 +69,11 @@ detailed view.
    configuration. Notices do not block the import process.
 
 
+.. _user-backend-module-synchronizable-sync:
+
+Triggering a synchronization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Clicking on the synchronize data button will immediately start
 the synchronization of the corresponding table. This may take quite
 some time if the data to import is large. If you move away from the BE
@@ -73,6 +84,26 @@ the process, flash messages will appear with the results:
 	:alt: Results of synchronization
 
 	Flash messages show the results of the synchronization
+
+
+.. _user-backend-module-synchronizable-preview:
+
+Running in preview mode
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Clicking on the preview button leads to the preview feature.
+For running a preview your first need to select a specific
+:ref:`step from the process <user-overview>`. The synchronization
+will run up to that step and stop. Preview data gets displayed
+if available (this depends on the step).
+
+Most importantly nothing permanent happens in preview mode.
+For example, data is not stored into the database.
+
+.. figure:: ../../Images/BackendPreview.png
+	:alt: Preview of a synchronization
+
+	The synchronization is run up to the Transform Data step and preview data is dumped to the screen
 
 
 .. _user-backend-module-automation:
@@ -166,3 +197,7 @@ There is not much more to it for now. It may gain new features in the future.
 	:alt: BE module overview for non-synchronizable tables
 
 	List of import log entries
+
+.. note::
+
+   Runs made in preview mode are not logged.

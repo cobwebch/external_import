@@ -33,18 +33,29 @@ class ClearCacheStep extends AbstractStep
     public function run()
     {
         $configuration = $this->configuration->getCtrlConfiguration();
-        if (!empty($configuration['clearCache'])) {
+        if (empty($configuration['clearCache'])) {
+            $this->importer->setPreviewData(
+                    [
+                            'caches' => []
+                    ]
+            );
+        } else {
             // Extract the list of caches to clear
             $caches = GeneralUtility::trimExplode(
                     ',',
                     $configuration['clearCache'],
                     true
             );
-            // Use DataHandler to clear the designated caches
-            if (count($caches) > 0) {
+            $this->importer->setPreviewData(
+                    [
+                            'caches' => $caches
+                    ]
+            );
+            // Use DataHandler to clear the designated caches, if not in preview mode
+            if (count($caches) > 0 && !$this->importer->isPreview()) {
                 /** @var $tce DataHandler */
                 $tce = GeneralUtility::makeInstance(DataHandler::class);
-                $tce->start(array(), array());
+                $tce->start([], []);
                 foreach ($caches as $cacheId) {
                     $tce->clear_cacheCmd($cacheId);
                 }

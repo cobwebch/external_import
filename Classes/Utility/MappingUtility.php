@@ -94,7 +94,7 @@ class MappingUtility
 
                                 // If not, create a new temporary key
                                 } else {
-                                    $temporaryKey = uniqid('NEW', true);
+                                    $temporaryKey = $this->importer->generateTemporaryKey();
                                     $this->importer->addTemporaryKey($singleValue, $temporaryKey);
                                 }
                                 // Use temporary key
