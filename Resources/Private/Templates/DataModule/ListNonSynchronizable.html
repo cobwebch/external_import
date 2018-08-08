@@ -1,6 +1,5 @@
 <html data-namespace-typo3-fluid="true"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers"
 	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
 	<f:flashMessages />
 
@@ -26,7 +25,7 @@
 				<f:for each="{configurations}" as="configuration">
 					<tr>
 						<td>
-							<ex:be.recordIcon table="{configuration.table}" />
+							<core:iconForRecord table="{configuration.table}" row="{0: ''}" />
 						</td>
 						<td>{configuration.tableName} ({configuration.table})</td>
 						<td>[{configuration.index}] {configuration.description}</td>
