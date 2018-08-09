@@ -21,6 +21,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -390,60 +391,67 @@ class StoreDataStep extends AbstractStep
 
         // Load the data and process it, if not in preview mode
         if (!$this->importer->isPreview()) {
-            $tce->start($tceData, $tceCommands);
-            $tce->process_datamap();
-            $tce->process_cmdmap();
-            $this->importer->debug(
-                    'New IDs',
-                    0,
-                    $tce->substNEWwithIDs
-            );
-            $inserts = count($tce->substNEWwithIDs);
+            try {
+                $tce->start($tceData, $tceCommands);
+                $tce->process_datamap();
+                $tce->process_cmdmap();
+                $this->importer->debug(
+                        'New IDs',
+                        0,
+                        $tce->substNEWwithIDs
+                );
+                $inserts = count($tce->substNEWwithIDs);
 
-            // Substitute NEW temporary keys with actual IDs in the "stored records" array
-            foreach ($storedRecords as $index => $record) {
-                if (strpos($record['uid'], 'NEW') === 0 && isset($tce->substNEWwithIDs[$record['uid']])) {
-                    $storedRecords[$index]['uid'] = $tce->substNEWwithIDs[$record['uid']];
+                // Substitute NEW temporary keys with actual IDs in the "stored records" array
+                foreach ($storedRecords as $index => $record) {
+                    if (strpos($record['uid'], 'NEW') === 0 && isset($tce->substNEWwithIDs[$record['uid']])) {
+                        $storedRecords[$index]['uid'] = $tce->substNEWwithIDs[$record['uid']];
+                    }
+                }
+
+                // Post-processing hook after data was saved
+                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
+                    foreach ($tceData as $tableRecords) {
+                        foreach ($tableRecords as $id => $record) {
+                            // Add status to record
+                            // If operation was insert, match placeholder to actual id
+                            $uid = $id;
+                            if (isset($tce->substNEWwithIDs[$id])) {
+                                $uid = $tce->substNEWwithIDs[$id];
+                                $record['tx_externalimport:status'] = 'insert';
+                            } else {
+                                $record['tx_externalimport:status'] = 'update';
+                            }
+                            // Restore additional fields, if any
+                            if ($this->getConfiguration()->getCountAdditionalFields() > 0) {
+                                foreach ($savedAdditionalFields[$id] as $fieldName => $fieldValue) {
+                                    $record[$fieldName] = $fieldValue;
+                                }
+                            }
+                            $savedData[$uid] = $record;
+                        }
+                    }
+                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] as $className) {
+                        try {
+                            $postProcessor = GeneralUtility::makeInstance($className);
+                            $postProcessor->datamapPostProcess($table, $savedData, $this->importer);
+                        } catch (\Exception $e) {
+                            $this->importer->debug(
+                                    sprintf(
+                                            'Could not instantiate class %s for hook %s',
+                                            $className,
+                                            'datamapPostProcess'
+                                    ),
+                                    1
+                            );
+                        }
+                    }
                 }
             }
-
-            // Post-processing hook after data was saved
-            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
-                foreach ($tceData as $tableRecords) {
-                    foreach ($tableRecords as $id => $record) {
-                        // Add status to record
-                        // If operation was insert, match placeholder to actual id
-                        $uid = $id;
-                        if (isset($tce->substNEWwithIDs[$id])) {
-                            $uid = $tce->substNEWwithIDs[$id];
-                            $record['tx_externalimport:status'] = 'insert';
-                        } else {
-                            $record['tx_externalimport:status'] = 'update';
-                        }
-                        // Restore additional fields, if any
-                        if ($this->getConfiguration()->getCountAdditionalFields() > 0) {
-                            foreach ($savedAdditionalFields[$id] as $fieldName => $fieldValue) {
-                                $record[$fieldName] = $fieldValue;
-                            }
-                        }
-                        $savedData[$uid] = $record;
-                    }
-                }
-                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] as $className) {
-                    try {
-                        $postProcessor = GeneralUtility::makeInstance($className);
-                        $postProcessor->datamapPostProcess($table, $savedData, $this->importer);
-                    } catch (\Exception $e) {
-                        $this->importer->debug(
-                                sprintf(
-                                        'Could not instantiate class %s for hook %s',
-                                        $className,
-                                        'datamapPostProcess'
-                                ),
-                                1
-                        );
-                    }
-                }
+            catch (\Exception $e) {
+                // Abort the process and report about the error
+                $this->handleTceException($e);
+                return;
             }
         }
 
@@ -489,24 +497,31 @@ class StoreDataStep extends AbstractStep
                 // Actually delete the records, if not in preview mode
                 if (!$this->importer->isPreview()) {
                     $tce->start([], $tceDeleteCommands);
-                    $tce->process_cmdmap();
-                    // Call a post-processing hook
-                    if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
-                        foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
-                            try {
-                                $postProcessor = GeneralUtility::makeInstance($className);
-                                $absentUids = $postProcessor->cmdmapPostProcess($table, $absentUids, $this->importer);
-                            } catch (\Exception $e) {
-                                $this->importer->debug(
-                                        sprintf(
-                                                'Could not instantiate class %s for hook %s',
-                                                $className,
-                                                'cmdmapPostProcess'
-                                        ),
-                                        1
-                                );
+                    try {
+                        $tce->process_cmdmap();
+                        // Call a post-processing hook
+                        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
+                            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
+                                try {
+                                    $postProcessor = GeneralUtility::makeInstance($className);
+                                    $absentUids = $postProcessor->cmdmapPostProcess($table, $absentUids, $this->importer);
+                                } catch (\Exception $e) {
+                                    $this->importer->debug(
+                                            sprintf(
+                                                    'Could not instantiate class %s for hook %s',
+                                                    $className,
+                                                    'cmdmapPostProcess'
+                                            ),
+                                            1
+                                    );
+                                }
                             }
                         }
+                    }
+                    catch (\Exception $e) {
+                        // Abort the process and report about the error
+                        $this->handleTceException($e);
+                        return;
                     }
                 }
             }
@@ -841,5 +856,36 @@ class StoreDataStep extends AbstractStep
         );
         $sortedData = $pagesForLevel;
         return $nextLevelPages;
+    }
+
+    /**
+     * Handles exceptions that happen when using the DataHandler to execute data or command structures.
+     *
+     * @param \Exception $e
+     * @return void
+     */
+    protected function handleTceException(\Exception $e)
+    {
+        // Set the abort flag to interrupt the process
+        $this->abortFlag = true;
+        // Add an error message
+        $this->importer->addMessage(
+                LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurredDuringSave',
+                        'external_import',
+                        [
+                                $e->getMessage(),
+                                $e->getCode(),
+                                $e->getFile(),
+                                $e->getLine()
+                        ]
+                )
+        );
+        // Send the call trail to the debut output
+        $this->importer->debug(
+                'Stack trace',
+                3,
+                $e->getTraceAsString()
+        );
     }
 }

@@ -128,6 +128,9 @@
 			<trans-unit id="things_happened" xml:space="preserve">
 				<source>One or more errors were reported. The count of operations performed may not be correct.</source>
 			</trans-unit>
+			<trans-unit id="exceptionOccurredDuringSave" xml:space="preserve">
+				<source>An exception occurred while saving the data: %1$s (code: %2$d, location: %3$s at line %4$d)</source>
+			</trans-unit>
 			<trans-unit id="scheduler.title" xml:space="preserve">
 				<source>External import</source>
 			</trans-unit>
