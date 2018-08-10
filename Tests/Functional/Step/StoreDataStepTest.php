@@ -15,167 +15,316 @@ namespace Cobweb\ExternalImport\Tests\Functional\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Lang\LanguageService;
 
 /**
  * Test suite for the StoreDataStep class.
  *
- * @package Cobweb\ExternalImport\Tests\Unit\Validator
+ * @package Cobweb\ExternalImport\Tests\Functional
  */
 class StoreDataStepTest extends FunctionalTestCase
 {
+    protected $testExtensionsToLoad = [
+            'typo3conf/ext/svconnector',
+            'typo3conf/ext/svconnector_csv',
+            'typo3conf/ext/svconnector_feed',
+            'typo3conf/ext/svconnector_json',
+            'typo3conf/ext/external_import',
+            'typo3conf/ext/externalimport_test'
+    ];
 
     /**
      * @var StoreDataStep
      */
     protected $subject;
 
+    /**
+     * @var Importer
+     */
+    protected $importer;
+
     public function setUp()
     {
         parent::setUp();
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $objectManager->get(StoreDataStep::class);
+        try {
+            $this->setUpBackendUserFromFixture(1);
+            // Connector services need a global LanguageService object
+            $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            $this->subject = $objectManager->get(StoreDataStep::class);
+            $this->importer = $objectManager->get(Importer::class);
+            $this->importDataSet(__DIR__ . '/../Fixtures/StoragePage.xml');
+            $this->importer->setForcedStoragePid(1);
+            $this->subject->setImporter($this->importer);
+        } catch (\Exception $e) {
+            self::markTestSkipped(
+                    sprintf(
+                            'Some initializations could not be performed (Exception: %s [%d])',
+                            $e->getMessage(),
+                            $e->getCode()
+                    )
+            );
+        }
     }
 
-    public function sortPagesProvider()
+    public function handleMmRelationsProvider(): array
     {
         return [
-                'No new pages - no sorting needed' => [
-                        [
-                                34 => [
-                                        'title' => 'Foo',
-                                        'pid' => 23
-                                ],
-                                42 => [
-                                        'title' => 'Bar',
-                                        'pid' => 34
-                                ],
+                'products (no MM)' => [
+                        'prerequisites' => [],
+                        'ctrlConfiguration' => [
+                                'referenceUid' => 'sku'
                         ],
-                        [
-                                34 => [
-                                        'title' => 'Foo',
-                                        'pid' => 23
+                        // No MM configuration
+                        'columnConfiguration' => [],
+                        // No need for complete records, as there are no MM relations anyway
+                        'records' => [
+                                [
+                                        'sku' => '000001',
+                                        'name' => 'Long sword'
                                 ],
-                                42 => [
-                                        'title' => 'Bar',
-                                        'pid' => 34
-                                ],
-                        ],
-                ],
-                'New pages, not nested - no sorting needed' => [
-                        [
-                                'NEW1' => [
-                                        'title' => 'Parent 1',
-                                        'pid' => 4
-                                ],
-                                'NEW2' => [
-                                        'title' => 'Parent 2',
-                                        'pid' => 4
-                                ],
-                                'NEW3' => [
-                                        'title' => 'Parent 3',
-                                        'pid' => 10
-                                ],
-                        ],
-                        [
-                                'NEW1' => [
-                                        'title' => 'Parent 1',
-                                        'pid' => 4
-                                ],
-                                'NEW2' => [
-                                        'title' => 'Parent 2',
-                                        'pid' => 4
-                                ],
-                                'NEW3' => [
-                                        'title' => 'Parent 3',
-                                        'pid' => 10
-                                ],
-                        ]
-                ],
-                'New pages, nested' => [
-                        [
-                                'NEW1' => [
-                                        'title' => 'Parent 1',
-                                        'pid' => 0
-                                ],
-                                'NEW2' => [
-                                        'title' => 'Child 1.1',
-                                        'pid' => 'NEW1'
-                                ],
-                                'NEW3' => [
-                                        'title' => 'Child 1.2',
-                                        'pid' => 'NEW1'
-                                ],
-                                'NEW4' => [
-                                        'title' => 'Parent 2',
-                                        'pid' => 0
-                                ],
-                                'NEW5' => [
-                                        'title' => 'Child 2.1',
-                                        'pid' => 'NEW4'
-                                ],
-                                'NEW6' => [
-                                        'title' => 'Child 2.1.1',
-                                        'pid' => 'NEW5'
-                                ],
-                                'NEW7' => [
-                                        'title' => 'Child 2.2',
-                                        'pid' => 'NEW4'
-                                ],
-                        ],
-                        [
-                                'NEW6' => [
-                                        'title' => 'Child 2.1.1',
-                                        'pid' => 'NEW5'
-                                ],
-                                'NEW2' => [
-                                        'title' => 'Child 1.1',
-                                        'pid' => 'NEW1'
-                                ],
-                                'NEW3' => [
-                                        'title' => 'Child 1.2',
-                                        'pid' => 'NEW1'
-                                ],
-                                'NEW5' => [
-                                        'title' => 'Child 2.1',
-                                        'pid' => 'NEW4'
-                                ],
-                                'NEW7' => [
-                                        'title' => 'Child 2.2',
-                                        'pid' => 'NEW4'
-                                ],
-                                'NEW1' => [
-                                        'title' => 'Parent 1',
-                                        'pid' => 0
-                                ],
-                                'NEW4' => [
-                                        'title' => 'Parent 2',
-                                        'pid' => 0
-                                ],
-                        ]
-                ],
-                'Page updated to new parent' => [
-                        [
-                                24 => [
-                                        'title' => 'Existing page',
-                                        'pid' => 'NEW1'
-                                ],
-                                'NEW1' => [
-                                        'title' => 'Parent 1',
-                                        'pid' => 0
+                                [
+                                        'sku' => '000002',
+                                        'name' => 'Chain mail'
                                 ]
                         ],
-                        [
-                                24 => [
-                                        'title' => 'Existing page',
-                                        'pid' => 'NEW1'
+                        'expectedMappings' => [],
+                        'expectedFullMappings' => []
+                ],
+                'bundles (MM with sorting)' => [
+                        'prerequisites' => [
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'base'
                                 ],
-                                'NEW1' => [
-                                        'title' => 'Parent 1',
-                                        'pid' => 0
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'more'
+                                ],
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'stable'
+                                ]
+                        ],
+                        // Only define relevant configuration
+                        'ctrlConfiguration' => [
+                                'referenceUid' => 'bundle_code'
+                        ],
+                        // Only define relevant configuration
+                        'columnConfiguration' => [
+                                'products' => [
+                                        'MM' => [
+                                                'mapping' => [
+                                                        'table' => 'tx_externalimporttest_product',
+                                                        'referenceField' => 'sku'
+                                                ],
+                                                'sorting' => 'position'
+                                        ]
+                                ]
+                        ],
+                        // Only the necessary fields
+                        'records' => [
+                                [
+                                        'bundle_code' => 'JOY01',
+                                        'products' => '000101',
+                                        'position' => 1
+                                ],
+                                [
+                                        'bundle_code' => 'JOY01',
+                                        'products' => '000102',
+                                        'position' => 2
+                                ],
+                                [
+                                        'bundle_code' => 'PAIN01',
+                                        'products' => '000005',
+                                        'position' => 2
+                                ],
+                                [
+                                        'bundle_code' => 'PAIN01',
+                                        'products' => '000001',
+                                        'position' => 1
+                                ],
+                                [
+                                        'bundle_code' => 'PAIN02',
+                                        'products' => '000005',
+                                        'position' => 4
+                                ],
+                                [
+                                        'bundle_code' => 'PAIN02',
+                                        'products' => '000001',
+                                        'position' => 2
+                                ],
+                                [
+                                        'bundle_code' => 'PAIN02',
+                                        'products' => '000202',
+                                        'position' => 1
+                                ],
+                                [
+                                        'bundle_code' => 'PAIN02',
+                                        'products' => '000201',
+                                        'position' => 3
+                                ]
+                        ],
+                        'expectedMappings' => [
+                                'products' => [
+                                        'JOY01' => [
+                                                1 => 3,
+                                                2 => 4
+                                        ],
+                                        'PAIN01' => [
+                                                1 => 1,
+                                                2 => 2
+                                        ],
+                                        'PAIN02' => [
+                                                1 => 6,
+                                                2 => 1,
+                                                3 => 5,
+                                                4 => 2
+                                        ]
+                                ]
+                        ],
+                        'expectedFullMappings' => []
+                ],
+                'orders (MM with additional fields)' => [
+                        'prerequisites' => [
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'base'
+                                ],
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'more'
+                                ],
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'stable'
+                                ]
+                        ],
+                        // Only define relevant configuration
+                        'ctrlConfiguration' => [
+                                'referenceUid' => 'order_id'
+                        ],
+                        // Only define relevant configuration
+                        'columnConfiguration' => [
+                                'products' => [
+                                        'MM' => [
+                                                'mapping' => [
+                                                        'table' => 'tx_externalimporttest_product',
+                                                        'referenceField' => 'sku'
+                                                ],
+                                                'additionalFields' => [
+                                                        'quantity' => 'qty'
+                                                ]
+                                        ]
+                                ]
+                        ],
+                        // Only the necessary fields
+                        'records' => [
+                                [
+                                        'order_id' => '000001',
+                                        'products' => '000001',
+                                        'qty' => 3
+                                ],
+                                [
+                                        'order_id' => '000001',
+                                        'products' => '000005',
+                                        'qty' => 1
+                                ],
+                                [
+                                        'order_id' => '000001',
+                                        'products' => '000101',
+                                        'qty' => 10
+                                ],
+                                [
+                                        'order_id' => '000001',
+                                        'products' => '000102',
+                                        'qty' => 2
+                                ],
+                                [
+                                        'order_id' => '000002',
+                                        'products' => '000001',
+                                        'qty' => 1
+                                ],
+                                [
+                                        'order_id' => '000002',
+                                        'products' => '000005',
+                                        'qty' => 2
+                                ],
+                                [
+                                        'order_id' => '000002',
+                                        'products' => '000202',
+                                        'qty' => 1
+                                ]
+                        ],
+                        'expectedMappings' => [
+                                'products' => [
+                                        '000001' => [
+                                                0 => 1,
+                                                1 => 2,
+                                                2 => 3,
+                                                3 => 4
+                                        ],
+                                        '000002' => [
+                                                0 => 1,
+                                                1 => 2,
+                                                2 => 6
+                                        ]
+                                ]
+                        ],
+                        'expectedFullMappings' => [
+                                'products' => [
+                                        '000001' => [
+                                                0 => [
+                                                        'value' => 1,
+                                                        'additionalFields' => [
+                                                                'quantity' => 3
+                                                        ]
+                                                ],
+                                                1 => [
+                                                        'value' => 2,
+                                                        'additionalFields' => [
+                                                                'quantity' => 1
+                                                        ]
+                                                ],
+                                                2 => [
+                                                        'value' => 3,
+                                                        'additionalFields' => [
+                                                                'quantity' => 10
+                                                        ]
+                                                ],
+                                                3 => [
+                                                        'value' => 4,
+                                                        'additionalFields' => [
+                                                                'quantity' => 2
+                                                        ]
+                                                ]
+                                        ],
+                                        '000002' => [
+                                                0 => [
+                                                        'value' => 1,
+                                                        'additionalFields' => [
+                                                                'quantity' => 1
+                                                        ]
+                                                ],
+                                                1 => [
+                                                        'value' => 2,
+                                                        'additionalFields' => [
+                                                                'quantity' => 2
+                                                        ]
+                                                ],
+                                                2 => [
+                                                        'value' => 6,
+                                                        'additionalFields' => [
+                                                                'quantity' => 1
+                                                        ]
+                                                ],
+                                        ]
                                 ]
                         ]
                 ]
@@ -183,17 +332,41 @@ class StoreDataStepTest extends FunctionalTestCase
     }
 
     /**
-     * @param array $input
-     * @param array $expected
      * @test
-     * @dataProvider sortPagesProvider
+     * @dataProvider handleMmRelationsProvider
+     * @param array $prerequisites List of imports that need to be run before the test can be performed
+     * @param array $ctrlConfiguration
+     * @param array $columnConfiguration
+     * @param array $records
+     * @param array $expectedMappings
+     * @param array $expectedFullMappings
      */
-    public function sortPagesDataSortsParentAndChildren($input, $expected)
-    {
-        $sortedData = $this->subject->sortPagesData($input);
+    public function handleMmRelationsPreparesMappings(
+            $prerequisites,
+            $ctrlConfiguration,
+            $columnConfiguration,
+            $records,
+            $expectedMappings,
+            $expectedFullMappings
+    ): void {
+        // Run necessary synchronizations
+        if (count($prerequisites) > 0) {
+            foreach ($prerequisites as $prerequisite) {
+                $messages = $this->importer->synchronize(
+                        $prerequisite['table'],
+                        $prerequisite['index']
+                );
+            }
+        }
+        // Run the actual test
+        $this->subject->handleMmRelations($ctrlConfiguration, $columnConfiguration, $records);
         self::assertSame(
-                $sortedData,
-                $expected
+                $expectedMappings,
+                $this->subject->getMappings()
+        );
+        self::assertSame(
+                $expectedFullMappings,
+                $this->subject->getFullMappings()
         );
     }
 }

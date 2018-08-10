@@ -27,6 +27,26 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class StoreDataStep extends AbstractStep
 {
     /**
+     * @var array List of all relations for each MM-relations field of each record being imported
+     */
+    protected $mappings = [];
+
+    /**
+     * @var array List of all relations for each MM-relations field of each record being imported, with additional fields
+     */
+    protected $fullMappings = [];
+
+    /**
+     * @var array
+     */
+    protected $fieldsExcludedFromInserts = [];
+
+    /**
+     * @var array
+     */
+    protected $fieldsExcludedFromUpdates = [];
+
+    /**
      * @var \Cobweb\ExternalImport\Utility\MappingUtility
      */
     protected $mappingUtility;
@@ -63,10 +83,6 @@ class StoreDataStep extends AbstractStep
                 $records
         );
 
-        // Initialize some variables
-        $fieldsExcludedFromInserts = [];
-        $fieldsExcludedFromUpdates = [];
-
         // Get the list of existing uids for the table
         $this->uidRepository->setConfiguration($this->getConfiguration());
         $existingUids = $this->uidRepository->getExistingUids();
@@ -75,138 +91,14 @@ class StoreDataStep extends AbstractStep
         $existingUids = $existingUids ?? [];
         $currentPids = $currentPids ?? [];
 
-        // Check which columns are MM-relations and get mappings to foreign tables for each
-        // NOTE: as it is now, it is assumed that the imported data is denormalised
-        //
-        // NOTE2:	as long as we're looping on all columns, we assemble the list
-        //			of fields that are excluded from insert or update operations
-        //
-        // There's more to do than that:
-        //
-        // 1.	a sorting field may have been defined, but TCEmain assumes the MM-relations are in the right order
-        //		and inserts its own number for the table's sorting field. So MM-relations must be sorted before executing TCEmain.
-        // 2.a	it is possible to store additional fields in the MM-relations. This is not TYPO3-standard, so TCEmain will
-        //		not be able to handle it. We thus need to store all that data now and rework the MM-relations when TCEmain is done.
-        // 2.b	if a pair of records is related to each other several times (because the additional fields vary), this will be filtered out
-        //		by TCEmain. So we must preserve also these additional relations.
-        $mappings = [];
-        $fullMappings = [];
         $ctrlConfiguration = $this->getConfiguration()->getCtrlConfiguration();
         $columnConfiguration = $this->getConfiguration()->getColumnConfiguration();
         $table = $this->importer->getExternalConfiguration()->getTable();
-        foreach ($columnConfiguration as $columnName => $columnData) {
-            // Check if some fields are excluded from some operations
-            // and add them to the relevant list
-            if (array_key_exists('disabledOperations', $columnData)) {
-                if (GeneralUtility::inList($columnData['disabledOperations'], 'insert')) {
-                    $fieldsExcludedFromInserts[] = $columnName;
-                }
-                if (GeneralUtility::inList($columnData['disabledOperations'], 'update')) {
-                    $fieldsExcludedFromUpdates[] = $columnName;
-                }
-            }
-            // Process MM-relations, if any
-            if (array_key_exists('MM', $columnData)) {
-                $mmData = $columnData['MM'];
-                $sortingField = $mmData['sorting'] ?? false;
-                $additionalFields = (isset($mmData['additionalFields'])) ? $mmData['additionalFields'] : [];
-                $hasAdditionalFields = count($additionalFields) > 0;
-
-                $mappings[$columnName] = [];
-                if ($additionalFields || $mmData['multiple']) {
-                    $fullMappings[$columnName] = [];
-                }
-
-                // Get foreign mapping for column
-                $mappingInformation = $mmData['mapping'];
-                $foreignMappings = $this->mappingUtility->getMapping($mappingInformation);
-
-                // Go through each record and assemble pairs of primary and foreign keys
-                foreach ($records as $theRecord) {
-                    $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
-                    // Make sure not to keep the value from the previous iteration
-                    unset($foreignValue);
-
-                    // Get foreign value
-                    // First try the "soft" matching method to mapping table
-                    if (!empty($mmData['mapping']['matchMethod'])) {
-                        if ($mmData['mapping']['matchMethod'] === 'strpos' || $mmData['mapping']['matchMethod'] === 'stripos') {
-                            // Try matching the value. If matching fails, unset it.
-                            try {
-                                $foreignValue = $this->mappingUtility->matchSingleField(
-                                        $theRecord[$columnName],
-                                        $mmData['mapping'],
-                                        $foreignMappings
-                                );
-                            } catch (\Exception $e) {
-                                // Nothing to do, foreign value must stay "unset"
-                            }
-                        }
-
-                        // Then the "strict" matching method to mapping table
-                    } elseif (isset($foreignMappings[$theRecord[$columnName]])) {
-                        $foreignValue = $foreignMappings[$theRecord[$columnName]];
-                    }
-
-                    // If a value was found, use it
-                    if (isset($foreignValue)) {
-                        if (!isset($mappings[$columnName][$externalUid])) {
-                            $mappings[$columnName][$externalUid] = [];
-                            // Initialise only if necessary
-                            if ($hasAdditionalFields || $mmData['multiple']) {
-                                $fullMappings[$columnName][$externalUid] = [];
-                            }
-                        }
-
-                        // If additional fields are defined, store those values in an intermediate array
-                        $fields = [];
-                        if ($hasAdditionalFields) {
-                            foreach ($additionalFields as $localFieldName => $externalFieldName) {
-                                $fields[$localFieldName] = $theRecord[$externalFieldName];
-                            }
-                        }
-
-                        // If a sorting field is defined, use that value for indexing, otherwise just add the element at the end of the array
-                        if ($sortingField) {
-                            $sortingValue = $theRecord[$sortingField];
-                            $mappings[$columnName][$externalUid][$sortingValue] = $foreignValue;
-                            if ($hasAdditionalFields || $mmData['multiple']) {
-                                $fullMappings[$columnName][$externalUid][$sortingValue] = [
-                                        'value' => $foreignValue,
-                                        'additionalFields' => $fields
-                                ];
-                            }
-                        } else {
-                            $mappings[$columnName][$externalUid][] = $foreignValue;
-                            if ($hasAdditionalFields || $mmData['multiple']) {
-                                $fullMappings[$columnName][$externalUid][] = [
-                                        'value' => $foreignValue,
-                                        'additionalFields' => $fields
-                                ];
-                            }
-                        }
-                    }
-                }
-
-                // If there was some special sorting to do, do it now
-                if ($sortingField) {
-                    foreach ($mappings as $innerColumnName => $columnMappings) {
-                        foreach ($columnMappings as $uid => $values) {
-                            ksort($values);
-                            $mappings[$innerColumnName][$uid] = $values;
-
-                            // Do the same for extended MM-relations, if necessary
-                            if ($additionalFields || $mmData['multiple']) {
-                                $fullValues = $fullMappings[$innerColumnName][$uid];
-                                ksort($fullValues);
-                                $fullMappings[$innerColumnName][$uid] = $fullValues;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        $hasMMRelations = count($mappings);
+        // Extract list of excluded fields
+        $this->listExcludedFields($columnConfiguration);
+        // Handle many-to-many relations
+        $this->handleMmRelations($ctrlConfiguration, $columnConfiguration, $records);
+        $hasMMRelations = count($this->mappings);
 
         // Insert or update records depending on existing uids
         $updates = 0;
@@ -238,7 +130,7 @@ class StoreDataStep extends AbstractStep
 
             // Prepare MM-fields, if any
             if ($hasMMRelations) {
-                foreach ($mappings as $columnName => $columnMappings) {
+                foreach ($this->mappings as $columnName => $columnMappings) {
                     if (isset($columnMappings[$externalUid])) {
                         $theRecord[$columnName] = implode(',', $columnMappings[$externalUid]);
 
@@ -282,8 +174,8 @@ class StoreDataStep extends AbstractStep
                     }
 
                     // Remove the fields which must be excluded from updates
-                    if (count($fieldsExcludedFromUpdates) > 0) {
-                        foreach ($fieldsExcludedFromUpdates as $excludedField) {
+                    if (count($this->fieldsExcludedFromUpdates) > 0) {
+                        foreach ($this->fieldsExcludedFromUpdates as $excludedField) {
                             unset($theRecord[$excludedField]);
                         }
                     }
@@ -324,8 +216,8 @@ class StoreDataStep extends AbstractStep
                 }
 
                 // Remove the fields which must be excluded from inserts
-                if (count($fieldsExcludedFromInserts) > 0) {
-                    foreach ($fieldsExcludedFromInserts as $excludedField) {
+                if (count($this->fieldsExcludedFromInserts) > 0) {
+                    foreach ($this->fieldsExcludedFromInserts as $excludedField) {
                         unset($theRecord[$excludedField]);
                     }
                 }
@@ -527,8 +419,8 @@ class StoreDataStep extends AbstractStep
         }
 
         // Perform post-processing of MM-relations if necessary and if not in preview mode
-        if (count($fullMappings) > 0 && !$this->importer->isPreview()) {
-            $this->postProcessMmRelations($fullMappings);
+        if (count($this->fullMappings) > 0 && !$this->importer->isPreview()) {
+            $this->postProcessMmRelations();
         }
 
         // Report any errors that might have been raised by the DataHandler
@@ -609,19 +501,168 @@ class StoreDataStep extends AbstractStep
     }
 
     /**
+     * Parses the column configuration and prepares the list of fields which should be excluded
+     * from the update and insert operations.
+     *
+     * @param array $columnConfiguration External Import configuration for the columns
+     */
+    public function listExcludedFields($columnConfiguration): void
+    {
+        foreach ($columnConfiguration as $columnName => $columnData) {
+            if (array_key_exists('disabledOperations', $columnData)) {
+                if (GeneralUtility::inList($columnData['disabledOperations'], 'insert')) {
+                    $this->fieldsExcludedFromInserts[] = $columnName;
+                }
+                if (GeneralUtility::inList($columnData['disabledOperations'], 'update')) {
+                    $this->fieldsExcludedFromUpdates[] = $columnName;
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks which columns are MM-relations and gets mappings to foreign tables for each.
+     *
+     * NOTE: as it is now, it is assumed that the imported data is denormalised
+     *
+     * NOTE2: as long as we're looping on all columns, we assemble the list of fields that are excluded from insert or update operations
+     *
+     * There's more to do than that:
+     *
+     * 1.	a sorting field may have been defined, but the TCE assumes the MM-relations are in the right order
+   	 * 	    and inserts its own number for the table's sorting field. So MM-relations must be sorted before acting on the TCE data.
+     * 2.a	it is possible to store additional fields in the MM-relations. This is not TYPO3-standard, so the TCE will
+   	 * 	    not be able to handle it. We thus need to store all that data now and rework the MM-relations when the TCE is done.
+     * 2.b	if a pair of records is related to each other several times (because the additional fields vary), this will be filtered out
+   	 * 	    by the TCE. So we must preserve also these additional relations.
+     *
+     * @param array $ctrlConfiguration "ctrl" part of the External Import configuration
+     * @param array $columnConfiguration Column part of the External Import configuration
+     * @param array $records The records being handled
+     * @return void
+     */
+    public function handleMmRelations($ctrlConfiguration, $columnConfiguration, $records): void
+    {
+        $this->mappings = [];
+        $this->fullMappings = [];
+        foreach ($columnConfiguration as $columnName => $columnData) {
+            // Process MM-relations, if any
+            if (array_key_exists('MM', $columnData)) {
+                $mmData = $columnData['MM'];
+                $sortingField = $mmData['sorting'] ?? false;
+                $additionalFields = $mmData['additionalFields'] ?? [];
+                $hasAdditionalFields = count($additionalFields) > 0;
+
+                $this->mappings[$columnName] = [];
+                if ($additionalFields || $mmData['multiple']) {
+                    $this->fullMappings[$columnName] = [];
+                }
+
+                // Get foreign mapping for column
+                $mappingInformation = $mmData['mapping'];
+                $foreignMappings = $this->mappingUtility->getMapping($mappingInformation);
+
+                // Go through each record and assemble pairs of primary and foreign keys
+                foreach ($records as $theRecord) {
+                    $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
+                    // Make sure not to keep the value from the previous iteration
+                    unset($foreignValue);
+
+                    // Get foreign value
+                    // First try the "soft" matching method to mapping table
+                    if (!empty($mmData['mapping']['matchMethod'])) {
+                        if ($mmData['mapping']['matchMethod'] === 'strpos' || $mmData['mapping']['matchMethod'] === 'stripos') {
+                            // Try matching the value. If matching fails, unset it.
+                            try {
+                                $foreignValue = $this->mappingUtility->matchSingleField(
+                                        $theRecord[$columnName],
+                                        $mmData['mapping'],
+                                        $foreignMappings
+                                );
+                            } catch (\Exception $e) {
+                                // Nothing to do, foreign value must stay "unset"
+                            }
+                        }
+
+                    // Then the "strict" matching method to mapping table
+                    } elseif (isset($foreignMappings[$theRecord[$columnName]])) {
+                        $foreignValue = $foreignMappings[$theRecord[$columnName]];
+                    }
+
+                    // If a value was found, use it
+                    if (isset($foreignValue)) {
+                        if (!isset($this->mappings[$columnName][$externalUid])) {
+                            $this->mappings[$columnName][$externalUid] = [];
+                            // Initialise only if necessary
+                            if ($hasAdditionalFields || $mmData['multiple']) {
+                                $this->fullMappings[$columnName][$externalUid] = [];
+                            }
+                        }
+
+                        // If additional fields are defined, store those values in an intermediate array
+                        $fields = [];
+                        if ($hasAdditionalFields) {
+                            foreach ($additionalFields as $localFieldName => $externalFieldName) {
+                                $fields[$localFieldName] = $theRecord[$externalFieldName];
+                            }
+                        }
+
+                        // If a sorting field is defined, use that value for indexing, otherwise just add the element at the end of the array
+                        if ($sortingField) {
+                            $sortingValue = $theRecord[$sortingField];
+                            $this->mappings[$columnName][$externalUid][$sortingValue] = $foreignValue;
+                            if ($hasAdditionalFields || $mmData['multiple']) {
+                                $this->fullMappings[$columnName][$externalUid][$sortingValue] = [
+                                        'value' => $foreignValue,
+                                        'additionalFields' => $fields
+                                ];
+                            }
+                        } else {
+                            $this->mappings[$columnName][$externalUid][] = $foreignValue;
+                            if ($hasAdditionalFields || $mmData['multiple']) {
+                                $this->fullMappings[$columnName][$externalUid][] = [
+                                        'value' => $foreignValue,
+                                        'additionalFields' => $fields
+                                ];
+                            }
+                        }
+                    }
+                }
+
+                // If there was some special sorting to do, do it now
+                if ($sortingField) {
+                    foreach ($this->mappings as $innerColumnName => $columnMappings) {
+                        foreach ($columnMappings as $uid => $values) {
+                            ksort($values);
+                            $this->mappings[$innerColumnName][$uid] = $values;
+
+                            // Do the same for extended MM-relations, if necessary
+                            if ($additionalFields || $mmData['multiple']) {
+                                $fullValues = $this->fullMappings[$innerColumnName][$uid];
+                                ksort($fullValues);
+                                $this->fullMappings[$innerColumnName][$uid] = $fullValues;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Stores all MM relations.
      *
      * Existing relations are deleted first.
      *
-     * @param array $fullMappings List of all mapped data
      * @return void
+     * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
-    protected function postProcessMmRelations($fullMappings)
+    protected function postProcessMmRelations(): void
     {
         $this->importer->debug(
                 'Handling full mappings',
                 0,
-                $fullMappings
+                $this->fullMappings
         );
 
         // Refresh list of existing primary keys now that new records have been inserted
@@ -630,7 +671,7 @@ class StoreDataStep extends AbstractStep
 
         // Loop on all columns that require a remapping
         $tableTca = $GLOBALS['TCA'][$this->importer->getExternalConfiguration()->getTable()];
-        foreach ($fullMappings as $columnName => $mappingData) {
+        foreach ($this->fullMappings as $columnName => $mappingData) {
             $columnTcaConfiguration = $tableTca['columns'][$columnName]['config'];
             $mmTable = $columnTcaConfiguration['MM'];
             // Prepare connection and query builder for the table
@@ -717,7 +758,7 @@ class StoreDataStep extends AbstractStep
      * @param array $errorLog
      * @return void
      */
-    protected function reportTceErrors($errorLog)
+    protected function reportTceErrors($errorLog): void
     {
         if (count($errorLog) > 0) {
             // If there are errors, get these messages from the sys_log table (assuming they are the latest ones)
@@ -886,5 +927,45 @@ class StoreDataStep extends AbstractStep
                 3,
                 $e->getTraceAsString()
         );
+    }
+
+    /**
+     * Returns the list of fields excluded from the insert operation.
+     *
+     * @return array
+     */
+    public function getFieldsExcludedFromInserts(): array
+    {
+        return $this->fieldsExcludedFromInserts;
+    }
+
+    /**
+     * Returns the list of fields excluded from the update operation.
+     *
+     * @return array
+     */
+    public function getFieldsExcludedFromUpdates(): array
+    {
+        return $this->fieldsExcludedFromUpdates;
+    }
+
+    /**
+     * Returns the mappings array.
+     *
+     * @return array
+     */
+    public function getMappings(): array
+    {
+        return $this->mappings;
+    }
+
+    /**
+     * Returns the full mappings array.
+     *
+     * @return array
+     */
+    public function getFullMappings(): array
+    {
+        return $this->fullMappings;
     }
 }

@@ -511,6 +511,58 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 ]
                         ]
                 ],
+                'bundles' => [
+                        'fixtures' => [],
+                        'prerequisites' => [
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'base'
+                                ],
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'more'
+                                ],
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'stable'
+                                ]
+                        ],
+                        'table' => 'tx_externalimporttest_bundle',
+                        'index' => 0,
+                        'testDatabase' => true,
+                        'recordsCount' => 0,
+                        'result' => [
+                                'data' => [
+                                        'tx_externalimporttest_bundle' => [
+                                                'NEW1' => [
+                                                        'bundle_code' => 'JOY01',
+                                                        'maker' => 'Doctor Strange',
+                                                        'name' => 'Bundle of joy',
+                                                        'products' => '3,4',
+                                                        'pid' => 1
+                                                ],
+                                                'NEW2' => [
+                                                        'bundle_code' => 'PAIN01',
+                                                        'maker' => 'Loki',
+                                                        'name' => 'Bundle of pain',
+                                                        'products' => '1,2',
+                                                        'pid' => 1
+                                                ],
+                                                'NEW3' => [
+                                                        'bundle_code' => 'PAIN02',
+                                                        'maker' => 'Mad Max',
+                                                        'name' => 'Bundle of extra pain',
+                                                        'products' => '6,1,5,2',
+                                                        'pid' => 1
+                                                ]
+                                        ]
+                                ],
+                                'commands-delete' => [],
+                                'commands-move' => [
+                                        'tx_externalimporttest_bundle' => []
+                                ]
+                        ]
+                ]
         ];
     }
 
