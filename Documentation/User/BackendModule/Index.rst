@@ -191,6 +191,10 @@ either triggered manually (via the backend module), run via the Scheduler
 or the command line, or called using the API. Any other status will appear
 as "Other".
 
+There is also a duration associated with each log entry. This is actually the
+duration of the whole import run and will be the same for all log entries related
+to the same run.
+
 There is not much more to it for now. It may gain new features in the future.
 
 .. figure:: ../../Images/LogModule.png

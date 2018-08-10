@@ -7,5 +7,6 @@ CREATE TABLE tx_externalimport_domain_model_log (
 	configuration varchar(255) DEFAULT '' NOT NULL,
 	context varchar(50) DEFAULT '' NOT NULL,
 	message text,
+	duration int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid)
 );

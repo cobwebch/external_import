@@ -148,6 +148,9 @@ class ReportingUtility
                     );
                     $logEntry->setContext($context);
                     $logEntry->setMessage($message);
+                    $logEntry->setDuration(
+                            $this->importer->getEndTime() - $this->importer->getStartTime()
+                    );
                     try {
                         $this->logRepository->add($logEntry);
                     }

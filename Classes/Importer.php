@@ -120,6 +120,16 @@ class Importer
     protected $testMode = false;
 
     /**
+     * @var int Start time of the current run
+     */
+    protected $startTime = 0;
+
+    /**
+     * @var int End time of the current run
+     */
+    protected $endTime = 0;
+
+    /**
      * @var array List of default steps for the synchronize data process
      */
     const SYNCHRONYZE_DATA_STEPS = [
@@ -350,6 +360,7 @@ class Importer
      */
     public function runSteps(Data $data)
     {
+        $this->setStartTime(time());
         // Get the process steps
         $steps = $this->externalConfiguration->getSteps();
         // If preview is defined, but step is not part of the process, issue exception
@@ -387,6 +398,8 @@ class Importer
                 break;
             }
             $data = $step->getData();
+            // We set the end time after each step, so that we still capture a certain duration even if one step crashes unexpectedly
+            $this->setEndTime(time());
         }
     }
 
@@ -711,6 +724,48 @@ class Importer
     public function resetPreviewData(): void
     {
         $this->previewData = null;
+    }
+
+    /**
+     * Returns the start time of the current run.
+     *
+     * @return int
+     */
+    public function getStartTime(): int
+    {
+        return $this->startTime;
+    }
+
+    /**
+     * Sets the start time of the current run.
+     *
+     * @param int $startTime
+     */
+    public function setStartTime(int $startTime): void
+    {
+        var_dump($startTime);
+        $this->startTime = $startTime;
+    }
+
+    /**
+     * Returns the end time of the current run.
+     *
+     * @return int
+     */
+    public function getEndTime(): int
+    {
+        return $this->endTime;
+    }
+
+    /**
+     * Sets the end time of the current run.
+     *
+     * @param int $endTime
+     */
+    public function setEndTime(int $endTime): void
+    {
+        var_dump($endTime);
+        $this->endTime = $endTime;
     }
 
     /**

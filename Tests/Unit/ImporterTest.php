@@ -222,4 +222,52 @@ class ImporterTest extends UnitTestCase
                 $this->subject->generateTemporaryKey()
         );
     }
+
+    /**
+     * @test
+     */
+    public function getStartTimeInitiallyReturnsZero()
+    {
+        self::assertEquals(
+                0,
+                $this->subject->getStartTime()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setStartTimeSetsStartTime()
+    {
+        $now = time();
+        $this->subject->setStartTime($now);
+        self::assertEquals(
+                $now,
+                $this->subject->getStartTime()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getEndTimeInitiallyReturnsZero()
+    {
+        self::assertEquals(
+                0,
+                $this->subject->getEndTime()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setEndTimeSetsEndTime()
+    {
+        $now = time();
+        $this->subject->setEndTime($now);
+        self::assertEquals(
+                $now,
+                $this->subject->getEndTime()
+        );
+    }
 }

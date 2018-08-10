@@ -283,6 +283,9 @@
 			<trans-unit id="logMessage" xml:space="preserve">
 				<source>Message</source>
 			</trans-unit>
+			<trans-unit id="logDuration" xml:space="preserve">
+				<source>Duration</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -136,6 +136,32 @@ define(['jquery',
 					targets: 'log-message',
 					data: 'message',
 					name: 'message'
+				},
+				{
+					targets: 'log-duration',
+					data: 'duration',
+					name: 'duration',
+					render:  function(data, type, row, meta) {
+						// For display, format the duration as a number of hours, minutes and seconds
+						if (type === 'display') {
+							var formattedTime = '';
+							var hours = Math.floor(data / 3600);
+							var residue = data % 3600;
+							var minutes = Math.floor(residue / 60);
+							var seconds = residue % 60;
+							if (hours > 0) {
+								formattedTime += hours + 'h ';
+							}
+							if (minutes > 0) {
+								formattedTime += minutes + 'm ';
+							}
+							formattedTime += seconds + 's';
+							console.log(data, hours, minutes, seconds);
+							return formattedTime;
+						} else {
+							return data;
+						}
+					}
 				}
 			],
 			initComplete: function() {

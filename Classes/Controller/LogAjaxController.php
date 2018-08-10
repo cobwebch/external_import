@@ -67,7 +67,8 @@ class LogAjaxController
                         'username' => $logEntry->getCruserId()->getUserName(),
                         'configuration' => $logEntry->getConfiguration(),
                         'context' => $logEntry->getContext(),
-                        'message' => $logEntry->getMessage()
+                        'message' => $logEntry->getMessage(),
+                        'duration' => $logEntry->getDuration()
                 ];
             }
         } catch (\Exception $e) {

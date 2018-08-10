@@ -23,6 +23,9 @@
 			<trans-unit id="tx_externalimport_domain_model_log.message" xml:space="preserve">
 				<source>Message</source>
 			</trans-unit>
+			<trans-unit id="tx_externalimport_domain_model_log.duration" xml:space="preserve">
+				<source>Duration (seconds)</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

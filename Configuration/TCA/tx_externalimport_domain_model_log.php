@@ -1,7 +1,7 @@
 <?php
 
-return array(
-        'ctrl' => array(
+return [
+        'ctrl' => [
                 'title' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log',
                 'label' => 'configuration',
                 'crdate' => 'crdate',
@@ -9,75 +9,87 @@ return array(
                 'rootLevel' => -1,
                 'default_sortby' => 'ORDER BY crdate DESC',
                 'searchFields' => 'configuration',
-                'typeicon_classes' => array(
+                'typeicon_classes' => [
                         'default' => 'tx_external_import-log'
-                ),
-        ),
-        'interface' => array(
+                ]
+        ],
+        'interface' => [
                 'showRecordFieldList' => 'status, crdate, cruser_id, configuration, message'
-        ),
-        'columns' => array(
-                'status' => array(
+        ],
+        'columns' => [
+                'status' => [
                         'exclude' => 0,
                         'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.status',
-                        'config' => array(
+                        'config' => [
                                 'readOnly' => true,
                                 'type' => 'input',
                                 'size' => 10,
                                 'max' => 5,
                                 'eval' => 'int',
-                        )
-                ),
-                'crdate' => array(
+                        ]
+                ],
+                'crdate' => [
                         'exclude' => 0,
                         'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.crdate',
-                        'config' => array(
+                        'config' => [
                                 'readOnly' => true,
                                 'type' => 'input',
                                 'size' => 20,
                                 'eval' => 'datetime',
-                        )
-                ),
-                'cruser_id' => array(
+                        ]
+                ],
+                'cruser_id' => [
                         'exclude' => 0,
                         'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.cruser_id',
-                        'config' => array(
+                        'config' => [
                                 'readOnly' => true,
                                 'type' => 'select',
                                 'size' => 1,
                                 'foreign_table' => 'be_users',
                                 'maxitems' => 1
-                        )
-                ),
-                'configuration' => array(
+                        ]
+                ],
+                'configuration' => [
                         'exclude' => 0,
                         'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.configuration',
-                        'config' => array(
+                        'config' => [
                                 'readOnly' => true,
                                 'type' => 'input',
                                 'eval' => 'trim, required'
-                        )
-                ),
-                'context' => array(
+                        ]
+                ],
+                'context' => [
                         'exclude' => 0,
                         'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.configuration',
-                        'config' => array(
+                        'config' => [
                                 'readOnly' => true,
                                 'type' => 'input',
                                 'max' => 50,
                                 'eval' => 'trim, required'
-                        )
-                ),
-                'message' => array(
+                        ]
+                ],
+                'message' => [
                         'exclude' => 0,
                         'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.message',
-                        'config' => array(
+                        'config' => [
                                 'readOnly' => true,
                                 'type' => 'text',
-                        )
-                ),
-        ),
-        'types' => array(
-                '0' => array('showitem' => 'status, crdate, cruser_id, configuration, context, message')
-        )
-);
+                        ]
+                ],
+                'duration' => [
+                        'exclude' => 0,
+                        'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.duration',
+                        'config' => [
+                                'readOnly' => true,
+                                'type' => 'input',
+                                'max' => 20,
+                                'eval' => 'int'
+                        ]
+                ]
+        ],
+        'types' => [
+                '0' => [
+                        'showitem' => 'status, crdate, cruser_id, configuration, context, message, duration'
+                ]
+        ]
+];

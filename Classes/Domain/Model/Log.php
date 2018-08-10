@@ -57,6 +57,11 @@ class Log extends AbstractEntity
     protected $message;
 
     /**
+     * @var int Run duration (in seconds)
+     */
+    protected $duration;
+
+    /**
      * @return int
      */
     public function getStatus()
@@ -150,5 +155,21 @@ class Log extends AbstractEntity
     public function setMessage($message)
     {
         $this->message = $message;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDuration(): int
+    {
+        return $this->duration;
+    }
+
+    /**
+     * @param int $duration
+     */
+    public function setDuration(int $duration): void
+    {
+        $this->duration = $duration;
     }
 }
