@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Unit;
 
 use Cobweb\ExternalImport\Importer;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Test case for the External Import importer.
@@ -58,6 +59,50 @@ class ImporterTest extends UnitTestCase
     {
         self::assertNull(
                 $this->subject->getExternalConfiguration()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getMessagesInitiallyReturnsEmptyStructure()
+    {
+        self::assertSame(
+                [
+                        AbstractMessage::ERROR => [],
+                        AbstractMessage::WARNING => [],
+                        AbstractMessage::OK => []
+                ],
+                $this->subject->getMessages()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function addMessagesAddsMessage()
+    {
+        $this->subject->addMessage('foo', AbstractMessage::WARNING);
+        self::assertCount(
+                1,
+                $this->subject->getMessages()[AbstractMessage::WARNING]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function resetMessagesInitiallyPreparesEmptyStructure()
+    {
+        $this->subject->addMessage('foo', AbstractMessage::WARNING);
+        $this->subject->resetMessages();
+        self::assertSame(
+                [
+                        AbstractMessage::ERROR => [],
+                        AbstractMessage::WARNING => [],
+                        AbstractMessage::OK => []
+                ],
+                $this->subject->getMessages()
         );
     }
 
