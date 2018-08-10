@@ -743,7 +743,6 @@ class Importer
      */
     public function setStartTime(int $startTime): void
     {
-        var_dump($startTime);
         $this->startTime = $startTime;
     }
 
@@ -764,7 +763,6 @@ class Importer
      */
     public function setEndTime(int $endTime): void
     {
-        var_dump($endTime);
         $this->endTime = $endTime;
     }
 
