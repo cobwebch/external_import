@@ -40,6 +40,45 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
+    public function getSubstructureFieldsInitiallyReturnsEmptyArray(): void
+    {
+        self::assertSame(
+                [],
+                $this->subject->getSubstructureFields()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getSubstructureFieldsReturnsListOfdFields(): void
+    {
+        $fakeConfiguration = [
+                'foo' => [
+                        'field' => 'whatever',
+                        'substructureFields' => [
+                                'foo' => [
+                                        'field' => 'one'
+                                ],
+                                'baz' => [
+                                        'field' => 'two'
+                                ]
+                        ]
+                ],
+                'bar' => [
+                        'field' => 'anything'
+                ]
+        ];
+        $this->subject->prepareStructuredInformation($fakeConfiguration);
+        self::assertSame(
+                ['baz'],
+                $this->subject->getSubstructureFields()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function getFieldsExcludedFromInsertsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -73,7 +112,7 @@ class StoreDataStepTest extends UnitTestCase
                         'disabledOperations' => 'update,insert'
                 ]
         ];
-        $this->subject->listExcludedFields($fakeConfiguration);
+        $this->subject->prepareStructuredInformation($fakeConfiguration);
         self::assertSame(
                 ['foo', 'baz'],
                 $this->subject->getFieldsExcludedFromInserts()
@@ -94,7 +133,7 @@ class StoreDataStepTest extends UnitTestCase
                         'disabledOperations' => 'update,insert'
                 ]
         ];
-        $this->subject->listExcludedFields($fakeConfiguration);
+        $this->subject->prepareStructuredInformation($fakeConfiguration);
         self::assertSame(
                 ['foo', 'baz'],
                 $this->subject->getFieldsExcludedFromUpdates()

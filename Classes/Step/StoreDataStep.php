@@ -47,6 +47,11 @@ class StoreDataStep extends AbstractStep
     protected $fieldsExcludedFromUpdates = [];
 
     /**
+     * @var array List of fields found in the "substructureFields" that should not be saved.
+     */
+    protected $substructureFields = [];
+
+    /**
      * @var \Cobweb\ExternalImport\Utility\MappingUtility
      */
     protected $mappingUtility;
@@ -95,7 +100,7 @@ class StoreDataStep extends AbstractStep
         $columnConfiguration = $this->getConfiguration()->getColumnConfiguration();
         $table = $this->importer->getExternalConfiguration()->getTable();
         // Extract list of excluded fields
-        $this->listExcludedFields($columnConfiguration);
+        $this->prepareStructuredInformation($columnConfiguration);
         // Handle many-to-many relations
         $this->handleMmRelations($ctrlConfiguration, $columnConfiguration, $records);
         $hasMMRelations = count($this->mappings);
@@ -134,7 +139,7 @@ class StoreDataStep extends AbstractStep
                     if (isset($columnMappings[$externalUid])) {
                         $theRecord[$columnName] = implode(',', $columnMappings[$externalUid]);
 
-                        // Make sure not to keep the original value if no mapping was found
+                    // Make sure not to keep the original value if no mapping was found
                     } else {
                         unset($theRecord[$columnName]);
                     }
@@ -148,6 +153,12 @@ class StoreDataStep extends AbstractStep
                     $localAdditionalFields[$fieldName] = $theRecord[$fieldName];
                     unset($theRecord[$fieldName]);
                 }
+            }
+            // Also remove fields coming from substructures.
+            // These, however, are not saved for later use.
+            // Question: should this saving of additional fields be actually deprecated? It does not seem very useful...
+            foreach ($this->substructureFields as $field) {
+                unset($theRecord[$field]);
             }
 
             $theID = '';
@@ -501,14 +512,23 @@ class StoreDataStep extends AbstractStep
     }
 
     /**
-     * Parses the column configuration and prepares the list of fields which should be excluded
-     * from the update and insert operations.
+     * Parses the column configuration and prepares various lists of properties for better performance.
      *
      * @param array $columnConfiguration External Import configuration for the columns
      */
-    public function listExcludedFields($columnConfiguration): void
+    public function prepareStructuredInformation($columnConfiguration): void
     {
         foreach ($columnConfiguration as $columnName => $columnData) {
+            // Assemble the list of fields defined with the "substructureFields" property
+            // These fields must be removed from the incoming data before it is saved to the database
+            if (isset($columnData['substructureFields'])) {
+                foreach ($columnData['substructureFields'] as $fieldName => $fieldConfiguration) {
+                    // Ignore fields which match the column name. These must stay and be saved.
+                    if ($fieldName !== $columnName) {
+                        $this->substructureFields[] = $fieldName;
+                    }
+                }
+            }
             if (array_key_exists('disabledOperations', $columnData)) {
                 if (GeneralUtility::inList($columnData['disabledOperations'], 'insert')) {
                     $this->fieldsExcludedFromInserts[] = $columnName;
@@ -927,6 +947,16 @@ class StoreDataStep extends AbstractStep
                 3,
                 $e->getTraceAsString()
         );
+    }
+
+    /**
+     * Returns the list of fields having defined with the "substructureFields" property.
+     *
+     * @return array
+     */
+    public function getSubstructureFields(): array
+    {
+        return $this->substructureFields;
     }
 
     /**

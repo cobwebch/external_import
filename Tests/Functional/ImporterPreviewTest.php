@@ -205,7 +205,18 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'categories' => 'USEFUL',
                                         'name' => 'Long sword',
                                         'sku' => '000001',
-                                        'tags' => 'attack,metal'
+                                        'tags' => 'attack,metal',
+                                        'pictures' => 'https://loremflickr.com/g/320/240/scotland',
+                                        'picture_title' => 'View from the left'
+                                ],
+                                [
+                                        'attributes' => "\n\t\t\t<quality>Robust</quality>\n\t\t\t<quality>Stylish</quality>\n\t\t\t<quality>Reliable</quality>\n\t\t",
+                                        'categories' => 'USEFUL',
+                                        'name' => 'Long sword',
+                                        'sku' => '000001',
+                                        'tags' => 'attack,metal',
+                                        'pictures' => 'https://loremflickr.com/g/320/240/volcano',
+                                        'picture_title' => 'View from above'
                                 ],
                                 [
                                         'attributes' => "\n\t\t\t<quality>Not too cumbersome</quality>\n\t\t\t<quality>Lets the air flow</quality>\n\t\t",
@@ -239,6 +250,61 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 [
                                         'code' => 'food',
                                         'name' => 'Food & Drinks'
+                                ]
+                        ]
+                ],
+                'array-type data with sub-structure' => [
+                        'table' => 'tx_externalimporttest_order',
+                        'index' => 0,
+                        'result' => [
+                                [
+                                        'client_id' => 'Conan the Barbarian',
+                                        'order_date' => '2014-08-07',
+                                        'order_id' => '000001',
+                                        'products' => '000001',
+                                        'quantity' => 3
+                                ],
+                                [
+                                        'client_id' => 'Conan the Barbarian',
+                                        'order_date' => '2014-08-07',
+                                        'order_id' => '000001',
+                                        'products' => '000005',
+                                        'quantity' => 1
+                                ],
+                                [
+                                        'client_id' => 'Conan the Barbarian',
+                                        'order_date' => '2014-08-07',
+                                        'order_id' => '000001',
+                                        'products' => '000101',
+                                        'quantity' => 10
+                                ],
+                                [
+                                        'client_id' => 'Conan the Barbarian',
+                                        'order_date' => '2014-08-07',
+                                        'order_id' => '000001',
+                                        'products' => '000102',
+                                        'quantity' => 2
+                                ],
+                                [
+                                        'client_id' => 'Sonja the Red',
+                                        'order_date' => '2014-08-08',
+                                        'order_id' => '000002',
+                                        'products' => '000001',
+                                        'quantity' => 1
+                                ],
+                                [
+                                        'client_id' => 'Sonja the Red',
+                                        'order_date' => '2014-08-08',
+                                        'order_id' => '000002',
+                                        'products' => '000005',
+                                        'quantity' => 2
+                                ],
+                                [
+                                        'client_id' => 'Sonja the Red',
+                                        'order_date' => '2014-08-08',
+                                        'order_id' => '000002',
+                                        'products' => '000202',
+                                        'quantity' => 1
                                 ]
                         ]
                 ]
@@ -317,7 +383,17 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'attributes' => "<ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                         'categories' => '',
                                         'name' => 'Long sword (base)',
-                                        'sku' => '000001'
+                                        'sku' => '000001',
+                                        'pictures' => 'https://loremflickr.com/g/320/240/scotland',
+                                        'picture_title' => 'View from the left'
+                                ],
+                                [
+                                        'attributes' => "<ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
+                                        'categories' => '',
+                                        'name' => 'Long sword (base)',
+                                        'sku' => '000001',
+                                        'pictures' => 'https://loremflickr.com/g/320/240/volcano',
+                                        'picture_title' => 'View from above'
                                 ],
                                 [
                                         'attributes' => "<ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
@@ -425,6 +501,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'name' => 'Long sword (base)',
                                                         'sku' => '000001',
                                                         'tags' => '1,3',
+                                                        'pictures' => 'https://loremflickr.com/g/320/240/scotland',
                                                         'pid' => 1
                                                 ],
                                                 'NEW2' => [
@@ -462,7 +539,8 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'attributes' => "<ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Long sword (base)',
-                                                        'sku' => '000001'
+                                                        'sku' => '000001',
+                                                        'pictures' => 'https://loremflickr.com/g/320/240/scotland'
                                                 ],
                                                 '2' => [
                                                         'attributes' => "<ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",

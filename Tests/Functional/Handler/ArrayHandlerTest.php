@@ -1,6 +1,6 @@
 <?php
 
-namespace Cobweb\ExternalImport\Tests\Functional\Step;
+namespace Cobweb\ExternalImport\Tests\Functional\Handler;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -93,10 +93,7 @@ class ArrayHandlerTest extends FunctionalTestCase
                                         'crazy_field' => 1
                                 ]
                         ],
-                        [
-                                [],
-                                []
-                        ]
+                        []
                 ],
                 'raw data with no additional field' => [
                         [
@@ -116,8 +113,7 @@ class ArrayHandlerTest extends FunctionalTestCase
                                 ],
                                 [
                                         'name' => 1
-                                ],
-                                []
+                                ]
                         ]
                 ],
                 'raw data with array path' => [
@@ -142,8 +138,7 @@ class ArrayHandlerTest extends FunctionalTestCase
                                 ],
                                 [
                                         'brand' => 'bar'
-                                ],
-                                []
+                                ]
                         ]
                 ],
                 'raw data with additional field' => [

@@ -14,21 +14,21 @@ simplest form this is just a reference to the external data's name:
 
 .. code-block:: php
 
-	'code' => array(
+	'code' => [
 		'exclude' => 0,
 		'label' => 'LLL:EXT:externalimport_tut/locallang_db.xml:tx_externalimporttut_departments.code',
-		'config' => array(
+		'config' => [
 			'type' => 'input',
-			'size' => '10',
-			'max' => '4',
+			'size' => 10,
+			'max' => 4,
 			'eval' => 'required,trim',
-		),
-		'external' => array(
-			0 => array(
+		],
+		'external' => [
+			0 => [
 				'field' => 'code'
-			)
-		)
-	),
+			]
+		]
+	],
 
 The properties for the columns configuration are described below.
 
@@ -51,6 +51,7 @@ Properties
 	field_                    string                                                                 Handle data
 	fieldNS_                  string                                                                 Handle data (XML)
 	MM_                       :ref:`MM configuration <administration-mm>`                            Store data
+	substructureFields_       array                                                                  Handle data
 	transformations_          :ref:`Transformations configuration <administration-transformations>`  Transform data
 	xmlValue_                 boolean                                                                Handle data (XML)
 	xpath_                    string                                                                 Handle data (XML)
@@ -221,12 +222,12 @@ Description
 
    .. code-block:: php
 
-		'external' => array(
-			0 => array(
+		'external' => [
+			0 => [
 				'fieldNS' => 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
 				'field' => 'LineExtensionAmount'
-			)
-		)
+			]
+		]
 
 Scope
   Handle data (XML)
@@ -247,6 +248,142 @@ Description
 
 Scope
   Handle data (XML)
+
+
+.. _administration-columns-properties-substructure-fields:
+
+substructureFields
+~~~~~~~~~~~~~~~~~~
+
+Type
+  array
+
+Description
+   Makes it possible to read several values that are located inside nested data structures.
+   Consider the following data source:
+
+   .. code:: json
+
+		[
+		  {
+			"order": "000001",
+			"date": "2014-08-07",
+			"customer": "Conan the Barbarian",
+			"products": [
+			  {
+				"product": "000001",
+				"qty": 3
+			  },
+			  {
+				"product": "000005",
+				"qty": 1
+			  },
+			  {
+				"product": "000101",
+				"qty": 10
+			  },
+			  {
+				"product": "000102",
+				"qty": 2
+			  }
+			]
+		  },
+		  {
+			"order": "000002",
+			"date": "2014-08-08",
+			"customer": "Sonja the Red",
+			"products": [
+			  {
+				"product": "000001",
+				"qty": 1
+			  },
+			  {
+				"product": "000005",
+				"qty": 2
+			  },
+			  {
+				"product": "000202",
+				"qty": 1
+			  }
+			]
+		  }
+		]
+
+   The "products" field is actually a nested structure, from which we want to fetch the values
+   from both `product` and `qty`. This can be achieved with the following configuration:
+
+   .. code:: php
+
+		'products' => [
+				'exclude' => 0,
+				'label' => 'Products',
+				'config' => [
+						...
+				],
+				'external' => [
+						0 => [
+								'field' => 'products',
+								'substructureFields' => [
+										'products' => [
+												'field' => 'product'
+										],
+										'quantity' => [
+												'field' => 'qty'
+										]
+								],
+								...
+						]
+				]
+		]
+
+   The keys to the configuration array correspond to the names of the columns where the values will be
+   stored. The configuration for each element can use all the existing properties for retrieving data:
+
+   - :ref:`field <administration-columns-properties-field>`
+   - :ref:`fieldNS <administration-columns-properties-fieldns>`
+   - :ref:`arrayPath <administration-columns-properties-array-path>`
+   - :ref:`arrayPathSeparator <administration-columns-properties-array-path-separator>`
+   - :ref:`attribute <administration-columns-properties-attribute>`
+   - :ref:`attributeNS <administration-columns-properties-attributens>`
+   - :ref:`xpath <administration-columns-properties-xpath>`
+   - :ref:`xmlValue <administration-columns-properties-xmlvalue>`
+
+   The substructure fields are search for inside the structure selected with the "main" data pointer.
+   In the example above, the whole "products" structure is first fetched, then the `product` and `qty`
+   are searched for inside that structure.
+
+   The above example will read the values in the `product` nested field and put it into "products" column. Same for
+   `qty` and "quantity". The fact that there are several entries will multiply imported records, actually
+   denormalising the data on the fly. The result would be something like:
+
+   +--------+------------+---------------------+----------+----------+
+   | order  | date       | customer            | products | quantity |
+   +========+============+=====================+==========+==========+
+   | 000001 | 2014-08-07 | Conan the Barbarian | 000001   | 3        |
+   +--------+------------+---------------------+----------+----------+
+   | 000001 | 2014-08-07 | Conan the Barbarian | 000005   | 1        |
+   +--------+------------+---------------------+----------+----------+
+   | 000001 | 2014-08-07 | Conan the Barbarian | 000101   | 10       |
+   +--------+------------+---------------------+----------+----------+
+   | 000001 | 2014-08-07 | Conan the Barbarian | 000102   | 2        |
+   +--------+------------+---------------------+----------+----------+
+   | 000002 | 2014-08-08 | Sonja the Red       | 000001   | 1        |
+   +--------+------------+---------------------+----------+----------+
+   | 000002 | 2014-08-08 | Sonja the Red       | 000005   | 2        |
+   +--------+------------+---------------------+----------+----------+
+   | 000002 | 2014-08-08 | Sonja the Red       | 000202   | 1        |
+   +--------+------------+---------------------+----------+----------+
+
+   Obviously if you have a single element in the nested structure, no denormalisation happens.
+
+   .. note::
+
+      In such scenarios you will generally want to have one of the nested fields "take the main role",
+      i.e. have its value fill a column bearing the name of TYPO3 column which contains the substructure
+      configuration. In the above example, the `product` field is matched to the "products" column name.
+
+Scope
+  Handle data
 
 
 .. _administration-columns-properties-mm:
@@ -282,21 +419,21 @@ Description
   .. code-block:: php
 
 		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
-				0 => array(
+				0 => [
 						'field' => 'start_date',
-						'transformations => array(
-								20 => array(
+						'transformations => [
+								20 => [
 										'trim' => true
-								),
-								10 => array(
-										'userFunc' => array(
+								],
+								10 => [
+										'userFunc' => [
 												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
 												'method' => 'parseDate'
-										)
-								)
-						)
-				)
-		);
+										]
+								]
+						]
+				]
+		];
 
   The "userFunc" will be executed first (:code:`10`) and the "trim" next (:code:`20`).
 
