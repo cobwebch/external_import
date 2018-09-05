@@ -229,7 +229,7 @@ class ImportCommand extends Command
                     );
                     if ($this->importer->isPreview()) {
                         $this->io->section('Preview data');
-                        $this->io->section(
+                        $this->io->writeln(
                                 var_export(
                                         $this->importer->getPreviewData(),
                                         true
