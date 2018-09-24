@@ -168,7 +168,7 @@ class Log extends AbstractEntity
     /**
      * @param int $duration
      */
-    public function setDuration(int $duration): void
+    public function setDuration(int $duration)
     {
         $this->duration = $duration;
     }

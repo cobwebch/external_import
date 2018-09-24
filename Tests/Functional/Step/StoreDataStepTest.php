@@ -341,14 +341,8 @@ class StoreDataStepTest extends FunctionalTestCase
      * @param array $expectedMappings
      * @param array $expectedFullMappings
      */
-    public function handleMmRelationsPreparesMappings(
-            $prerequisites,
-            $ctrlConfiguration,
-            $columnConfiguration,
-            $records,
-            $expectedMappings,
-            $expectedFullMappings
-    ): void {
+    public function handleMmRelationsPreparesMappings($prerequisites, $ctrlConfiguration, $columnConfiguration, $records, $expectedMappings, $expectedFullMappings)
+    {
         // Run necessary synchronizations
         if (count($prerequisites) > 0) {
             foreach ($prerequisites as $prerequisite) {

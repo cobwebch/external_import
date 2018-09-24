@@ -711,7 +711,7 @@ class Importer
      *
      * @param mixed $previewData
      */
-    public function setPreviewData($previewData): void
+    public function setPreviewData($previewData)
     {
         $this->previewData = $previewData;
     }
@@ -721,7 +721,7 @@ class Importer
      *
      * @return void
      */
-    public function resetPreviewData(): void
+    public function resetPreviewData()
     {
         $this->previewData = null;
     }
@@ -741,7 +741,7 @@ class Importer
      *
      * @param int $startTime
      */
-    public function setStartTime(int $startTime): void
+    public function setStartTime(int $startTime)
     {
         $this->startTime = $startTime;
     }
@@ -761,7 +761,7 @@ class Importer
      *
      * @param int $endTime
      */
-    public function setEndTime(int $endTime): void
+    public function setEndTime(int $endTime)
     {
         $this->endTime = $endTime;
     }

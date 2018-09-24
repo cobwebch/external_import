@@ -40,7 +40,7 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
-    public function getSubstructureFieldsInitiallyReturnsEmptyArray(): void
+    public function getSubstructureFieldsInitiallyReturnsEmptyArray()
     {
         self::assertSame(
                 [],
@@ -51,7 +51,7 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
-    public function getSubstructureFieldsReturnsListOfdFields(): void
+    public function getSubstructureFieldsReturnsListOfdFields()
     {
         $fakeConfiguration = [
                 'foo' => [
@@ -79,7 +79,7 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
-    public function getFieldsExcludedFromInsertsInitiallyReturnsEmptyArray(): void
+    public function getFieldsExcludedFromInsertsInitiallyReturnsEmptyArray()
     {
         self::assertSame(
                 [],
@@ -90,7 +90,7 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
-    public function getFieldsExcludedFromUpdatesInitiallyReturnsEmptyArray(): void
+    public function getFieldsExcludedFromUpdatesInitiallyReturnsEmptyArray()
     {
         self::assertSame(
                 [],
@@ -101,7 +101,7 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
-    public function getFieldsExcludedFromInsertsReturnsExcludedFields(): void
+    public function getFieldsExcludedFromInsertsReturnsExcludedFields()
     {
         $fakeConfiguration = [
                 'foo' => [
@@ -122,7 +122,7 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
-    public function getFieldsExcludedFromUpdatesReturnsExcludedFields(): void
+    public function getFieldsExcludedFromUpdatesReturnsExcludedFields()
     {
         $fakeConfiguration = [
                 'foo' => [
@@ -143,7 +143,7 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
-    public function getMappingsInitiallyReturnsEmptyArray(): void
+    public function getMappingsInitiallyReturnsEmptyArray()
     {
         self::assertSame(
                 [],
@@ -154,7 +154,7 @@ class StoreDataStepTest extends UnitTestCase
     /**
      * @test
      */
-    public function getFullMappingsInitiallyReturnsEmptyArray(): void
+    public function getFullMappingsInitiallyReturnsEmptyArray()
     {
         self::assertSame(
                 [],
@@ -310,7 +310,7 @@ class StoreDataStepTest extends UnitTestCase
      * @test
      * @dataProvider sortPagesProvider
      */
-    public function sortPagesDataSortsParentAndChildren($input, $expected): void
+    public function sortPagesDataSortsParentAndChildren($input, $expected)
     {
         $sortedData = $this->subject->sortPagesData($input);
         self::assertSame(

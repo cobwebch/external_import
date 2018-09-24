@@ -516,7 +516,7 @@ class StoreDataStep extends AbstractStep
      *
      * @param array $columnConfiguration External Import configuration for the columns
      */
-    public function prepareStructuredInformation($columnConfiguration): void
+    public function prepareStructuredInformation($columnConfiguration)
     {
         foreach ($columnConfiguration as $columnName => $columnData) {
             // Assemble the list of fields defined with the "substructureFields" property
@@ -561,7 +561,7 @@ class StoreDataStep extends AbstractStep
      * @param array $records The records being handled
      * @return void
      */
-    public function handleMmRelations($ctrlConfiguration, $columnConfiguration, $records): void
+    public function handleMmRelations($ctrlConfiguration, $columnConfiguration, $records)
     {
         $this->mappings = [];
         $this->fullMappings = [];
@@ -677,7 +677,7 @@ class StoreDataStep extends AbstractStep
      * @return void
      * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
-    protected function postProcessMmRelations(): void
+    protected function postProcessMmRelations()
     {
         $this->importer->debug(
                 'Handling full mappings',
@@ -778,7 +778,7 @@ class StoreDataStep extends AbstractStep
      * @param array $errorLog
      * @return void
      */
-    protected function reportTceErrors($errorLog): void
+    protected function reportTceErrors($errorLog)
     {
         if (count($errorLog) > 0) {
             // If there are errors, get these messages from the sys_log table (assuming they are the latest ones)
