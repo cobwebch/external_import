@@ -1,3 +1,7 @@
+2018-10-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Corrected saving of Scheduler tasks, resolves #72
+
 2018-08-14 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Added possibility to handle deep structures and denormalise on the fly, resolves #67

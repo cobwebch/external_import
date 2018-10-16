@@ -150,7 +150,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
                 $task->table = $fieldValue;
                 $task->index = 0;
         } else {
-            list($table, $index) = explode('/', $fieldValue);
+            list($table, $index) = explode('-', $fieldValue);
             $task->table = $table;
             $task->index = $index;
         }
