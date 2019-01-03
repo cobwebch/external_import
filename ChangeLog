@@ -1,3 +1,7 @@
+2019-01-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Display nodetype validation error when property is missing, resolves #76
+
 2018-10-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Corrected saving of Scheduler tasks, resolves #72
