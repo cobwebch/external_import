@@ -10,33 +10,32 @@
  * writing. "version" and "dependencies" must not be touched!
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = array (
-  'title' => 'External Data Import',
-  'description' => 'Tool for importing data from external sources into the TYPO3 CMS database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line tool and an API.',
-  'category' => 'module',
-  'author' => 'Francois Suter (Cobweb)',
-  'author_email' => 'typo3@cobweb.ch',
-  'state' => 'stable',
-  'uploadfolder' => 0,
-  'createDirs' => '',
-  'clearCacheOnLoad' => 0,
-  'author_company' => '',
-  'version' => '4.0.2',
-  'constraints' =>
-  array (
-    'depends' =>
-    array (
-      'svconnector' => '3.0.0-0.0.0',
-      'typo3' => '8.7.0-8.99.99',
-    ),
-    'conflicts' =>
-    array (
-    ),
-    'suggests' =>
-    array (
-      'externalimport_tut' => '2.0.1-0.0.0',
-      'scheduler' => '',
-    ),
-  ),
-);
-
+$EM_CONF[$_EXTKEY] = [
+        'title' => 'External Data Import',
+        'description' => 'Tool for importing data from external sources into the TYPO3 CMS database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line tool and an API.',
+        'category' => 'module',
+        'author' => 'Francois Suter (Cobweb)',
+        'author_email' => 'typo3@cobweb.ch',
+        'state' => 'stable',
+        'uploadfolder' => 0,
+        'createDirs' => '',
+        'clearCacheOnLoad' => 0,
+        'author_company' => '',
+        'version' => '4.0.2',
+        'constraints' =>
+                [
+                        'depends' =>
+                                [
+                                        'svconnector' => '3.3.0-0.0.0',
+                                        'typo3' => '8.7.0-9.99.99',
+                                ],
+                        'conflicts' =>
+                                [
+                                ],
+                        'suggests' =>
+                                [
+                                        'externalimport_tut' => '2.0.1-0.0.0',
+                                        'scheduler' => '',
+                                ],
+                ],
+];
