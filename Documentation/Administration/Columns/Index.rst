@@ -32,6 +32,13 @@ simplest form this is just a reference to the external data's name:
 
 The properties for the columns configuration are described below.
 
+.. warning::
+
+   Columns "crdate", "tstamp" and "cruser_id" cannot be mapped as they are overwritten by the
+   :php:`DataHandler`. If you need to manipulate these columns you should use the "datamapPostProcess"
+   or "cmdmapPostProcess" :ref:`hooks <developer-hooks>`, which are called after :php:`DataHandler`
+   operations.
+
 
 .. _administration-columns-properties:
 
