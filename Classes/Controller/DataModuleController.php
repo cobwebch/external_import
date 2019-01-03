@@ -213,6 +213,8 @@ class DataModuleController extends ActionController
      * @param string $table The name of the table to synchronize
      * @param string $index Key of the external configuration
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function synchronizeAction($table, $index)
     {
@@ -329,8 +331,10 @@ class DataModuleController extends ActionController
      * @param int $group Scheduler task group
      * @param \DateTime $start_date_hr Automation start date
      * @param string $index Index for which to set an automated task for
-     * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
      */
     public function createTaskAction($table, $frequency, $group, \DateTime $start_date_hr = null, $index = '')
     {
@@ -371,6 +375,8 @@ class DataModuleController extends ActionController
      *
      * @param int $uid Id of the task to edit
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function editTaskAction($uid)
     {
@@ -406,8 +412,10 @@ class DataModuleController extends ActionController
      * @param string $frequency Automation frequency
      * @param int $group Scheduler task group
      * @param \DateTime $start_date_hr Automation start date
-     * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
      */
     public function updateTaskAction($uid, $frequency, $group, \DateTime $start_date_hr = null)
     {
@@ -449,6 +457,8 @@ class DataModuleController extends ActionController
      *
      * @param int $uid Id of the scheduler task to delete
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function deleteTaskAction($uid)
     {

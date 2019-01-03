@@ -47,7 +47,7 @@ class SchedulerRepository implements SingletonInterface
      *
      * @var array
      */
-    protected $tasks = array();
+    protected $tasks = [];
 
     /**
      * Local instance of the scheduler object
@@ -71,17 +71,20 @@ class SchedulerRepository implements SingletonInterface
     }
 
     /**
-     * Fetches all tasks related to the external import extension
-     * The return array is structured per table/index
+     * Fetches all tasks related to the external import extension.
+     *
+     * The return array is structured per table/index.
      *
      * @return array List of registered events/tasks, per table and index
      */
-    public function fetchAllTasks()
+    public function fetchAllTasks(): array
     {
-        $taskList = array();
+        $taskList = [];
         /** @var $taskObject AutomatedSyncTask */
         foreach ($this->tasks as $taskObject) {
-            $key = $taskObject->table . '-' . $taskObject->index;
+            $configurationKey = GeneralUtility::makeInstance(\Cobweb\ExternalImport\Domain\Model\ConfigurationKey::class);
+            $configurationKey->setTableAndIndex($taskObject->table, (string)$taskObject->index);
+            $key = $configurationKey->getConfigurationKey();
             $taskList[$key] = $this->assembleTaskInformation($taskObject);
         }
         return $taskList;
@@ -94,7 +97,7 @@ class SchedulerRepository implements SingletonInterface
      * @throws \InvalidArgumentException
      * @return array
      */
-    public function fetchTaskByUid($uid)
+    public function fetchTaskByUid($uid): array
     {
         $uid = (int)$uid;
         /** @var $taskObject AutomatedSyncTask */
@@ -116,7 +119,7 @@ class SchedulerRepository implements SingletonInterface
      * @throws \InvalidArgumentException
      * @return array Information about the task, if defined
      */
-    public function fetchFullSynchronizationTask()
+    public function fetchFullSynchronizationTask(): array
     {
         // Check all tasks object to find the one with the "all" keyword as a table
         /** @var $taskObject AutomatedSyncTask */
@@ -136,11 +139,11 @@ class SchedulerRepository implements SingletonInterface
      *
      * @return array
      */
-    public function fetchAllGroups()
+    public function fetchAllGroups(): array
     {
-        $groups = array(
+        $groups = [
                 0 => ''
-        );
+        ];
         if (ExtensionManagementUtility::isLoaded('scheduler')) {
             try {
                 $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
@@ -166,7 +169,7 @@ class SchedulerRepository implements SingletonInterface
      * @param AutomatedSyncTask $taskObject The task to handle
      * @return array The information about the task
      */
-    protected function assembleTaskInformation(AutomatedSyncTask $taskObject)
+    protected function assembleTaskInformation(AutomatedSyncTask $taskObject): array
     {
         $cronCommand = $taskObject->getExecution()->getCronCmd();
         $interval = $taskObject->getExecution()->getInterval();
@@ -295,7 +298,7 @@ class SchedulerRepository implements SingletonInterface
      * @param int $uid Id of an existing task (will be 0 for a new task)
      * @return array
      */
-    public function prepareTaskData($frequency, $group, \DateTime $startDate = null, $table = '', $index = '', $uid = 0)
+    public function prepareTaskData($frequency, $group, \DateTime $startDate = null, $table = '', $index = '', $uid = 0): array
     {
         // Assemble base data
         $taskData = array(

@@ -48,7 +48,10 @@ class ConfigurationRepository
 
     public function __construct()
     {
-        $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import']);
+        $this->extensionConfiguration = unserialize(
+                $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import'],
+                ['allowed_classes' => false]
+        );
     }
 
     /**
@@ -58,7 +61,7 @@ class ConfigurationRepository
      * @param string|integer $index Key of the configuration
      * @return array The relevant TCA configuration
      */
-    protected function findByTableAndIndex($table, $index)
+    protected function findByTableAndIndex($table, $index): array
     {
         if (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
             return $this->processCtrlConfiguration(
@@ -75,7 +78,7 @@ class ConfigurationRepository
      * @param string|integer $index Key of the configuration
      * @return array The relevant TCA configuration
      */
-    protected function findColumnsByTableAndIndex($table, $index)
+    protected function findColumnsByTableAndIndex($table, $index): array
     {
         $columns = [];
         if (isset($GLOBALS['TCA'][$table]['columns'])) {
@@ -95,7 +98,7 @@ class ConfigurationRepository
      *
      * @return array
      */
-    public function findOrderedConfigurations()
+    public function findOrderedConfigurations(): array
     {
         $externalTables = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
@@ -131,7 +134,7 @@ class ConfigurationRepository
      * @param string $group Name of the group to look up
      * @return array
      */
-    public function findByGroup($group)
+    public function findByGroup($group): array
     {
         $externalTables = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
@@ -160,7 +163,12 @@ class ConfigurationRepository
         return $externalTables;
     }
 
-    public function findAllGroups()
+    /**
+     * Returns all configuration groups.
+     *
+     * @return array
+     */
+    public function findAllGroups(): array
     {
         $groups = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
@@ -185,7 +193,7 @@ class ConfigurationRepository
      * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return Configuration
      */
-    public function findConfigurationObject($table, $index, $defaultSteps = null)
+    public function findConfigurationObject($table, $index, $defaultSteps = null): Configuration
     {
         $configuration = $this->objectManager->get(Configuration::class);
         $ctrlConfiguration = $this->findByTableAndIndex($table, $index);
@@ -214,7 +222,7 @@ class ConfigurationRepository
      * @param bool $isSynchronizable True for tables with synchronization configuration, false for others
      * @return array List of external import TCA configurations
      */
-    public function findBySync($isSynchronizable)
+    public function findBySync($isSynchronizable): array
     {
         $isSynchronizable = (bool)$isSynchronizable;
         $configurations = [];
@@ -260,7 +268,9 @@ class ConfigurationRepository
                             $tableTitle = $sections['ctrl']['title'];
                         }
                         // Store the base configuration
-                        $taskId = $tableName . '-' . $index;
+                        $configurationKey = GeneralUtility::makeInstance(\Cobweb\ExternalImport\Domain\Model\ConfigurationKey::class);
+                        $configurationKey->setTableAndIndex($tableName, (string)$index);
+                        $taskId = $configurationKey->getConfigurationKey();
                         $tableConfiguration = [
                                 'id' => $taskId,
                                 'table' => $tableName,
@@ -294,7 +304,7 @@ class ConfigurationRepository
      *
      * @return string Global access (none, partial or all)
      */
-    public function findGlobalWriteAccess()
+    public function findGlobalWriteAccess(): string
     {
 
         // An admin user has full access
@@ -337,7 +347,7 @@ class ConfigurationRepository
      * @param array $configuration The external import configuration to process
      * @return array The processed configuration
      */
-    protected function processCtrlConfiguration($configuration)
+    protected function processCtrlConfiguration($configuration): array
     {
         // If the pid is not set in the current configuration, use global storage pid
         $pid = 0;

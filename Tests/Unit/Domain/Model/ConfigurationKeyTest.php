@@ -1,0 +1,109 @@
+<?php
+namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
+
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
+use Nimut\TestingFramework\TestCase\UnitTestCase;
+
+/**
+ * Test suite for the ConfigurationKey model
+ *
+ * @package Cobweb\ExternalImport\Tests\Unit\Domain\Model
+ */
+class ConfigurationKeyTest extends UnitTestCase
+{
+    /**
+     * @var ConfigurationKey
+     */
+    protected $subject;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->subject = new ConfigurationKey();
+    }
+
+    /**
+     * @test
+     */
+    public function getConfigurationKeyInitiallyReturnsEmptyString()
+    {
+        self::assertEquals('', $this->subject->getConfigurationKey());
+    }
+
+    /**
+     * @test
+     */
+    public function getIndexInitiallyReturnsEmptyString()
+    {
+        self::assertEquals('', $this->subject->getIndex());
+    }
+
+    /**
+     * @test
+     */
+    public function getTableInitiallyReturnsEmptyString()
+    {
+        self::assertEquals('', $this->subject->getTable());
+    }
+
+    public function configurationProvider(): array
+    {
+        return [
+                'standard table name, numerical index' => [
+                        'table' => 'tx_foo',
+                        'index' => 1,
+                        'key' => 'tx_foo***1'
+                ],
+                'standard table name, string index' => [
+                        'table' => 'tx_foo',
+                        'index' => 'bar',
+                        'key' => 'tx_foo***bar'
+                ],
+                'table name with hyphen, string index' => [
+                        'table' => 'tx-foo',
+                        'index' => 'bar',
+                        'key' => 'tx-foo***bar'
+                ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider configurationProvider
+     * @param string $table
+     * @param string $index
+     * @param string $key
+     */
+    public function setConfigurationKeySetsTableAndIndex($table, $index, $key)
+    {
+        $this->subject->setConfigurationKey($key);
+        self::assertEquals($table, $this->subject->getTable());
+        self::assertEquals($index, $this->subject->getIndex());
+    }
+
+    /**
+     * @test
+     * @dataProvider configurationProvider
+     * @param string $table
+     * @param string $index
+     * @param string $key
+     */
+    public function setTableAndIndexSetsConfigurationKey($table, $index, $key)
+    {
+        $this->subject->setTableAndIndex($table, (string)$index);
+        self::assertEquals($key, $this->subject->getConfigurationKey());
+    }
+}

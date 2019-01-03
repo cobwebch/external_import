@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\Task;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -43,7 +44,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
      * @param AbstractTask $task When editing, reference to the current task object. Null when adding.
      * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
-     * @return array Array containg all the information pertaining to the additional fields
+     * @return array Array containing all the information pertaining to the additional fields
      *               The array is multidimensional, keyed to the task class name and each field's id
      *               For each field it provides an associative sub-array with the following:
      *                   ['code']        => The HTML code for the field
@@ -60,7 +61,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
                 $taskInfo[self::$fieldName] = 'all';
             } elseif ($parentObject->CMD === 'edit') {
                 // In case of edit, set to internal value if no data was submitted already
-                $taskInfo[self::$fieldName] = $task->table . '-' . $task->index;
+                $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
+                $configurationKey->setTableAndIndex($task->table, (string)$task->index);
+                $taskInfo[self::$fieldName] = $configurationKey->getConfigurationKey();
             }
         }
 
@@ -150,9 +153,10 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
                 $task->table = $fieldValue;
                 $task->index = 0;
         } else {
-            list($table, $index) = explode('-', $fieldValue);
-            $task->table = $table;
-            $task->index = $index;
+            $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
+            $configurationKey->setConfigurationKey($fieldValue);
+            $task->table = $configurationKey->getTable();
+            $task->index = $configurationKey->getIndex();
         }
     }
 }

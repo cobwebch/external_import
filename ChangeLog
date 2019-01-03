@@ -2,6 +2,7 @@
 
 	* Display nodetype validation error when property is missing, resolves #76
 	* Update documentation to mention restriction on crdate, tstamp and cruser_id fields, resolves #71
+	* Introduce centralized handling of configuration keys, resolves #73
 
 2018-10-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
