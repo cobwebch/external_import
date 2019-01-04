@@ -14,30 +14,36 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
  * Checks for errors for a given property.
  *
  * @package Cobweb\ExternalImport\ViewHelpers
  */
-class HasErrorViewHelper extends AbstractViewHelper
+class HasErrorViewHelper extends AbstractConditionViewHelper
 {
+
     /**
-     * Renders some string or other depending on there being errors for a given property.
+     * Initializes the arguments of the ViewHelper.
      *
-     * @param string $for Name of the property to check
-     * @param string $then Output if there are any errors
-     * @param string $else Output if there are no errors
-     * @return string
+     * @return void
      */
-    public function render($for, $then, $else)
+    public function initializeArguments()
     {
-        $errors = $this->controllerContext->getRequest()->getOriginalRequestMappingResults()->getFlattenedErrors();
-        if (count($errors[$for]) > 0) {
-            return $then;
-        } else {
-            return $else;
-        }
+        parent::initializeArguments();
+        $this->registerArgument('errors', 'array', 'Validation error results', true);
+        $this->registerArgument('for', 'string', 'Name of the field to fetch the errors for', true);
+    }
+
+    /**
+     * Returns true if there's at least one error for the given field.
+     *
+     * @param array|NULL $arguments
+     * @return boolean
+     */
+    protected static function evaluateCondition($arguments = null)
+    {
+        return count($arguments['errors'][$arguments['for']]) > 0;
     }
 }

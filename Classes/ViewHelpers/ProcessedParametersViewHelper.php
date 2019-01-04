@@ -17,7 +17,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Processes the connector parameters of an external import configuration
@@ -35,20 +35,13 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
-     * Process parameters and set them as variable.
+     * Initializes the arguments of the ViewHelper.
      *
-     * @param Configuration $configuration Configuration object
-     * @return string Rendered string
+     * @return void
      */
-    public function render(Configuration $configuration)
+    public function initializeArguments()
     {
-        return static::renderStatic(
-            array(
-                    'configuration' => $configuration
-            ),
-            $this->buildRenderChildrenClosure(),
-            $this->renderingContext
-        );
+        $this->registerArgument('configuration', Configuration::class, 'The configuration object ot handle', true);
     }
 
     /**
@@ -76,7 +69,7 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
             }
         }
 
-        $templateVariableContainer = $renderingContext->getTemplateVariableContainer();
+        $templateVariableContainer = $renderingContext->getVariableProvider();
         $templateVariableContainer->add('processedParameters', $processedParameters);
 
         $output = $renderChildrenClosure();

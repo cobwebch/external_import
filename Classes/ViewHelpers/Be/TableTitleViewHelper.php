@@ -16,25 +16,19 @@ namespace Cobweb\ExternalImport\ViewHelpers\Be;
 
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 class TableTitleViewHelper extends AbstractViewHelper
 {
+
     /**
-     * Prints out the name of the given table.
+     * Initializes the arguments of the ViewHelper.
      *
-     * @param string $table Name of the table
-     * @return string
+     * @return void
      */
-    public function render($table)
+    public function initializeArguments()
     {
-        return static::renderStatic(
-            array(
-                'table' => $table
-            ),
-            $this->buildRenderChildrenClosure(),
-            $this->renderingContext
-        );
+        $this->registerArgument('table', 'string', 'Name of the table', true);
     }
 
     /**

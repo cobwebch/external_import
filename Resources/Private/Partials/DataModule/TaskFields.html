@@ -8,7 +8,7 @@
 	<div class="typo3-TCEforms">
 		<div class="tab-pane">
 			<fieldset class="form-section">
-				<div class="form-group {ex:hasError(for: 'frequency', then: 'has-error', else: '')}">
+				<div class="form-group {ex:hasError(errors: errors, for: 'frequency', then: 'has-error', else: '')}">
 					<label>
 						<f:translate id="frequency" />
 					</label>
@@ -28,7 +28,7 @@
 						<f:form.select class="form-control" name="group" value="{task.group}" options="{groups}" />
 					</div>
 				</div>
-				<div class="form-group {ex:hasError(for: 'start_date_hr', then: 'has-error', else: '')}">
+				<div class="form-group {ex:hasError(errors: errors, for: 'start_date_hr', then: 'has-error', else: '')}">
 					<label>
 						<f:translate id="start_date" />
 					</label>
@@ -46,7 +46,7 @@
 				</div>
 				<div class="form-group">
 					<div class="field-control-wrap">
-						<f:form.submit name="saveTask" value="{f:translate(id: 'LLL:EXT:lang/locallang_common.xlf:save')}" class="btn btn-default" />
+						<f:form.submit name="saveTask" value="{f:translate(id: 'LLL:EXT:core/Resources/Private/Language/locallang_common.xlf:save')}" class="btn btn-default" />
 					</div>
 				</div>
 			</fieldset>

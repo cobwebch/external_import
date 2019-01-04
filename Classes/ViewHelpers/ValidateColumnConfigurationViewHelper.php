@@ -16,7 +16,10 @@ namespace Cobweb\ExternalImport\ViewHelpers;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Validates the "column" part of a configuration and loads the validation results as a container variable.
@@ -33,21 +36,41 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
+     * Initializes the arguments of the ViewHelper.
+     *
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument('configuration', Configuration::class, 'General external import configuration object', true);
+        $this->registerArgument('column', 'string', 'Name of the column to check', true);
+        $this->registerArgument('as', 'string', 'Name of the variable in which to store the validation results', true);
+    }
+
+    /**
      * Runs the validation and loads the results.
      *
-     * @param Configuration $configuration The general external import configuration
-     * @param string $column The name of the column to check
-     * @param string $as Name of the variable in which to store the validation results
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param RenderingContextInterface $renderingContext
+     *
      * @return string
      */
-    public function render(Configuration $configuration, $column, $as)
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-        $configurationValidator = $this->objectManager->get(ColumnConfigurationValidator::class);
-        $configurationValidator->isValid($configuration, $column);
-        $templateVariableContainer = $this->renderingContext->getTemplateVariableContainer();
-        $templateVariableContainer->add($as, $configurationValidator->getResults()->getAll());
-        $output = $this->renderChildren();
-        $templateVariableContainer->remove($as);
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $configurationValidator = $objectManager->get(ColumnConfigurationValidator::class);
+        $configurationValidator->isValid(
+                $arguments['configuration'],
+                $arguments['column']
+        );
+        $templateVariableContainer = $renderingContext->getVariableProvider();
+        $templateVariableContainer->add(
+                $arguments['as'],
+                $configurationValidator->getResults()->getAll()
+        );
+        $output = $renderChildrenClosure();
+        $templateVariableContainer->remove($arguments['as']);
         return $output;
     }
 }

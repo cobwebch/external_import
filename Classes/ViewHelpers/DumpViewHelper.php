@@ -16,7 +16,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
 
 use Cobweb\ExternalImport\Utility\DebugUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Dumps an array in a formatted way.
@@ -33,24 +33,17 @@ class DumpViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
-     * Dumps the array.
+     * Initializes the arguments of the ViewHelper.
      *
-     * @param array $array The original array to dump
-     * @return string
+     * @return void
      */
-    public function render(array $array)
+    public function initializeArguments()
     {
-        return static::renderStatic(
-            array(
-                'array' => $array
-            ),
-            $this->buildRenderChildrenClosure(),
-            $this->renderingContext
-        );
+        $this->registerArgument('array', 'array', 'The array to dump', true);
     }
 
     /**
-     * Dumps original.
+     * Dumps the array.
      *
      * @param array $arguments
      * @param \Closure $renderChildrenClosure

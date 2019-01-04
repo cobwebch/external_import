@@ -318,7 +318,8 @@ class DataModuleController extends ActionController
                 [
                         'table' => $table,
                         'index' => $index,
-                        'groups' => $this->schedulerRepository->fetchAllGroups()
+                        'groups' => $this->schedulerRepository->fetchAllGroups(),
+                        'errors' => $this->controllerContext->getRequest()->getOriginalRequestMappingResults()->getFlattenedErrors()
                 ]
         );
     }
@@ -389,7 +390,8 @@ class DataModuleController extends ActionController
             $this->view->assignMultiple(
                     [
                             'task' => $task,
-                            'groups' => $this->schedulerRepository->fetchAllGroups()
+                            'groups' => $this->schedulerRepository->fetchAllGroups(),
+                            'errors' => $this->controllerContext->getRequest()->getOriginalRequestMappingResults()->getFlattenedErrors()
                     ]
             );
         } catch (\Exception $e) {

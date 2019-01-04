@@ -16,7 +16,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
 
 use Cobweb\ExternalImport\Utility\DebugUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Dumps an array in a formatted way, comparing it with a second, modified array.
@@ -33,22 +33,14 @@ class TwinDumpViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
-     * Dumps the original array and its differences.
+     * Initializes the arguments of the ViewHelper.
      *
-     * @param array $originalArray The original array to dump
-     * @param array $modifiedArray The modifiedarray to dump
-     * @return string
+     * @return void
      */
-    public function render(array $originalArray, array $modifiedArray)
+    public function initializeArguments()
     {
-        return static::renderStatic(
-            array(
-                'originalArray' => $originalArray,
-                'modifiedArray' => $modifiedArray
-            ),
-            $this->buildRenderChildrenClosure(),
-            $this->renderingContext
-        );
+        $this->registerArgument('originalArray', 'array', 'The original array to dump', true);
+        $this->registerArgument('modifiedArray', 'array', 'The modified array to dump', true);
     }
 
     /**

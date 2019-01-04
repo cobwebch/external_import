@@ -20,7 +20,7 @@ use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Creates a link to the given in Web > List view.
@@ -37,20 +37,13 @@ class PageLinkViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
-     * Creates the link.
+     * Initializes the arguments of the ViewHelper.
      *
-     * @param int $page The original array to dump
-     * @return string
+     * @return void
      */
-    public function render($page)
+    public function initializeArguments()
     {
-        return static::renderStatic(
-            array(
-                'page' => $page
-            ),
-            $this->buildRenderChildrenClosure(),
-            $this->renderingContext
-        );
+        $this->registerArgument('page', 'int', 'Uid of the page to create the link to', true);
     }
 
     /**

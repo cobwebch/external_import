@@ -15,7 +15,8 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  */
 
 use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Displays the validation result for the current property.
@@ -32,18 +33,31 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
     protected $escapeOutput = false;
 
     /**
+     * Initializes the arguments of the ViewHelper.
+     *
+     * @return void
+     */
+    public function initializeArguments()
+    {
+        $this->registerArgument('result', 'array', 'Validation result (contains message and severity)', true);
+    }
+
+    /**
      * Renders the validation result.
      *
-     * @param array $result Validation result (contains message and severity)
+     * @param array $arguments
+     * @param \Closure $renderChildrenClosure
+     * @param RenderingContextInterface $renderingContext
      * @return string
      */
-    public function render($result)
+    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-        $classes = array(
+        $result = $arguments['result'];
+        $classes = [
                 FlashMessage::NOTICE => 'alert-notice',
                 FlashMessage::WARNING => 'alert-warning',
                 FlashMessage::ERROR => 'alert-danger'
-        );
+        ];
         $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert %1$s">%2$s</li></ul></div>';
         return sprintf(
                 $message,
