@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Task;
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Importer;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
@@ -78,9 +79,9 @@ class AutomatedSyncTask extends AbstractTask
                     list($table, $index) = explode('/', $key);
                     $reportContent .= $importer->reportForTable($table, $index, $messages);
                     $reportContent .= "\n\n";
-                    if (count($messages['error']) > 0) {
+                    if (count($messages[FlashMessage::ERROR]) > 0) {
                         $globalStatus = 'ERROR';
-                    } elseif (count($messages['warning']) > 0) {
+                    } elseif (count($messages[FlashMessage::WARNING]) > 0) {
                         $globalStatus = 'WARNING';
                     }
                 }
@@ -95,9 +96,9 @@ class AutomatedSyncTask extends AbstractTask
             if (!empty($extensionConfiguration['reportEmail'])) {
                 $reportContent .= $importer->reportForTable($this->table, $this->index, $messages);
                 $reportContent .= "\n\n";
-                if (count($messages['error']) > 0) {
+                if (count($messages[FlashMessage::ERROR]) > 0) {
                     $globalStatus = 'ERROR';
-                } elseif (count($messages['warning']) > 0) {
+                } elseif (count($messages[FlashMessage::WARNING]) > 0) {
                     $globalStatus = 'WARNING';
                 }
                 // Assemble the subject and send the mail
