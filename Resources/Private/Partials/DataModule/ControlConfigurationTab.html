@@ -109,10 +109,11 @@
 					<td>
 						<f:if condition="{ctrlConfiguration.enforcePid}">
 							<f:then>
-								<f:translate id="LLL:EXT:lang/locallang_common.xml:yes" />
+								<!-- TODO: remove extra translation when dropping TYPO3 8 support -->
+								<f:translate id="LLL:EXT:lang/locallang_common.xml:yes" /><f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:yes" />
 							</f:then>
 							<f:else>
-								<f:translate id="LLL:EXT:lang/locallang_common.xml:no" />
+								<f:translate id="LLL:EXT:lang/locallang_common.xml:no" /><f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:no" />
 							</f:else>
 						</f:if>
 					</td>
@@ -122,10 +123,11 @@
 					<td>
 						<f:if condition="{ctrlConfiguration.disableLog}">
 							<f:then>
-								<f:translate id="LLL:EXT:lang/locallang_common.xml:yes" />
+								<!-- TODO: remove extra translation when dropping TYPO3 8 support -->
+								<f:translate id="LLL:EXT:lang/locallang_common.xml:yes" /><f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:yes" />
 							</f:then>
 							<f:else>
-								<f:translate id="LLL:EXT:lang/locallang_common.xml:no" />
+								<f:translate id="LLL:EXT:lang/locallang_common.xml:no" /><f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:no" />
 							</f:else>
 						</f:if>
 					</td>
