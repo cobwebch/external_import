@@ -67,3 +67,11 @@ $iconRegistry->registerIcon(
                 'source' => 'EXT:external_import/Resources/Public/Icons/Log.png'
         ]
 );
+$iconRegistry->registerIcon(
+        'tx_external_import-loader',
+        \TYPO3\CMS\Core\Imaging\IconProvider\FontawesomeIconProvider::class,
+        [
+                'name' => 'spinner',
+                'spinning' => true
+        ]
+);

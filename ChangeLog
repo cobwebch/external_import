@@ -1,6 +1,7 @@
 2019-01-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Ensure compatibility with TYPO3 v9, resolves #62
+	* Ensure spinner icon is available, resolves #80
 
 2019-01-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
