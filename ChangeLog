@@ -2,6 +2,7 @@
 
 	* Ensure compatibility with TYPO3 v9, resolves #62
 	* Ensure spinner icon is available, resolves #80
+	* Fix wrong check for 0-ish values, resolves #74
 
 2019-01-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

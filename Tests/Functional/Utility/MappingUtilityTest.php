@@ -70,7 +70,8 @@ class MappingUtilityTest extends FunctionalTestCase
                         ],
                         [
                                 'CAT1' => 1,
-                                'CAT2' => 2
+                                'CAT2' => 2,
+                                '0' => 4
                         ]
                 ],
                 'All records (with valueField property)' => [
@@ -81,7 +82,20 @@ class MappingUtilityTest extends FunctionalTestCase
                         ],
                         [
                                 'CAT1' => 1,
-                                'CAT2' => 2
+                                'CAT2' => 2,
+                                '0' => 4
+                        ]
+                ],
+                'All records (with non-uid valueField property)' => [
+                        [
+                                'table' => 'sys_category',
+                                'referenceField' => 'external_key',
+                                'valueField' => 'title'
+                        ],
+                        [
+                                'CAT1' => 'Category 1',
+                                'CAT2' => 'Category 2',
+                                '0' => 'Category 4'
                         ]
                 ],
                 'Filtered records' => [

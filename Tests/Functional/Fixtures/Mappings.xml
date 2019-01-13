@@ -34,4 +34,13 @@
 		<title>Category 3</title>
 		<external_key>CAT3</external_key>
 	</sys_category>
+	<!-- Tests that 0 is an acceptable value -->
+	<sys_category>
+		<uid>4</uid>
+		<pid>2</pid>
+		<deleted>0</deleted>
+		<hidden>0</hidden>
+		<title>Category 4</title>
+		<external_key>0</external_key>
+	</sys_category>
 </dataset>

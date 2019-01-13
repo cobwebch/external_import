@@ -31,6 +31,18 @@ class MappingUtility
     protected $importer;
 
     /**
+     * Returns the object as a string.
+     *
+     * NOTE: this seems pretty useless but somehow is needed when a functional test fails. Don't ask me why.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return __CLASS__;
+    }
+
+    /**
      * Takes a record set and maps a given field to some existing database relation.
      *
      * @param array $records Records to handle
@@ -221,7 +233,7 @@ class MappingUtility
                 while ($row = $res->fetch(\PDO::FETCH_ASSOC)) {
                     // Don't consider records with empty references, as they can't be matched
                     // to external data anyway (but a real zero is acceptable)
-                    if (!empty($row[$referenceField]) || $mappingData[$referenceField] === '0' || $mappingData[$referenceField] === 0) {
+                    if (!empty($row[$referenceField]) || $row[$referenceField] === '0' || $row[$referenceField] === 0) {
                         $localMapping[$row[$referenceField]] = $row[$valueField];
                     }
                 }
