@@ -18,6 +18,7 @@ use Cobweb\ExternalImport\Context\AbstractCallContext;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -68,6 +69,11 @@ class Importer
      * @var \Cobweb\ExternalImport\Domain\Repository\UidRepository
      */
     protected $uidRepository;
+
+    /**
+     * @var \TYPO3\CMS\Core\Log\Logger
+     */
+    protected $logger;
 
     /**
      * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
@@ -238,7 +244,8 @@ class Importer
         // Initialize existing uids list
         $this->uidRepository->setConfiguration($this->externalConfiguration);
         $this->uidRepository->resetExistingUids();
-    }
+        /** @var $logger \TYPO3\CMS\Core\Log\Logger */
+        $this->logger = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Log\LogManager::class)->getLogger(__CLASS__);    }
 
     /**
      * Calls on the distant data source and synchronizes the data into the TYPO3 database.
@@ -502,7 +509,9 @@ class Importer
     }
 
     /**
-     * Writes debug messages to the devlog, depending on debug flag.
+     * Writes debug messages, depending on debug flag.
+     *
+     * The output varies depending on TYPO3 version and call context.
      *
      * @param string $message The debug message
      * @param int $severity The severity of the issue
@@ -512,12 +521,48 @@ class Importer
     public function debug($message, $severity = 0, $data = null)
     {
         if ($this->isDebug()) {
-            GeneralUtility::devLog(
-                    $message,
-                    'external_import',
-                    $severity,
-                    $data
-            );
+            if (CompatibilityUtility::isV8()) {
+                GeneralUtility::devLog(
+                        $message,
+                        'external_import',
+                        $severity,
+                        $data
+                );
+            } else {
+                $data = is_array($data) ? $data : [$data];
+                // Match devlog severities: 0 is info, 1 is notice, 2 is warning, 3 is fatal error, -1 is "OK" message
+                switch ($severity) {
+                    case 0:
+                        $this->logger->info(
+                                $message,
+                                $data
+                        );
+                        break;
+                    case 1:
+                        $this->logger->notice(
+                                $message,
+                                $data
+                        );
+                        break;
+                    case 2:
+                        $this->logger->warning(
+                                $message,
+                                $data
+                        );
+                        break;
+                    case 3:
+                        $this->logger->error(
+                                $message,
+                                $data
+                        );
+                        break;
+                    default:
+                        $this->logger->debug(
+                                $message,
+                                $data
+                        );
+                }
+            }
             // Push the debug data to the call context for special display, if needed (e.g. the command-line controller)
             if ($this->callContext !== null) {
                 $this->callContext->outputDebug(

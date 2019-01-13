@@ -50,8 +50,28 @@ Preview/Debug limit
   feature is implemented.
 
 Debug
-  Check to enable the extension to store some log data
+  Check to enable the extension to log some data during import runs.
+  This may have an effect depending on the call context (e.g. in verbose mode
+  on the command line, debug output will be sent to standard output).
+  Up to TYPO3 8, debug output is sent to the Developer's Log
   (requires an extension such as `devlog <http://typo3.org/extensions/repository/view/devlog/>`_).
+  Since TYPO3 9, debug output is routed using the Core Logger API.
+  Hence if you wish to see more details, you may want to add specific
+  configuration for the :php:`\Cobweb\ExternalImport\Importer` class which centralizes logging.
+  Example:
+
+  .. code-block:: php
+
+		$GLOBALS['TYPO3_CONF_VARS']['LOG']['Cobweb']['ExternalImport']['Importer']['writerConfiguration'] = [
+			// configuration for ERROR level log entries
+			\TYPO3\CMS\Core\Log\LogLevel::DEBUG => [
+				// add a FileWriter
+				\TYPO3\CMS\Core\Log\Writer\FileWriter::class => [
+					// configuration for the writer
+					'logFile' => 'typo3temp/logs/typo3_import.log'
+				]
+			]
+		];
 
 Disable logging
   Disables logging by TCEmain. By default

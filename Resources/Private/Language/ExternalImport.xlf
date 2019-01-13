@@ -27,7 +27,7 @@
 				<source>Preview/Debug limit: The number of rows to show while doing a preview. Set to 0 for showing all. This also affects the debugging output.</source>
 			</trans-unit>
 			<trans-unit id="config.debug" xml:space="preserve">
-				<source>Debug: Check to turn on debugging to the Dev Log. Debugging also takes place if TYPO3_DLOG is true. Requires devlog or similar extension.</source>
+				<source>Debug: Check to turn on debugging (output depends on TYPO3 version and context; check the documentation).</source>
 			</trans-unit>
 			<trans-unit id="config.disableLog" xml:space="preserve">
 				<source>Disable logging: Check to disable logging by TCEmain. Recommended if you don't need to keep close track of the import process.</source>
