@@ -14,8 +14,7 @@ connect to.
 Automating the imports requires system extension "scheduler" or setting up
 cron jobs calling the command-line controller.
 
-TYPO3 CMS 7 or above is required. The command-line controller is only
-available as of TYPO3 CMS 8.
+TYPO3 CMS 8 or above is required.
 
 
 .. _installation-compatibility:
@@ -87,38 +86,38 @@ As an example, usage of such properties should be changed from:
 
   .. code-block:: php
 
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
-				0 => array(
+		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
+				0 => [
 						'field' => 'start_date',
 						'trim' => true
-						'userFunc' => array(
+						'userFunc' => [
 								'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
 								'method' => 'parseDate'
-						)
-				)
-		);
+						]
+				]
+		];
 
 
 to:
 
   .. code-block:: php
 
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
-				0 => array(
+		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
+				0 => [
 						'field' => 'start_date',
-						'transformations => array(
-								10 => array(
+						'transformations => [
+								10 => [
 										'trim' => true
-								),
-								20 => array(
-										'userFunc' => array(
+								],
+								20 => [
+										'userFunc' => [
 												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
 												'method' => 'parseDate'
-										)
-								)
-						)
-				)
-		);
+										]
+								]
+						]
+				]
+		];
 
 
 If you want to preserve "old-style" order, the transformation properties were called in the
