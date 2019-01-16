@@ -194,9 +194,9 @@ class StoreDataStep extends AbstractStep
                     $theID = $existingUids[$externalUid];
                     $tceData[$table][$theID] = $theRecord;
                     // Check if some records have a changed "pid", in which case a "move" action is also needed
-                    if (array_key_exists('pid', $theRecord) && $theRecord['pid'] !== $currentPids[$externalUid]) {
+                    if (array_key_exists('pid', $theRecord) && (int)$theRecord['pid'] !== $currentPids[$externalUid]) {
                         $tceCommands[$table][$theID] = [
-                                'move' => $theRecord['pid']
+                                'move' => (int)$theRecord['pid']
                         ];
                         $moves++;
                     }

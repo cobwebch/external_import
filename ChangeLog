@@ -1,3 +1,7 @@
+2019-01-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Make sure pids are compared as integers, resolves #81
+
 2019-01-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Ensure compatibility with TYPO3 v9, resolves #62
