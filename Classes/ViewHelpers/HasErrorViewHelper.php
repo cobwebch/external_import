@@ -44,6 +44,9 @@ class HasErrorViewHelper extends AbstractConditionViewHelper
      */
     protected static function evaluateCondition($arguments = null)
     {
-        return count($arguments['errors'][$arguments['for']]) > 0;
+        if (isset($arguments['errors'][$arguments['for']])) {
+            return count($arguments['errors'][$arguments['for']]) > 0;
+        }
+        return false;
     }
 }

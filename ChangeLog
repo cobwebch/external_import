@@ -1,3 +1,7 @@
+2019-02-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Catch empty error array, resolves #84
+
 2019-01-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Make sure pids are compared as integers, resolves #81
