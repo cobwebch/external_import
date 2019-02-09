@@ -278,7 +278,8 @@ class ControlConfigurationValidator
         // If the pid is 0, data will be stored on root page.
         if ($property === 0) {
             // Table is allowed on root page, just issue notice to make sure pid was not forgotten
-            if ($rootLevelFlag === -1 || $rootLevelFlag === 1) {
+            // NOTE: "rootLevel" is not supposed to be "true", but errors happen and we allow for these.
+            if ($rootLevelFlag === -1 || $rootLevelFlag === 1 || $rootLevelFlag) {
                 $this->results->add(
                         'pid',
                         LocalizationUtility::translate(

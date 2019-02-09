@@ -1,6 +1,7 @@
 2019-02-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Catch empty error array, resolves #84
+	* Allow for "rootLevel" property to be "true" instead of "1", resolves #82
 
 2019-01-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
