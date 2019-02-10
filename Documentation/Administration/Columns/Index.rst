@@ -355,7 +355,7 @@ Description
    - :ref:`xpath <administration-columns-properties-xpath>`
    - :ref:`xmlValue <administration-columns-properties-xmlvalue>`
 
-   The substructure fields are search for inside the structure selected with the "main" data pointer.
+   The substructure fields are searched for inside the structure selected with the "main" data pointer.
    In the example above, the whole "products" structure is first fetched, then the `product` and `qty`
    are searched for inside that structure.
 
