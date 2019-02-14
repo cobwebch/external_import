@@ -320,7 +320,7 @@ class TransformDataStepTest extends FunctionalTestCase
                         ],
                         [
                                 0 => [
-                                        'foo' => '2017-10-11 18:29:01',
+                                        'foo' => '2017-10-11T18:29:01+02:00',
                                         'bar' => 4
                                 ]
                         ],
