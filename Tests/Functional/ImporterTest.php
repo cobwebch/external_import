@@ -418,7 +418,6 @@ class ImporterTest extends FunctionalTestCase
                 ->from('tx_externalimporttest_order_items_mm')
                 // Ensure consistent order for safe comparison
                 ->orderBy('uid_local', 'ASC')
-                ->addOrderBy('sorting_foreign', 'ASC')
                 ->execute();
         $countRelations = 0;
         $quantities = [];
