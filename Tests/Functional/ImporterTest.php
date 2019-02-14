@@ -415,7 +415,7 @@ class ImporterTest extends FunctionalTestCase
         /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
                 ->select('uid_local', 'quantity')
-                ->from('tx_externalimporttest_order_items')
+                ->from('tx_externalimporttest_order_items_mm')
                 // Ensure consistent order for safe comparison
                 ->orderBy('uid_local', 'ASC')
                 ->addOrderBy('sorting_foreign', 'ASC')
