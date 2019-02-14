@@ -41,39 +41,26 @@ class ArrayHandlerTest extends FunctionalTestCase
     {
         parent::setUp();
         $configuration = $this->getMockBuilder(Configuration::class)->getMock();
-        $configuration->expects($this->any())
-                ->method('getColumnConfiguration')
-                ->will(
-                        $this->returnValue(
-                                [
-                                        'name' => [
-                                                'field' => 'normal_field'
-                                        ],
-                                        'brand' => [
-                                                'arrayPath' => 'brand|name',
-                                                'arrayPathSeparator' => '|'
-                                        ]
+        $configuration->method('getColumnConfiguration')
+                ->willReturn(
+                        [
+                                'name' => [
+                                        'field' => 'normal_field'
+                                ],
+                                'brand' => [
+                                        'arrayPath' => 'brand|name',
+                                        'arrayPathSeparator' => '|'
                                 ]
-                        )
+                        ]
                 );
-        $configuration->expects($this->any())
-                ->method('getCountAdditionalFields')
-                ->will(
-                        $this->returnValue(1)
-                );
-        $configuration->expects($this->any())
-                ->method('getAdditionalFields')
-                ->will(
-                        $this->returnValue(
-                                ['special_field']
-                        )
-                );
+        $configuration->method('getCountAdditionalFields')
+                ->willReturn(1);
+        $configuration->method('getAdditionalFields')
+                ->willReturn(['special_field']);
         $this->importer = $this->getMockBuilder(Importer::class)->getMock();
         $this->importer->expects($this->once())
                 ->method('getExternalConfiguration')
-                ->will(
-                        $this->returnValue($configuration)
-                );
+                ->willReturn($configuration);
         $this->subject = new ArrayHandler();
     }
 
@@ -168,6 +155,8 @@ class ArrayHandlerTest extends FunctionalTestCase
 
     /**
      * @test
+     * @param array $rawData
+     * @param array $expectedStructure
      * @dataProvider rawDataProvider
      */
     public function handleDataReturnsStructureData($rawData, $expectedStructure)
