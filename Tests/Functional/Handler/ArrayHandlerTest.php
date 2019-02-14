@@ -40,7 +40,7 @@ class ArrayHandlerTest extends FunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $configuration = $this->getMockBuilder(Configuration::class)->getMock();
+        $configuration = $this->createMock(Configuration::class);
         $configuration->method('getColumnConfiguration')
                 ->willReturn(
                         [
@@ -57,9 +57,8 @@ class ArrayHandlerTest extends FunctionalTestCase
                 ->willReturn(1);
         $configuration->method('getAdditionalFields')
                 ->willReturn(['special_field']);
-        $this->importer = $this->getMockBuilder(Importer::class)->getMock();
-        $this->importer->expects($this->once())
-                ->method('getExternalConfiguration')
+        $this->importer = $this->createMock(Importer::class);
+        $this->importer->method('getExternalConfiguration')
                 ->willReturn($configuration);
         $this->subject = new ArrayHandler();
     }
