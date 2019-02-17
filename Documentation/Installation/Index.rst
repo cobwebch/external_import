@@ -28,7 +28,7 @@ Compatibility issues
 Upgrade to 4.1.0
 """"""""""""""""
 
-Version 4.1.0 introduces one **breaking change**. There now exist custom permissions
+Version 4.1.0 introduces one **breaking change**. There now exists custom permissions
 for backend users regarding usage of the backend module. On top of table-related
 permissions, users must have been given explicit rights (via the user groups they
 belong to) to perform synchronizations or define Scheduler tasks. See the
