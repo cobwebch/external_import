@@ -15,6 +15,7 @@ Developer's Guide
    Api/Index
    UserFunctions/Index
    Hooks/Index
+   CriticalExceptions/Index
    Steps/Index
    CustomHandlers/Index
 

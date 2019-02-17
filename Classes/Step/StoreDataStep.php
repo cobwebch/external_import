@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
+use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -171,6 +172,9 @@ class StoreDataStep extends AbstractStep
                             try {
                                 $preProcessor = GeneralUtility::makeInstance($className);
                                 $theRecord = $preProcessor->processBeforeUpdate($theRecord, $this->importer);
+                            } catch (CriticalFailureException $e) {
+                                $this->abortFlag = true;
+                                return;
                             } catch (\Exception $e) {
                                 $this->importer->debug(
                                         sprintf(
@@ -213,6 +217,9 @@ class StoreDataStep extends AbstractStep
                         try {
                             $preProcessor = GeneralUtility::makeInstance($className);
                             $theRecord = $preProcessor->processBeforeInsert($theRecord, $this->importer);
+                        } catch (CriticalFailureException $e) {
+                            $this->abortFlag = true;
+                            return;
                         } catch (\Exception $e) {
                             $this->importer->debug(
                                     sprintf(
@@ -337,6 +344,9 @@ class StoreDataStep extends AbstractStep
                         try {
                             $postProcessor = GeneralUtility::makeInstance($className);
                             $postProcessor->datamapPostProcess($table, $savedData, $this->importer);
+                        } catch (CriticalFailureException $e) {
+                            $this->abortFlag = true;
+                            return;
                         } catch (\Exception $e) {
                             $this->importer->debug(
                                     sprintf(
@@ -349,8 +359,7 @@ class StoreDataStep extends AbstractStep
                         }
                     }
                 }
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 // Abort the process and report about the error
                 $this->handleTceException($e);
                 return;
@@ -369,6 +378,9 @@ class StoreDataStep extends AbstractStep
                     try {
                         $preProcessor = GeneralUtility::makeInstance($className);
                         $absentUids = $preProcessor->processBeforeDelete($table, $absentUids, $this->importer);
+                    } catch (CriticalFailureException $e) {
+                        $this->abortFlag = true;
+                        return;
                     } catch (\Exception $e) {
                         $this->importer->debug(
                                 sprintf(
@@ -407,6 +419,9 @@ class StoreDataStep extends AbstractStep
                                 try {
                                     $postProcessor = GeneralUtility::makeInstance($className);
                                     $absentUids = $postProcessor->cmdmapPostProcess($table, $absentUids, $this->importer);
+                                } catch (CriticalFailureException $e) {
+                                    $this->abortFlag = true;
+                                    return;
                                 } catch (\Exception $e) {
                                     $this->importer->debug(
                                             sprintf(
@@ -419,8 +434,7 @@ class StoreDataStep extends AbstractStep
                                 }
                             }
                         }
-                    }
-                    catch (\Exception $e) {
+                    } catch (\Exception $e) {
                         // Abort the process and report about the error
                         $this->handleTceException($e);
                         return;

@@ -8,7 +8,7 @@ User functions
 
 The external import extension can call user functions for any field
 where external data is imported. A sample function is provided in
-:file:`Classes/Transformation/DateTimeTransformation.php` .
+:file:`Classes/Transformation/DateTimeTransformation.php`.
 Basically, the function receives three parameters:
 
 +----------+---------+-----------------------------------------------------------------------+
@@ -37,6 +37,10 @@ field.
    already gone through renaming the fields. That means the names of the
    fields are not those of the external data, but those of the TYPO3 CMS
    fields.
+
+The function may throw the special exception :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+This will cause the "Transform Data" step to abort. More details in the chapter about
+:ref:`critical exceptions <developer-critical-exceptions>`.
 
 .. note::
 

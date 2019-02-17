@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -88,7 +89,13 @@ class ReadDataStep extends AbstractStep
                 $data = array();
 
                 // Pre-process connector parameters
-                $parameters = $this->processParameters($ctrlConfiguration['parameters']);
+                try {
+                    $parameters = $this->processParameters($ctrlConfiguration['parameters']);
+                } catch (CriticalFailureException $e) {
+                    // If a critical failure occurred during hook execution, set the abort flag and return to controller
+                    $this->setAbortFlag(true);
+                    return;
+                }
 
                 // A problem may happen while fetching the data
                 // If so, the import process has to be aborted
@@ -151,6 +158,7 @@ class ReadDataStep extends AbstractStep
      *
      * @param array $parameters List of parameters to process
      * @return array The processed parameters
+     * @throws CriticalFailureException
      */
     protected function processParameters($parameters)
     {
@@ -159,6 +167,9 @@ class ReadDataStep extends AbstractStep
                 try {
                     $preProcessor = GeneralUtility::makeInstance($className);
                     $parameters = $preProcessor->processParameters($parameters, $this->importer->getExternalConfiguration());
+                } catch (CriticalFailureException $e) {
+                    // This exception must not be caught here, but thrown further up
+                    throw $e;
                 } catch (\Exception $e) {
                     $this->importer->debug(
                             sprintf(

@@ -20,6 +20,12 @@ some hooks are not called.
    description for those that could be replaced by custom steps.
 
 
+Some hooks may throw the special exception :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+This will cause their "parent" step to abort. More details in the chapter about
+:ref:`critical exceptions <developer-critical-exceptions>`. Which hooks
+may do this is mentioned below.
+
+
 processParameters
   This allows for dynamic manipulation of the
   :ref:`parameters <administration-general-tca-properties-parameters>`
@@ -61,6 +67,8 @@ preprocessRawRecordset
   object (an instance of class :php:`\Cobweb\ExternalImport\Importer`) as
   parameters. It is expected to return a full recordset too.
 
+  This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+
   .. note::
 
      Since External Import version 4.0.0, use a custom step instead,
@@ -81,6 +89,8 @@ validateRawRecordset
   hook, the first method that returns false aborts the import. Further
   methods are not called.
 
+  This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+
   .. note::
 
      Since External Import version 4.0.0, use a custom step instead,
@@ -96,6 +106,8 @@ preprocessRecordset
   :php:`\Cobweb\ExternalImport\Importer`) as parameters. It is expected
   to return a full recordset too.
 
+  This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+
   .. note::
 
      Since External Import version 4.0.0, use a custom step instead,
@@ -110,9 +122,13 @@ updatePreProcess
   :php:`\Cobweb\ExternalImport\Importer`) as parameters. It is expected
   to return the complete record.
 
+  This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+
 insertPreProcess
   Similar to the "updatePreProcess" hook, but for
   the insert operation.
+
+  This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
 
 deletePreProcess
   This hook can be used to modify the list of
@@ -121,6 +137,9 @@ deletePreProcess
   second parameter is a reference to the calling object (again, an
   instance of class :php:`\Cobweb\ExternalImport\Importer`). The method invoked is
   expected to return a list of primary keys too.
+
+  This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+  However note that the data will already have been saved.
 
 datamapPostProcess
   This hook is called after all records have
@@ -133,6 +152,9 @@ datamapPostProcess
   either "insert" or "update" depending on what operation was performed
   on the record.
 
+  This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+  However note that the data will already have been saved.
+
   .. note::
 
      This hook is not called in preview mode.
@@ -143,6 +165,9 @@ cmdmapPostProcess
   affected table, the list of uid's of the deleted records and a back-
   reference to the calling object (an instance of class
   :php:`\Cobweb\ExternalImport\Importer`).
+
+  This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+  However note that the data will already have been saved.
 
   .. note::
 

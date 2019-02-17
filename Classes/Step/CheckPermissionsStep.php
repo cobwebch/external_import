@@ -24,7 +24,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class CheckPermissionsStep extends AbstractStep
 {
     /**
-     * Checks the current user has enough permissions to run the import process to the end.
+     * Checks that the current user has enough permissions to run the import process to the end.
      *
      * @return void
      */

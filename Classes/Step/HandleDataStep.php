@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\DataHandlerInterface;
+use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -111,7 +112,13 @@ class HandleDataStep extends AbstractStep
         }
 
         // Apply any existing pre-processing hook to the raw data
-        $records = $this->preprocessRawData($records);
+        try {
+            $records = $this->preprocessRawData($records);
+        } catch (CriticalFailureException $e) {
+            // If a critical failure occurred during hook execution, set the abort flag and return to controller
+            $this->setAbortFlag(true);
+            return;
+        }
 
         // Set the records in the Data object (and also as preview, if activated)
         $this->getData()->setRecords($records);
@@ -125,6 +132,7 @@ class HandleDataStep extends AbstractStep
      *
      * @param array $records Records containing the mapped data
      * @return array
+     * @throws CriticalFailureException
      */
     protected function preprocessRawData($records)
     {
@@ -135,6 +143,9 @@ class HandleDataStep extends AbstractStep
                     $records = $preProcessor->preprocessRawRecordset($records, $this->importer);
                     // Compact the array again, in case some values were unset in the pre-processor
                     $records = array_values($records);
+                } catch (CriticalFailureException $e) {
+                    // This exception must not be caught here, but thrown further up
+                    throw $e;
                 } catch (\Exception $e) {
                     $this->importer->debug(
                             sprintf(
