@@ -1,6 +1,7 @@
 2019-02-17 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Add critical exception to abort step if needed, resolves #83
+	* Abort when external data cannot be read, resolves #85
 
 2019-02-14 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

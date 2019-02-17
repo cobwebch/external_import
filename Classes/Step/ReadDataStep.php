@@ -43,6 +43,7 @@ class ReadDataStep extends AbstractStep
 
         // The service is not available
         if ($services === false) {
+            $this->setAbortFlag(true);
             $this->importer->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_service',
@@ -59,16 +60,17 @@ class ReadDataStep extends AbstractStep
             // The service was instantiated, but an error occurred while initiating the connection
             // The returned value is not a Connector service
             if (!($connector instanceof ConnectorBase)) {
+                $this->setAbortFlag(true);
                 // If the returned value is an array, we have proper error reporting.
                 if (is_array($connector)) {
                     $this->importer->addMessage(
                             LocalizationUtility::translate(
                                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_with_error',
                                     'external_import',
-                                    array(
+                                    [
                                             $connector['msg'],
                                             $connector['nr']
-                                    )
+                                    ]
                             )
                     );
 
@@ -86,7 +88,7 @@ class ReadDataStep extends AbstractStep
             } else {
                 // Store a reference to the connector object for the callback step
                 $this->configuration->setConnector($connector);
-                $data = array();
+                $data = [];
 
                 // Pre-process connector parameters
                 try {
@@ -109,9 +111,9 @@ class ReadDataStep extends AbstractStep
                                     LocalizationUtility::translate(
                                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
                                             'external_import',
-                                            array(
+                                            [
                                                     $e->getMessage()
-                                            )
+                                            ]
                                     )
                             );
                         }
@@ -126,9 +128,9 @@ class ReadDataStep extends AbstractStep
                                     LocalizationUtility::translate(
                                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
                                             'external_import',
-                                            array(
+                                            [
                                                     $e->getMessage()
-                                            )
+                                            ]
                                     )
                             );
                         }
