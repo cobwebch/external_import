@@ -65,7 +65,13 @@ class ConfigurationKey
     public function setConfigurationKey(string $configurationKey)
     {
         $this->configurationKey = $configurationKey;
-        list($this->table, $this->index) = explode(self::CONCATENATOR, $configurationKey);
+        $keyParts = explode(self::CONCATENATOR, $configurationKey);
+        $this->table = $keyParts[0];
+        if (empty($keyParts[1])) {
+            $this->index = '';
+        } else {
+            $this->index = $keyParts[1];
+        }
     }
 
     /**
@@ -78,7 +84,14 @@ class ConfigurationKey
     {
         $this->table = $table;
         $this->index = $index;
-        $this->configurationKey = $table . self::CONCATENATOR . $index;
+        // Handle special cases for "all tables" and "group" configurations
+        if ($table === 'all') {
+            $this->configurationKey = 'all';
+        } elseif (strpos($table, 'group:') === 0) {
+            $this->configurationKey = $table;
+        } else {
+            $this->configurationKey = $table . self::CONCATENATOR . $index;
+        }
     }
 
     /**

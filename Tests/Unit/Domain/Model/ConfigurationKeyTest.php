@@ -77,6 +77,16 @@ class ConfigurationKeyTest extends UnitTestCase
                         'index' => 'bar',
                         'key' => 'tx-foo***bar'
                 ],
+                'group name' => [
+                        'table' => 'group:foo',
+                        'index' => '',
+                        'key' => 'group:foo'
+                ],
+                'all tables' => [
+                        'table' => 'all',
+                        'index' => '',
+                        'key' => 'all'
+                ]
         ];
     }
 
