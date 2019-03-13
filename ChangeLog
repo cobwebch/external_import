@@ -1,6 +1,7 @@
 2019-03-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fix handling of configuration keys for "all" and "group" configurations, resolves #92
+	* Improve exception handling when applying a user function in the Transform Data Step, resolves #93
 
 2019-02-17 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

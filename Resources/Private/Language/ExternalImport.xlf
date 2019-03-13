@@ -113,6 +113,9 @@
 			<trans-unit id="invalid_userfunc" xml:space="preserve">
 				<source>Invalid user function %s</source>
 			</trans-unit>
+			<trans-unit id="transformationFailed" xml:space="preserve">
+				<source>Record transformation failed. See attached data for details.</source>
+			</trans-unit>
 			<trans-unit id="unknownTransformationProperty" xml:space="preserve">
 				<source>Unknown transformation property %s</source>
 			</trans-unit>

@@ -335,7 +335,7 @@ class TransformDataStepTest extends FunctionalTestCase
     }
 
     /**
-     * Tests the applyTrim() method.
+     * Tests the applyUserFunction() method.
      *
      * @param string $name Name of the column to transform
      * @param array $configuration True if data needs to be trimmed

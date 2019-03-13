@@ -225,11 +225,25 @@ class TransformDataStep extends AbstractStep
                 $methodName = $configuration['method'];
                 $parameters = $configuration['params'] ?? [];
                 foreach ($records as $index => $record) {
-                    $records[$index][$name] = $userObject->$methodName($record, $name, $parameters);
+                    try {
+                        $records[$index][$name] = $userObject->$methodName($record, $name, $parameters);
+                    } catch (CriticalFailureException $e) {
+                        // This exception must not be caught here, but thrown further up
+                        throw $e;
+                    } catch (\Exception $e) {
+                        $this->importer->debug(
+                                LocalizationUtility::translate(
+                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailed',
+                                        'external_import'
+                                ),
+                                2,
+                                [
+                                        'user function' => $configuration,
+                                        'record' => $record
+                                ]
+                        );
+                    }
                 }
-            } catch (CriticalFailureException $e) {
-                // This exception must not be caught here, but thrown further up
-                throw $e;
             } catch (\Exception $e) {
                 $this->importer->debug(
                         sprintf(
