@@ -67,6 +67,11 @@ class ConfigurationKeyTest extends UnitTestCase
                         'index' => 1,
                         'key' => 'tx_foo***1'
                 ],
+                'standard table name, numerical index with value 0' => [
+                        'table' => 'tx_foo',
+                        'index' => 0,
+                        'key' => 'tx_foo***0'
+                ],
                 'standard table name, string index' => [
                         'table' => 'tx_foo',
                         'index' => 'bar',
