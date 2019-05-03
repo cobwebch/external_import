@@ -15,9 +15,11 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Pseudo-repository for fetching external import configurations from the TCA
@@ -257,20 +259,21 @@ class ConfigurationRepository
                         $description = '';
                         if (isset($externalConfig['description'])) {
                             if (strpos($externalConfig['description'], 'LLL:') === 0) {
-                                $description = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($externalConfig['description']);
+                                $description = LocalizationUtility::translate($externalConfig['description']);
                             } else {
                                 $description = $externalConfig['description'];
                             }
                         }
                         if (strpos($sections['ctrl']['title'], 'LLL:') === 0) {
-                            $tableTitle = \TYPO3\CMS\Extbase\Utility\LocalizationUtility::translate($sections['ctrl']['title']);
+                            $tableTitle = LocalizationUtility::translate($sections['ctrl']['title']);
                         } else {
                             $tableTitle = $sections['ctrl']['title'];
                         }
                         // Store the base configuration
-                        $configurationKey = GeneralUtility::makeInstance(\Cobweb\ExternalImport\Domain\Model\ConfigurationKey::class);
+                        $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                         $configurationKey->setTableAndIndex($tableName, (string)$index);
                         $taskId = $configurationKey->getConfigurationKey();
+                        $groupKey = $externalConfig['group'] ? 'group:' . $externalConfig['group'] : '';
                         $tableConfiguration = [
                                 'id' => $taskId,
                                 'table' => $tableName,
@@ -282,12 +285,20 @@ class ConfigurationRepository
                                 'writeAccess' => $hasWriteAccess
                         ];
                         // Add Scheduler task information, if any
+                        // If the configuration is part of a group and that group is automated, return task information too,
+                        // but if the configuration is specifically automated, that will take precedence
                         if (array_key_exists($taskId, $tasks)) {
                             $tableConfiguration['automated'] = 1;
                             $tableConfiguration['task'] = $tasks[$taskId];
+                            $tableConfiguration['groupTask'] = 0;
+                        } elseif (array_key_exists($groupKey, $tasks)) {
+                            $tableConfiguration['automated'] = 1;
+                            $tableConfiguration['task'] = $tasks[$groupKey];
+                            $tableConfiguration['groupTask'] = 1;
                         } else {
                             $tableConfiguration['automated'] = 0;
                             $tableConfiguration['task'] = null;
+                            $tableConfiguration['groupTask'] = 0;
                         }
                         $configurations[] = $tableConfiguration;
                     }

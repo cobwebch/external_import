@@ -1,6 +1,7 @@
 2019-05-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fix handling of configuration key when index is 0
+	* Display sync information for individual configuration when synchronization for group is active, resolves #91
 
 2019-03-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 

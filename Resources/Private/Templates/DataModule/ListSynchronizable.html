@@ -108,6 +108,9 @@
 											</f:then>
 											<f:else>
 												<f:translate id="next_autosync" arguments="{0: configuration.task.frequencyText, 1: configuration.task.nextexecution}" />
+												<f:if condition="{configuration.groupTask}">
+													<f:translate id="autosync_for_group" />
+												</f:if>
 											</f:else>
 										</f:if>
 									</f:then>
@@ -119,26 +122,34 @@
 							<td class="tx_externalimport_actions">
 								<f:if condition="{configuration.writeAccess} && {rights.scheduler}">
 									<f:then>
-											<f:if condition="{configuration.automated}">
-												<f:then>
-													<f:if condition="{configuration.task.disabled}">
-														<f:then>
-															<span class="label label-default">disabled</span>
-														</f:then>
-														<f:else>
-															<div class="btn-group input-group-btn">
-																<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
-																<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
-															</div>
-														</f:else>
-													</f:if>
-												</f:then>
+										<f:if condition="{configuration.automated}">
+											<f:then>
+												<f:if condition="{configuration.task.disabled}">
+													<f:then>
+														<span class="label label-default">disabled</span>
+													</f:then>
+													<f:else>
+														<f:if condition="{configuration.groupTask}">
+															<f:then>&nbsp;</f:then>
+															<f:else>
+																<div class="btn-group input-group-btn">
+																	<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
+																	<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
+																</div>
+															</f:else>
+														</f:if>
+													</f:else>
+												</f:if>
+											</f:then>
+											<f:else>
+												<f:then>&nbsp;</f:then>
 												<f:else>
 													<div class="btn-group">
 														<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
 													</div>
 												</f:else>
-											</f:if>
+											</f:else>
+										</f:if>
 									</f:then>
 									<f:else>&nbsp;</f:else>
 								</f:if>
