@@ -19,7 +19,6 @@ use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -27,7 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @package Cobweb\ExternalImport\Domain\Repository
  */
-class UidRepository implements SingletonInterface
+class UidRepository
 {
     /**
      * @var Configuration

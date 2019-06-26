@@ -67,11 +67,6 @@ class StoreDataStep extends AbstractStep
         $this->mappingUtility = $mappingUtility;
     }
 
-    public function injectUidRepository(\Cobweb\ExternalImport\Domain\Repository\UidRepository $uidRepository)
-    {
-        $this->uidRepository = $uidRepository;
-    }
-
     /**
      * Stores the data to the database using DataHandler.
      *
@@ -90,6 +85,7 @@ class StoreDataStep extends AbstractStep
         );
 
         // Get the list of existing uids for the table
+        $this->uidRepository = $this->importer->getUidRepository();
         $this->uidRepository->setConfiguration($this->getConfiguration());
         $existingUids = $this->uidRepository->getExistingUids();
         $currentPids = $this->uidRepository->getCurrentPids();

@@ -624,6 +624,16 @@ class Importer
     }
 
     /**
+     * Returns the uid repository.
+     *
+     * @return Domain\Repository\UidRepository
+     */
+    public function getUidRepository()
+    {
+        return $this->uidRepository;
+    }
+
+    /**
      * Forces the storage pid for imported records.
      *
      * This is meant essentially for testing, but can also be useful when using Importer::import().

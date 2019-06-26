@@ -1,3 +1,7 @@
+2019-06-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Sanitize usage of uidRepository, resolves #101
+
 2019-05-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Fix handling of configuration key when index is 0
