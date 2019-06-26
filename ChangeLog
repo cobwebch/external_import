@@ -2,6 +2,7 @@
 
 	* Sanitize usage of uidRepository, resolves #101
 	* Add note about MM and multipleValuesSeparator properties not working together, resolves #98
+	* Release version 4.1.3
 
 2019-05-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
