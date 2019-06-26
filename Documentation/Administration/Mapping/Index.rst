@@ -190,6 +190,13 @@ Description
   This makes it possible to handle 1:n or m:n relations, where the
   incoming values are all stored in the same field.
 
+  .. note::
+
+     This property does nothing when used in combination with the
+     :ref:`MM property <administration-mm>`, because we expect denoramlized
+     data with one and denormalized data with the other. The chapter about
+     :ref:`mapping data <user-mapping-data-mm>` hopefully helps understand this.
+
 Scope
   Transform data
 
