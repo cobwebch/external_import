@@ -45,5 +45,5 @@ abstract class AbstractCallContext
      * @param mixed $data Additional data to display
      * @return void
      */
-    abstract public function outputDebug($message, $severity, $data);
+    abstract public function outputDebug($message, $severity, $data): void;
 }

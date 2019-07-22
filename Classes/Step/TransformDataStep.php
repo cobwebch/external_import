@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Utility\MappingUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -28,7 +29,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class TransformDataStep extends AbstractStep
 {
     /**
-     * @var \Cobweb\ExternalImport\Utility\MappingUtility
+     * @var MappingUtility
      */
     protected $mappingUtility;
 
@@ -37,7 +38,7 @@ class TransformDataStep extends AbstractStep
      */
     static public $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunc'];
 
-    public function injectMappingUtility(\Cobweb\ExternalImport\Utility\MappingUtility $mappingUtility)
+    public function injectMappingUtility(MappingUtility $mappingUtility): void
     {
         $this->mappingUtility = $mappingUtility;
     }
@@ -48,7 +49,7 @@ class TransformDataStep extends AbstractStep
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         // First of all, set the Importer (it seems like this cannot be done in the inject method; it happens too early)
         $this->mappingUtility->setImporter($this->importer);
@@ -145,7 +146,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyTrim($name, $configuration, array $records)
+    public function applyTrim($name, $configuration, array $records): array
     {
         if ((bool)$configuration) {
             foreach ($records as $index => $record) {
@@ -163,7 +164,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyMapping($name, $configuration, array $records)
+    public function applyMapping($name, $configuration, array $records): array
     {
         return $this->mappingUtility->mapData(
                 $records,
@@ -181,7 +182,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyValue($name, $configuration, array $records)
+    public function applyValue($name, $configuration, array $records): array
     {
         foreach ($records as $index => $record) {
             $records[$index][$name] = $configuration;
@@ -197,7 +198,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyRteEnabledFlag($name, $configuration, array $records)
+    public function applyRteEnabledFlag($name, $configuration, array $records): array
     {
         // TODO: check if this is still relevant/correct with TYPO3 v8
         if ((bool)$configuration) {
@@ -217,7 +218,7 @@ class TransformDataStep extends AbstractStep
      * @return array
      * @throws CriticalFailureException
      */
-    public function applyUserFunction($name, $configuration, array $records)
+    public function applyUserFunction($name, $configuration, array $records): array
     {
             // Try to get the referenced class
             try {
@@ -269,7 +270,7 @@ class TransformDataStep extends AbstractStep
      * @return array
      * @throws CriticalFailureException
      */
-    protected function preprocessData($records)
+    protected function preprocessData($records): array
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRecordset'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRecordset'] as $className) {

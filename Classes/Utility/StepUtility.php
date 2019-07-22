@@ -34,7 +34,7 @@ class StepUtility
      * @param array $configuration Configuration for the new step
      * @return array Modified list of steps
      */
-    public function insertStep($currentSteps, $configuration)
+    public function insertStep($currentSteps, $configuration): ?array
     {
         try {
             $validatedConfiguration = $this->validateCustomStepConfiguration(
@@ -70,7 +70,7 @@ class StepUtility
      * @return array Validated configuration
      * @throws InvalidCustomStepConfiguration
      */
-    public function validateCustomStepConfiguration($currentSteps, $configuration)
+    public function validateCustomStepConfiguration($currentSteps, $configuration): array
     {
         // Early exit if configuration is incomplete
         if (!isset($configuration['class'])) {

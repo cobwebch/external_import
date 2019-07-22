@@ -63,7 +63,7 @@ class ArrayHandlerTest extends FunctionalTestCase
         $this->subject = new ArrayHandler();
     }
 
-    public function rawDataProvider()
+    public function rawDataProvider(): array
     {
         return [
                 'empty raw data' => [
@@ -158,7 +158,7 @@ class ArrayHandlerTest extends FunctionalTestCase
      * @param array $expectedStructure
      * @dataProvider rawDataProvider
      */
-    public function handleDataReturnsStructureData($rawData, $expectedStructure)
+    public function handleDataReturnsStructureData($rawData, $expectedStructure): void
     {
         $structuredData = $this->subject->handleData($rawData, $this->importer);
         self::assertSame(

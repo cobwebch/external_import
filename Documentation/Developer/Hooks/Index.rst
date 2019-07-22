@@ -143,7 +143,7 @@ deletePreProcess
 
 datamapPostProcess
   This hook is called after all records have
-  been updated or inserted using TCEmain. It can be used for any follow-
+  been updated or inserted using the TYPO3 Core Engine. It can be used for any follow-
   up operation. It receives as parameters the name of the affected
   table, the list of records keyed to their uid (including the new uid's
   for the new records) and a back-reference to the calling object (an
@@ -161,7 +161,7 @@ datamapPostProcess
 
 cmdmapPostProcess
   This hook is called after all records have
-  been deleted using TCEmain. It receives as parameters the name of the
+  been deleted using the TYPO3 Core Engine. It receives as parameters the name of the
   affected table, the list of uid's of the deleted records and a back-
   reference to the calling object (an instance of class
   :php:`\Cobweb\ExternalImport\Importer`).

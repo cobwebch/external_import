@@ -18,5 +18,5 @@ will provide additional information.
 As described in the :ref:`Configuration chapter <configuration>`,
 it is also possible to receive a detailed report by email.
 It will contain a general summary of what happened during synchronization,
-but also all error messages logged by TCEmain, if any.
+but also all error messages logged by the TYPO3 Core Engine, if any.
 

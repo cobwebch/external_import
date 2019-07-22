@@ -30,7 +30,7 @@ namespace Cobweb\ExternalImport\Domain\Model;
  */
 class ConfigurationKey
 {
-    const CONCATENATOR = '***';
+    public const CONCATENATOR = '***';
 
     /**
      * @var string External Import configuration key
@@ -62,7 +62,7 @@ class ConfigurationKey
      *
      * @param string $configurationKey
      */
-    public function setConfigurationKey(string $configurationKey)
+    public function setConfigurationKey(string $configurationKey): void
     {
         $this->configurationKey = $configurationKey;
         $keyParts = explode(self::CONCATENATOR, $configurationKey);
@@ -80,7 +80,7 @@ class ConfigurationKey
      * @param string $table
      * @param string $index
      */
-    public function setTableAndIndex(string $table, string $index)
+    public function setTableAndIndex(string $table, string $index): void
     {
         $this->table = $table;
         $this->index = $index;

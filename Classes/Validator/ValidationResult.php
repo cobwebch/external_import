@@ -33,7 +33,7 @@ class ValidationResult
      * @param int $severity
      * @return void
      */
-    public function add($property, $message, $severity = AbstractMessage::WARNING)
+    public function add($property, $message, $severity = AbstractMessage::WARNING): void
     {
         $this->results[$property] = array(
             'severity' => $severity,
@@ -46,7 +46,7 @@ class ValidationResult
      *
      * @return array
      */
-    public function getAll()
+    public function getAll(): array
     {
         return $this->results;
     }
@@ -57,9 +57,9 @@ class ValidationResult
      * @param string $property Name of the property
      * @return array|null
      */
-    public function getForProperty($property)
+    public function getForProperty($property): ?array
     {
-        return array_key_exists($property, $this->results) ? $this->results[$property] : null;
+        return $this->results[$property] ?? null;
     }
 
     /**
@@ -68,7 +68,7 @@ class ValidationResult
      * @param int $severity Severity level
      * @return array
      */
-    public function getForSeverity($severity)
+    public function getForSeverity($severity): array
     {
         $results = array();
         foreach ($this->results as $property => $result) {

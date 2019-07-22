@@ -96,7 +96,7 @@ class UidRepositoryTest extends FunctionalTestCase
      * @throws \Nimut\TestingFramework\Exception\Exception
      * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
-    public function getExistingUidsTriggersFetchingOfUidsAndPids($configuration, $listOfUids, $listOfPids)
+    public function getExistingUidsTriggersFetchingOfUidsAndPids($configuration, $listOfUids, $listOfPids): void
     {
         $this->importDataSet(__DIR__ . '/../../Fixtures/UidRepository.xml');
         $configurationObject = $this->objectManager->get(Configuration::class);
@@ -120,7 +120,8 @@ class UidRepositoryTest extends FunctionalTestCase
      * @test
      * @expectedException \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
-    public function getExistingUidsWithoutConfigurationThrowsException() {
+    public function getExistingUidsWithoutConfigurationThrowsException(): void
+    {
         $this->subject->getExistingUids();
     }
 }

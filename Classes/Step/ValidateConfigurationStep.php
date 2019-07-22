@@ -35,12 +35,12 @@ class ValidateConfigurationStep extends AbstractStep
      */
     protected $columnValidator;
 
-    public function injectCtrlValidator(\Cobweb\ExternalImport\Validator\ControlConfigurationValidator $validator)
+    public function injectCtrlValidator(\Cobweb\ExternalImport\Validator\ControlConfigurationValidator $validator): void
     {
         $this->ctrlValidator = $validator;
     }
 
-    public function injectColumnValidator(\Cobweb\ExternalImport\Validator\ColumnConfigurationValidator $validator)
+    public function injectColumnValidator(\Cobweb\ExternalImport\Validator\ColumnConfigurationValidator $validator): void
     {
         $this->columnValidator = $validator;
     }
@@ -50,7 +50,7 @@ class ValidateConfigurationStep extends AbstractStep
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
         // If there's no "ctrl" configuration, issue error

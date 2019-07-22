@@ -34,7 +34,7 @@ class LogRepository extends Repository
         return self::class;
     }
 
-    public function initializeObject()
+    public function initializeObject(): void
     {
         /** @var Typo3QuerySettings $querySettings */
         $querySettings = $this->objectManager->get(Typo3QuerySettings::class);
@@ -89,7 +89,7 @@ class LogRepository extends Repository
      * @return int
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function countBySearch(QueryParameters $queryParameters)
+    public function countBySearch(QueryParameters $queryParameters): int
     {
         $query = $this->createQuery();
         if ($queryParameters->getSearch() !== '' && count($queryParameters->getSearchColumns()) > 0) {
@@ -115,7 +115,7 @@ class LogRepository extends Repository
      * @return array
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    protected function assembleSearchConditions(QueryInterface $query, string $search, array $searchColumns)
+    protected function assembleSearchConditions(QueryInterface $query, string $search, array $searchColumns): array
     {
         $searchConditions = [];
         $search = '%' . $search . '%';

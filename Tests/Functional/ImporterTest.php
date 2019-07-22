@@ -16,11 +16,12 @@ namespace Cobweb\ExternalImport\Tests\Functional;
  */
 
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Step\StoreDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Lang\LanguageService;
+use \TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Testcase for the External Import importer
@@ -43,7 +44,7 @@ class ImporterTest extends FunctionalTestCase
     /**
      * @var Importer
      */
-    protected $subject = null;
+    protected $subject;
 
     protected function setUp()
     {
@@ -76,7 +77,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importTagsWithImporterStoresFiveRecords()
+    public function importTagsWithImporterStoresFiveRecords(): void
     {
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_tag',
@@ -100,7 +101,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importCategoriesWithImporterStoresFourRecordsWithOneParentRelation()
+    public function importCategoriesWithImporterStoresFourRecordsWithOneParentRelation(): void
     {
         $messages = $this->subject->synchronize(
                 'sys_category',
@@ -129,7 +130,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importBaseProductsWithImporterStoresTwoRecordsAndCreatesRelations()
+    public function importBaseProductsWithImporterStoresTwoRecordsAndCreatesRelations(): void
     {
         // Import tags and categories first, so that relations can be created to them from products
         $this->subject->synchronize(
@@ -182,7 +183,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importMoreProductsWithImporterStoresTwoRecords()
+    public function importMoreProductsWithImporterStoresTwoRecords(): void
     {
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_product',
@@ -205,7 +206,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importStableProductsWithImporterStoresTwoRecordsAndRemovesOldRelations()
+    public function importStableProductsWithImporterStoresTwoRecordsAndRemovesOldRelations(): void
     {
         try {
             // Create 1 category and 1 relation to it. The relation should be removed by the import process.
@@ -244,7 +245,7 @@ class ImporterTest extends FunctionalTestCase
             self::assertEquals(
                     0,
                     $this->subject->getReportingUtility()->getValueForStep(
-                            \Cobweb\ExternalImport\Step\StoreDataStep::class,
+                            StoreDataStep::class,
                             'updates'
                     )
             );
@@ -277,7 +278,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importProductsForStoresWithImporterCreatesSixRelations()
+    public function importProductsForStoresWithImporterCreatesSixRelations(): void
     {
         // First import products and stores, so that relations can be created
         $this->subject->synchronize(
@@ -330,7 +331,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importBundlesWithImporterStoresThreeRecordsAndCreatesOrderedRelations()
+    public function importBundlesWithImporterStoresThreeRecordsAndCreatesOrderedRelations(): void
     {
         // First import all products, so that relations can be created
         $this->subject->synchronize(
@@ -386,7 +387,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelations()
+    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelations(): void
     {
         // First import all products, so that relations can be created
         $this->subject->synchronize(
@@ -441,7 +442,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importStoresWithImporterStoresTwoRecordsAndCreatesRelations()
+    public function importStoresWithImporterStoresTwoRecordsAndCreatesRelations(): void
     {
         // First import products, so that relations can be created
         $this->subject->synchronize(
@@ -487,7 +488,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importInvoicesWithImporterStoresThreeRecords()
+    public function importInvoicesWithImporterStoresThreeRecords(): void
     {
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_invoice',
@@ -506,7 +507,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importProductsAsPagesWithImporterCreatesProperPageTree()
+    public function importProductsAsPagesWithImporterCreatesProperPageTree(): void
     {
         $messages = $this->subject->synchronize(
                 'pages',
@@ -557,7 +558,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importUpdatedProductsWithImporterMovesProducts()
+    public function importUpdatedProductsWithImporterMovesProducts(): void
     {
         try {
             $this->importDataSet(__DIR__ . '/Fixtures/ExtraStoragePage.xml');
@@ -599,7 +600,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @return array
      */
-    public function wrongConfigurationNames()
+    public function wrongConfigurationNames(): array
     {
         return [
                 'Wrong ctrl configuration' => [
@@ -621,7 +622,7 @@ class ImporterTest extends FunctionalTestCase
      * @test
      * @dataProvider wrongConfigurationNames
      */
-    public function importWithErroneousConfigurationReturnsError($table, $configuration)
+    public function importWithErroneousConfigurationReturnsError($table, $configuration): void
     {
         $messages = $this->subject->synchronize(
                 $table,

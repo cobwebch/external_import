@@ -118,7 +118,7 @@ class MappingUtilityTest extends FunctionalTestCase
      * @param array $results
      * @throws \Nimut\TestingFramework\Exception\Exception
      */
-    public function getMappingReturnsRecordsToMap($mappingConfiguration, $results)
+    public function getMappingReturnsRecordsToMap($mappingConfiguration, $results): void
     {
         $this->importDataSet(__DIR__ . '/../Fixtures/Mappings.xml');
         $mappings = $this->subject->getMapping($mappingConfiguration);

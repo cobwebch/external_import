@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Exception\SchedulerRepositoryException;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -82,7 +83,7 @@ class SchedulerRepository implements SingletonInterface
         $taskList = [];
         /** @var $taskObject AutomatedSyncTask */
         foreach ($this->tasks as $taskObject) {
-            $configurationKey = GeneralUtility::makeInstance(\Cobweb\ExternalImport\Domain\Model\ConfigurationKey::class);
+            $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
             $configurationKey->setTableAndIndex($taskObject->table, (string)$taskObject->index);
             $key = $configurationKey->getConfigurationKey();
             $taskList[$key] = $this->assembleTaskInformation($taskObject);
@@ -195,7 +196,7 @@ class SchedulerRepository implements SingletonInterface
                 'group' => $taskObject->getTaskGroup(),
                 // Format date and time as needed for form input
                 'startTimestamp' => $startTimestamp,
-                'startDate' => (empty($startTimestamp)) ? '' : date($editFormat,
+                'startDate' => empty($startTimestamp) ? '' : date($editFormat,
                         $taskObject->getExecution()->getStart())
         );
         return $taskInformation;
@@ -210,7 +211,7 @@ class SchedulerRepository implements SingletonInterface
      * @return void
      * @throws \Cobweb\ExternalImport\Exception\SchedulerRepositoryException
      */
-    public function saveTask($taskData)
+    public function saveTask($taskData): void
     {
         // Early exit if "scheduler" extension is not loaded
         if (!ExtensionManagementUtility::isLoaded('scheduler')) {
@@ -270,7 +271,7 @@ class SchedulerRepository implements SingletonInterface
      * @param integer $uid Primary key of the task to remove
      * @return boolean True or false depending on success or failure of action
      */
-    public function deleteTask($uid)
+    public function deleteTask($uid): bool
     {
         // Early exit if "scheduler" extension is not loaded
         if (ExtensionManagementUtility::isLoaded('scheduler')) {

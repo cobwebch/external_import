@@ -32,7 +32,7 @@ class ReadDataStep extends AbstractStep
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
         // Check if there are any services of the given type
@@ -162,7 +162,7 @@ class ReadDataStep extends AbstractStep
      * @return array The processed parameters
      * @throws CriticalFailureException
      */
-    protected function processParameters($parameters)
+    protected function processParameters($parameters): array
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {

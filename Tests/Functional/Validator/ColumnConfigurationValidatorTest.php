@@ -41,7 +41,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         $this->subject = $this->objectManager->get(ColumnConfigurationValidator::class);
     }
 
-    public function validConfigurationProvider()
+    public function validConfigurationProvider(): array
     {
         return [
                 'Data type "array": using property "field" (string)' => [
@@ -163,7 +163,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider validConfigurationProvider
      */
-    public function isValidReturnsTrueForValidConfiguration($controlConfiguration, $columnConfiguration)
+    public function isValidReturnsTrueForValidConfiguration($controlConfiguration, $columnConfiguration): void
     {
         $configuration = $this->objectManager->get(Configuration::class);
         $configuration->setCtrlConfiguration($controlConfiguration);
@@ -176,7 +176,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         );
     }
 
-    public function invalidConfigurationProvider()
+    public function invalidConfigurationProvider(): array
     {
         return [
                 'Data type "array": missing data-setting properties' => [
@@ -227,7 +227,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidConfigurationProvider
      */
-    public function isValidRaisesMessageForInvalidConfiguration($controlConfiguration, $columnConfiguration, $severity)
+    public function isValidRaisesMessageForInvalidConfiguration($controlConfiguration, $columnConfiguration, $severity): void
     {
         $configuration = $this->objectManager->get(Configuration::class);
         $configuration->setCtrlConfiguration($controlConfiguration);

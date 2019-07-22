@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Tests\Unit;
 use Cobweb\ExternalImport\Importer;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test case for the External Import importer.
@@ -32,19 +33,19 @@ class ImporterTest extends UnitTestCase
     /**
      * @var Importer
      */
-    protected $subject = null;
+    protected $subject;
 
     protected function setUp()
     {
         // Note: the Importer class normally needs to be instanciated via the ObjectManager,
         // but we don't need all the dependency injection for unit tests.
-        $this->subject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(Importer::class);
+        $this->subject = GeneralUtility::makeInstance(Importer::class);
     }
 
     /**
      * @test
      */
-    public function getExtensionConfigurationInitiallyReturnsEmptyArray()
+    public function getExtensionConfigurationInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
                 [],
@@ -55,7 +56,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function getExternalConfigurationInitiallyReturnsNull()
+    public function getExternalConfigurationInitiallyReturnsNull(): void
     {
         self::assertNull(
                 $this->subject->getExternalConfiguration()
@@ -65,7 +66,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function getMessagesInitiallyReturnsEmptyStructure()
+    public function getMessagesInitiallyReturnsEmptyStructure(): void
     {
         self::assertSame(
                 [
@@ -80,7 +81,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function addMessagesAddsMessage()
+    public function addMessagesAddsMessage(): void
     {
         $this->subject->addMessage('foo', AbstractMessage::WARNING);
         self::assertCount(
@@ -92,7 +93,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function resetMessagesInitiallyPreparesEmptyStructure()
+    public function resetMessagesInitiallyPreparesEmptyStructure(): void
     {
         $this->subject->addMessage('foo', AbstractMessage::WARNING);
         $this->subject->resetMessages();
@@ -109,7 +110,8 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function getContextInitiallyReturnsManualContext() {
+    public function getContextInitiallyReturnsManualContext(): void
+    {
         self::assertSame(
                 'manual',
                 $this->subject->getContext()
@@ -119,7 +121,8 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function setContextSetsContext() {
+    public function setContextSetsContext(): void
+    {
         $this->subject->setContext('cli');
         self::assertSame(
                 'cli',
@@ -130,14 +133,16 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function isDebugInitiallyReturnsFalse() {
+    public function isDebugInitiallyReturnsFalse(): void
+    {
         self::assertFalse($this->subject->isDebug());
     }
 
     /**
      * @test
      */
-    public function setDebugSetsDebugFlag() {
+    public function setDebugSetsDebugFlag(): void
+    {
         $this->subject->setDebug(true);
         self::assertTrue($this->subject->isDebug());
     }
@@ -145,14 +150,16 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function isVerboseInitiallyReturnsFalse() {
+    public function isVerboseInitiallyReturnsFalse(): void
+    {
         self::assertFalse($this->subject->isVerbose());
     }
 
     /**
      * @test
      */
-    public function setVerboseSetsVerboseFlag() {
+    public function setVerboseSetsVerboseFlag(): void
+    {
         $this->subject->setVerbose(true);
         self::assertTrue($this->subject->isVerbose());
     }
@@ -160,7 +167,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function isTestModeInitiallyReturnsFalse()
+    public function isTestModeInitiallyReturnsFalse(): void
     {
         self::assertFalse(
                 $this->subject->isTestMode()
@@ -170,7 +177,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function setTestModeSetsTestMode()
+    public function setTestModeSetsTestMode(): void
     {
         $this->subject->setTestMode(true);
         self::assertTrue(
@@ -181,14 +188,15 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function isPreviewInitiallyReturnsFalse() {
+    public function isPreviewInitiallyReturnsFalse(): void
+    {
         self::assertFalse($this->subject->isPreview());
     }
 
     /**
      * @test
      */
-    public function getPreviewStepInitiallyReturnsEmptyString()
+    public function getPreviewStepInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
                 '',
@@ -199,7 +207,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function setPreviewStepSetsPreviewStep()
+    public function setPreviewStepSetsPreviewStep(): void
     {
         $this->subject->setPreviewStep('foo');
         self::assertSame(
@@ -211,12 +219,12 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function getPreviewDataInitiallyReturnsNull()
+    public function getPreviewDataInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getPreviewData());
     }
 
-    public function previewDataProvider()
+    public function previewDataProvider(): array
     {
         return [
                 'string' => [
@@ -236,7 +244,7 @@ class ImporterTest extends UnitTestCase
      * @dataProvider previewDataProvider
      * @param mixed $data
      */
-    public function setPreviewDataSetsPreviewData($data)
+    public function setPreviewDataSetsPreviewData($data): void
     {
         $this->subject->setPreviewData($data);
         self::assertSame(
@@ -248,7 +256,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function resetPreviewDataSetsPreviewDataToNull()
+    public function resetPreviewDataSetsPreviewDataToNull(): void
     {
         $this->subject->resetPreviewData();
         self::assertNull(
@@ -259,7 +267,8 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function generateTemporaryKeyInTestModeGeneratesPredictableKey() {
+    public function generateTemporaryKeyInTestModeGeneratesPredictableKey(): void
+    {
         // NOTE: any step will do
         $this->subject->setTestMode(true);
         self::assertEquals(
@@ -271,7 +280,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function getStartTimeInitiallyReturnsZero()
+    public function getStartTimeInitiallyReturnsZero(): void
     {
         self::assertEquals(
                 0,
@@ -282,7 +291,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function setStartTimeSetsStartTime()
+    public function setStartTimeSetsStartTime(): void
     {
         $now = time();
         $this->subject->setStartTime($now);
@@ -295,7 +304,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function getEndTimeInitiallyReturnsZero()
+    public function getEndTimeInitiallyReturnsZero(): void
     {
         self::assertEquals(
                 0,
@@ -306,7 +315,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function setEndTimeSetsEndTime()
+    public function setEndTimeSetsEndTime(): void
     {
         $now = time();
         $this->subject->setEndTime($now);

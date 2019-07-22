@@ -38,7 +38,7 @@ class ConfigurationKeyTest extends UnitTestCase
     /**
      * @test
      */
-    public function getConfigurationKeyInitiallyReturnsEmptyString()
+    public function getConfigurationKeyInitiallyReturnsEmptyString(): void
     {
         self::assertEquals('', $this->subject->getConfigurationKey());
     }
@@ -46,7 +46,7 @@ class ConfigurationKeyTest extends UnitTestCase
     /**
      * @test
      */
-    public function getIndexInitiallyReturnsEmptyString()
+    public function getIndexInitiallyReturnsEmptyString(): void
     {
         self::assertEquals('', $this->subject->getIndex());
     }
@@ -54,7 +54,7 @@ class ConfigurationKeyTest extends UnitTestCase
     /**
      * @test
      */
-    public function getTableInitiallyReturnsEmptyString()
+    public function getTableInitiallyReturnsEmptyString(): void
     {
         self::assertEquals('', $this->subject->getTable());
     }
@@ -102,7 +102,7 @@ class ConfigurationKeyTest extends UnitTestCase
      * @param string $index
      * @param string $key
      */
-    public function setConfigurationKeySetsTableAndIndex($table, $index, $key)
+    public function setConfigurationKeySetsTableAndIndex($table, $index, $key): void
     {
         $this->subject->setConfigurationKey($key);
         self::assertEquals($table, $this->subject->getTable());
@@ -116,7 +116,7 @@ class ConfigurationKeyTest extends UnitTestCase
      * @param string $index
      * @param string $key
      */
-    public function setTableAndIndexSetsConfigurationKey($table, $index, $key)
+    public function setTableAndIndexSetsConfigurationKey($table, $index, $key): void
     {
         $this->subject->setTableAndIndex($table, (string)$index);
         self::assertEquals($key, $this->subject->getConfigurationKey());

@@ -41,7 +41,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function getDrawInitiallyReturnsZero()
+    public function getDrawInitiallyReturnsZero(): void
     {
         self::assertSame(
                 0,
@@ -52,7 +52,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function getSearchInitiallyReturnsEmptyString()
+    public function getSearchInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
                 '',
@@ -63,7 +63,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function getSearchColumnsInitiallyReturnsEmptyArray()
+    public function getSearchColumnsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
                 [],
@@ -74,7 +74,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function getLimitInitiallyReturnsZero()
+    public function getLimitInitiallyReturnsZero(): void
     {
         self::assertSame(
                 0,
@@ -85,7 +85,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function getOffsetInitiallyReturnsZero()
+    public function getOffsetInitiallyReturnsZero(): void
     {
         self::assertSame(
                 0,
@@ -96,7 +96,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function getOrderInitiallyReturnsEmptyString()
+    public function getOrderInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
                 '',
@@ -107,7 +107,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function getDirectionInitiallyReturnsDesc()
+    public function getDirectionInitiallyReturnsDesc(): void
     {
         self::assertSame(
                 QueryInterface::ORDER_DESCENDING,
@@ -118,7 +118,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function setDrawSetsValue()
+    public function setDrawSetsValue(): void
     {
         $this->subject->setDraw(2);
         self::assertSame(
@@ -130,7 +130,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function setSearchSetsValue()
+    public function setSearchSetsValue(): void
     {
         $this->subject->setSearch('foo');
         self::assertSame(
@@ -142,7 +142,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function setSearchColumnsKeepsOnlySearchableColumns()
+    public function setSearchColumnsKeepsOnlySearchableColumns(): void
     {
         $this->subject->setSearchColumns(
                 [
@@ -169,7 +169,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function setLimitSetsValue()
+    public function setLimitSetsValue(): void
     {
         $this->subject->setLimit(2);
         self::assertSame(
@@ -181,7 +181,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function setOffsetSetsValue()
+    public function setOffsetSetsValue(): void
     {
         $this->subject->setOffset(2);
         self::assertSame(
@@ -193,7 +193,7 @@ class QueryParametersTest extends UnitTestCase
     /**
      * @test
      */
-    public function setOrderSetsValue()
+    public function setOrderSetsValue(): void
     {
         $this->subject->setOrder('foo');
         self::assertSame(
@@ -202,7 +202,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    public function directionValueProvider()
+    public function directionValueProvider(): array
     {
         return [
                 'ASC is ASC' => [
@@ -230,7 +230,7 @@ class QueryParametersTest extends UnitTestCase
      * @param string $value
      * @param string $expected
      */
-    public function setDirectionSetsSanitizedValue($value, $expected)
+    public function setDirectionSetsSanitizedValue($value, $expected): void
     {
         $this->subject->setDirection($value);
         self::assertSame(

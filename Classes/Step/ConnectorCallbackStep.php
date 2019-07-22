@@ -31,7 +31,7 @@ class ConnectorCallbackStep extends AbstractStep
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         // Call connector's post-processing with a rough error status
         if ($this->configuration->getConnector() !== null) {

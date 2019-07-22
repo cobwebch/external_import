@@ -14,7 +14,12 @@ namespace Cobweb\ExternalImport\Tests\Functional\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Step\TransformDataStep;
+use Cobweb\ExternalImport\Transformation\DateTimeTransformation;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Test suite for the TransformDataStep class.
@@ -29,21 +34,21 @@ class TransformDataStepTest extends FunctionalTestCase
     ];
 
     /**
-     * @var \Cobweb\ExternalImport\Step\TransformDataStep
+     * @var TransformDataStep
      */
     protected $subject;
 
     public function setUp()
     {
         parent::setUp();
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
-        $this->subject = $objectManager->get(\Cobweb\ExternalImport\Step\TransformDataStep::class);
-        $configuration = $objectManager->get(\Cobweb\ExternalImport\Domain\Model\Configuration::class);
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->subject = $objectManager->get(TransformDataStep::class);
+        $configuration = $objectManager->get(Configuration::class);
         $configuration->setTable('foo');
         $this->subject->setConfiguration($configuration);
     }
 
-    public function trimDataProvider()
+    public function trimDataProvider(): array
     {
         return [
                 'Trim data (true)' => [
@@ -123,7 +128,7 @@ class TransformDataStepTest extends FunctionalTestCase
      * @test
      * @dataProvider trimDataProvider
      */
-    public function applyTrimTrimsDataIfTrue($name, $configuration, array $records, array $expected)
+    public function applyTrimTrimsDataIfTrue($name, $configuration, array $records, array $expected): void
     {
         $result = $this->subject->applyTrim(
                 $name,
@@ -133,7 +138,7 @@ class TransformDataStepTest extends FunctionalTestCase
         self::assertSame($expected, $result);
     }
 
-    public function mappingDataProvider()
+    public function mappingDataProvider(): array
     {
         return [
             'Map to sys_category with default value' => [
@@ -220,7 +225,7 @@ class TransformDataStepTest extends FunctionalTestCase
      * @dataProvider mappingDataProvider
      * @throws \Nimut\TestingFramework\Exception\Exception
      */
-    public function applyMappingMapsData($name, $configuration, array $records, array $expected)
+    public function applyMappingMapsData($name, $configuration, array $records, array $expected): void
     {
         $this->importDataSet(__DIR__ . '/../Fixtures/Categories.xml');
         $result = $this->subject->applyMapping(
@@ -236,7 +241,7 @@ class TransformDataStepTest extends FunctionalTestCase
      *
      * @test
      */
-    public function applyValueAppliesValue()
+    public function applyValueAppliesValue(): void
     {
         $result = $this->subject->applyValue(
                 'foo',
@@ -272,7 +277,7 @@ class TransformDataStepTest extends FunctionalTestCase
      *
      * @test
      */
-    public function applyRteEnabledFlagAppliesFlag()
+    public function applyRteEnabledFlagAppliesFlag(): void
     {
         $result = $this->subject->applyRteEnabledFlag(
                 'foo',
@@ -305,13 +310,13 @@ class TransformDataStepTest extends FunctionalTestCase
         );
     }
 
-    public function userFuncDataProvider()
+    public function userFuncDataProvider(): array
     {
         return [
                 'Valid configuration - data transformed' => [
                         'foo',
                         [
-                                'class' => \Cobweb\ExternalImport\Transformation\DateTimeTransformation::class,
+                                'class' => DateTimeTransformation::class,
                                 'method' => 'parseDate',
                                 'params' => [
                                         'function' => 'date',
@@ -344,7 +349,7 @@ class TransformDataStepTest extends FunctionalTestCase
      * @test
      * @dataProvider userFuncDataProvider
      */
-    public function applyUserFunctionTransformsDataIfValid($name, $configuration, array $records, array $expected)
+    public function applyUserFunctionTransformsDataIfValid($name, $configuration, array $records, array $expected): void
     {
         $result = $this->subject->applyUserFunction(
                 $name,

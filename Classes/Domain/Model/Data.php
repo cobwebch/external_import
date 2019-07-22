@@ -42,7 +42,7 @@ class Data
     /**
      * @param mixed $rawData
      */
-    public function setRawData($rawData)
+    public function setRawData($rawData): void
     {
         $this->rawData = $rawData;
     }
@@ -50,7 +50,7 @@ class Data
     /**
      * @return array
      */
-    public function getRecords()
+    public function getRecords(): array
     {
         return $this->records;
     }
@@ -58,7 +58,7 @@ class Data
     /**
      * @param array $records
      */
-    public function setRecords(array $records)
+    public function setRecords(array $records): void
     {
         $this->records = $records;
     }

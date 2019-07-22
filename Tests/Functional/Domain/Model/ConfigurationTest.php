@@ -38,7 +38,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getAdditionalFieldsInitiallyReturnsEmptyArray()
+    public function getAdditionalFieldsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
                 [],
@@ -49,7 +49,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getColumnConfigurationInitiallyReturnsNull()
+    public function getColumnConfigurationInitiallyReturnsNull(): void
     {
         self::assertNull(
                 $this->subject->getColumnConfiguration()
@@ -59,7 +59,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getConfigurationForColumnInitiallyReturnsEmptyArray()
+    public function getConfigurationForColumnInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
                 [],
@@ -70,7 +70,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getConnectorInitiallyReturnsNull()
+    public function getConnectorInitiallyReturnsNull(): void
     {
         self::assertNull(
                 $this->subject->getColumnConfiguration()
@@ -80,7 +80,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getCountAdditionalFieldsInitiallyReturnsZero()
+    public function getCountAdditionalFieldsInitiallyReturnsZero(): void
     {
         self::assertSame(
                 0,
@@ -91,7 +91,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getCtrlConfigurationInitiallyReturnsNull()
+    public function getCtrlConfigurationInitiallyReturnsNull(): void
     {
         self::assertNull(
                 $this->subject->getCtrlConfiguration()
@@ -101,7 +101,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getCtrlConfigurationPropertyInitiallyReturnsNull()
+    public function getCtrlConfigurationPropertyInitiallyReturnsNull(): void
     {
         self::assertNull(
                 $this->subject->getCtrlConfigurationProperty('foo')
@@ -111,7 +111,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getIndexInitiallyReturnsNull()
+    public function getIndexInitiallyReturnsNull(): void
     {
         self::assertNull(
                 $this->subject->getIndex()
@@ -121,7 +121,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getStepsInitiallyReturnsEmptyArray()
+    public function getStepsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
                 [],
@@ -132,7 +132,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getStoragePidInitiallyReturnsNull()
+    public function getStoragePidInitiallyReturnsNull(): void
     {
         self::assertNull(
                 $this->subject->getStoragePid()
@@ -142,14 +142,14 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getTableInitiallyReturnsNull()
+    public function getTableInitiallyReturnsNull(): void
     {
         self::assertNull(
                 $this->subject->getTable()
         );
     }
 
-    public function ctrlConfigurationProvider()
+    public function ctrlConfigurationProvider(): array
     {
         return [
                 'sample configuration' => [
@@ -171,7 +171,8 @@ class ConfigurationTest extends FunctionalTestCase
      * @param array $additionalFields
      * @dataProvider ctrlConfigurationProvider
      */
-    public function setCtrlConfigurationSetsCtrlConfigurationAndMore($configuration, $pid, $additionalFields) {
+    public function setCtrlConfigurationSetsCtrlConfigurationAndMore($configuration, $pid, $additionalFields): void
+    {
         $this->subject->setCtrlConfiguration($configuration);
         self::assertSame(
                 $configuration,
@@ -195,7 +196,7 @@ class ConfigurationTest extends FunctionalTestCase
         );
     }
 
-    public function columnConfigurationProvider()
+    public function columnConfigurationProvider(): array
     {
         return [
                 'sample configuration' => [
@@ -235,7 +236,7 @@ class ConfigurationTest extends FunctionalTestCase
      * @param string $columnName
      * @param array $processedConfiguration
      */
-    public function setColumnConfigurationSetsConfigurationAndSortsTransformations($configuration, $columnName, $processedConfiguration)
+    public function setColumnConfigurationSetsConfigurationAndSortsTransformations($configuration, $columnName, $processedConfiguration): void
     {
         $this->subject->setColumnConfiguration($configuration);
         self::assertSame(
@@ -247,7 +248,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setAdditionalFieldsSetsFieldsAndCount()
+    public function setAdditionalFieldsSetsFieldsAndCount(): void
     {
         $additionalFields = ['foo', 'bar'];
         $this->subject->setAdditionalFields($additionalFields);
@@ -264,7 +265,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setConnectorSetsConnector()
+    public function setConnectorSetsConnector(): void
     {
         $connector = GeneralUtility::makeInstance(ConnectorFeed::class);
         $this->subject->setConnector($connector);
@@ -277,7 +278,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setCountAdditionalFieldsSetsCount()
+    public function setCountAdditionalFieldsSetsCount(): void
     {
         $countAdditionalFields = 2;
         $this->subject->setCountAdditionalFields($countAdditionalFields);
@@ -290,7 +291,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setIndexSetsIndex()
+    public function setIndexSetsIndex(): void
     {
         $index = 2;
         $this->subject->setIndex($index);
@@ -303,7 +304,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setStoragePidSetsPid()
+    public function setStoragePidSetsPid(): void
     {
         $storagePid = 2;
         $this->subject->setStoragePid($storagePid);
@@ -316,7 +317,7 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function setTableSetsTable()
+    public function setTableSetsTable(): void
     {
         $table = 'tx_foo_bar';
         $this->subject->setTable($table);

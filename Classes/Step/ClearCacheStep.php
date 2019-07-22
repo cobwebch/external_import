@@ -30,7 +30,7 @@ class ClearCacheStep extends AbstractStep
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $configuration = $this->configuration->getCtrlConfiguration();
         if (empty($configuration['clearCache'])) {

@@ -33,7 +33,7 @@ class CommandLineCallContext extends AbstractCallContext
      *
      * @param SymfonyStyle $io
      */
-    public function setInputOutput(SymfonyStyle $io)
+    public function setInputOutput(SymfonyStyle $io): void
     {
         $this->io = $io;
     }
@@ -46,7 +46,7 @@ class CommandLineCallContext extends AbstractCallContext
      * @param mixed $data Additional data to display
      * @return void
      */
-    public function outputDebug($message, $severity, $data)
+    public function outputDebug($message, $severity, $data): void
     {
         if ($this->importer->isVerbose()) {
             switch ($severity) {

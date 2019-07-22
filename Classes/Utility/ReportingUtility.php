@@ -17,21 +17,29 @@ namespace Cobweb\ExternalImport\Utility;
 
 use Cobweb\ExternalImport\Domain\Model\Log;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
+use Cobweb\ExternalImport\Exception\UnknownReportingKeyException;
 use Cobweb\ExternalImport\Importer;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Mail\MailMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This class performs various reporting actions after a data import has taken place.
  *
  * @package Cobweb\ExternalImport\Utility
  */
-class ReportingUtility
+class ReportingUtility implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var Importer Back-reference to the calling instance
      */
@@ -62,18 +70,29 @@ class ReportingUtility
      */
     protected $persistenceManager;
 
-    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager)
+    /**
+     * @var Context
+     */
+    protected $context;
+
+    public function injectObjectManager(ObjectManager $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
 
-    public function injectLogRepository(\Cobweb\ExternalImport\Domain\Repository\LogRepository $logRepository)
+    public function injectLogRepository(LogRepository $logRepository): void
     {
         $this->logRepository = $logRepository;
     }
 
-    public function injectPersistenceManager(\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager $persistenceManager) {
+    public function injectPersistenceManager(PersistenceManager $persistenceManager): void
+    {
         $this->persistenceManager = $persistenceManager;
+    }
+
+    public function injectContext(Context $context): void
+    {
+        $this->context = $context;
     }
 
     /**
@@ -82,42 +101,10 @@ class ReportingUtility
      * @param Importer $importer
      * @return void
      */
-    public function setImporter(Importer $importer)
+    public function setImporter(Importer $importer): void
     {
         $this->importer = $importer;
         $this->extensionConfiguration = $importer->getExtensionConfiguration();
-    }
-
-    /**
-     * Stores the messages to the devLog.
-     *
-     * @return void
-     */
-    public function writeToDevLog()
-    {
-        if ($this->importer->isDebug()) {
-            $messages = $this->importer->getMessages();
-
-            // Define a global severity based on the highest issue level reported
-            $severity = -1;
-            if (count($messages[FlashMessage::ERROR]) > 0) {
-                $severity = 3;
-            } elseif (count($messages[FlashMessage::WARNING]) > 0) {
-                $severity = 2;
-            }
-
-            // Log all the messages in one go
-            GeneralUtility::devLog(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:sync_table',
-                            'external_import',
-                            $this->importer->getExternalConfiguration()->getTable()
-                    ),
-                    'external_import',
-                    $severity,
-                    $messages
-            );
-        }
     }
 
     /**
@@ -125,28 +112,36 @@ class ReportingUtility
      *
      * @return void
      */
-    public function writeToLog()
+    public function writeToLog(): void
     {
         // Don't log in preview mode
         if (!$this->importer->isPreview()) {
             $messages = $this->importer->getMessages();
-            $context = $this->importer->getContext();
+            $importContext = $this->importer->getContext();
+            try {
+                $now = new \DateTime(
+                        $this->context->getPropertyFromAspect('date', 'timestamp')
+                );
+            } catch (\Exception $e) {
+                $now = new \DateTime();
+            }
+            try {
+                $currentUser = $this->context->getPropertyFromAspect('backend.user', 'id');
+            } catch (AspectNotFoundException $e) {
+                $currentUser = 0;
+            }
             foreach ($messages as $status => $messageList) {
                 foreach ($messageList as $message) {
                     /** @var Log $logEntry */
                     $logEntry = $this->objectManager->get(Log::class);
                     $logEntry->setPid($this->extensionConfiguration['logStorage']);
                     $logEntry->setStatus($status);
-                    $logEntry->setCrdate(
-                            new \DateTime('@' . $GLOBALS['EXEC_TIME'])
-                    );
-                    $logEntry->setCruserId(
-                            $this->getBackendUser()->user['uid'] ?? 0
-                    );
+                    $logEntry->setCrdate($now);
+                    $logEntry->setCruserId($currentUser);
                     $logEntry->setConfiguration(
                             $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()
                     );
-                    $logEntry->setContext($context);
+                    $logEntry->setContext($importContext);
                     $logEntry->setMessage($message);
                     $logEntry->setDuration(
                             $this->importer->getEndTime() - $this->importer->getStartTime()
@@ -173,7 +168,7 @@ class ReportingUtility
      * @param array $messages List of messages for the given table
      * @return string Formatted text of the report
      */
-    public function reportForTable($table, $index, $messages)
+    public function reportForTable($table, $index, $messages): string
     {
         $languageObject = $this->getLanguageObject();
         $report = sprintf(
@@ -202,19 +197,30 @@ class ReportingUtility
      * @param string $body Text body of the mail
      * @return void
      */
-    public function sendMail($subject, $body)
+    public function sendMail($subject, $body): void
     {
         $result = 0;
         // Define sender mail and name
         $senderMail = '';
         $senderName = '';
-        $backendUser = $this->getBackendUser();
-        if (!empty($backendUser->user['email'])) {
-            $senderMail = $backendUser->user['email'];
-            if (empty($backendUser->user['realName'])) {
-                $senderName = $backendUser->user['username'];
+        // First try to get the current backend user
+        try {
+            $currentUser = $this->context->getPropertyFromAspect('backend.user', 'id');
+            $currentUserRecord = BackendUtility::getRecord(
+                    'be_users',
+                    $currentUser,
+                    'email, username, realName'
+            );
+        } catch (AspectNotFoundException $e) {
+            $currentUserRecord = [];
+        }
+
+        if (!empty($currentUserRecord['email'])) {
+            $senderMail = $currentUserRecord['email'];
+            if (empty($currentUserRecord['realName'])) {
+                $senderName = $currentUserRecord['username'];
             } else {
-                $senderName = $backendUser->user['realName'];
+                $senderName = $currentUserRecord['realName'];
             }
         } elseif (!empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'])) {
             $senderMail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
@@ -261,14 +267,7 @@ class ReportingUtility
             if (!empty($message)) {
                 $comment .= ' (' . $message . ')';
             }
-            $backendUser->writelog(
-                    4,
-                    0,
-                    1,
-                    'external_import',
-                    $comment,
-                    []
-            );
+            $this->logger->error($comment);
         }
     }
 
@@ -278,7 +277,7 @@ class ReportingUtility
      * @param mixed $value Value to store
      * @return void
      */
-    public function setValueForStep(string $step, string $key, $value)
+    public function setValueForStep(string $step, string $key, $value): void
     {
         if (!array_key_exists($step, $this->reportingValues)) {
             $this->reportingValues[$step] = [];
@@ -290,14 +289,14 @@ class ReportingUtility
      * @param string $step Name of the step (class)
      * @param string $key Name of the key
      * @return mixed
-     * @throws \Cobweb\ExternalImport\Exception\UnknownReportingKeyException
+     * @throws UnknownReportingKeyException
      */
     public function getValueForStep(string $step, string $key)
     {
         if (isset($this->reportingValues[$step][$key])) {
             return $this->reportingValues[$step][$key];
         }
-        throw new \Cobweb\ExternalImport\Exception\UnknownReportingKeyException(
+        throw new UnknownReportingKeyException(
                 sprintf(
                         'No value found for step "%1$s" and key "%2$s"',
                         $step,
@@ -311,20 +310,10 @@ class ReportingUtility
     /**
      * Returns the global language object.
      *
-     * @return \TYPO3\CMS\Lang\LanguageService
+     * @return LanguageService
      */
-    protected function getLanguageObject()
+    protected function getLanguageObject(): LanguageService
     {
         return $GLOBALS['LANG'];
-    }
-
-    /**
-     * Returns the BE user data.
-     *
-     * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
-     */
-    protected function getBackendUser()
-    {
-        return $GLOBALS['BE_USER'];
     }
 }

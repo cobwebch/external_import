@@ -15,7 +15,6 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
  */
 
 
-use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Model\Log;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 
@@ -40,7 +39,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getStatusInitiallyReturnsNull()
+    public function getStatusInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getStatus());
     }
@@ -48,7 +47,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function setStatusSetsStatus()
+    public function setStatusSetsStatus(): void
     {
         $this->subject->setStatus(3);
         self::assertEquals(
@@ -60,7 +59,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getCrdateInitiallyReturnsNull()
+    public function getCrdateInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getCrdate());
     }
@@ -68,7 +67,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function setCrdateSetsCrdate()
+    public function setCrdateSetsCrdate(): void
     {
         $now = new \DateTime();
         $this->subject->setCrdate(
@@ -83,7 +82,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getCruserIdInitiallyReturnsNull()
+    public function getCruserIdInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getCruserId());
     }
@@ -91,7 +90,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function setCruserIdSetsCruserId()
+    public function setCruserIdSetsCruserId(): void
     {
         $user = new \TYPO3\CMS\Extbase\Domain\Model\BackendUser();
         $user->setUserName('ford.escort');
@@ -107,7 +106,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getConfigurationInitiallyReturnsNull()
+    public function getConfigurationInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getConfiguration());
     }
@@ -115,7 +114,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function setConfigurationSetsConfiguration()
+    public function setConfigurationSetsConfiguration(): void
     {
         $this->subject->setConfiguration('foo');
         self::assertSame(
@@ -127,7 +126,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getContextInitiallyReturnsNull()
+    public function getContextInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getContext());
     }
@@ -135,7 +134,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function setContextSetsContext()
+    public function setContextSetsContext(): void
     {
         $this->subject->setContext('foo');
         self::assertSame(
@@ -147,7 +146,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getMessageInitiallyReturnsNull()
+    public function getMessageInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getMessage());
     }
@@ -155,7 +154,7 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function setMessageSetsMessage()
+    public function setMessageSetsMessage(): void
     {
         $this->subject->setMessage('foo');
         self::assertSame(

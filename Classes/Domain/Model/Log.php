@@ -64,7 +64,7 @@ class Log extends AbstractEntity
     /**
      * @return int
      */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
@@ -72,7 +72,7 @@ class Log extends AbstractEntity
     /**
      * @param int $status
      */
-    public function setStatus($status)
+    public function setStatus($status): void
     {
         $this->status = $status;
     }
@@ -80,7 +80,7 @@ class Log extends AbstractEntity
     /**
      * @return \DateTime
      */
-    public function getCrdate()
+    public function getCrdate(): \DateTime
     {
         return $this->crdate;
     }
@@ -88,7 +88,7 @@ class Log extends AbstractEntity
     /**
      * @param \DateTime $crdate
      */
-    public function setCrdate($crdate)
+    public function setCrdate($crdate): void
     {
         $this->crdate = $crdate;
     }
@@ -96,7 +96,7 @@ class Log extends AbstractEntity
     /**
      * @return BackendUser
      */
-    public function getCruserId()
+    public function getCruserId(): BackendUser
     {
         return $this->cruserId;
     }
@@ -104,7 +104,7 @@ class Log extends AbstractEntity
     /**
      * @param BackendUser $cruserId
      */
-    public function setCruserId($cruserId)
+    public function setCruserId($cruserId): void
     {
         $this->cruserId = $cruserId;
     }
@@ -112,7 +112,7 @@ class Log extends AbstractEntity
     /**
      * @return string
      */
-    public function getConfiguration()
+    public function getConfiguration(): string
     {
         return $this->configuration;
     }
@@ -120,7 +120,7 @@ class Log extends AbstractEntity
     /**
      * @param string $configuration
      */
-    public function setConfiguration($configuration)
+    public function setConfiguration($configuration): void
     {
         $this->configuration = $configuration;
     }
@@ -128,7 +128,7 @@ class Log extends AbstractEntity
     /**
      * @return string
      */
-    public function getContext()
+    public function getContext(): string
     {
         return $this->context;
     }
@@ -136,7 +136,7 @@ class Log extends AbstractEntity
     /**
      * @param string $context
      */
-    public function setContext(string $context)
+    public function setContext(string $context): void
     {
         $this->context = $context;
     }
@@ -144,7 +144,7 @@ class Log extends AbstractEntity
     /**
      * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
@@ -152,7 +152,7 @@ class Log extends AbstractEntity
     /**
      * @param string $message
      */
-    public function setMessage($message)
+    public function setMessage($message): void
     {
         $this->message = $message;
     }
@@ -168,7 +168,7 @@ class Log extends AbstractEntity
     /**
      * @param int $duration
      */
-    public function setDuration(int $duration)
+    public function setDuration(int $duration): void
     {
         $this->duration = $duration;
     }

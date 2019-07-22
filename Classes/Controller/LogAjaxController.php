@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -38,11 +39,11 @@ class LogAjaxController
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function getAction(ServerRequestInterface $request, ResponseInterface $response)
+    public function getAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         // Process query parameters
         $queryParameters = GeneralUtility::makeInstance(
-                \Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters::class,
+                QueryParameters::class,
                 $request->getQueryParams()
         );
         // Get an instance of the log repository
@@ -53,6 +54,7 @@ class LogAjaxController
         $totalEntries = $logRepository->findAll()->count();
         // Get the filtered entries and their count
         $logs = [];
+        $logCount = 0;
         $error = '';
         try {
             // Search for all matching entries

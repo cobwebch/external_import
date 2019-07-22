@@ -50,7 +50,7 @@ abstract class AbstractStep
      *
      * @return void
      */
-    abstract public function run();
+    abstract public function run(): void;
 
     /**
      * Sets the preview data for the Importer class.
@@ -58,7 +58,7 @@ abstract class AbstractStep
      * @param mixed $data
      * @return void
      */
-    public function setPreviewData($data)
+    public function setPreviewData($data): void
     {
         if ($this->importer->isPreview()) {
             $this->importer->setPreviewData($data);
@@ -68,7 +68,7 @@ abstract class AbstractStep
     /**
      * @return Data
      */
-    public function getData()
+    public function getData(): Data
     {
         return $this->data;
     }
@@ -76,7 +76,7 @@ abstract class AbstractStep
     /**
      * @param Data $data
      */
-    public function setData(Data $data)
+    public function setData(Data $data): void
     {
         $this->data = $data;
     }
@@ -84,7 +84,7 @@ abstract class AbstractStep
     /**
      * @return Configuration
      */
-    public function getConfiguration()
+    public function getConfiguration(): Configuration
     {
         return $this->configuration;
     }
@@ -92,7 +92,7 @@ abstract class AbstractStep
     /**
      * @param Configuration $configuration
      */
-    public function setConfiguration(Configuration $configuration)
+    public function setConfiguration(Configuration $configuration): void
     {
         $this->configuration = $configuration;
     }
@@ -100,7 +100,7 @@ abstract class AbstractStep
     /**
      * @return bool
      */
-    public function isAbortFlag()
+    public function isAbortFlag(): bool
     {
         return $this->abortFlag;
     }
@@ -108,7 +108,7 @@ abstract class AbstractStep
     /**
      * @param bool $abortFlag
      */
-    public function setAbortFlag($abortFlag)
+    public function setAbortFlag($abortFlag): void
     {
         $this->abortFlag = $abortFlag;
     }
@@ -116,7 +116,7 @@ abstract class AbstractStep
     /**
      * @return Importer
      */
-    public function getImporter()
+    public function getImporter(): Importer
     {
         return $this->importer;
     }
@@ -124,7 +124,7 @@ abstract class AbstractStep
     /**
      * @param Importer $importer
      */
-    public function setImporter(Importer $importer)
+    public function setImporter(Importer $importer): void
     {
         $this->importer = $importer;
     }

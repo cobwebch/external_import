@@ -16,9 +16,6 @@ reportEmail =
 # cat=basic/reporting/b; type=string; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.reportSubject
 reportSubject =
 
-# cat=basic/debugging/a; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.previewLimit
-previewLimit = 10
-
 # cat=basic/debugging/b; type=boolean; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.debug
 debug = 0
 

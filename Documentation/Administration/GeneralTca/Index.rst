@@ -499,7 +499,7 @@ Type
   integer
 
 Description
-  Set to :code:`true` to disable logging by TCEmain. This setting will override
+  Set to :code:`true` to disable logging by the TYP3 Core Engine. This setting will override
   the general "Disable logging" setting
   (see :ref:`Configuration for more details <configuration>`).
 

@@ -22,6 +22,7 @@ use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
 use TYPO3\CMS\Backend\Template\Components\Menu\MenuItem;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -62,7 +63,7 @@ class DataModuleController extends ActionController
      * @param ConfigurationRepository $configurationRepository
      * @return void
      */
-    public function injectConfigurationRepository(ConfigurationRepository $configurationRepository)
+    public function injectConfigurationRepository(ConfigurationRepository $configurationRepository): void
     {
         $this->configurationRepository = $configurationRepository;
     }
@@ -73,7 +74,7 @@ class DataModuleController extends ActionController
      * @param SchedulerRepository $schedulerRepository
      * @return void
      */
-    public function injectSchedulerRepository(SchedulerRepository $schedulerRepository)
+    public function injectSchedulerRepository(SchedulerRepository $schedulerRepository): void
     {
         $this->schedulerRepository = $schedulerRepository;
     }
@@ -82,6 +83,8 @@ class DataModuleController extends ActionController
      * Initializes the template to use for all actions.
      *
      * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentNameException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
      */
     protected function initializeAction()
     {
@@ -130,7 +133,7 @@ class DataModuleController extends ActionController
      *
      * @return void
      */
-    public function listSynchronizableAction()
+    public function listSynchronizableAction(): void
     {
         $this->prepareDocHeaderMenu();
 
@@ -180,7 +183,7 @@ class DataModuleController extends ActionController
      *
      * @return void
      */
-    public function listNonSynchronizableAction()
+    public function listNonSynchronizableAction(): void
     {
         $this->prepareDocHeaderMenu();
 
@@ -216,7 +219,7 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
-    public function synchronizeAction($table, $index)
+    public function synchronizeAction($table, $index): void
     {
         // Synchronize the chosen data
         /** @var Importer $importer */
@@ -236,7 +239,7 @@ class DataModuleController extends ActionController
      * @param string $index Key of the external configuration
      * @param string $stepClass Name of the Step class to preview
      */
-    public function previewAction($table, $index, $stepClass = '')
+    public function previewAction($table, $index, $stepClass = ''): void
     {
         // Add a close button to the toolbar
         $this->prepareCloseButton('listSynchronizable');
@@ -276,7 +279,7 @@ class DataModuleController extends ActionController
      * @param string $index Key of the external configuration
      * @return void
      */
-    public function viewConfigurationAction($table, $index)
+    public function viewConfigurationAction($table, $index): void
     {
         $configuration = $this->configurationRepository->findConfigurationObject(
                 $table,
@@ -308,7 +311,7 @@ class DataModuleController extends ActionController
      * @param string $index Index of the configuration to set a task for
      * @return void
      */
-    public function newTaskAction($table, $index = '')
+    public function newTaskAction($table, $index = ''): void
     {
         // Add a close button to the toolbar
         $this->prepareCloseButton('listSynchronizable');
@@ -337,7 +340,7 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
      */
-    public function createTaskAction($table, $frequency, $group, \DateTime $start_date_hr = null, $index = '')
+    public function createTaskAction($table, $frequency, $group, \DateTime $start_date_hr = null, $index = ''): void
     {
         try {
             $this->schedulerRepository->saveTask(
@@ -379,7 +382,7 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
-    public function editTaskAction($uid)
+    public function editTaskAction($uid): void
     {
         // Add a close button to the toolbar
         $this->prepareCloseButton('listSynchronizable');
@@ -419,7 +422,7 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
      */
-    public function updateTaskAction($uid, $frequency, $group, \DateTime $start_date_hr = null)
+    public function updateTaskAction($uid, $frequency, $group, \DateTime $start_date_hr = null): void
     {
         try {
             $this->schedulerRepository->saveTask(
@@ -462,7 +465,7 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
-    public function deleteTaskAction($uid)
+    public function deleteTaskAction($uid): void
     {
         try {
             $this->schedulerRepository->deleteTask($uid);
@@ -493,7 +496,7 @@ class DataModuleController extends ActionController
      *
      * @return void
      */
-    protected function prepareDocHeaderMenu()
+    protected function prepareDocHeaderMenu(): void
     {
         $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
@@ -549,7 +552,7 @@ class DataModuleController extends ActionController
      * @param string $returnAction Name of the action to return to
      * @return void
      */
-    protected function prepareCloseButton($returnAction)
+    protected function prepareCloseButton($returnAction): void
     {
         $closeIcon = $this->view->getModuleTemplate()->getIconFactory()->getIcon('actions-close', Icon::SIZE_SMALL);
         $closeButton = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar()->makeLinkButton()
@@ -572,7 +575,7 @@ class DataModuleController extends ActionController
      * @param array $messages List of messages from an External Import run
      * @param bool $storeInSession Whether to store the flash messages in session or not
      */
-    protected function prepareMessages($messages, $storeInSession = true)
+    protected function prepareMessages($messages, $storeInSession = true): void
     {
         // If there are too many messages, Remove extra messages and add warning about it
         // to avoid cluttering the interface
@@ -614,9 +617,9 @@ class DataModuleController extends ActionController
     /**
      * Returns the global BE user object.
      *
-     * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+     * @return BackendUserAuthentication
      */
-    protected function getBackendUser()
+    protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
     }

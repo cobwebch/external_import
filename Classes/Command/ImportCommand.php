@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Context\CommandLineCallContext;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Importer;
 use Symfony\Component\Console\Command\Command;
@@ -134,7 +135,7 @@ class ImportCommand extends Command
             $this->importer = $this->objectManager->get(Importer::class);
             $this->importer->setContext('cli');
             $callContext = $this->objectManager->get(
-                    \Cobweb\ExternalImport\Context\CommandLineCallContext::class,
+                    CommandLineCallContext::class,
                     $this->importer
             );
             $callContext->setInputOutput($this->io);
@@ -189,7 +190,7 @@ class ImportCommand extends Command
      *
      * @return void
      */
-    protected function printConfigurationList()
+    protected function printConfigurationList(): void
     {
         $configurations = $this->configurationRepository->findOrderedConfigurations();
         $outputTable = [];
@@ -215,7 +216,7 @@ class ImportCommand extends Command
      * @param array $configurations List of External Import configurations
      * @return void
      */
-    protected function runSynchronization(array $configurations)
+    protected function runSynchronization(array $configurations): void
     {
         if (count($configurations) === 0) {
             $this->io->warning('No configuration to synchronize.');
@@ -247,7 +248,7 @@ class ImportCommand extends Command
      *
      * @param array $messages
      */
-    protected function reportResults($messages)
+    protected function reportResults($messages): void
     {
         foreach ($messages as $severity => $messageList) {
             foreach ($messageList as $message) {

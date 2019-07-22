@@ -46,7 +46,7 @@ class LogModuleController extends ActionController
      * @param LogRepository $logRepository
      * @return void
      */
-    public function injectLogRepository(LogRepository $logRepository)
+    public function injectLogRepository(LogRepository $logRepository): void
     {
         $this->logRepository = $logRepository;
     }
@@ -84,7 +84,7 @@ class LogModuleController extends ActionController
      *
      * @return void
      */
-    public function listAction()
+    public function listAction(): void
     {
     }
 }

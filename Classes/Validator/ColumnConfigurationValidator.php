@@ -34,7 +34,7 @@ class ColumnConfigurationValidator
      */
     protected $results;
 
-    public function injectValidationResult(ValidationResult $result)
+    public function injectValidationResult(ValidationResult $result): void
     {
         $this->results = $result;
     }
@@ -46,7 +46,7 @@ class ColumnConfigurationValidator
      * @param string $column Name of the column to check
      * @return bool
      */
-    public function isValid(Configuration $configuration, $column)
+    public function isValid(Configuration $configuration, $column): bool
     {
         $columnConfiguration = $configuration->getConfigurationForColumn($column);
         // Validate properties used to choose the import value
@@ -77,7 +77,7 @@ class ColumnConfigurationValidator
      * @param array $ctrlConfiguration "ctrl" configuration to check
      * @param array $columnConfiguration Column configuration to check (unused when checking a "ctrl" configuration)
      */
-    public function validateDataSettingProperties($ctrlConfiguration, $columnConfiguration)
+    public function validateDataSettingProperties($ctrlConfiguration, $columnConfiguration): void
     {
         $hasValueProperty = $this->hasValueProperty($columnConfiguration);
         if ($ctrlConfiguration['data'] === 'array') {
@@ -139,7 +139,7 @@ class ColumnConfigurationValidator
      *
      * @param array $columnConfiguration
      */
-    public function validateTransformationProperties($columnConfiguration)
+    public function validateTransformationProperties($columnConfiguration): void
     {
         // Check if any transformation property is defined at column-level (rather than in the "transformations" property)
         $properties = array_keys($columnConfiguration);
@@ -176,7 +176,7 @@ class ColumnConfigurationValidator
      * @param array $columnConfiguration
      * @return bool
      */
-    public function hasValueProperty($columnConfiguration)
+    public function hasValueProperty($columnConfiguration): bool
     {
         if (isset($columnConfiguration['transformations'])) {
             foreach ($columnConfiguration['transformations'] as $transformation) {
@@ -193,7 +193,7 @@ class ColumnConfigurationValidator
      *
      * @return ValidationResult
      */
-    public function getResults()
+    public function getResults(): ValidationResult
     {
         return $this->results;
     }

@@ -46,7 +46,7 @@ class MappingUtilityTest extends UnitTestCase
      *
      * @return array
      */
-    public function mappingTestWithStrposProvider()
+    public function mappingTestWithStrposProvider(): array
     {
         return [
                 'australia' => [
@@ -74,7 +74,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingConfiguration
      * @param string $expectedResult
      */
-    public function matchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult)
+    public function matchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
@@ -86,7 +86,7 @@ class MappingUtilityTest extends UnitTestCase
      *
      * @return array
      */
-    public function mappingTestWithStrposSymmetricProvider()
+    public function mappingTestWithStrposSymmetricProvider(): array
     {
         return [
                 'australia' => [
@@ -114,7 +114,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingConfiguration
      * @param string $expectedResult
      */
-    public function matchWordsWithStrposSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult)
+    public function matchWordsWithStrposSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
@@ -125,7 +125,7 @@ class MappingUtilityTest extends UnitTestCase
      *
      * @return array
      */
-    public function mappingTestWithStrposWithBadMappingTableProvider()
+    public function mappingTestWithStrposWithBadMappingTableProvider(): array
     {
         return [
             // Case doesn't match in this data set
@@ -162,7 +162,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingTable
      * @param array $mappingConfiguration
      */
-    public function failMatchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration)
+    public function failMatchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration): void
     {
         $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
     }
@@ -172,7 +172,7 @@ class MappingUtilityTest extends UnitTestCase
      *
      * @return array
      */
-    public function mappingTestWithStriposProvider()
+    public function mappingTestWithStriposProvider(): array
     {
         $data = [
                 'australia' => [
@@ -201,7 +201,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingConfiguration
      * @param string $expectedResult
      */
-    public function matchWordsWithStirposNotSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult)
+    public function matchWordsWithStirposNotSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
@@ -213,7 +213,7 @@ class MappingUtilityTest extends UnitTestCase
      *
      * @return array
      */
-    public function mappingTestWithStriposWithBadMappingTableProvider()
+    public function mappingTestWithStriposWithBadMappingTableProvider(): array
     {
         return [
             // Case doesn't match in this data set
@@ -239,7 +239,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingTable
      * @param array $mappingConfiguration
      */
-    public function failMatchWordsWithStriposNotSymmetric($inputData, $mappingTable, $mappingConfiguration)
+    public function failMatchWordsWithStriposNotSymmetric($inputData, $mappingTable, $mappingConfiguration): void
     {
         $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
     }

@@ -31,7 +31,7 @@ class XmlHandler implements DataHandlerInterface
      * @param Importer $importer Back-reference to the current Importer instance
      * @return array
      */
-    public function handleData($rawData, Importer $importer)
+    public function handleData($rawData, Importer $importer): array
     {
         $data = [];
         $counter = 0;
@@ -213,7 +213,7 @@ class XmlHandler implements DataHandlerInterface
      * @return \DOMNodeList
      * @throws \Exception
      */
-    public function getNodeList($record, $columnConfiguration, $xPathObject)
+    public function getNodeList($record, $columnConfiguration, $xPathObject): \DOMNodeList
     {
         // If a "field" is defined, refine the selection to get the correct node
         if (isset($columnConfiguration['field'])) {
@@ -298,7 +298,7 @@ class XmlHandler implements DataHandlerInterface
      * @param \DOMNode $node Currently handled XML node
      * @return string Code inside the node
      */
-    public function getXmlValue($node)
+    public function getXmlValue($node): string
     {
         $innerHTML = '';
         $children = $node->childNodes;
@@ -322,7 +322,7 @@ class XmlHandler implements DataHandlerInterface
      * @return \DOMNodeList List of found nodes
      * @throws \Exception
      */
-    public function selectNodeWithXpath($xPathObject, $xPath, $context)
+    public function selectNodeWithXpath($xPathObject, $xPath, $context): \DOMNodeList
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
         if ($resultNodes->length > 0) {

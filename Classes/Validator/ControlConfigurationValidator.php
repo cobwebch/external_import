@@ -18,6 +18,7 @@ use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Utility\StepUtility;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -44,16 +45,16 @@ class ControlConfigurationValidator
     protected $results;
 
     /**
-     * @var \Cobweb\ExternalImport\Utility\StepUtility
+     * @var StepUtility
      */
     protected $stepUtility;
 
-    public function injectValidationResult(ValidationResult $result)
+    public function injectValidationResult(ValidationResult $result): void
     {
         $this->results = $result;
     }
 
-    public function injectStepUtility(\Cobweb\ExternalImport\Utility\StepUtility $stepUtility)
+    public function injectStepUtility(StepUtility $stepUtility): void
     {
         $this->stepUtility = $stepUtility;
     }
@@ -64,7 +65,7 @@ class ControlConfigurationValidator
      * @param Configuration $configuration Configuration object to check
      * @return bool
      */
-    public function isValid(Configuration $configuration)
+    public function isValid(Configuration $configuration): bool
     {
         $this->table = $configuration->getTable();
         $ctrlConfiguration = $configuration->getCtrlConfiguration();
@@ -102,7 +103,7 @@ class ControlConfigurationValidator
      * @param string $property Property value
      * @return void
      */
-    public function validateDataProperty($property)
+    public function validateDataProperty($property): void
     {
         if (empty($property)) {
             $this->results->add(
@@ -113,17 +114,15 @@ class ControlConfigurationValidator
                     ),
                     AbstractMessage::ERROR
             );
-        } else {
-            if ($property !== 'array' && $property !== 'xml') {
-                $this->results->add(
-                        'data',
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty',
-                                'external_import'
-                        ),
-                        AbstractMessage::ERROR
-                );
-            }
+        } elseif ($property !== 'array' && $property !== 'xml') {
+            $this->results->add(
+                    'data',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty',
+                            'external_import'
+                    ),
+                    AbstractMessage::ERROR
+            );
         }
     }
 
@@ -136,7 +135,7 @@ class ControlConfigurationValidator
      * @param string $property Property value
      * @return void
      */
-    public function validateConnectorProperty($property)
+    public function validateConnectorProperty($property): void
     {
         if (!empty($property)) {
             $services = ExtensionManagementUtility::findService(
@@ -162,7 +161,7 @@ class ControlConfigurationValidator
      * @param string $property Property value
      * @return void
      */
-    public function validateDataHandlerProperty($property)
+    public function validateDataHandlerProperty($property): void
     {
         if (!empty($property)) {
             if (class_exists($property)) {
@@ -208,7 +207,7 @@ class ControlConfigurationValidator
      * @param string $property Property value
      * @return void
      */
-    public function validateNodetypeProperty($property)
+    public function validateNodetypeProperty($property): void
     {
         if (empty($property)) {
             $this->results->add(
@@ -228,7 +227,7 @@ class ControlConfigurationValidator
      * @param string $property Property value
      * @return void
      */
-    public function validateReferenceUidProperty($property)
+    public function validateReferenceUidProperty($property): void
     {
         if (empty($property)) {
             $this->results->add(
@@ -248,7 +247,7 @@ class ControlConfigurationValidator
      * @param string $property Property value
      * @return void
      */
-    public function validatePriorityProperty($property)
+    public function validatePriorityProperty($property): void
     {
         if (empty($property)) {
             $this->results->add(
@@ -271,7 +270,7 @@ class ControlConfigurationValidator
      * @param string $property Property value
      * @return void
      */
-    public function validatePidProperty($property)
+    public function validatePidProperty($property): void
     {
         // TCA property rootLevel defaults to 0
         $rootLevelFlag = $GLOBALS['TCA'][$this->table]['ctrl']['rootLevel'] ?? 0;
@@ -337,7 +336,7 @@ class ControlConfigurationValidator
      * @param array $columns List of column configurations
      * @return void
      */
-    public function validateUseColumnIndexProperty($property, $columns)
+    public function validateUseColumnIndexProperty($property, $columns): void
     {
         // If useColumnIndex is defined, it needs to match an existing index for the same table
         // If there's no column configuration using that index, issue an error
@@ -364,7 +363,7 @@ class ControlConfigurationValidator
      * @param array $ctrlConfiguration Full "ctrl" configuration
      * @return void
      */
-    public function validateCustomStepsProperty($property, $ctrlConfiguration)
+    public function validateCustomStepsProperty($property, $ctrlConfiguration): void
     {
         if ($property !== null && is_array($property) && count($property) > 0) {
             // Define the process default steps, depending on process type
@@ -401,7 +400,7 @@ class ControlConfigurationValidator
      *
      * @return ValidationResult
      */
-    public function getResults()
+    public function getResults(): ValidationResult
     {
         return $this->results;
     }

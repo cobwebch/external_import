@@ -44,7 +44,7 @@ class SchedulerRepositoryTest extends FunctionalTestCase
      * @test
      * @throws \Nimut\TestingFramework\Exception\Exception
      */
-    public function fetchAllGroupsReturnsAllExistingGroups()
+    public function fetchAllGroupsReturnsAllExistingGroups(): void
     {
         $this->importDataSet(__DIR__ . '/../../Fixtures/Scheduler.xml');
         $groups = $this->subject->fetchAllGroups();

@@ -40,7 +40,7 @@ class ReportingUtilityTest extends UnitTestCase
      * @test
      * @expectedException \Cobweb\ExternalImport\Exception\UnknownReportingKeyException
      */
-    public function getValueForStepForUnknownKeyThrowsException()
+    public function getValueForStepForUnknownKeyThrowsException(): void
     {
         $this->subject->getValueForStep('foo', 'bar');
     }
@@ -48,7 +48,7 @@ class ReportingUtilityTest extends UnitTestCase
     /**
      * @test
      */
-    public function getValueForStepReturnsExpectedValue()
+    public function getValueForStepReturnsExpectedValue(): void
     {
         $this->subject->setValueForStep(
                 \Cobweb\ExternalImport\Step\StoreDataStep::class,

@@ -17,8 +17,11 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Importer;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -39,21 +42,23 @@ class ConfigurationRepository
     protected $extensionConfiguration = [];
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var ObjectManager
      */
     protected $objectManager;
 
-    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $objectManager)
+    public function injectObjectManager(ObjectManager $objectManager): void
     {
         $this->objectManager = $objectManager;
     }
 
+    /**
+     * ConfigurationRepository constructor.
+     * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
+     * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
+     */
     public function __construct()
     {
-        $this->extensionConfiguration = unserialize(
-                $GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import'],
-                ['allowed_classes' => false]
-        );
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('external_import');
     }
 
     /**
@@ -108,10 +113,7 @@ class ConfigurationRepository
                 foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
                     if (!empty($externalConfig['connector'])) {
                         // Default priority if not defined, set to very low
-                        $priority = Importer::DEFAULT_PRIORITY;
-                        if (isset($externalConfig['priority'])) {
-                            $priority = $externalConfig['priority'];
-                        }
+                        $priority = $externalConfig['priority'] ?? Importer::DEFAULT_PRIORITY;
                         if (!isset($externalTables[$priority])) {
                             $externalTables[$priority] = [];
                         }
@@ -144,10 +146,7 @@ class ConfigurationRepository
                 foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
                     if (!empty($externalConfig['connector']) && $externalConfig['group'] === $group) {
                         // Default priority if not defined, set to very low
-                        $priority = Importer::DEFAULT_PRIORITY;
-                        if (isset($externalConfig['priority'])) {
-                            $priority = $externalConfig['priority'];
-                        }
+                        $priority = $externalConfig['priority'] ?? Importer::DEFAULT_PRIORITY;
                         if (!isset($externalTables[$priority])) {
                             $externalTables[$priority] = [];
                         }
@@ -201,10 +200,7 @@ class ConfigurationRepository
         $ctrlConfiguration = $this->findByTableAndIndex($table, $index);
 
         // Override the configuration index for columns, if so defined
-        $columnIndex = $index;
-        if (isset($ctrlConfiguration['useColumnIndex'])) {
-            $columnIndex = $ctrlConfiguration['useColumnIndex'];
-        }
+        $columnIndex = $ctrlConfiguration['useColumnIndex'] ?? $index;
         $columnsConfiguration = $this->findColumnsByTableAndIndex($table, $columnIndex);
 
         // Set the values in the Configuration object
@@ -238,11 +234,12 @@ class ConfigurationRepository
         }
 
         // Loop on all tables and extract external_import-related information from them
+        $backendUser = $this->getBackendUser();
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             // Check if table has external info and user has at least read-access to it
-            if (isset($sections['ctrl']['external']) && $GLOBALS['BE_USER']->check('tables_select', $tableName)) {
+            if (isset($sections['ctrl']['external']) && $backendUser->check('tables_select', $tableName)) {
                 $externalData = $sections['ctrl']['external'];
-                $hasWriteAccess = $GLOBALS['BE_USER']->check('tables_modify', $tableName);
+                $hasWriteAccess = $backendUser->check('tables_modify', $tableName);
                 foreach ($externalData as $index => $externalConfig) {
                     // Synchronizable tables have a connector configuration
                     // Non-synchronizable tables don't
@@ -317,9 +314,9 @@ class ConfigurationRepository
      */
     public function findGlobalWriteAccess(): string
     {
-
         // An admin user has full access
-        if ($GLOBALS['BE_USER']->isAdmin()) {
+        $backendUser = $this->getBackendUser();
+        if ($backendUser->isAdmin()) {
             $hasGlobalWriteAccess = 'all';
         } else {
 
@@ -331,7 +328,7 @@ class ConfigurationRepository
                 if (isset($sections['ctrl']['external'])) {
                     $numberOfTables++;
                     // Check if user has write rights on it
-                    if (!$GLOBALS['BE_USER']->check('tables_modify', $tableName)) {
+                    if (!$backendUser->check('tables_modify', $tableName)) {
                         $noAccessCount++;
                     }
                 }
@@ -340,13 +337,11 @@ class ConfigurationRepository
             if ($noAccessCount === 0) {
                 $hasGlobalWriteAccess = 'all';
 
-                // Assess if user has rights to no table at all or at least to some
+            // Assess if user has rights to no table at all or at least to some
+            } else if ($noAccessCount === $numberOfTables) {
+                $hasGlobalWriteAccess = 'none';
             } else {
-                if ($noAccessCount === $numberOfTables) {
-                    $hasGlobalWriteAccess = 'none';
-                } else {
-                    $hasGlobalWriteAccess = 'partial';
-                }
+                $hasGlobalWriteAccess = 'partial';
             }
         }
         return $hasGlobalWriteAccess;
@@ -372,4 +367,13 @@ class ConfigurationRepository
         return $configuration;
     }
 
+    /**
+     * Returns the BE user object.
+     *
+     * @return BackendUserAuthentication
+     */
+    protected function getBackendUser(): BackendUserAuthentication
+    {
+        return $GLOBALS['BE_USER'];
+    }
 }

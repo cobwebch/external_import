@@ -17,11 +17,15 @@ namespace Cobweb\ExternalImport;
 use Cobweb\ExternalImport\Context\AbstractCallContext;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -31,12 +35,14 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class Importer
+class Importer implements LoggerAwareInterface
 {
-    const DEFAULT_PRIORITY = 1000;
+    use LoggerAwareTrait;
+
+    public const DEFAULT_PRIORITY = 1000;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Object\ObjectManager
+     * @var ObjectManager
      */
     protected $objectManager;
 
@@ -66,14 +72,9 @@ class Importer
     protected $reportingUtility;
 
     /**
-     * @var \Cobweb\ExternalImport\Domain\Repository\UidRepository
+     * @var UidRepository
      */
     protected $uidRepository;
-
-    /**
-     * @var \TYPO3\CMS\Core\Log\Logger
-     */
-    protected $logger;
 
     /**
      * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
@@ -98,7 +99,7 @@ class Importer
     /**
      * @var AbstractCallContext
      */
-    protected $callContext = null;
+    protected $callContext;
 
     /**
      * @var bool Whether debugging is turned on or off
@@ -138,7 +139,7 @@ class Importer
     /**
      * @var array List of default steps for the synchronize data process
      */
-    const SYNCHRONYZE_DATA_STEPS = [
+    public const SYNCHRONYZE_DATA_STEPS = [
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\ValidateConnectorStep::class,
@@ -154,7 +155,7 @@ class Importer
     /**
      * @var array List of default steps for the import data process
      */
-    const IMPORT_DATA_STEPS = [
+    public const IMPORT_DATA_STEPS = [
             Step\CheckPermissionsStep::class,
             Step\ValidateConfigurationStep::class,
             Step\HandleDataStep::class,
@@ -164,11 +165,14 @@ class Importer
             Step\ClearCacheStep::class
     ];
 
+    /**
+     * Importer constructor.
+     * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
+     * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
+     */
     public function __construct()
     {
-        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import'])) {
-            $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['external_import'], ['allowed_classes' => false]);
-        }
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('external_import');
         $this->setDebug((bool)$this->extensionConfiguration['debug']);
 
         // Force PHP limit execution time if set
@@ -199,23 +203,23 @@ class Importer
         return __CLASS__;
     }
 
-    public function injectObjectManager(\TYPO3\CMS\Extbase\Object\ObjectManager $manager)
+    public function injectObjectManager(ObjectManager $manager): void
     {
         $this->objectManager = $manager;
     }
 
-    public function injectConfigurationRepository(\Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository $repository)
+    public function injectConfigurationRepository(ConfigurationRepository $repository): void
     {
         $this->configurationRepository = $repository;
     }
 
-    public function injectReportingUtility(\Cobweb\ExternalImport\Utility\ReportingUtility $utility)
+    public function injectReportingUtility(ReportingUtility $utility): void
     {
         $this->reportingUtility = $utility;
         $this->reportingUtility->setImporter($this);
     }
 
-    public function injectUidRepository(\Cobweb\ExternalImport\Domain\Repository\UidRepository $uidRepository)
+    public function injectUidRepository(UidRepository $uidRepository): void
     {
         $this->uidRepository = $uidRepository;
     }
@@ -228,7 +232,7 @@ class Importer
      * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return void
      */
-    protected function initialize($table, $index, $defaultSteps = null)
+    protected function initialize($table, $index, $defaultSteps = null): void
     {
         $this->externalConfiguration = $this->configurationRepository->findConfigurationObject(
                 $table,
@@ -239,13 +243,10 @@ class Importer
         {
             $this->externalConfiguration->setStoragePid($this->forcedStoragePid);
         }
-        // Set the storage page as the related page for the devLog entries
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['GLOBAL']['debugData']['pid'] = $this->externalConfiguration->getStoragePid();
         // Initialize existing uids list
         $this->uidRepository->setConfiguration($this->externalConfiguration);
         $this->uidRepository->resetExistingUids();
-        /** @var $logger \TYPO3\CMS\Core\Log\Logger */
-        $this->logger = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Log\LogManager::class)->getLogger(__CLASS__);    }
+    }
 
     /**
      * Calls on the distant data source and synchronizes the data into the TYPO3 database.
@@ -254,7 +255,7 @@ class Importer
      * @param mixed $index Index of the synchronisation configuration to use
      * @return array List of error or success messages
      */
-    public function synchronize($table, $index)
+    public function synchronize($table, $index): array
     {
         // Initialize message array
         $this->resetMessages();
@@ -295,7 +296,6 @@ class Importer
             );
         }
         // Log results
-        $this->reportingUtility->writeToDevLog();
         $this->reportingUtility->writeToLog();
 
         return $this->messages;
@@ -309,7 +309,7 @@ class Importer
      * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
      * @return array List of error or success messages
      */
-    public function import($table, $index, $rawData)
+    public function import($table, $index, $rawData): array
     {
         // Initialize message array
         $this->resetMessages();
@@ -353,7 +353,6 @@ class Importer
             );
         }
         // Log results
-        $this->reportingUtility->writeToDevLog();
         $this->reportingUtility->writeToLog();
         return $this->messages;
     }
@@ -365,7 +364,7 @@ class Importer
      * @return void
      * @throws Exception\InvalidPreviewStepException
      */
-    public function runSteps(Data $data)
+    public function runSteps(Data $data): void
     {
         $this->setStartTime(time());
         // Get the process steps
@@ -417,7 +416,7 @@ class Importer
      *
      * @return \Cobweb\ExternalImport\Domain\Model\Configuration
      */
-    public function getExternalConfiguration()
+    public function getExternalConfiguration(): Domain\Model\Configuration
     {
         return $this->externalConfiguration;
     }
@@ -427,7 +426,7 @@ class Importer
      *
      * @return ConfigurationRepository
      */
-    public function getConfigurationRepository()
+    public function getConfigurationRepository(): ConfigurationRepository
     {
         return $this->configurationRepository;
     }
@@ -439,7 +438,7 @@ class Importer
      *
      * @return array The unserialized extension's configuration
      */
-    public function getExtensionConfiguration()
+    public function getExtensionConfiguration(): array
     {
         return $this->extensionConfiguration;
     }
@@ -449,7 +448,7 @@ class Importer
      *
      * @return array
      */
-    public function getTemporaryKeys()
+    public function getTemporaryKeys(): array
     {
         return $this->temporaryKeys;
     }
@@ -460,7 +459,7 @@ class Importer
      * @param int $value Value for which we want to find a key
      * @return bool
      */
-    public function hasTemporaryKey($value)
+    public function hasTemporaryKey($value): bool
     {
         return array_key_exists($value, $this->temporaryKeys);
     }
@@ -471,7 +470,7 @@ class Importer
      * @param int $value Value for which we want to find a key
      * @return string
      */
-    public function getTemporaryKeyForValue($value)
+    public function getTemporaryKeyForValue($value): string
     {
         if (array_key_exists($value, $this->temporaryKeys)) {
             return $this->temporaryKeys[$value];
@@ -485,7 +484,7 @@ class Importer
      * @param int $value
      * @param string $key
      */
-    public function addTemporaryKey($value, $key)
+    public function addTemporaryKey($value, $key): void
     {
         $this->temporaryKeys[$value] = $key;
     }
@@ -499,7 +498,7 @@ class Importer
      *
      * @return string
      */
-    public function generateTemporaryKey()
+    public function generateTemporaryKey(): string
     {
         if ($this->isTestMode()) {
             self::$forcedTemporaryKeySerial++;
@@ -518,59 +517,50 @@ class Importer
      * @param null $data Data associated with the debugging information
      * @return void
      */
-    public function debug($message, $severity = 0, $data = null)
+    public function debug($message, $severity = 0, $data = null): void
     {
         if ($this->isDebug()) {
-            if (CompatibilityUtility::isV8()) {
-                GeneralUtility::devLog(
-                        $message,
-                        'external_import',
-                        $severity,
-                        $data
-                );
-            } else {
-                $data = is_array($data) ? $data : [$data];
-                // Match devlog severities: 0 is info, 1 is notice, 2 is warning, 3 is fatal error, -1 is "OK" message
-                switch ($severity) {
-                    case 0:
-                        $this->logger->info(
-                                $message,
-                                $data
-                        );
-                        break;
-                    case 1:
-                        $this->logger->notice(
-                                $message,
-                                $data
-                        );
-                        break;
-                    case 2:
-                        $this->logger->warning(
-                                $message,
-                                $data
-                        );
-                        break;
-                    case 3:
-                        $this->logger->error(
-                                $message,
-                                $data
-                        );
-                        break;
-                    default:
-                        $this->logger->debug(
-                                $message,
-                                $data
-                        );
-                }
+            $data = is_array($data) ? $data : [$data];
+            // Match devlog severities: 0 is info, 1 is notice, 2 is warning, 3 is fatal error, -1 is "OK" message
+            switch ($severity) {
+                case 0:
+                    $this->logger->info(
+                            $message,
+                            $data
+                    );
+                    break;
+                case 1:
+                    $this->logger->notice(
+                            $message,
+                            $data
+                    );
+                    break;
+                case 2:
+                    $this->logger->warning(
+                            $message,
+                            $data
+                    );
+                    break;
+                case 3:
+                    $this->logger->error(
+                            $message,
+                            $data
+                    );
+                    break;
+                default:
+                    $this->logger->debug(
+                            $message,
+                            $data
+                    );
             }
-            // Push the debug data to the call context for special display, if needed (e.g. the command-line controller)
-            if ($this->callContext !== null) {
-                $this->callContext->outputDebug(
-                        $message,
-                        $severity,
-                        $data
-                );
-            }
+        }
+        // Push the debug data to the call context for special display, if needed (e.g. the command-line controller)
+        if ($this->callContext !== null) {
+            $this->callContext->outputDebug(
+                    $message,
+                    $severity,
+                    $data
+            );
         }
     }
 
@@ -582,7 +572,7 @@ class Importer
      * @param integer $status Status of the message. Expected is "success", "warning" or "error"
      * @return void
      */
-    public function addMessage($text, $status = AbstractMessage::ERROR)
+    public function addMessage($text, $status = AbstractMessage::ERROR): void
     {
         if (!empty($text)) {
             $this->messages[$status][] = $text;
@@ -594,7 +584,7 @@ class Importer
      *
      * @return array
      */
-    public function getMessages()
+    public function getMessages(): array
     {
         return $this->messages;
     }
@@ -604,7 +594,7 @@ class Importer
      *
      * @return void
      */
-    public function resetMessages()
+    public function resetMessages(): void
     {
         $this->messages = [
                 AbstractMessage::ERROR => [],
@@ -618,7 +608,7 @@ class Importer
      *
      * @return ReportingUtility
      */
-    public function getReportingUtility()
+    public function getReportingUtility(): ReportingUtility
     {
         return $this->reportingUtility;
     }
@@ -628,7 +618,7 @@ class Importer
      *
      * @return Domain\Repository\UidRepository
      */
-    public function getUidRepository()
+    public function getUidRepository(): Domain\Repository\UidRepository
     {
         return $this->uidRepository;
     }
@@ -640,7 +630,7 @@ class Importer
      *
      * @param $pid
      */
-    public function setForcedStoragePid($pid)
+    public function setForcedStoragePid($pid): void
     {
         $this->forcedStoragePid = (int)$pid;
     }
@@ -650,7 +640,7 @@ class Importer
      *
      * @return string
      */
-    public function getContext()
+    public function getContext(): string
     {
         return $this->context;
     }
@@ -660,7 +650,7 @@ class Importer
      *
      * @param $context
      */
-    public function setContext($context)
+    public function setContext($context): void
     {
         $this->context = $context;
     }
@@ -668,7 +658,7 @@ class Importer
     /**
      * @return AbstractCallContext
      */
-    public function getCallContext()
+    public function getCallContext(): AbstractCallContext
     {
         return $this->callContext;
     }
@@ -676,7 +666,7 @@ class Importer
     /**
      * @param AbstractCallContext $callContext
      */
-    public function setCallContext(AbstractCallContext $callContext)
+    public function setCallContext(AbstractCallContext $callContext): void
     {
         $this->callContext = $callContext;
     }
@@ -686,7 +676,7 @@ class Importer
      *
      * @return bool
      */
-    public function isDebug()
+    public function isDebug(): bool
     {
         return $this->debug;
     }
@@ -696,7 +686,7 @@ class Importer
      *
      * @param bool $debug
      */
-    public function setDebug(bool $debug)
+    public function setDebug(bool $debug): void
     {
         $this->debug = $debug;
     }
@@ -706,7 +696,7 @@ class Importer
      *
      * @return bool
      */
-    public function isVerbose()
+    public function isVerbose(): bool
     {
         return $this->verbose;
     }
@@ -716,7 +706,7 @@ class Importer
      *
      * @param bool $verbose
      */
-    public function setVerbose(bool $verbose)
+    public function setVerbose(bool $verbose): void
     {
         $this->verbose = $verbose;
     }
@@ -726,7 +716,7 @@ class Importer
      *
      * @return bool
      */
-    public function isPreview()
+    public function isPreview(): bool
     {
         return $this->previewStep !== '';
     }
@@ -736,7 +726,7 @@ class Importer
      *
      * @return string
      */
-    public function getPreviewStep()
+    public function getPreviewStep(): string
     {
         return $this->previewStep;
     }
@@ -746,7 +736,7 @@ class Importer
      *
      * @param string $step
      */
-    public function setPreviewStep(string $step)
+    public function setPreviewStep(string $step): void
     {
         $this->previewStep = $step;
     }
@@ -766,7 +756,7 @@ class Importer
      *
      * @param mixed $previewData
      */
-    public function setPreviewData($previewData)
+    public function setPreviewData($previewData): void
     {
         $this->previewData = $previewData;
     }
@@ -776,7 +766,7 @@ class Importer
      *
      * @return void
      */
-    public function resetPreviewData()
+    public function resetPreviewData(): void
     {
         $this->previewData = null;
     }
@@ -796,7 +786,7 @@ class Importer
      *
      * @param int $startTime
      */
-    public function setStartTime(int $startTime)
+    public function setStartTime(int $startTime): void
     {
         $this->startTime = $startTime;
     }
@@ -816,7 +806,7 @@ class Importer
      *
      * @param int $endTime
      */
-    public function setEndTime(int $endTime)
+    public function setEndTime(int $endTime): void
     {
         $this->endTime = $endTime;
     }
@@ -830,7 +820,7 @@ class Importer
      * @param bool $mode Set to true for test mode
      * @return void
      */
-    public function setTestMode(bool $mode)
+    public function setTestMode(bool $mode): void
     {
         $this->testMode = $mode;
     }
@@ -840,7 +830,7 @@ class Importer
      *
      * @return bool
      */
-    public function isTestMode()
+    public function isTestMode(): bool
     {
         return $this->testMode;
     }

@@ -16,6 +16,8 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Handler\ArrayHandler;
+use Cobweb\ExternalImport\Handler\XmlHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -28,21 +30,21 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class HandleDataStep extends AbstractStep
 {
     /**
-     * @var \Cobweb\ExternalImport\Handler\ArrayHandler
+     * @var ArrayHandler
      */
     protected $arrayHandler;
 
     /**
-     * @var \Cobweb\ExternalImport\Handler\XmlHandler
+     * @var XmlHandler
      */
     protected $xmlHandler;
 
-    public function injectArrayHandler(\Cobweb\ExternalImport\Handler\ArrayHandler $handler)
+    public function injectArrayHandler(ArrayHandler $handler): void
     {
         $this->arrayHandler = $handler;
     }
 
-    public function injectXmlHander(\Cobweb\ExternalImport\Handler\XmlHandler $handler)
+    public function injectXmlHander(XmlHandler $handler): void
     {
         $this->xmlHandler = $handler;
     }
@@ -52,7 +54,7 @@ class HandleDataStep extends AbstractStep
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
         $originalData = $this->getData()->getRawData();
@@ -134,7 +136,7 @@ class HandleDataStep extends AbstractStep
      * @return array
      * @throws CriticalFailureException
      */
-    protected function preprocessRawData($records)
+    protected function preprocessRawData($records): array
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'] as $className) {

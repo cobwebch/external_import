@@ -29,7 +29,7 @@ class ValidateConnectorStep extends AbstractStep
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
         if (empty($ctrlConfiguration['connector'])) {

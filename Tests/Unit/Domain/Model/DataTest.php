@@ -39,7 +39,7 @@ class DataTest extends UnitTestCase
     /**
      * @test
      */
-    public function getRawDataInitiallyReturnsNull()
+    public function getRawDataInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getRawData());
     }
@@ -47,7 +47,7 @@ class DataTest extends UnitTestCase
     /**
      * @test
      */
-    public function setRawDataSetsRawData()
+    public function setRawDataSetsRawData(): void
     {
         $this->subject->setRawData('foo');
         self::assertSame(
@@ -59,7 +59,7 @@ class DataTest extends UnitTestCase
     /**
      * @test
      */
-    public function getRecordsInitiallyReturnsEmptyArray()
+    public function getRecordsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
                 [],
@@ -70,7 +70,7 @@ class DataTest extends UnitTestCase
     /**
      * @test
      */
-    public function setRecordsSetsRecords()
+    public function setRecordsSetsRecords(): void
     {
         $this->subject->setRecords([1, 2]);
         self::assertSame(

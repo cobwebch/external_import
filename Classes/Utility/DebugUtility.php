@@ -22,7 +22,7 @@ class DebugUtility
      * @param array $array Array to display
      * @return string HTML table assembled from array
      */
-    public static function dumpArray($array)
+    public static function dumpArray($array): string
     {
         $table = '<table>';
         foreach ($array as $key => $value) {
@@ -52,7 +52,7 @@ class DebugUtility
      * @param array $copyArray Related array
      * @return string HTML table assembled from array
      */
-    public static function dumpTwinArrays($referenceArray, $copyArray)
+    public static function dumpTwinArrays($referenceArray, $copyArray): string
     {
         $table = '<table>';
         foreach ($referenceArray as $key => $value) {

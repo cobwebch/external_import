@@ -43,19 +43,11 @@ Subject of email report
   It may be convenient – for example – to use the server's name, in case
   you have several servers running the same imports.
 
-Preview/Debug limit
-  This is the maximum number of rows that will
-  be dumped to the devlog when debugging is turned on. It will also be
-  used as the number of rows displayed during a preview, when that
-  feature is implemented.
-
 Debug
   Check to enable the extension to log some data during import runs.
   This may have an effect depending on the call context (e.g. in verbose mode
   on the command line, debug output will be sent to standard output).
-  Up to TYPO3 8, debug output is sent to the Developer's Log
-  (requires an extension such as `devlog <http://typo3.org/extensions/repository/view/devlog/>`_).
-  Since TYPO3 9, debug output is routed using the Core Logger API.
+  Debug output is routed using the Core Logger API.
   Hence if you wish to see more details, you may want to add specific
   configuration for the :php:`\Cobweb\ExternalImport\Importer` class which centralizes logging.
   Example:
@@ -74,7 +66,7 @@ Debug
 		];
 
 Disable logging
-  Disables logging by TCEmain. By default
+  Disables logging by the TYPO3 Core Engine. By default
   an entry will be written in the System > Log for each record
   touched by the import process. This may create quite a lot of log
   entries on large imports. Checking this box disables logging for
@@ -84,7 +76,7 @@ Disable logging
   .. warning::
 
      There is one big drawback to this method however.
-     If TCEmain logging is disabled, errors are not tracked at all.
+     If core logging is disabled, errors are not tracked at all.
      This means that the import will run happily all the time and
      never report errors. You will unfortunately have to choose
      between errors not being reported and your log being flooded.

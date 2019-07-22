@@ -15,7 +15,8 @@ namespace Cobweb\ExternalImport\Domain\Model;
  */
 
 use Cobweb\ExternalImport\Importer;
-use Cobweb\ExternalImport\Step\TransformDataStep;
+use Cobweb\ExternalImport\Utility\StepUtility;
+use Cobweb\Svconnector\Service\ConnectorBase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -66,24 +67,24 @@ class Configuration
     protected $steps = [];
 
     /**
-     * @var \Cobweb\Svconnector\Service\ConnectorBase Reference to the connector object
+     * @var ConnectorBase Reference to the connector object
      */
     protected $connector;
 
     /**
-     * @var \Cobweb\ExternalImport\Utility\StepUtility
+     * @var StepUtility
      */
     protected $stepUtility;
 
-    public function injectStepUtility(\Cobweb\ExternalImport\Utility\StepUtility $stepUtility)
+    public function injectStepUtility(StepUtility $stepUtility): void
     {
         $this->stepUtility = $stepUtility;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTable()
+    public function getTable(): ?string
     {
         return $this->table;
     }
@@ -91,7 +92,7 @@ class Configuration
     /**
      * @param string $table
      */
-    public function setTable($table)
+    public function setTable($table): void
     {
         $this->table = $table;
     }
@@ -107,15 +108,15 @@ class Configuration
     /**
      * @param int|string $index
      */
-    public function setIndex($index)
+    public function setIndex($index): void
     {
         $this->index = $index;
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getCtrlConfiguration()
+    public function getCtrlConfiguration(): ?array
     {
         return $this->ctrlConfiguration;
     }
@@ -128,7 +129,7 @@ class Configuration
      * @param array $defaultSteps List of default steps (if null will be guessed by the repository)
      * @return void
      */
-    public function setCtrlConfiguration(array $ctrlConfiguration, $defaultSteps = null)
+    public function setCtrlConfiguration(array $ctrlConfiguration, $defaultSteps = null): void
     {
         $this->ctrlConfiguration = $ctrlConfiguration;
         // Define the process default steps, depending on process type or the predefined value
@@ -183,9 +184,9 @@ class Configuration
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getColumnConfiguration()
+    public function getColumnConfiguration(): ?array
     {
         return $this->columnConfiguration;
     }
@@ -195,7 +196,7 @@ class Configuration
      *
      * @param array $columnConfiguration
      */
-    public function setColumnConfiguration(array $columnConfiguration)
+    public function setColumnConfiguration(array $columnConfiguration): void
     {
         $this->columnConfiguration = $columnConfiguration;
         $this->sortTransformationProperties();
@@ -207,7 +208,7 @@ class Configuration
      * @param string $column Name of the column
      * @return array
      */
-    public function getConfigurationForColumn($column)
+    public function getConfigurationForColumn($column): array
     {
         if (array_key_exists($column, $this->columnConfiguration)) {
             return $this->columnConfiguration[$column];
@@ -216,9 +217,9 @@ class Configuration
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getStoragePid()
+    public function getStoragePid(): ?int
     {
         return $this->storagePid;
     }
@@ -226,7 +227,7 @@ class Configuration
     /**
      * @param int $storagePid
      */
-    public function setStoragePid($storagePid)
+    public function setStoragePid($storagePid): void
     {
         $this->storagePid = $storagePid;
     }
@@ -234,7 +235,7 @@ class Configuration
     /**
      * @return array
      */
-    public function getAdditionalFields()
+    public function getAdditionalFields(): array
     {
         return $this->additionalFields;
     }
@@ -242,7 +243,7 @@ class Configuration
     /**
      * @param array $additionalFields
      */
-    public function setAdditionalFields(array $additionalFields)
+    public function setAdditionalFields(array $additionalFields): void
     {
         $this->additionalFields = $additionalFields;
         $this->countAdditionalFields = count($additionalFields);
@@ -251,7 +252,7 @@ class Configuration
     /**
      * @return int
      */
-    public function getCountAdditionalFields()
+    public function getCountAdditionalFields(): int
     {
         return $this->countAdditionalFields;
     }
@@ -259,7 +260,7 @@ class Configuration
     /**
      * @param int $countAdditionalFields
      */
-    public function setCountAdditionalFields($countAdditionalFields)
+    public function setCountAdditionalFields($countAdditionalFields): void
     {
         $this->countAdditionalFields = $countAdditionalFields;
     }
@@ -271,23 +272,23 @@ class Configuration
      *
      * @return array
      */
-    public function getSteps()
+    public function getSteps(): array
     {
         return $this->steps;
     }
 
     /**
-     * @return \Cobweb\Svconnector\Service\ConnectorBase
+     * @return ConnectorBase
      */
-    public function getConnector()
+    public function getConnector(): \Cobweb\Svconnector\Service\ConnectorBase
     {
         return $this->connector;
     }
 
     /**
-     * @param \Cobweb\Svconnector\Service\ConnectorBase $connector
+     * @param ConnectorBase $connector
      */
-    public function setConnector(\Cobweb\Svconnector\Service\ConnectorBase $connector)
+    public function setConnector(ConnectorBase $connector): void
     {
         $this->connector = $connector;
     }
@@ -297,7 +298,7 @@ class Configuration
      *
      * @return void
      */
-    protected function sortTransformationProperties()
+    protected function sortTransformationProperties(): void
     {
         foreach ($this->columnConfiguration as $name => $configuration) {
             if (isset($configuration['transformations'])) {

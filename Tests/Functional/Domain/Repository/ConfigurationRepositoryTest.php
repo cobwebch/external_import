@@ -59,7 +59,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findByGroupFindsDesignatedGroup()
+    public function findByGroupFindsDesignatedGroup(): void
     {
         $groups = $this->subject->findByGroup('Products');
         self::assertCount(
@@ -68,7 +68,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    public function syncFlagProvider()
+    public function syncFlagProvider(): array
     {
         return [
                 'sync is true' => [
@@ -85,7 +85,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findAllGroupsReturnsListOfGroups()
+    public function findAllGroupsReturnsListOfGroups(): void
     {
         self::assertSame(
                 [
@@ -101,7 +101,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
      * @test
      * @dataProvider syncFlagProvider
      */
-    public function findBySyncFindsCorrectCountOfConfigurations($sync, $expectedCount)
+    public function findBySyncFindsCorrectCountOfConfigurations($sync, $expectedCount): void
     {
         // TODO: this is not very satisfying, because the default user provided by the backend user fixture is admin
         self::assertCount(
@@ -110,7 +110,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    public function findConfigurationProvider()
+    public function findConfigurationProvider(): array
     {
         return [
                 'simple configuration' => [
@@ -147,7 +147,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
      * @param string $expectedCtrlValue
      * @param array $expectedColumnConfiguration
      */
-    public function findConfigurationObjectReturnsExpectedConfiguration($table, $index, $expectedCtrlValue, $expectedColumnConfiguration)
+    public function findConfigurationObjectReturnsExpectedConfiguration($table, $index, $expectedCtrlValue, $expectedColumnConfiguration): void
     {
         $configuration = $this->subject->findConfigurationObject(
                 $table,
@@ -168,7 +168,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findGlobalWriteAccessReturnsAll()
+    public function findGlobalWriteAccessReturnsAll(): void
     {
         // TODO: this is not very satisfying, because the default user provided by the backend user fixture is admin
         self::assertSame(
@@ -180,7 +180,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findOrderedConfigurationsReturnsFullOrderedList()
+    public function findOrderedConfigurationsReturnsFullOrderedList(): void
     {
         $expectedList = [
                 1000 => [

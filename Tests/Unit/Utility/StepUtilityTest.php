@@ -41,7 +41,7 @@ class StepUtilityTest extends UnitTestCase
     /**
      * @return array
      */
-    public function customStepsGoodConfigurationProvider()
+    public function customStepsGoodConfigurationProvider(): array
     {
         return [
                 'insert step before first step' => [
@@ -140,7 +140,7 @@ class StepUtilityTest extends UnitTestCase
      * @param array $configuration
      * @param array $resultingSteps
      */
-    public function insertStepInsertsCustomStepAtCorrectLocation($currentSteps, $configuration, $resultingSteps)
+    public function insertStepInsertsCustomStepAtCorrectLocation($currentSteps, $configuration, $resultingSteps): void
     {
         self::assertSame(
                 $resultingSteps,
@@ -154,7 +154,7 @@ class StepUtilityTest extends UnitTestCase
     /**
      * @return array
      */
-    public function customStepsWrongConfigurationProvider()
+    public function customStepsWrongConfigurationProvider(): array
     {
         return [
                 'insert step with missing class information' => [
@@ -229,7 +229,7 @@ class StepUtilityTest extends UnitTestCase
      * @param array $configuration
      * @expectedException \Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration
      */
-    public function validateCustomStepConfigurationWithWrongInformationThrowsException($currentSteps, $configuration)
+    public function validateCustomStepConfigurationWithWrongInformationThrowsException($currentSteps, $configuration): void
     {
         $this->subject->validateCustomStepConfiguration(
                 $currentSteps,
@@ -243,7 +243,7 @@ class StepUtilityTest extends UnitTestCase
      * @param array $currentSteps
      * @param array $configuration
      */
-    public function insertStepWithWrongInformationReturnsCurrentSteps($currentSteps, $configuration)
+    public function insertStepWithWrongInformationReturnsCurrentSteps($currentSteps, $configuration): void
     {
         self::assertSame(
                 $currentSteps,

@@ -14,6 +14,10 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -28,12 +32,17 @@ class CheckPermissionsStep extends AbstractStep
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $table = $this->importer->getExternalConfiguration()->getTable();
-        if (!$GLOBALS['BE_USER']->check('tables_modify', $table)) {
+        if (!$this->getBackendUser()->check('tables_modify', $table)) {
             $this->abortFlag = true;
-            $userName = $GLOBALS['BE_USER']->user['username'];
+            $context = GeneralUtility::makeInstance(Context::class);
+            try {
+                $userName = $context->getPropertyFromAspect('backend.user', 'username');
+            } catch (AspectNotFoundException $e) {
+                $userName = 'Unknown';
+            }
             $this->importer->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_rights_for_sync',
@@ -42,5 +51,15 @@ class CheckPermissionsStep extends AbstractStep
                     )
             );
         }
+    }
+
+    /**
+     * Returns the BE user object.
+     *
+     * @return BackendUserAuthentication
+     */
+    protected function getBackendUser(): BackendUserAuthentication
+    {
+        return $GLOBALS['BE_USER'];
     }
 }

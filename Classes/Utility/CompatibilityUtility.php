@@ -26,13 +26,12 @@ class CompatibilityUtility
     /**
      * Checks whether we are running TYPO3 v8 or not (i.e. more, TYPO3 v9).
      *
+     * NOTE: this method is currently unused, but is kept as boilerplate for when the next compat check is needed.
+     *
      * @return bool
      */
-    public static function isV8()
+    public static function isV8(): bool
     {
-        if (VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch) >= VersionNumberUtility::convertVersionNumberToInteger('9.0.0')) {
-            return false;
-        }
-        return true;
+        return !(VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch) >= VersionNumberUtility::convertVersionNumberToInteger('9.0.0'));
     }
 }

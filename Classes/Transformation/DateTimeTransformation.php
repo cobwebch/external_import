@@ -49,7 +49,7 @@ class DateTimeTransformation implements SingletonInterface
         // so the offset must be added first to compensate for this
         // NOTE: this correction was made dependent on a parameter (enforceTimeZone), but it might
         // make sense to execute it all the time, given the context in which this method is called
-        if (!empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['serverTimeZone']) && !empty($params['enforceTimeZone'])) {
+        if (!empty($params['enforceTimeZone'] && !empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['serverTimeZone']))) {
             $value += ($GLOBALS['TYPO3_CONF_VARS']['SYS']['serverTimeZone'] * 3600);
         }
         // Format value only if a function was defined

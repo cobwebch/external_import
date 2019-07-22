@@ -78,7 +78,7 @@ Type
 Description
   If some MM-relations exist several times in your external data
   (because they have various additional fields), you must set this
-  property to 1, so that they are preserved (otherwise TCEmain will take
+  property to 1, so that they are preserved (otherwise the TYPO3 Core Engine will take
   only unique "uid\_local"-"uid\_foreign" pairs into account).
 
 Scope
@@ -97,8 +97,8 @@ Description
   Indicates that the data is to be sorted according to that particular
   field from the external data.
 
-  Note that since the external import relies on TCEmain to store the
-  data, TCEmain sets its own numbering for sorting, thus the value in
+  Note that since the external import relies on the TYPO3 Core Engine to store the
+  data, which sets its own numbering for sorting, thus the value in
   sorting is never used as is, but just for ordering the records. So if
   the records in the external source are already sorted, there's no need
   to define the "sorting" property.

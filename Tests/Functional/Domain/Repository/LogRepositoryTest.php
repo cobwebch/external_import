@@ -62,7 +62,7 @@ class LogRepositoryTest extends FunctionalTestCase
         }
     }
 
-    public function queryDataProvider()
+    public function queryDataProvider(): array
     {
         $searchColumns = [
                 0 => [
@@ -134,7 +134,7 @@ class LogRepositoryTest extends FunctionalTestCase
      * @param int $filteredCount The filtered number of records
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function countBySearchReturnsExpectedNumberOfRecords($parameters, $fullCount, $filteredCount)
+    public function countBySearchReturnsExpectedNumberOfRecords($parameters, $fullCount, $filteredCount): void
     {
         $this->queryParameters->setAllParameters($parameters);
         $count = $this->subject->countBySearch($this->queryParameters);
@@ -153,7 +153,7 @@ class LogRepositoryTest extends FunctionalTestCase
      * @param int $filteredCount The filtered number of records
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function findBySearchReturnsExpectedRecords($parameters, $fullCount, $filteredCount)
+    public function findBySearchReturnsExpectedRecords($parameters, $fullCount, $filteredCount): void
     {
         $this->queryParameters->setAllParameters($parameters);
         $records = $this->subject->findBySearch($this->queryParameters);

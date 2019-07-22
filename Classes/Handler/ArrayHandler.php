@@ -32,7 +32,7 @@ class ArrayHandler implements DataHandlerInterface
      * @param Importer $importer Back-reference to the current Importer instance
      * @return array
      */
-    public function handleData($rawData, Importer $importer)
+    public function handleData($rawData, Importer $importer): array
     {
         $data = [];
         $counter = 0;

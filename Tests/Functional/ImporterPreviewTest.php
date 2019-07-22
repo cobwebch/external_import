@@ -16,10 +16,21 @@ namespace Cobweb\ExternalImport\Tests\Functional;
  */
 
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Step\CheckPermissionsStep;
+use Cobweb\ExternalImport\Step\ClearCacheStep;
+use Cobweb\ExternalImport\Step\ConnectorCallbackStep;
+use Cobweb\ExternalImport\Step\HandleDataStep;
+use Cobweb\ExternalImport\Step\ReadDataStep;
+use Cobweb\ExternalImport\Step\StoreDataStep;
+use Cobweb\ExternalImport\Step\TransformDataStep;
+use Cobweb\ExternalImport\Step\ValidateConfigurationStep;
+use Cobweb\ExternalImport\Step\ValidateConnectorStep;
+use Cobweb\ExternalImport\Step\ValidateDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Lang\LanguageService;
+use \TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Test suite for the preview feature of the Importer class.
@@ -40,7 +51,7 @@ class ImporterPreviewTest extends FunctionalTestCase
     /**
      * @var Importer
      */
-    protected $subject = null;
+    protected $subject;
 
     protected function setUp()
     {
@@ -68,7 +79,7 @@ class ImporterPreviewTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function runPreviewWithWrongPreviewStepIssuesWarning()
+    public function runPreviewWithWrongPreviewStepIssuesWarning(): void
     {
         $this->subject->setPreviewStep('foo');
         $messages = $this->subject->synchronize(
@@ -77,16 +88,16 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
         self::assertCount(
                 1,
-                $messages[\TYPO3\CMS\Core\Messaging\AbstractMessage::WARNING]
+                $messages[AbstractMessage::WARNING]
         );
     }
 
     /**
      * @test
      */
-    public function runPreviewOnCheckPermissionsStepReturnsNull()
+    public function runPreviewOnCheckPermissionsStepReturnsNull(): void
     {
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\CheckPermissionsStep::class);
+        $this->subject->setPreviewStep(CheckPermissionsStep::class);
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_tag',
                 0
@@ -99,9 +110,9 @@ class ImporterPreviewTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function runPreviewOnValidateConfigurationStepReturnsNull()
+    public function runPreviewOnValidateConfigurationStepReturnsNull(): void
     {
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\ValidateConfigurationStep::class);
+        $this->subject->setPreviewStep(ValidateConfigurationStep::class);
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_tag',
                 0
@@ -114,9 +125,9 @@ class ImporterPreviewTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function runPreviewOnValidateConnectorStepReturnsNull()
+    public function runPreviewOnValidateConnectorStepReturnsNull(): void
     {
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\ValidateConnectorStep::class);
+        $this->subject->setPreviewStep(ValidateConnectorStep::class);
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_tag',
                 0
@@ -126,7 +137,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    public function readPreviewProvider()
+    public function readPreviewProvider(): array
     {
         return [
                 'xml-type data' => [
@@ -174,14 +185,14 @@ class ImporterPreviewTest extends FunctionalTestCase
      * @param $index
      * @param $result
      */
-    public function runPreviewOnReadDataStepReturnsRawData($table, $index, $result)
+    public function runPreviewOnReadDataStepReturnsRawData($table, $index, $result): void
     {
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\ReadDataStep::class);
+        $this->subject->setPreviewStep(ReadDataStep::class);
         $messages = $this->subject->synchronize(
                 $table,
                 $index
         );
-        // The result variable, may be pointing to a file, in which case we want to read it
+        // The result variable may be pointing to a file, in which case we want to read it
         if (is_string($result) && strpos($result, 'EXT:') === 0) {
             $result = file_get_contents(
                     GeneralUtility::getFileAbsFileName($result)
@@ -193,7 +204,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    public function handlePreviewProvider()
+    public function handlePreviewProvider(): array
     {
         return [
                 'xml-type data' => [
@@ -307,9 +318,9 @@ class ImporterPreviewTest extends FunctionalTestCase
      * @param $index
      * @param $result
      */
-    public function runPreviewOnHandleDataStepReturnsHandledData($table, $index, $result)
+    public function runPreviewOnHandleDataStepReturnsHandledData($table, $index, $result): void
     {
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\HandleDataStep::class);
+        $this->subject->setPreviewStep(HandleDataStep::class);
         $messages = $this->subject->synchronize(
                 $table,
                 $index
@@ -323,9 +334,9 @@ class ImporterPreviewTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function runPreviewOnValidateDataStepReturnsNull()
+    public function runPreviewOnValidateDataStepReturnsNull(): void
     {
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\ValidateDataStep::class);
+        $this->subject->setPreviewStep(ValidateDataStep::class);
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_tag',
                 0
@@ -335,7 +346,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    public function transformPreviewProvider()
+    public function transformPreviewProvider(): array
     {
         return [
                 'tags' => [
@@ -392,9 +403,9 @@ class ImporterPreviewTest extends FunctionalTestCase
      * @param $index
      * @param $result
      */
-    public function runPreviewOnTransformDataStepReturnsTransformedData($table, $index, $result)
+    public function runPreviewOnTransformDataStepReturnsTransformedData($table, $index, $result): void
     {
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\TransformDataStep::class);
+        $this->subject->setPreviewStep(TransformDataStep::class);
         $messages = $this->subject->synchronize(
                 $table,
                 $index
@@ -405,7 +416,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    public function storePreviewProvider()
+    public function storePreviewProvider(): array
     {
         return [
                 'tags' => [
@@ -632,7 +643,7 @@ class ImporterPreviewTest extends FunctionalTestCase
      * @param int $recordsCount How many records should be in the database
      * @param $result
      */
-    public function runPreviewOnStoreDataStepReturnsStorageDataAndWritesNothingToDatabase($fixtures, $prerequisites, $table, $index, $testDatabase, $recordsCount, $result)
+    public function runPreviewOnStoreDataStepReturnsStorageDataAndWritesNothingToDatabase($fixtures, $prerequisites, $table, $index, $testDatabase, $recordsCount, $result): void
     {
         // Load designated fixture files
         if (count($fixtures) > 0) {
@@ -659,7 +670,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             }
         }
         // Run the actual test
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\StoreDataStep::class);
+        $this->subject->setPreviewStep(StoreDataStep::class);
         $this->subject->setTestMode(true);
         $messages = $this->subject->synchronize(
                 $table,
@@ -681,7 +692,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         }
     }
 
-    public function clearCachePreviewProvider()
+    public function clearCachePreviewProvider(): array
     {
         return [
                 'tags' => [
@@ -710,14 +721,14 @@ class ImporterPreviewTest extends FunctionalTestCase
      * @param $index
      * @param $result
      */
-    public function runPreviewOnClearCacheStepReturnsCacheListAndClearsNothing($table, $index, $result)
+    public function runPreviewOnClearCacheStepReturnsCacheListAndClearsNothing($table, $index, $result): void
     {
         try {
             $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.xml');
         } catch (\Exception $e) {
             self::markTestSkipped('Could not load fixture file');
         }
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\ClearCacheStep::class);
+        $this->subject->setPreviewStep(ClearCacheStep::class);
         $this->subject->setTestMode(true);
         $messages = $this->subject->synchronize(
                 $table,
@@ -738,9 +749,9 @@ class ImporterPreviewTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function runPreviewOnConnectorCallbackStepReturnsNull()
+    public function runPreviewOnConnectorCallbackStepReturnsNull(): void
     {
-        $this->subject->setPreviewStep(\Cobweb\ExternalImport\Step\ConnectorCallbackStep::class);
+        $this->subject->setPreviewStep(ConnectorCallbackStep::class);
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_tag',
                 0

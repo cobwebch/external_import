@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Utility\MappingUtility;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -53,7 +54,7 @@ class StoreDataStep extends AbstractStep
     protected $substructureFields = [];
 
     /**
-     * @var \Cobweb\ExternalImport\Utility\MappingUtility
+     * @var MappingUtility
      */
     protected $mappingUtility;
 
@@ -62,7 +63,7 @@ class StoreDataStep extends AbstractStep
      */
     protected $uidRepository;
 
-    public function injectMappingUtility(\Cobweb\ExternalImport\Utility\MappingUtility $mappingUtility)
+    public function injectMappingUtility(MappingUtility $mappingUtility): void
     {
         $this->mappingUtility = $mappingUtility;
     }
@@ -73,7 +74,7 @@ class StoreDataStep extends AbstractStep
      * @return void
      * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
-    public function run()
+    public function run(): void
     {
         $this->mappingUtility->setImporter($this->importer);
         $records = $this->getData()->getRecords();
@@ -103,6 +104,7 @@ class StoreDataStep extends AbstractStep
         $hasMMRelations = count($this->mappings);
 
         // Insert or update records depending on existing uids
+        $inserts = 0;
         $updates = 0;
         $moves = 0;
         $updatedUids = [];
@@ -281,9 +283,9 @@ class StoreDataStep extends AbstractStep
         $tce = GeneralUtility::makeInstance(DataHandler::class);
         // Check if TCEmain logging should be turned on or off
         $extensionConfiguration = $this->importer->getExtensionConfiguration();
-        $disableLogging = (empty($extensionConfiguration['disableLog'])) ? false : true;
+        $disableLogging = empty($extensionConfiguration['disableLog']) ? false : true;
         if (array_key_exists('disableLog', $ctrlConfiguration)) {
-            $disableLogging = (empty($ctrlConfiguration['disableLog'])) ? false : true;
+            $disableLogging = empty($ctrlConfiguration['disableLog']) ? false : true;
         }
         $tce->enableLogging = !$disableLogging;
         // If the table has a sorting field, reverse the data array,
@@ -309,7 +311,7 @@ class StoreDataStep extends AbstractStep
 
                 // Substitute NEW temporary keys with actual IDs in the "stored records" array
                 foreach ($storedRecords as $index => $record) {
-                    if (strpos($record['uid'], 'NEW') === 0 && isset($tce->substNEWwithIDs[$record['uid']])) {
+                    if (isset($tce->substNEWwithIDs[$record['uid']]) && strpos($record['uid'], 'NEW') === 0) {
                         $storedRecords[$index]['uid'] = $tce->substNEWwithIDs[$record['uid']];
                     }
                 }
@@ -526,7 +528,7 @@ class StoreDataStep extends AbstractStep
      *
      * @param array $columnConfiguration External Import configuration for the columns
      */
-    public function prepareStructuredInformation($columnConfiguration)
+    public function prepareStructuredInformation($columnConfiguration): void
     {
         foreach ($columnConfiguration as $columnName => $columnData) {
             // Assemble the list of fields defined with the "substructureFields" property
@@ -571,7 +573,7 @@ class StoreDataStep extends AbstractStep
      * @param array $records The records being handled
      * @return void
      */
-    public function handleMmRelations($ctrlConfiguration, $columnConfiguration, $records)
+    public function handleMmRelations($ctrlConfiguration, $columnConfiguration, $records): void
     {
         $this->mappings = [];
         $this->fullMappings = [];
@@ -687,7 +689,7 @@ class StoreDataStep extends AbstractStep
      * @return void
      * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
-    protected function postProcessMmRelations()
+    protected function postProcessMmRelations(): void
     {
         $this->importer->debug(
                 'Handling full mappings',
@@ -743,6 +745,7 @@ class StoreDataStep extends AbstractStep
                 }
                 $conditions = $additionalWheres;
                 $conditions[$referenceField] = (int)$uid;
+                // TODO: check this. It is unused!
                 $conditionTypes = $additionalWhereTypes;
                 $conditionTypes[] = Connection::PARAM_INT;
                 $connection->delete(
@@ -788,7 +791,7 @@ class StoreDataStep extends AbstractStep
      * @param array $errorLog
      * @return void
      */
-    protected function reportTceErrors($errorLog)
+    protected function reportTceErrors($errorLog): void
     {
         if (count($errorLog) > 0) {
             // If there are errors, get these messages from the sys_log table (assuming they are the latest ones)
@@ -843,8 +846,7 @@ class StoreDataStep extends AbstractStep
                         );
                     }
                     $this->importer->addMessage(
-                            $message,
-                            AbstractMessage::ERROR
+                            $message
                     );
                     $this->importer->debug(
                             $message,
@@ -873,7 +875,7 @@ class StoreDataStep extends AbstractStep
      * @param array $data
      * @return array
      */
-    public function sortPagesData(array $data)
+    public function sortPagesData(array $data): array
     {
         $originalData = $data;
         $levelPages = [];
@@ -907,7 +909,7 @@ class StoreDataStep extends AbstractStep
      * @param array $sortedData
      * @return array
      */
-    public function extractLevelPages(array $levelPages, array &$data, array &$sortedData)
+    public function extractLevelPages(array $levelPages, array &$data, array &$sortedData): array
     {
         $nextLevelPages = [];
         $pagesForLevel = [];
@@ -934,7 +936,7 @@ class StoreDataStep extends AbstractStep
      * @param \Exception $e
      * @return void
      */
-    protected function handleTceException(\Exception $e)
+    protected function handleTceException(\Exception $e): void
     {
         // Set the abort flag to interrupt the process
         $this->abortFlag = true;

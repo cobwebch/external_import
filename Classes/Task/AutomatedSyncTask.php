@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Task;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -73,7 +74,7 @@ class AutomatedSyncTask extends AbstractTask
             }
             // Exit early if no configuration was found
             if (count($configurations) === 0) {
-                throw new \Cobweb\ExternalImport\Exception\NoConfigurationException(
+                throw new NoConfigurationException(
                         'No configuration was found for synchronization. Please check your task settings or your configuration via the BE module.',
                         1530390188
                 );
@@ -104,7 +105,7 @@ class AutomatedSyncTask extends AbstractTask
                     $globalStatus = 'WARNING';
                 }
                 // Assemble the subject and send the mail
-                $subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
+                $subject = empty($extensionConfiguration['reportSubject']) ? '' : $extensionConfiguration['reportSubject'];
                 $subject .= ' [' . $globalStatus . '] ' . 'Full synchronization';
                 $importer->getReportingUtility()->sendMail($subject, $reportContent);
             }
@@ -123,7 +124,7 @@ class AutomatedSyncTask extends AbstractTask
                     $globalStatus = 'WARNING';
                 }
                 // Assemble the subject and send the mail
-                $subject = (empty($extensionConfiguration['reportSubject'])) ? '' : $extensionConfiguration['reportSubject'];
+                $subject = empty($extensionConfiguration['reportSubject']) ? '' : $extensionConfiguration['reportSubject'];
                 $subject .= ' [' . $globalStatus . '] ' . 'Synchronization of table ' . $this->table . ', index ' . $this->index;
                 $importer->getReportingUtility()->sendMail($subject, $reportContent);
             }

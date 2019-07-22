@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Validator;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
@@ -68,7 +69,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider validConfigurationProvider
      */
-    public function isValidReturnsTrueForValidConfiguration($configuration)
+    public function isValidReturnsTrueForValidConfiguration($configuration): void
     {
         self::assertTrue(
                 $this->subject->isValid(
@@ -80,7 +81,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
         );
     }
 
-    public function invalidConfigurationProvider()
+    public function invalidConfigurationProvider(): array
     {
         return array(
                 'Missing data property' => array(
@@ -114,7 +115,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidConfigurationProvider
      */
-    public function isValidReturnsFalseForInvalidConfiguration($configuration)
+    public function isValidReturnsFalseForInvalidConfiguration($configuration): void
     {
         self::assertFalse(
                 $this->subject->isValid(
@@ -126,7 +127,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
         );
     }
 
-    public function invalidDataPropertyConfigurationProvider()
+    public function invalidDataPropertyConfigurationProvider(): array
     {
         return array(
                 'Missing data property' => array(
@@ -145,7 +146,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidDataPropertyConfigurationProvider
      */
-    public function validateDataPropertyWithInvalidValueRaisesError($configuration)
+    public function validateDataPropertyWithInvalidValueRaisesError($configuration): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -163,7 +164,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function validateConnectorPropertyWithInvalidValueRaisesError()
+    public function validateConnectorPropertyWithInvalidValueRaisesError(): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -181,20 +182,20 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
         );
     }
 
-    public function invalidDataHandlerPropertyConfigurationProvider()
+    public function invalidDataHandlerPropertyConfigurationProvider(): array
     {
-        return array(
-                'Not existing class' => array(
-                        array(
+        return [
+                'Not existing class' => [
+                        [
                                 'dataHandler' => 'Cobweb\\ExternalImport\\' . time()
-                        )
-                ),
-                'Class not implementing proper interface' => array(
-                        array(
-                                'dataHandler' => \Cobweb\ExternalImport\Importer::class
-                        )
-                )
-        );
+                        ]
+                ],
+                'Class not implementing proper interface' => [
+                        [
+                                'dataHandler' => Importer::class
+                        ]
+                ]
+        ];
     }
 
     /**
@@ -202,7 +203,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidDataHandlerPropertyConfigurationProvider
      */
-    public function validateDataHandlerPropertyWithInvalidValueRaisesNotice($configuration)
+    public function validateDataHandlerPropertyWithInvalidValueRaisesNotice($configuration): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -220,7 +221,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function validateNodetypePropertyForXmlDataWithEmptyValueRaisesError()
+    public function validateNodetypePropertyForXmlDataWithEmptyValueRaisesError(): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -240,7 +241,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function validateReferenceUidPropertyWithEmptyValueRaisesError()
+    public function validateReferenceUidPropertyWithEmptyValueRaisesError(): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -258,7 +259,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function validatePriorityPropertyWithEmptyValueRaisesNotice()
+    public function validatePriorityPropertyWithEmptyValueRaisesNotice(): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -278,7 +279,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function validatePidPropertyWithEmptyValueForRootTableRaisesNotice()
+    public function validatePidPropertyWithEmptyValueForRootTableRaisesNotice(): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -297,7 +298,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
         );
     }
 
-    public function invalidPidPropertyConfigurationProvider()
+    public function invalidPidPropertyConfigurationProvider(): array
     {
         return array(
                 'Missing pid, non-root table' => array(
@@ -329,7 +330,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidPidPropertyConfigurationProvider
      */
-    public function validatePidPropertyWithInvalidValueRaisesError($table, $configuration)
+    public function validatePidPropertyWithInvalidValueRaisesError($table, $configuration): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -347,7 +348,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function validateUseColumnIndexPropertyWithInvalidValueRaisesError()
+    public function validateUseColumnIndexPropertyWithInvalidValueRaisesError(): void
     {
         $this->subject->isValid(
                 $this->prepareConfigurationObject(
@@ -367,7 +368,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function addResultAddsResults()
+    public function addResultAddsResults(): void
     {
         $results = array(
                 'foo' => array(
@@ -388,7 +389,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function addResultForPropertyAddsResultsForProperty()
+    public function addResultForPropertyAddsResultsForProperty(): void
     {
         $results = array(
                 'foo' => array(
@@ -410,7 +411,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function addResultForSeverityAddsResultsForSeverity()
+    public function addResultForSeverityAddsResultsForSeverity(): void
     {
         $results = [
                 'foo' => [
@@ -438,7 +439,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      * @param array $configuration
      * @return Configuration
      */
-    protected function prepareConfigurationObject($table, $configuration)
+    protected function prepareConfigurationObject($table, $configuration): Configuration
     {
         $configurationObject = $this->objectManager->get(Configuration::class);
         $configurationObject->setTable($table);

@@ -16,7 +16,6 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Exception\MissingConfigurationException;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -48,7 +47,7 @@ class UidRepository
      *
      * @param Configuration $configuration
      */
-    public function setConfiguration(Configuration $configuration)
+    public function setConfiguration(Configuration $configuration): void
     {
         $this->configuration = $configuration;
     }
@@ -63,7 +62,7 @@ class UidRepository
      * @return void
      * @throws MissingConfigurationException
      */
-    protected function retrieveExistingUids()
+    protected function retrieveExistingUids(): void
     {
         // If no configuration was defined, exit early with exception
         if ($this->configuration === null) {
@@ -76,13 +75,13 @@ class UidRepository
         $table = $this->configuration->getTable();
         $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
         $where = '1 = 1';
+        // TODO: use QueryBuilder to add constraints properly (verify that whereClause indeed works)
         if ($ctrlConfiguration['enforcePid']) {
             $where = 'pid = ' . (int)$this->configuration->getStoragePid();
         }
         if (!empty($ctrlConfiguration['whereClause'])) {
             $where .= ' AND ' . $ctrlConfiguration['whereClause'];
         }
-        $where .= BackendUtility::deleteClause($table);
         $referenceUidField = $ctrlConfiguration['referenceUid'];
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()
@@ -111,10 +110,10 @@ class UidRepository
     /**
      * Returns the list of primary keys of existing records in the database.
      *
-     * @return array
+     * @return array|null
      * @throws MissingConfigurationException
      */
-    public function getExistingUids()
+    public function getExistingUids(): ?array
     {
         // If the list is UIDs is null, assume it wasn't fetched yet and do so
         if ($this->existingUids === null) {
@@ -128,7 +127,7 @@ class UidRepository
      *
      * @return void
      */
-    public function resetExistingUids()
+    public function resetExistingUids(): void
     {
         $this->existingUids = null;
     }
@@ -136,10 +135,10 @@ class UidRepository
     /**
      * Returns the list of storage PIDs of existing records in the database.
      *
-     * @return array
+     * @return array|null
      * @throws MissingConfigurationException
      */
-    public function getCurrentPids()
+    public function getCurrentPids(): ?array
     {
         // If the list is UIDs is null, assume it wasn't fetched yet and do so
         if ($this->currentPids === null) {
@@ -153,7 +152,7 @@ class UidRepository
      *
      * @return void
      */
-    public function resetCurrentPids()
+    public function resetCurrentPids(): void
     {
         $this->currentPids = null;
     }

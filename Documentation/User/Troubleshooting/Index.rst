@@ -14,7 +14,7 @@ The automatic synchronization is not being executed
 
 You may observe that the scheduled synchronization is not taking place
 at all. Even if the debug mode is activated and you look at the
-devLog, you will see no call to external\_import. This may happen when
+logs, you will see no call to external\_import. This may happen when
 you set a too high frequency for synchronizations (like 1 minute for
 example). If the previous synchronization has not finished, the
 Scheduler will prevent the new one from taking place. The symptom is a

@@ -1,3 +1,7 @@
+2019-07-22 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Drop compatibility with TYPO3 v8, resolves #79
+
 2019-06-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Sanitize usage of uidRepository, resolves #101

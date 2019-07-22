@@ -36,7 +36,7 @@ class XmlHandlerTest extends UnitTestCase
         $this->subject = new XmlHandler();
     }
 
-    public function getValueSuccessProvider()
+    public function getValueSuccessProvider(): array
     {
         return [
                 'direct simple value' => [
@@ -79,7 +79,7 @@ class XmlHandlerTest extends UnitTestCase
      * @param mixed $result
      * @throws \Exception
      */
-    public function getValueReturnsValueIfFound($structure, $configuration, $result)
+    public function getValueReturnsValueIfFound($structure, $configuration, $result): void
     {
         // Load the XML into a DOM object
         $dom = new \DOMDocument();
@@ -93,7 +93,7 @@ class XmlHandlerTest extends UnitTestCase
         );
     }
 
-    public function getSubstructureProvider()
+    public function getSubstructureProvider(): array
     {
         return [
                 [
@@ -132,7 +132,7 @@ class XmlHandlerTest extends UnitTestCase
      * @param array $result
      * @throws \Exception
      */
-    public function getSubstructureValuesReturnsExpectedRows($structure, $configuration, $result)
+    public function getSubstructureValuesReturnsExpectedRows($structure, $configuration, $result): void
     {
         // Load the XML into a DOM object
         $dom = new \DOMDocument();

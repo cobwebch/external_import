@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -26,7 +27,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class MappingUtility
 {
     /**
-     * @var \Cobweb\ExternalImport\Importer Back-reference to the current Importer instance
+     * @var Importer Back-reference to the current Importer instance
      */
     protected $importer;
 
@@ -51,7 +52,7 @@ class MappingUtility
      * @param array $mappingInformation Mapping configuration
      * @return array
      */
-    public function mapData($records, $table, $columnName, $mappingInformation)
+    public function mapData($records, $table, $columnName, $mappingInformation): array
     {
         $mappings = $this->getMapping($mappingInformation);
         $numRecords = count($records);
@@ -183,7 +184,7 @@ class MappingUtility
      * @param array $mappingData Data defining the mapping of fields
      * @return array Hash table for mapping
      */
-    public function getMapping($mappingData)
+    public function getMapping($mappingData): array
     {
         $localMapping = array();
 
@@ -195,10 +196,7 @@ class MappingUtility
             // No value map, get values from the database
         } else {
             // Assemble query and get data
-            $valueField = 'uid';
-            if (isset($mappingData['valueField'])) {
-                $valueField = $mappingData['valueField'];
-            }
+            $valueField = $mappingData['valueField'] ?? 'uid';
             $referenceField = $mappingData['referenceField'];
             // Define where clause
             $whereClause = '1 = 1';
@@ -278,9 +276,9 @@ class MappingUtility
     /**
      * Sets a reference to the current Importer instance.
      *
-     * @param \Cobweb\ExternalImport\Importer $importer
+     * @param Importer $importer
      */
-    public function setImporter($importer)
+    public function setImporter($importer): void
     {
         $this->importer = $importer;
     }

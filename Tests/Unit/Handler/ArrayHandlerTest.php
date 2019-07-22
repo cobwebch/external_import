@@ -36,7 +36,7 @@ class ArrayHandlerTest extends UnitTestCase
         $this->subject = new ArrayHandler();
     }
 
-    public function getValueSuccessProvider()
+    public function getValueSuccessProvider(): array
     {
         return [
                 'direct simple value' => [
@@ -85,7 +85,7 @@ class ArrayHandlerTest extends UnitTestCase
      * @param array $configuration
      * @param mixed $result
      */
-    public function getValueReturnsValueIfFound($record, $configuration, $result)
+    public function getValueReturnsValueIfFound($record, $configuration, $result): void
     {
         $value = $this->subject->getValue($record, $configuration);
         self::assertSame(
@@ -94,7 +94,7 @@ class ArrayHandlerTest extends UnitTestCase
         );
     }
 
-    public function getValueFailWithInvalidArgumentExceptionProvider()
+    public function getValueFailWithInvalidArgumentExceptionProvider(): array
     {
         return [
                 'direct simple value' => [
@@ -128,11 +128,12 @@ class ArrayHandlerTest extends UnitTestCase
      * @param array $configuration
      * @expectedException \InvalidArgumentException
      */
-    public function getValueThrowsInvalidArgumentExceptionIfValueNotFound($record, $configuration) {
+    public function getValueThrowsInvalidArgumentExceptionIfValueNotFound($record, $configuration): void
+    {
         $value = $this->subject->getValue($record, $configuration);
     }
 
-    public function getSubstructureProvider()
+    public function getSubstructureProvider(): array
     {
         return [
                 [
@@ -184,7 +185,7 @@ class ArrayHandlerTest extends UnitTestCase
      * @param array $configuration
      * @param array $result
      */
-    public function getSubstructureValuesReturnsExpectedRows($structure, $configuration, $result)
+    public function getSubstructureValuesReturnsExpectedRows($structure, $configuration, $result): void
     {
         self::assertSame(
                 $result,
