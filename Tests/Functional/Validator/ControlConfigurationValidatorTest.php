@@ -45,23 +45,23 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
 
     public function validConfigurationProvider(): array
     {
-        return array(
-                'Typical configuration for array type' => array(
-                        array(
+        return [
+                'Typical configuration for array type' => [
+                        [
                                 'data' => 'array',
                                 'referenceUid' => 'external_id',
                                 'pid' => 12
-                        )
-                ),
-                'Typical configuration for xml type' => array(
-                        array(
+                        ]
+                ],
+                'Typical configuration for xml type' => [
+                        [
                                 'data' => 'xml',
                                 'nodetype' => 'foo',
                                 'referenceUid' => 'external_id',
                                 'pid' => 12
-                        )
-                )
-        );
+                        ]
+                ]
+        ];
     }
 
     /**
@@ -83,31 +83,31 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
 
     public function invalidConfigurationProvider(): array
     {
-        return array(
-                'Missing data property' => array(
-                        array(
+        return [
+                'Missing data property' => [
+                        [
                                 'reference_uid' => 'external_id'
-                        )
-                ),
-                'Invalid data property' => array(
-                        array(
+                        ]
+                ],
+                'Invalid data property' => [
+                        [
                                 'data' => 'foo',
                                 'reference_uid' => 'external_id'
-                        )
-                ),
-                'Invalid connector property' => array(
-                        array(
+                        ]
+                ],
+                'Invalid connector property' => [
+                        [
                                 'data' => 'array',
                                 'reference_uid' => 'external_id',
                                 'connector' => time()
-                        )
-                ),
-                'Missing reference_uid property' => array(
-                        array(
+                        ]
+                ],
+                'Missing reference_uid property' => [
+                        [
                                 'data' => 'array'
-                        )
-                )
-        );
+                        ]
+                ]
+        ];
     }
 
     /**
@@ -129,16 +129,16 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
 
     public function invalidDataPropertyConfigurationProvider(): array
     {
-        return array(
-                'Missing data property' => array(
-                        array()
-                ),
-                'Invalid data property' => array(
-                        array(
+        return [
+                'Missing data property' => [
+                        []
+                ],
+                'Invalid data property' => [
+                        [
                                 'data' => 'foo'
-                        )
-                )
-        );
+                        ]
+                ]
+        ];
     }
 
     /**
@@ -300,28 +300,28 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
 
     public function invalidPidPropertyConfigurationProvider(): array
     {
-        return array(
-                'Missing pid, non-root table' => array(
+        return [
+                'Missing pid, non-root table' => [
                         'tt_content',
-                        array(
+                        [
                             // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
                             // be set to 0 if missing from configuration
                             'pid' => 0
-                        )
-                ),
-                'Negative pid' => array(
+                        ]
+                ],
+                'Negative pid' => [
                         'tt_content',
-                        array(
+                        [
                                 'pid' => -12
-                        )
-                ),
-                'Positive pid, root table' => array(
+                        ]
+                ],
+                'Positive pid, root table' => [
                         'be_users',
-                        array(
+                        [
                                 'pid' => 12
-                        )
-                )
-        );
+                        ]
+                ]
+        ];
     }
 
     /**
@@ -370,12 +370,12 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      */
     public function addResultAddsResults(): void
     {
-        $results = array(
-                'foo' => array(
+        $results = [
+                'foo' => [
                         'severity' => FlashMessage::WARNING,
                         'message' => 'Something went wrong'
-                )
-        );
+                ]
+        ];
         $this->subject->getResults()->add(
                 'foo',
                 $results['foo']['message']
@@ -391,12 +391,12 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
      */
     public function addResultForPropertyAddsResultsForProperty(): void
     {
-        $results = array(
-                'foo' => array(
+        $results = [
+                'foo' => [
                         'severity' => FlashMessage::WARNING,
                         'message' => 'Something went wrong'
-                )
-        );
+                ]
+        ];
         $this->subject->getResults()->add(
                 'foo',
                 $results['foo']['message']

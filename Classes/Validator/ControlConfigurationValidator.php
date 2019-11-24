@@ -109,8 +109,7 @@ class ControlConfigurationValidator
             $this->results->add(
                     'data',
                     LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingDataProperty',
-                            'external_import'
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingDataProperty'
                     ),
                     AbstractMessage::ERROR
             );
@@ -118,8 +117,7 @@ class ControlConfigurationValidator
             $this->results->add(
                     'data',
                     LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty',
-                            'external_import'
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty'
                     ),
                     AbstractMessage::ERROR
             );
@@ -146,8 +144,7 @@ class ControlConfigurationValidator
                 $this->results->add(
                         'connector',
                         LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:unavailableConnector',
-                                'external_import'
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:unavailableConnector'
                         ),
                         AbstractMessage::ERROR
                 );
@@ -171,8 +168,7 @@ class ControlConfigurationValidator
                         $this->results->add(
                                 'dataHandler',
                                 LocalizationUtility::translate(
-                                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerInterfaceIssue',
-                                        'external_import'
+                                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerInterfaceIssue'
                                 ),
                                 AbstractMessage::NOTICE
                         );
@@ -182,8 +178,7 @@ class ControlConfigurationValidator
                     $this->results->add(
                             'dataHandler',
                             LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNoInstance',
-                                    'external_import'
+                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNoInstance'
                             ),
                             AbstractMessage::NOTICE
                     );
@@ -192,8 +187,7 @@ class ControlConfigurationValidator
                 $this->results->add(
                         'dataHandler',
                         LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNotFound',
-                                'external_import'
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNotFound'
                         ),
                         AbstractMessage::NOTICE
                 );
@@ -213,8 +207,7 @@ class ControlConfigurationValidator
             $this->results->add(
                     'nodetype',
                     LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodetypeProperty',
-                            'external_import'
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodetypeProperty'
                     ),
                     AbstractMessage::ERROR
             );
@@ -233,8 +226,7 @@ class ControlConfigurationValidator
             $this->results->add(
                     'referenceUid',
                     LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingReferenceUidProperty',
-                            'external_import'
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingReferenceUidProperty'
                     ),
                     AbstractMessage::ERROR
             );
@@ -254,10 +246,10 @@ class ControlConfigurationValidator
                     'priority',
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:defaultPriorityValue',
-                            'external_import',
-                            array(
+                            null,
+                            [
                                     Importer::DEFAULT_PRIORITY
-                            )
+                            ]
                     ),
                     AbstractMessage::NOTICE
             );
@@ -293,10 +285,10 @@ class ControlConfigurationValidator
                         'pid',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPageNotAllowed',
-                                'external_import',
-                                array(
+                                null,
+                                [
                                         $this->table
-                                )
+                                ]
                         ),
                         AbstractMessage::ERROR
                 );
@@ -318,10 +310,10 @@ class ControlConfigurationValidator
                         'pid',
                         LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidPidPropertyOnlyRoot',
-                                'external_import',
-                                array(
+                                null,
+                                [
                                         $this->table
-                                )
+                                ]
                         ),
                         AbstractMessage::ERROR
                 );
@@ -345,11 +337,11 @@ class ControlConfigurationValidator
                     'useColumnIndex',
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:wrongUseColumnIndexProperty',
-                            'external_import',
-                            array(
+                            null,
+                            [
                                     $property,
                                     $this->table
-                            )
+                            ]
                     ),
                     AbstractMessage::ERROR
             );
@@ -381,11 +373,11 @@ class ControlConfigurationValidator
                             'customSteps',
                             LocalizationUtility::translate(
                                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidCustomStepsProperty',
-                                    'external_import',
-                                    array(
+                                    null,
+                                    [
                                             $e->getMessage(),
                                             $e->getCode()
-                                    )
+                                    ]
                             ),
                             AbstractMessage::NOTICE
                     );
