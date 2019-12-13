@@ -1,6 +1,6 @@
 <?php
 
-namespace Cobweb\ExternalImport\Tests\Unit\Validator;
+namespace Cobweb\ExternalImport\Tests\Functional\Validator;
 
 /*
  * This file is part of the TYPO3 CMS project.
