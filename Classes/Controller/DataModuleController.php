@@ -89,17 +89,6 @@ class DataModuleController extends ActionController
     protected function initializeAction()
     {
         $this->defaultViewObjectName = BackendTemplateView::class;
-        // This is needed for backward-compatibility with TYPO3 v7. In TYPO3 v8, the date picker widget
-        // returns ISO-formatted date which is nicely converted into a DateTime object. In TYPO3 v7, the
-        // date picker returns a timestamp, which needs to be "manually" converted to a DateTime object.
-        // TODO: remove in the next release, when compatibility with TYPO3 v7 is dropped.
-        if ($this->request->hasArgument('start_date_hr')) {
-            $date = $this->request->getArgument('start_date_hr');
-            if (\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($date)) {
-                $dateObject = new \DateTime('@' . $date);
-                $this->request->setArgument('start_date_hr', $dateObject);
-            }
-        }
     }
 
     /**
