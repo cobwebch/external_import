@@ -202,6 +202,19 @@
 					</td>
 				</tr>
 				<tr>
+					<td><f:translate id="updateSlugs" /></td>
+					<td>
+						<f:if condition="{ctrlConfiguration.updateSlugs}">
+							<f:then>
+								<f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:yes" />
+							</f:then>
+							<f:else>
+								<f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:no" />
+							</f:else>
+						</f:if>
+					</td>
+				</tr>
+				<tr>
 					<td><f:translate id="columnIndex" /></td>
 					<td>
 						<f:if condition="{ctrlConfiguration.useColumnIndex}">

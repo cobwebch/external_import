@@ -558,33 +558,11 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importUpdatedProductsWithImporterMovesProducts(): void
+    public function importUpdatedProductsWithImporterMovesProductsAndUpdatesSlugs(): void
     {
         try {
             $this->importDataSet(__DIR__ . '/Fixtures/ExtraStoragePage.xml');
-            // First import base products
-            $this->subject->synchronize(
-                    'tx_externalimporttest_product',
-                    'base'
-            );
-            // Import "updated" products, which is supposed to move one product to a different page
-            $messages = $this->subject->synchronize(
-                    'tx_externalimporttest_product',
-                    'updated_products'
-            );
-            $countMovedProducts = $this->getDatabaseConnection()->selectCount(
-                    'uid',
-                    'tx_externalimporttest_product',
-                    'pid = 2'
-            );
-            // A single product should have been moved
-            self::assertEquals(
-                    1,
-                    $countMovedProducts,
-                    serialize($messages)
-            );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             self::markTestSkipped(
                     sprintf(
                             'Extra storage page fixture could not be loaded (Exception: %s [%d])',
@@ -593,6 +571,32 @@ class ImporterTest extends FunctionalTestCase
                     )
             );
         }
+        // First import base products
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'base'
+        );
+        // Import "updated" products, which is supposed to move one product to a different page
+        $messages = $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'updated_products'
+        );
+        $movedProducts = $this->getDatabaseConnection()->select(
+                'name',
+                'tx_externalimporttest_product',
+                'pid = 2'
+        )->fetchAll();
+        // A single product should have been moved
+        self::assertCount(
+                1,
+                $movedProducts,
+                serialize($messages)
+        );
+        // That product should have an updated slug
+        self::assertSame(
+                'Long sword (updated)',
+                $movedProducts[0]['name']
+        );
     }
 
     /**

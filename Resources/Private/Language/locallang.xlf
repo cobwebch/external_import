@@ -114,6 +114,9 @@
 			<trans-unit id="customSteps" xml:space="preserve">
 				<source>Custom process steps</source>
 			</trans-unit>
+			<trans-unit id="updateSlugs" xml:space="preserve">
+				<source>Update slug fields</source>
+			</trans-unit>
 			<trans-unit id="undefined" xml:space="preserve">
 				<source>(Not defined)</source>
 			</trans-unit>

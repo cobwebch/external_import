@@ -68,6 +68,7 @@ Properties
 	pid_                                  integer           Store data
 	priority_                             integer           Display/automated import
 	referenceUid_                         string            Store data
+    updateSlugs_                          boolean           Store data
 	useColumnIndex_                       string or integer Configuration
 	whereClause_                          string            Store data
 	===================================== ================= ========================
@@ -383,6 +384,24 @@ Description
 
 Scope
   Read data
+
+
+.. _administration-general-tca-properties-update-slugs:
+
+updateSlugs
+~~~~~~~~~~~
+
+Type
+  boolean
+
+Description
+  Slugs are populated automatically for new records thanks to External Import relying on the
+  :php:`\TYPO3\CMS\Core\DataHandling\DataHandler` class. The same is not true for updated records.
+  If you want record slugs to be updated when modified external data is imported, set this
+  flag to :php:`true`.
+
+Scope
+  Store data
 
 
 .. _administration-general-tca-properties-namespaces:

@@ -562,6 +562,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'data' => [
                                         'tx_externalimporttest_product' => [
                                                 '1' => [
+                                                        'name' => 'Long sword (updated)',
                                                         'pid' => '2',
                                                         'sku' => '000001'
                                                 ]

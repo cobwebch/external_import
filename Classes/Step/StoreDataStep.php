@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Step;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Utility\MappingUtility;
+use Cobweb\ExternalImport\Utility\SlugUtility;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -122,6 +123,7 @@ class StoreDataStep extends AbstractStep
         $countConfiguredAdditionalFields = $this->getConfiguration()->getCountAdditionalFields();
         $isUpdateAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'update');
         $isInsertAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'insert');
+        $updateSlugs = (bool)$this->getConfiguration()->getCtrlConfigurationProperty('updateSlugs');
         foreach ($records as $theRecord) {
             $localAdditionalFields = [];
             $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
@@ -308,6 +310,10 @@ class StoreDataStep extends AbstractStep
                         $tce->substNEWwithIDs
                 );
                 $inserts = count($tce->substNEWwithIDs);
+                // Update the slug fields, if activated
+                if ($updateSlugs) {
+                    $this->updateSlugs($table, $updatedUids);
+                }
 
                 // Substitute NEW temporary keys with actual IDs in the "stored records" array
                 foreach ($storedRecords as $index => $record) {
@@ -928,6 +934,17 @@ class StoreDataStep extends AbstractStep
         );
         $sortedData = $pagesForLevel;
         return $nextLevelPages;
+    }
+
+    /**
+     * Updates the slug fields for the given records of the given table.
+     *
+     * @param string $table Name of the affected table
+     * @param array $uids List of primary keys of records to update
+     */
+    public function updateSlugs($table, $uids): void {
+        $slugUtility = GeneralUtility::makeInstance(SlugUtility::class, $this->importer);
+        $slugUtility->updateAll($table, $uids);
     }
 
     /**
