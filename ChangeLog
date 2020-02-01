@@ -1,3 +1,7 @@
+2020-02-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Add test for mapping behavior (default value and multiple value separator), resolves #106
+
 2019-06-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Sanitize usage of uidRepository, resolves #101
