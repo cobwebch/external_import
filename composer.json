@@ -22,7 +22,6 @@
 		"cobweb/svconnector": ">=3.3.0"
 	},
 	"replace": {
-		"external_import": "self.version",
 		"typo3-ter/external_import": "self.version"
 	}
 }
