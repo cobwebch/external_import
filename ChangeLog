@@ -1,3 +1,7 @@
+2020-02-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Add simple mechanism for passing Importer instance to user functions, resolves #105
+
 2020-02-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Add test for mapping behavior (default value and multiple value separator), resolves #106
