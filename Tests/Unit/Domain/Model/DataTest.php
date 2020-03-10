@@ -59,6 +59,43 @@ class DataTest extends UnitTestCase
     /**
      * @test
      */
+    public function getExtraDataInitiallyReturnsEmptyArray()
+    {
+        self::assertSame(
+                [],
+                $this->subject->getExtraData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setExtraDataOverwritesExistingExtraData()
+    {
+        $this->subject->setExtraData(['foo']);
+        $this->subject->setExtraData(['bar']);
+        self::assertSame(
+                ['bar'],
+                $this->subject->getExtraData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function addExtraDataAddsExtraData()
+    {
+        $this->subject->addExtraData('entry1', 'foo');
+        $this->subject->addExtraData('entry2', 'bar');
+        self::assertSame(
+                ['entry1' => 'foo', 'entry2' => 'bar'],
+                $this->subject->getExtraData()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function getRecordsInitiallyReturnsEmptyArray()
     {
         self::assertSame(

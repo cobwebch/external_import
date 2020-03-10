@@ -1,6 +1,7 @@
 2020-03-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Allow usage of XPath for selecting reference nodes, resolves #109
+	* Introduce extra data storage in Data object, resolves #112
 
 2020-02-03 Francois Suter (Idéative)  <typo3@ideative.ch>
 

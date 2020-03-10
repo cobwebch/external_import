@@ -69,6 +69,14 @@ rawData
   the import API. Given the current capacities of External Import, this
   may be either a string representing a XML structure or a PHP array.
 
+extraData
+  An array available for anyone to write into and read from. This is some kind
+  of storage space where any type of data can be stored and passed from step to
+  step.
+
+  On top of the usual getter and setter, use :php:`addExtraData($key, $data)`
+  to add some data to this array using the defined array key.
+
 records
   The data as structured by External Import, step after step.
 
