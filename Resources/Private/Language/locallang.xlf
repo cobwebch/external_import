@@ -81,6 +81,9 @@
 			<trans-unit id="reference_node" xml:space="preserve">
 				<source>Reference node</source>
 			</trans-unit>
+			<trans-unit id="reference_nodepath" xml:space="preserve">
+				<source>Reference XPath</source>
+			</trans-unit>
 			<trans-unit id="namespaces" xml:space="preserve">
 				<source>Namespaces</source>
 			</trans-unit>

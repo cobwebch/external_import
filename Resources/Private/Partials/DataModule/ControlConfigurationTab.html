@@ -67,13 +67,29 @@
 					</tr>
 				</f:if>
 				<!-- Nodetype property may be missing which creates an error for XML-type data. So we need to explicitely check for a validation error. -->
-				<f:if condition="{ctrlConfiguration.nodetype} || {results.nodetype}">
+				<f:if condition="{ctrlConfiguration.nodetype} || {ctrlConfiguration.nodepath} || {results.nodetype}">
 					<tr>
 						<td><f:translate id="reference_node" /></td>
 						<td>
-							{ctrlConfiguration.nodetype}
+							<f:if condition="{ctrlConfiguration.nodetype}">
+								<f:then>
+									{ctrlConfiguration.nodetype}
+								</f:then>
+								<f:else>-</f:else>
+							</f:if>
 							<f:if condition="{results.nodetype}">
 								<ex:displayValidationResult result="{results.nodetype}" />
+							</f:if>
+						</td>
+					</tr>
+					<tr>
+						<td><f:translate id="reference_nodepath" /></td>
+						<td>
+							<f:if condition="{ctrlConfiguration.nodepath}">
+								<f:then>
+									{ctrlConfiguration.nodepath}
+								</f:then>
+								<f:else>-</f:else>
 							</f:if>
 						</td>
 					</tr>

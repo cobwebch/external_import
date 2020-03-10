@@ -23,6 +23,9 @@
 			<trans-unit id="missingNodetypeProperty" xml:space="preserve">
 				<source>Property "nodetype" is mandatory for "xml"-type data.</source>
 			</trans-unit>
+			<trans-unit id="missingNodeProperty" xml:space="preserve">
+				<source>Either property "nodetype" or "nodepath" must be set for "xml"-type data.</source>
+			</trans-unit>
 			<trans-unit id="missingReferenceUidProperty" xml:space="preserve">
 				<source>Property "referenceUid" is mandatory.</source>
 			</trans-unit>

@@ -1,3 +1,7 @@
+2020-03-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+
+	* Allow usage of XPath for selecting reference nodes, resolves #109
+
 2020-02-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
 
 	* Add simple mechanism for passing Importer instance to user functions, resolves #105

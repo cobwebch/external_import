@@ -64,6 +64,7 @@ Properties
 	minimumRecords_                       integer           Validate data
 	namespaces_                           array             Handle data (XML)
 	nodetype_                             string            Handle data (XML)
+	nodepath_                             string            Handle data (XML)
 	parameters_                           array             Read data
 	pid_                                  integer           Store data
 	priority_                             integer           Display/automated import
@@ -184,6 +185,23 @@ Description
   database fields (see also the description of the
   :ref:`field <administration-columns-properties-field>`
   attribute).
+
+Scope
+  Handle data (XML)
+
+
+.. _administration-general-tca-properties-nodepath:
+
+nodepath
+~~~~~~~~
+
+Type
+  string
+
+Description
+  XPath expression for selecting the reference nodes inside the XML structure.
+  This is an alternative to the :ref:`nodetype <administration-general-tca-properties-nodetype>`
+  property and will take precedence if both are defined.
 
 Scope
   Handle data (XML)

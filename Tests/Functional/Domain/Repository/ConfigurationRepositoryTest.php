@@ -73,7 +73,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         return [
                 'sync is true' => [
                         true,
-                        14
+                        15
                 ],
                 'sync is false' => [
                         false,
@@ -192,6 +192,9 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                 5050 => [
                         ['table' => 'sys_category', 'index' => 'product_categories', 'group' => '-'],
                         ['table' => 'sys_category', 'index' => 'column_configuration_errors', 'group' => '-']
+                ],
+                5080 => [
+                        ['table' => 'tx_externalimporttest_designer', 'index' => 0, 'group' => '-']
                 ],
                 5100 => [
                         ['table' => 'tx_externalimporttest_product', 'index' => 'base', 'group' => 'Products']

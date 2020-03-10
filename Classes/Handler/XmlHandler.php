@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Handler;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Importer;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Remaps data from a XML structure to an array mapped to TCA columns.
@@ -50,8 +51,23 @@ class XmlHandler implements DataHandlerInterface
             }
         }
 
-        // Get the nodes that represent the root of each data record
-        $records = $dom->getElementsByTagName($ctrlConfiguration['nodetype']);
+        // Get the nodes that represent the root of each data record, using XPath if defined
+        $records = [];
+        if (array_key_exists('nodepath', $ctrlConfiguration)) {
+            try {
+                $records = $this->selectNodeWithXpath(
+                        $xPathObject,
+                        $ctrlConfiguration['nodepath']
+                );
+            } catch (\Exception $e) {
+                $importer->addMessage(
+                        $e->getMessage(),
+                        AbstractMessage::WARNING
+                );
+            }
+        } else {
+            $records = $dom->getElementsByTagName($ctrlConfiguration['nodetype']);
+        }
         for ($i = 0; $i < $records->length; $i++) {
             $referenceCounter = $counter;
             $data[$referenceCounter] = [];
@@ -318,11 +334,11 @@ class XmlHandler implements DataHandlerInterface
      *
      * @param \DOMXPath $xPathObject Instantiated DOMXPath object
      * @param string $xPath XPath query to evaluate
-     * @param \DOMNode $context Node giving the context of the XPath query
+     * @param \DOMNode $context Node giving the context of the XPath query (null for root node)
      * @return \DOMNodeList List of found nodes
      * @throws \Exception
      */
-    public function selectNodeWithXpath($xPathObject, $xPath, $context)
+    public function selectNodeWithXpath($xPathObject, $xPath, $context = null)
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
         if ($resultNodes->length > 0) {
