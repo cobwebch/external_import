@@ -2,6 +2,7 @@
 
 	* Allow usage of XPath for selecting reference nodes, resolves #109
 	* Introduce extra data storage in Data object, resolves #112
+	* Release version 4.2.0
 
 2020-02-03 Francois Suter (Idéative)  <typo3@ideative.ch>
 
