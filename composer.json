@@ -8,9 +8,15 @@
 	"authors": [
 		{
 			"name": "Francois Suter",
-			"role": "Developer"
+			"role": "Developer",
+			"email": "typo3@ideative.ch",
+			"homepage": "https://www.ideative.ch/"
 		}
 	],
+	"support": {
+		"issues": "https://github.com/cobwebch/external_import/issues",
+		"docs": "https://docs.typo3.org/p/cobweb/external_import/master/en-us/"
+	},
 	"autoload": {
 		"psr-4": {
 			"Cobweb\\ExternalImport\\": "Classes/"

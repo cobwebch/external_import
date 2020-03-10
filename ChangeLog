@@ -1,58 +1,58 @@
-2020-03-10 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2020-03-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Allow usage of XPath for selecting reference nodes, resolves #109
 
-2020-02-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2020-02-03 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add simple mechanism for passing Importer instance to user functions, resolves #105
 
-2020-02-01 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2020-02-01 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add test for mapping behavior (default value and multiple value separator), resolves #106
 
-2019-06-26 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-06-26 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Sanitize usage of uidRepository, resolves #101
 	* Add note about MM and multipleValuesSeparator properties not working together, resolves #98
 	* Release version 4.1.3
 
-2019-05-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-05-03 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix handling of configuration key when index is 0
 	* Display sync information for individual configuration when synchronization for group is active, resolves #91
 
-2019-03-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-03-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix handling of configuration keys for "all" and "group" configurations, resolves #92
 	* Improve exception handling when applying a user function in the Transform Data Step, resolves #93
 
-2019-02-17 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-02-17 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add critical exception to abort step if needed, resolves #83
 	* Abort when external data cannot be read, resolves #85
 	* Release version 4.1.2
 
-2019-02-14 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-02-14 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix failing functional tests, resolves #89
 
-2019-02-09 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-02-09 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Catch empty error array, resolves #84
 	* Allow for "rootLevel" property to be "true" instead of "1", resolves #82
 
-2019-01-16 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-01-16 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Make sure pids are compared as integers, resolves #81
 
-2019-01-13 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-01-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Ensure compatibility with TYPO3 v9, resolves #62
 	* Ensure spinner icon is available, resolves #80
 	* Fix wrong check for 0-ish values, resolves #74
 	* Release version 4.1.0
 
-2019-01-03 Francois Suter (Cobweb)  <typo3@cobweb.ch>
+2019-01-03 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Display nodetype validation error when property is missing, resolves #76
 	* Update documentation to mention restriction on crdate, tstamp and cruser_id fields, resolves #71
