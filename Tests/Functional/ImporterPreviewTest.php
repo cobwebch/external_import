@@ -369,13 +369,13 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'index' => 'base',
                         'result' => [
                                 [
-                                        'attributes' => "<ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
+                                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                         'categories' => '',
                                         'name' => 'Long sword (base)',
                                         'sku' => '000001'
                                 ],
                                 [
-                                        'attributes' => "<ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
+                                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
                                         'categories' => '',
                                         'name' => 'Chain mail (base)',
                                         'sku' => '000005'
@@ -475,7 +475,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'data' => [
                                         'tx_externalimporttest_product' => [
                                                 'NEW1' => [
-                                                        'attributes' => "<ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
+                                                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Long sword (base)',
                                                         'sku' => '000001',
@@ -483,7 +483,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'pid' => 1
                                                 ],
                                                 'NEW2' => [
-                                                        'attributes' => "<ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
+                                                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Chain mail (base)',
                                                         'sku' => '000005',
@@ -514,13 +514,13 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'data' => [
                                         'tx_externalimporttest_product' => [
                                                 '1' => [
-                                                        'attributes' => "<ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
+                                                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Long sword (base)',
                                                         'sku' => '000001',
                                                 ],
                                                 '2' => [
-                                                        'attributes' => "<ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
+                                                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Chain mail (base)',
                                                         'sku' => '000005'

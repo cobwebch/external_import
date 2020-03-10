@@ -38,6 +38,9 @@ class TransformDataStepTest extends FunctionalTestCase
         parent::setUp();
         $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
         $this->subject = $objectManager->get(\Cobweb\ExternalImport\Step\TransformDataStep::class);
+        $this->subject->setImporter(
+                $this->createMock(\Cobweb\ExternalImport\Importer::class)
+        );
         $configuration = $objectManager->get(\Cobweb\ExternalImport\Domain\Model\Configuration::class);
         $configuration->setTable('foo');
         $this->subject->setConfiguration($configuration);
