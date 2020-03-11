@@ -1,6 +1,7 @@
 2020-03-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix duplication of information in StoreDataStep, resolves #113
+	* Release version 4.2.1
 
 2020-03-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
