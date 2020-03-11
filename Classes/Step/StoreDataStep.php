@@ -77,7 +77,7 @@ class StoreDataStep extends AbstractStep
     {
         $this->mappingUtility->setImporter($this->importer);
         $records = $this->getData()->getRecords();
-        $storedRecords = $records;
+        $storedRecords = [];
         $this->importer->debug(
                 'Data received for storage',
                 0,
