@@ -88,7 +88,10 @@ class ControlConfigurationValidator
 
         // Validate properties specific to the "xml"-type data
         if ($ctrlConfiguration['data'] === 'xml') {
-            $this->validateNodetypeProperty($ctrlConfiguration['nodetype']);
+            $this->validateNodeProperty(
+                    $ctrlConfiguration['nodetype'],
+                    $ctrlConfiguration['nodepath']
+            );
         }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
@@ -196,18 +199,20 @@ class ControlConfigurationValidator
     }
 
     /**
-     * Validates the "nodetype" property.
+     * Validates that there's either "nodetype" or "nodepath" property.
      *
-     * @param string $property Property value
+     * @param string $nodetype Nodetype property value
+     * @param string $nodepath Nodepath property value
      * @return void
      */
-    public function validateNodetypeProperty($property): void
+    public function validateNodeProperty($nodetype = '', $nodepath = ''): void
     {
-        if (empty($property)) {
+        if (empty($nodetype) && empty($nodepath)) {
             $this->results->add(
                     'nodetype',
                     LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodetypeProperty'
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodeProperty',
+                            'external_import'
                     ),
                     AbstractMessage::ERROR
             );

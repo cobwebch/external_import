@@ -53,10 +53,18 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                                 'pid' => 12
                         ]
                 ],
-                'Typical configuration for xml type' => [
+                'Typical configuration for xml type (nodetype)' => [
                         [
                                 'data' => 'xml',
                                 'nodetype' => 'foo',
+                                'referenceUid' => 'external_id',
+                                'pid' => 12
+                        ]
+                ],
+                'Typical configuration for xml type (nodepath)' => [
+                        [
+                                'data' => 'xml',
+                                'nodepath' => '//foo',
                                 'referenceUid' => 'external_id',
                                 'pid' => 12
                         ]

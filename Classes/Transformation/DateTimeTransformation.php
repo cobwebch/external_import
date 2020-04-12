@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Cobweb\ExternalImport\Transformation;
 
 /*
@@ -14,6 +15,8 @@ namespace Cobweb\ExternalImport\Transformation;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\ImporterAwareInterface;
+use Cobweb\ExternalImport\ImporterAwareTrait;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**
@@ -23,8 +26,9 @@ use TYPO3\CMS\Core\SingletonInterface;
  * @package TYPO3
  * @subpackage tx_externalimport
  */
-class DateTimeTransformation implements SingletonInterface
+class DateTimeTransformation implements SingletonInterface, ImporterAwareInterface
 {
+    use ImporterAwareTrait;
 
     /**
      * This an example method to be called by external import for transforming data
@@ -41,7 +45,7 @@ class DateTimeTransformation implements SingletonInterface
      * @param array $params Additional parameters from the TCA
      * @return mixed Timestamp or formatted date string
      */
-    public function parseDate($record, $index, $params)
+    public function parseDate(array $record, string $index, array $params)
     {
         $value = strtotime($record[$index]);
         // Consider time zone offset
@@ -57,8 +61,8 @@ class DateTimeTransformation implements SingletonInterface
             // Use strftime for formatting
             if ($params['function'] === 'strftime') {
                 $value = strftime($params['format'], $value);
-            } // Otherwise use date
-            else {
+            // Otherwise use date
+            } else {
                 $value = date($params['format'], $value);
             }
         }

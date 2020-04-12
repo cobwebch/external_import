@@ -87,10 +87,10 @@ class MappingUtility
 
                         // The external field is expected to contain a single value
                     } else {
-                        $singleExternalValues = array($externalValue);
+                        $singleExternalValues = [$externalValue];
                     }
                     // Loop on all values and try to map them
-                    $mappedExternalValues = array();
+                    $mappedExternalValues = [];
                     foreach ($singleExternalValues as $singleValue) {
 
                         // Value is matched in the available mapping
@@ -146,10 +146,10 @@ class MappingUtility
 
                     // The external field is expected to contain a single value
                     } else {
-                        $singleExternalValues = array($externalValue);
+                        $singleExternalValues = [$externalValue];
                     }
                     // Loop on all values and try to map them
-                    $mappedExternalValues = array();
+                    $mappedExternalValues = [];
                     foreach ($singleExternalValues as $singleValue) {
                         // Try matching the value. If matching fails, unset it.
                         try {

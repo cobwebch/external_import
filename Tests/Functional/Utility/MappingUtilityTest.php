@@ -127,4 +127,128 @@ class MappingUtilityTest extends FunctionalTestCase
                 $mappings
         );
     }
+
+    public function dataToMapProvider(): array
+    {
+        return [
+                'Default value gets applied' => [
+                        'records' => [
+                                0 => [
+                                        'title' => 'Page with matching category',
+                                        'categories' => 'CAT2'
+                                ],
+                                1 => [
+                                        'title' => 'Page with non-matching category',
+                                        'categories' => 'CATX'
+                                ],
+                                2 => [
+                                        'title' => 'Page with missing category'
+                                ]
+                        ],
+                        'table' => 'pages',
+                        'field' => 'categories',
+                        'mappingConfiguration' => [
+                                'default' => 1,
+                                'table' => 'sys_category',
+                                'referenceField' => 'external_key'
+                        ],
+                        'result' => [
+                                0 => [
+                                        'title' => 'Page with matching category',
+                                        'categories' => '2'
+                                ],
+                                1 => [
+                                        'title' => 'Page with non-matching category',
+                                        'categories' => 1
+                                ],
+                                2 => [
+                                        'title' => 'Page with missing category',
+                                        'categories' => 1
+                                ]
+                        ]
+                ],
+                'Field gets unset without default value' => [
+                        'records' => [
+                                0 => [
+                                        'title' => 'Page with matching category',
+                                        'categories' => 'CAT2'
+                                ],
+                                1 => [
+                                        'title' => 'Page with non-matching category',
+                                        'categories' => 'CATX'
+                                ],
+                                2 => [
+                                        'title' => 'Page with missing category'
+                                ]
+                        ],
+                        'table' => 'pages',
+                        'field' => 'categories',
+                        'mappingConfiguration' => [
+                                'table' => 'sys_category',
+                                'referenceField' => 'external_key'
+                        ],
+                        'result' => [
+                                0 => [
+                                        'title' => 'Page with matching category',
+                                        'categories' => '2'
+                                ],
+                                1 => [
+                                        'title' => 'Page with non-matching category'
+                                ],
+                                2 => [
+                                        'title' => 'Page with missing category'
+                                ]
+                        ]
+                ],
+                'Multiple values separator' => [
+                        'records' => [
+                                0 => [
+                                        'title' => 'Page with two matching categories',
+                                        'categories' => 'CAT1,CAT2'
+                                ],
+                                1 => [
+                                        'title' => 'Page with one matching and one non-matching category',
+                                        'categories' => 'CAT1,CATX'
+                                ]
+                        ],
+                        'table' => 'pages',
+                        'field' => 'categories',
+                        'mappingConfiguration' => [
+                                'table' => 'sys_category',
+                                'referenceField' => 'external_key',
+                                'multipleValuesSeparator' => ','
+                        ],
+                        'result' => [
+                                0 => [
+                                        'title' => 'Page with two matching categories',
+                                        'categories' => '1,2'
+                                ],
+                                1 => [
+                                        'title' => 'Page with one matching and one non-matching category',
+                                        'categories' => '1'
+                                ]
+                        ]
+                ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider dataToMapProvider
+     * @param array $records Records to handle
+     * @param string $table Name of the table the records belong to
+     * @param string $columnName Name of the column whose values must be mapped
+     * @param array $mappingInformation Mapping configuration
+     * @param array $result Mapped records (expected result)
+     * @throws \Nimut\TestingFramework\Exception\Exception
+     */
+    public function mapDataMapsDataAndAppliesDefaultValueIfDefined($records, $table, $columnName, $mappingInformation, $result)
+    {
+        $this->importDataSet(__DIR__ . '/../Fixtures/Mappings.xml');
+        $mappedRecords = $this->subject->mapData($records, $table, $columnName, $mappingInformation);
+        self::assertSame(
+                $result,
+                $mappedRecords
+        );
+    }
 }

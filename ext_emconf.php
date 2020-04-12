@@ -14,14 +14,14 @@ $EM_CONF[$_EXTKEY] = [
         'title' => 'External Data Import',
         'description' => 'Tool for importing data from external sources into the TYPO3 CMS database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line tool and an API.',
         'category' => 'module',
-        'author' => 'Francois Suter (Cobweb)',
-        'author_email' => 'typo3@cobweb.ch',
+        'author' => 'Francois Suter (Idéative)',
+        'author_email' => 'typo3@ideative.ch',
         'state' => 'stable',
         'uploadfolder' => 0,
         'createDirs' => '',
         'clearCacheOnLoad' => 0,
         'author_company' => '',
-        'version' => '4.1.3',
+        'version' => '4.2.1',
         'constraints' =>
                 [
                         'depends' =>

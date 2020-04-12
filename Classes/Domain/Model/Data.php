@@ -27,6 +27,11 @@ class Data
     protected $rawData;
 
     /**
+     * @var array Array available for storing any kind of data that will be passed from step to step
+     */
+    protected $extraData = [];
+
+    /**
      * @var array Array of data being imported
      */
     protected $records = [];
@@ -45,6 +50,31 @@ class Data
     public function setRawData($rawData): void
     {
         $this->rawData = $rawData;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtraData(): array
+    {
+        return $this->extraData;
+    }
+
+    /**
+     * @param array $extraData
+     */
+    public function setExtraData(array $extraData): void
+    {
+        $this->extraData = $extraData;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $data
+     */
+    public function addExtraData(string $key, $data): void
+    {
+        $this->extraData[$key] = $data;
     }
 
     /**

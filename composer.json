@@ -8,15 +8,21 @@
 	"authors": [
 		{
 			"name": "Francois Suter",
-			"role": "Developer"
+			"role": "Developer",
+			"email": "typo3@ideative.ch",
+			"homepage": "https://www.ideative.ch/"
 		}
 	],
+	"support": {
+		"issues": "https://github.com/cobwebch/external_import/issues",
+		"docs": "https://docs.typo3.org/p/cobweb/external_import/master/en-us/"
+	},
 	"autoload": {
 		"psr-4": {
 			"Cobweb\\ExternalImport\\": "Classes/"
 		}
 	},
-	"version": "4.1.3",
+	"version": "4.2.1",
 	"require": {
 		"typo3/cms-core": ">=9.5.0,<11.0",
 		"cobweb/svconnector": ">=3.3.0"

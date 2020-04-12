@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Utility\MappingUtility;
+use Cobweb\ExternalImport\ImporterAwareInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -227,6 +228,9 @@ class TransformDataStep extends AbstractStep
                 $parameters = $configuration['params'] ?? [];
                 foreach ($records as $index => $record) {
                     try {
+                        if ($userObject instanceof ImporterAwareInterface) {
+                            $userObject->setImporter($this->importer);
+                        }
                         $records[$index][$name] = $userObject->$methodName($record, $name, $parameters);
                     } catch (CriticalFailureException $e) {
                         // This exception must not be caught here, but thrown further up
