@@ -2,6 +2,7 @@
 
 	* Make add task button visible again independently of task groups, resolves #117
 	* Update documentation settings
+	* Release version 4.2.2
 
 2020-03-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
