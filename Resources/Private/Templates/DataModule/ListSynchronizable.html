@@ -142,12 +142,9 @@
 												</f:if>
 											</f:then>
 											<f:else>
-												<f:then>&nbsp;</f:then>
-												<f:else>
-													<div class="btn-group">
-														<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
-													</div>
-												</f:else>
+												<div class="btn-group">
+													<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
+												</div>
 											</f:else>
 										</f:if>
 									</f:then>

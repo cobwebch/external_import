@@ -1,23 +1,17 @@
-#########################
-# Git
-# global ignore file
-########################
-# ignoring temporary files (left by e.g. vim)
-# ignoring by common IDE's used directories/files
-# dont ignore .rej and .orig as we want to see/clean files after conflict resolution
-#
+# Git global ignore file
 # for local exclude patterns please edit .git/info/exclude
-#
+# Example file see https://github.com/TYPO3-Documentation/T3DocTeam/blob/master/.gitignore
+
+# ignore generated documentation
+*GENERATED*
+
+# ignore typical clutter of IDEs and editors (this could be added in .git/info/exclude,
+#  but we add it here for convenience)
 *~
 *.bak
 *.idea
 *.project
 *.swp
-.buildpath
-.cache
 .project
-.session
-.settings
-.TemporaryItems
 .webprj
 nbproject
