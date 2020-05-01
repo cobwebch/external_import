@@ -1,6 +1,7 @@
 2020-05-01 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Do not log the execution time limit change (logger not available), resolves #119
+	* Fix syntax error in documentation code sample, resolves #118
 
 2020-04-14 Francois Suter (Idéative)  <typo3@ideative.ch>
 
