@@ -2,6 +2,7 @@
 
 	* Do not log the execution time limit change (logger not available), resolves #119
 	* Fix syntax error in documentation code sample, resolves #118
+	* Release version 4.2.3
 
 2020-04-14 Francois Suter (Idéative)  <typo3@ideative.ch>
 

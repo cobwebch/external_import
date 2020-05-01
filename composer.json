@@ -22,7 +22,7 @@
 			"Cobweb\\ExternalImport\\": "Classes/"
 		}
 	},
-	"version": "4.2.2",
+	"version": "4.2.3",
 	"require": {
 		"typo3/cms-core": ">=8.7.0,<10.0",
 		"cobweb/svconnector": ">=3.3.0"
