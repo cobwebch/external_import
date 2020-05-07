@@ -1,6 +1,7 @@
 2020-05-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix display of connector property error, resolves #122
+	* Use new API to report about connector configuration errors, resolves #75
 
 2020-05-01 Francois Suter (Idéative)  <typo3@ideative.ch>
 

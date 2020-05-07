@@ -23,6 +23,9 @@
 							<ex:processedParameters configuration="{configuration}">
 								<ex:twinDump originalArray="{ctrlConfiguration.parameters}" modifiedArray="{processedParameters}" />
 							</ex:processedParameters>
+							<f:if condition="{results.parameters}">
+								<ex:displayValidationResult result="{results.parameters}" />
+							</f:if>
 						</td>
 					</tr>
 				</f:if>

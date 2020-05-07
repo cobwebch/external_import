@@ -84,6 +84,10 @@ class ControlConfigurationValidator
         // Validate properties for pull-only configurations
         if (!empty($ctrlConfiguration['connector'])) {
             $this->validatePriorityProperty($ctrlConfiguration['priority']);
+            $this->validateConnectorConfigurationProperty(
+                    $ctrlConfiguration['connector'],
+                    $ctrlConfiguration['parameters']
+            );
         }
 
         // Validate properties specific to the "xml"-type data
@@ -151,6 +155,36 @@ class ControlConfigurationValidator
                         ),
                         AbstractMessage::ERROR
                 );
+            }
+        }
+    }
+
+    /**
+     * Validates the "parameters" property.
+     *
+     * @param string $connector Type of connector
+     * @param array $property Parameters for the connector
+     * @return void
+     * @see \Cobweb\ExternalImport\Validator\ControlConfigurationValidator::validateConnectorProperty
+     */
+    public function validateConnectorConfigurationProperty($connector, $property): void
+    {
+        $connectorService = GeneralUtility::makeInstanceService(
+                'connector',
+                $connector
+        );
+        // Proceed only if connector was found
+        // NOTE: we do not report if connector was not found, because this is the task of validateConnectorProperty()
+        if ($connectorService !== false) {
+            $results = $connectorService->checkConfiguration($property);
+            foreach ($results as $severity => $messages) {
+                foreach ($messages as $message) {
+                    $this->results->add(
+                            'parameters',
+                            $message,
+                            $severity
+                    );
+                }
             }
         }
     }
