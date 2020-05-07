@@ -2,6 +2,7 @@
 
 	* Fix display of connector property error, resolves #122
 	* Use new API to report about connector configuration errors, resolves #75
+	* Actually use the custom step validation, resolves #121
 
 2020-05-01 Francois Suter (Idéative)  <typo3@ideative.ch>
 

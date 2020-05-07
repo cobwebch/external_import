@@ -80,6 +80,10 @@ class ControlConfigurationValidator
                 $ctrlConfiguration['useColumnIndex'],
                 $configuration->getColumnConfiguration()
         );
+        $this->validateCustomStepsProperty(
+                $ctrlConfiguration['customSteps'],
+                $ctrlConfiguration
+        );
 
         // Validate properties for pull-only configurations
         if (!empty($ctrlConfiguration['connector'])) {
