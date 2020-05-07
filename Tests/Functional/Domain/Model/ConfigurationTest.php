@@ -31,7 +31,7 @@ class ConfigurationTest extends FunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $objectManager = new ObjectManager();
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->subject = $objectManager->get(Configuration::class);
     }
 

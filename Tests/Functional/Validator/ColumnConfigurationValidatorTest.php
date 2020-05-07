@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Functional\Validator;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -37,6 +38,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
     public function setUp()
     {
         parent::setUp();
+        // Connector services need a global LanguageService object
+        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->subject = $this->objectManager->get(ColumnConfigurationValidator::class);
     }

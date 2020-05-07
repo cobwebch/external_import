@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Context\AbstractCallContext;
 use Cobweb\ExternalImport\Context\CommandLineCallContext;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Importer;
@@ -114,74 +115,88 @@ class ImportCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      *
-     * @return void
+     * @return int
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Make sure the _cli_ user is loaded
-        Bootstrap::getInstance()->initializeBackendAuthentication();
+        Bootstrap::initializeBackendAuthentication();
 
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title($this->getDescription());
 
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurationRepository = $this->objectManager->get(ConfigurationRepository::class);
+        try {
 
-        $list = $input->getOption('list');
-        // Call up the list and print it out
-        if ($list) {
-            $this->printConfigurationList();
-        } else {
-            $this->importer = $this->objectManager->get(Importer::class);
-            $this->importer->setContext('cli');
-            $callContext = $this->objectManager->get(
-                    CommandLineCallContext::class,
-                    $this->importer
-            );
-            $callContext->setInputOutput($this->io);
-            $this->importer->setCallContext($callContext);
+            $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+            $this->configurationRepository = $this->objectManager->get(ConfigurationRepository::class);
 
-            $preview = $input->getOption('preview');
-            if ($preview) {
-                $this->importer->setPreviewStep($preview);
-            }
-            $all = $input->getOption('all');
-            $group = $input->getOption('group');
-            $table = $input->getOption('table');
-            $index = $input->getOption('index');
-
-            // Check output options
-            $debug = $input->getOption('debug');
-            // Set the debug flag only if true
-            if ($debug) {
-                $this->importer->setDebug((bool)$debug);
-            }
-            $this->importer->setVerbose($output->isVerbose());
-
-            // Launch full synchronization
-            if ($all) {
-                $configurations = $this->configurationRepository->findOrderedConfigurations();
-                $this->runSynchronization($configurations);
-            // Launch group synchronization
-            } elseif ($group) {
-                $configurations = $this->configurationRepository->findByGroup($group);
-                $this->runSynchronization($configurations);
-            // Launch selected synchronization
-            } elseif ($table !== null && $index !== null) {
-                // Assemble fake configuration array, for calling the same method as above
-                $configurations = [
-                    Importer::DEFAULT_PRIORITY => [
-                            [
-                                    'table' => $table,
-                                    'index' => $index
-                            ]
-                    ]
-                ];
-                $this->runSynchronization($configurations);
+            $list = $input->getOption('list');
+            // Call up the list and print it out
+            if ($list) {
+                $this->printConfigurationList();
             } else {
-                // Report erroneous arguments
-                $this->io->warning('The command was called with invalid arguments. Please use "typo3 help externalimport:sync" for help.');
+                $this->importer = $this->objectManager->get(Importer::class);
+                $this->importer->setContext('cli');
+                /** @var AbstractCallContext $callContext */
+                $callContext = $this->objectManager->get(
+                        CommandLineCallContext::class,
+                        $this->importer
+                );
+                $callContext->setInputOutput($this->io);
+                $this->importer->setCallContext($callContext);
+
+                $preview = $input->getOption('preview');
+                if ($preview) {
+                    $this->importer->setPreviewStep($preview);
+                }
+                $all = $input->getOption('all');
+                $group = $input->getOption('group');
+                $table = $input->getOption('table');
+                $index = $input->getOption('index');
+
+                // Check output options
+                $debug = $input->getOption('debug');
+                // Set the debug flag only if true
+                if ($debug) {
+                    $this->importer->setDebug((bool)$debug);
+                }
+                $this->importer->setVerbose($output->isVerbose());
+
+                // Launch full synchronization
+                if ($all) {
+                    $configurations = $this->configurationRepository->findOrderedConfigurations();
+                    $this->runSynchronization($configurations);
+                    // Launch group synchronization
+                } elseif ($group) {
+                    $configurations = $this->configurationRepository->findByGroup($group);
+                    $this->runSynchronization($configurations);
+                    // Launch selected synchronization
+                } elseif ($table !== null && $index !== null) {
+                    // Assemble fake configuration array, for calling the same method as above
+                    $configurations = [
+                            Importer::DEFAULT_PRIORITY => [
+                                    [
+                                            'table' => $table,
+                                            'index' => $index
+                                    ]
+                            ]
+                    ];
+                    $this->runSynchronization($configurations);
+                } else {
+                    // Report erroneous arguments
+                    $this->io->warning('The command was called with invalid arguments. Please use "typo3 help externalimport:sync" for help.');
+                }
             }
+            return 1;
+        } catch (\Exception $e) {
+            $this->io->error(
+                    sprintf(
+                            'An exception occurred: %s (%d)',
+                            $e->getMessage(),
+                            $e->getCode()
+                    )
+            );
+            return 0;
         }
     }
 

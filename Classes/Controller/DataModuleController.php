@@ -327,7 +327,7 @@ class DataModuleController extends ActionController
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
-     * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
+     * @\TYPO3\CMS\Extbase\Annotation\Validate(param="frequency", validator="\Cobweb\ExternalImport\Validator\FrequencyValidator")
      */
     public function createTaskAction($table, $frequency, $group, \DateTime $start_date_hr = null, $index = ''): void
     {
@@ -409,7 +409,7 @@ class DataModuleController extends ActionController
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
-     * @validate $frequency \Cobweb\ExternalImport\Validator\FrequencyValidator
+     * @\TYPO3\CMS\Extbase\Annotation\Validate(param="frequency", validator="\Cobweb\ExternalImport\Validator\FrequencyValidator")
      */
     public function updateTaskAction($uid, $frequency, $group, \DateTime $start_date_hr = null): void
     {

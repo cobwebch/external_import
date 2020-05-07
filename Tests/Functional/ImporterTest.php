@@ -54,7 +54,7 @@ class ImporterTest extends FunctionalTestCase
             // Connector services need a global LanguageService object
             $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
-            $objectManager = new ObjectManager();
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             $this->subject = $objectManager->get(Importer::class);
             $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
             $this->subject->setForcedStoragePid(1);

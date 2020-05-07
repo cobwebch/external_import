@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -42,6 +43,9 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         parent::setUp();
         try {
             $this->setUpBackendUserFromFixture(1);
+            // Configuration repository needs a global LanguageService object
+            $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+
             $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             $this->subject = $objectManager->get(ConfigurationRepository::class);
         }

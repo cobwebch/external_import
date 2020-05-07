@@ -29,6 +29,7 @@ use Cobweb\ExternalImport\Step\ValidateDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use \TYPO3\CMS\Core\Localization\LanguageService;
 
@@ -61,7 +62,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             // Connector services need a global LanguageService object
             $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
-            $objectManager = new ObjectManager();
+            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
             $this->subject = $objectManager->get(Importer::class);
             $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
             $this->subject->setForcedStoragePid(1);
@@ -725,9 +726,18 @@ class ImporterPreviewTest extends FunctionalTestCase
     public function runPreviewOnClearCacheStepReturnsCacheListAndClearsNothing($table, $index, $result): void
     {
         try {
-            $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.xml');
+            if (VersionNumberUtility::convertVersionNumberToInteger(VersionNumberUtility::getNumericTypo3Version()) > 10000000) {
+                $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest_v10.xml');
+            } else {
+                $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.xml');
+            }
         } catch (\Exception $e) {
-            self::markTestSkipped('Could not load fixture file');
+            self::markTestSkipped(
+                    sprintf(
+                            VersionNumberUtility::convertVersionNumberToInteger(VersionNumberUtility::getNumericTypo3Version()) . ': Could not load fixture file: %s',
+                            $e->getMessage()
+                    )
+            );
         }
         $this->subject->setPreviewStep(ClearCacheStep::class);
         $this->subject->setTestMode(true);
@@ -742,7 +752,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         // The cache item created with the fixture should not be have been cleared
         $countCacheItems = $this->getDatabaseConnection()->selectCount(
                 'id',
-                'cf_cache_pages_tags'
+                'cache_pages_tags'
         );
         self::assertEquals(1, $countCacheItems);
     }

@@ -462,7 +462,7 @@ class Importer implements LoggerAwareInterface
      * @param int $value Value for which we want to find a key
      * @return string
      */
-    public function getTemporaryKeyForValue($value): string
+    public function getTemporaryKeyForValue($value): ?string
     {
         if (array_key_exists($value, $this->temporaryKeys)) {
             return $this->temporaryKeys[$value];
