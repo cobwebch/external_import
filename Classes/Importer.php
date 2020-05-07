@@ -178,14 +178,6 @@ class Importer implements LoggerAwareInterface
         // Force PHP limit execution time if set
         if (isset($this->extensionConfiguration['timelimit']) && ($this->extensionConfiguration['timelimit'] > -1)) {
             set_time_limit($this->extensionConfiguration['timelimit']);
-            $this->debug(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:timelimit',
-                            'external_import'
-                    ),
-                    0,
-                    $this->extensionConfiguration['timelimit']
-            );
         }
         // Initialize message array
         $this->resetMessages();

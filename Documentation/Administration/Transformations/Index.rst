@@ -121,19 +121,19 @@ Description
 
   .. code-block:: php
 
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
-				0 => array(
+		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
+				0 => [
 						'field' => 'start_date',
-						'transformations' => array(
-								10 => (
-										'userFunc' => array(
+						'transformations' => [
+								10 => [
+										'userFunc' => [
 												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
 												'method' => 'parseDate'
-										)
-								)
-						)
-				)
-		);
+										]
+								]
+						]
+				]
+		];
 
   A user function requires three parameters:
 
