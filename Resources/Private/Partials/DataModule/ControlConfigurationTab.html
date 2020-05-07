@@ -8,7 +8,12 @@
 				<f:if condition="{ctrlConfiguration.connector}">
 					<tr>
 						<td><f:translate id="connector" /></td>
-						<td>{ctrlConfiguration.connector}</td>
+						<td>
+							{ctrlConfiguration.connector}
+							<f:if condition="{results.connector}">
+								<ex:displayValidationResult result="{results.connector}" />
+							</f:if>
+						</td>
 					</tr>
 				</f:if>
 				<f:if condition="{ctrlConfiguration.parameters}">
@@ -18,9 +23,6 @@
 							<ex:processedParameters configuration="{configuration}">
 								<ex:twinDump originalArray="{ctrlConfiguration.parameters}" modifiedArray="{processedParameters}" />
 							</ex:processedParameters>
-							<f:if condition="{results.connector}">
-								<ex:displayValidationResult result="{results.connector}" />
-							</f:if>
 						</td>
 					</tr>
 				</f:if>
