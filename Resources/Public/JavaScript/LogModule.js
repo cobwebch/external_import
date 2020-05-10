@@ -156,7 +156,6 @@ define(['jquery',
 								formattedTime += minutes + 'm ';
 							}
 							formattedTime += seconds + 's';
-							console.log(data, hours, minutes, seconds);
 							return formattedTime;
 						} else {
 							return data;

@@ -19,6 +19,7 @@ use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -39,7 +40,7 @@ class LogAjaxController
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function getAction(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function getAction(ServerRequestInterface $request, ResponseInterface $response = null): ResponseInterface
     {
         // Process query parameters
         $queryParameters = GeneralUtility::makeInstance(
@@ -66,7 +67,7 @@ class LogAjaxController
                 $logs[] = [
                         'status' => $logEntry->getStatus(),
                         'crdate' => $logEntry->getCrdate()->format('U'),
-                        'username' => $logEntry->getCruserId()->getUserName(),
+                        'username' => $logEntry->getCruserId() ? $logEntry->getCruserId()->getUserName() : '-',
                         'configuration' => $logEntry->getConfiguration(),
                         'context' => $logEntry->getContext(),
                         'message' => $logEntry->getMessage(),
@@ -88,6 +89,9 @@ class LogAjaxController
                 'recordsFiltered' => $logCount,
                 'error' => $error
         ];
+        if ($response === null) {
+            $response = GeneralUtility::makeInstance(JsonResponse::class);
+        }
         $response->getBody()->write(json_encode($fullResponse));
         return $response;
     }

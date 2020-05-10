@@ -37,7 +37,7 @@ class ImporterTest extends UnitTestCase
 
     protected function setUp()
     {
-        // Note: the Importer class normally needs to be instanciated via the ObjectManager,
+        // Note: the Importer class normally needs to be instantiated via the ObjectManager,
         // but we don't need all the dependency injection for unit tests.
         $this->subject = GeneralUtility::makeInstance(Importer::class);
     }
@@ -45,10 +45,18 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function getExtensionConfigurationInitiallyReturnsEmptyArray(): void
+    public function getExtensionConfigurationInitiallyReturnsDefaultConfiguration(): void
     {
         self::assertSame(
-                [],
+                [
+                        'storagePID' => '0',
+                        'logStorage' => '0',
+                        'timelimit' => '-1',
+                        'reportEmail' => '',
+                        'reportSubject' => '',
+                        'debug' => '0',
+                        'disableLog' => '0',
+                ],
                 $this->subject->getExtensionConfiguration()
         );
     }

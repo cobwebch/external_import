@@ -14,6 +14,7 @@ namespace Cobweb\ExternalImport\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
@@ -29,7 +30,7 @@ class Log extends AbstractEntity
     /**
      * @var int Run status (based on FlashMessage codes)
      */
-    protected $status;
+    protected $status = AbstractMessage::NOTICE;
 
     /**
      * @var \DateTime Run date and time
@@ -44,22 +45,22 @@ class Log extends AbstractEntity
     /**
      * @var string Name of the corresponding external import configuration (table and index)
      */
-    protected $configuration;
+    protected $configuration = '';
 
     /**
      * @var string Execution context
      */
-    protected $context;
+    protected $context = '';
 
     /**
      * @var string The log message
      */
-    protected $message;
+    protected $message = '';
 
     /**
      * @var int Run duration (in seconds)
      */
-    protected $duration;
+    protected $duration = 0;
 
     /**
      * @return int
@@ -78,9 +79,9 @@ class Log extends AbstractEntity
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getCrdate(): \DateTime
+    public function getCrdate(): ?\DateTime
     {
         return $this->crdate;
     }
@@ -94,9 +95,9 @@ class Log extends AbstractEntity
     }
 
     /**
-     * @return BackendUser
+     * @return BackendUser|null
      */
-    public function getCruserId(): BackendUser
+    public function getCruserId(): ?BackendUser
     {
         return $this->cruserId;
     }

@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 use Cobweb\ExternalImport\Domain\Model\Log;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Test suite for the Log model class.
@@ -39,9 +40,12 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getStatusInitiallyReturnsNull(): void
+    public function getStatusInitiallyReturnsNoticeLevel(): void
     {
-        self::assertNull($this->subject->getStatus());
+        self::assertEquals(
+                AbstractMessage::NOTICE,
+                $this->subject->getStatus()
+        );
     }
 
     /**
@@ -106,9 +110,12 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getConfigurationInitiallyReturnsNull(): void
+    public function getConfigurationInitiallyReturnsEmptyString(): void
     {
-        self::assertNull($this->subject->getConfiguration());
+        self::assertSame(
+                '',
+                $this->subject->getConfiguration()
+        );
     }
 
     /**
@@ -126,9 +133,12 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getContextInitiallyReturnsNull(): void
+    public function getContextInitiallyReturnsEmptyString(): void
     {
-        self::assertNull($this->subject->getContext());
+        self::assertSame(
+                '',
+                $this->subject->getContext()
+        );
     }
 
     /**
@@ -146,9 +156,12 @@ class LogTest extends UnitTestCase
     /**
      * @test
      */
-    public function getMessageInitiallyReturnsNull(): void
+    public function getMessageInitiallyReturnsEmptyString(): void
     {
-        self::assertNull($this->subject->getMessage());
+        self::assertSame(
+                '',
+                $this->subject->getMessage()
+        );
     }
 
     /**

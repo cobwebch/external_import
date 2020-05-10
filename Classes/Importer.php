@@ -406,9 +406,9 @@ class Importer implements LoggerAwareInterface
     /**
      * Returns the model object containing the whole External Import configuration.
      *
-     * @return \Cobweb\ExternalImport\Domain\Model\Configuration
+     * @return \Cobweb\ExternalImport\Domain\Model\Configuration|null
      */
-    public function getExternalConfiguration(): Domain\Model\Configuration
+    public function getExternalConfiguration(): ?Domain\Model\Configuration
     {
         return $this->externalConfiguration;
     }
@@ -428,7 +428,7 @@ class Importer implements LoggerAwareInterface
      *
      * It is used to avoid reading it multiple times from the various components of this extension.
      *
-     * @return array The unserialized extension's configuration
+     * @return array The extension's configuration
      */
     public function getExtensionConfiguration(): array
     {
