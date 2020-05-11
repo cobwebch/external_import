@@ -23,6 +23,7 @@ use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -75,6 +76,11 @@ class Importer implements LoggerAwareInterface
      * @var UidRepository
      */
     protected $uidRepository;
+
+    /**
+     * @var Random
+     */
+    protected $randomGenerator;
 
     /**
      * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
@@ -214,6 +220,11 @@ class Importer implements LoggerAwareInterface
     public function injectUidRepository(UidRepository $uidRepository): void
     {
         $this->uidRepository = $uidRepository;
+    }
+
+    public function injectRandomGenerator(Random $random): void
+    {
+        $this->randomGenerator = $random;
     }
 
     /**
@@ -496,7 +507,7 @@ class Importer implements LoggerAwareInterface
             self::$forcedTemporaryKeySerial++;
             return 'NEW' . self::$forcedTemporaryKeySerial;
         }
-        return uniqid('NEW', true);
+        return 'NEW' . $this->randomGenerator->generateRandomHexString(20);
     }
 
     /**
