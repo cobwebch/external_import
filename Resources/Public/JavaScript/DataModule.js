@@ -189,6 +189,8 @@ define(['jquery',
 		// Clicking the sync button should display a message warning not to leave the window
 		tableView.find('.sync-button').on('click', function () {
 			Notification.info(TYPO3.lang.syncRunning, TYPO3.lang.doNotLeaveWindow, 0);
+			// And add the "active" class to the icon itself (used for animation)
+			$(this).find('img').addClass('active');
 		});
 	};
 
