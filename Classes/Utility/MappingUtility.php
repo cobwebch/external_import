@@ -221,7 +221,7 @@ class MappingUtility
                                     DeletedRestriction::class
                             )
                     );
-            $res = $queryBuilder->select($referenceField, $valueField)
+            $res = $queryBuilder->selectLiteral($referenceField, $valueField)
                     ->from($mappingData['table'])
                     ->where($whereClause)
                     ->execute();

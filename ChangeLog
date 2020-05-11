@@ -1,6 +1,7 @@
 2020-05-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Ensure compatibility with TYPO3 v10, resolves #108
+	* Allow SQL functions in valueField and referenceField properties, resolves #114
 
 2020-05-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 

@@ -59,6 +59,10 @@ Type
 Description
   Name of the field against which external values must be matched.
 
+  .. note::
+
+     SQL functions may be used here. Example: :php:`'CONCAT(first_name, \' \', last_name)'`.
+
 Scope
   Transform data
 
@@ -74,6 +78,10 @@ Type
 Description
   Name of the field to take the mapped value from. If not defined, this
   will default to "uid".
+
+  .. note::
+
+     SQL functions may be used here. Example: :php:`'CONCAT(first_name, \' \', last_name)'`.
 
 Scope
   Transform data
