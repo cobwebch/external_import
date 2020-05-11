@@ -14,7 +14,7 @@ connect to.
 Automating the imports requires system extension "scheduler" or setting up
 cron jobs calling the command-line controller.
 
-TYPO3 CMS 9 is required.
+TYPO3 CMS 9 or 10 is required.
 
 
 .. _installation-compatibility:

@@ -31,11 +31,12 @@ This data is stored into the TYPO3 CMS database using the same mapping process
 as when data is fetched directly by the extension.
 
 This extension contains a number of hooks as well as the possibility to call
-user-defined functions during the import process, which makes it a quite flexible tool.
-However it was not designed for extensive data manipulation. It is assumed
-that the data received from the external source is in "palatable" format.
-If the external data requires a lot of processing, it is probably better
-to put it through an ETL or ESB tool first, and then import it into TYPO3 CMS.
+user-defined functions during the import process or to create custom steps,
+which makes it a quite flexible tool. However it was not designed for extensive
+data manipulation. It is assumed that the data received from the external source
+is in "palatable" format. If the external data requires a lot of processing,
+it is probably better to put it through an ETL or ESB tool first,
+and then import it into TYPO3 CMS.
 
 Please also check extension :ref:`externalimport_tut <tut:start>`
 which provides a tutorial to this extension.
@@ -67,7 +68,7 @@ Every encouragement keeps the developer ticking, so don't hesitate
 to send thanks or share your enthusiasm about the extension.
 
 If you appreciate this work and want to show some support, please
-check http://www.monpetitcoin.com/en/francois/support-me/.
+check https://www.monpetitcoin.com/en/support-me/.
 
 
 .. _participate:
