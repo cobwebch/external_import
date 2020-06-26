@@ -1,3 +1,7 @@
+2020-06-26 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix failing validation in case of multiple custom steps, resolves #128
+
 2020-05-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Ensure compatibility with TYPO3 v10, resolves #108

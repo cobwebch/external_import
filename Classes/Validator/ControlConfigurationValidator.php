@@ -409,7 +409,7 @@ class ControlConfigurationValidator
             }
             foreach ($property as $customStepConfiguration) {
                 try {
-                    $steps = $this->stepUtility->validateCustomStepConfiguration($steps, $customStepConfiguration);
+                    $result = $this->stepUtility->validateCustomStepConfiguration($steps, $customStepConfiguration);
                 }
                 catch (InvalidCustomStepConfiguration $e) {
                     $this->results->add(
