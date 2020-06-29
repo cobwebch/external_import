@@ -25,10 +25,10 @@ External Import
 		2007-2020
 
 	:Author:
-		  François Suter (Cobweb)
+		  François Suter (Idéative)
 
 	:Email:
-		  typo3@cobweb.ch
+		  typo3@ideative.ch
 
 	:License:
 		This document is published under the Open Content License
