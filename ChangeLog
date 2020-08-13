@@ -1,3 +1,7 @@
+2020-08-13 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Enforce strict Scheduler dependency, resolves #129
+
 2020-06-26 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix failing validation in case of multiple custom steps, resolves #128

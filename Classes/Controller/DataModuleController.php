@@ -164,7 +164,6 @@ class DataModuleController extends ActionController
                 [
                         'configurations' => $configurations,
                         'fullSynchronizationTask' => $fullSynchronizationTask,
-                        'hasScheduler' => ExtensionManagementUtility::isLoaded('scheduler'),
                         'rights' => [
                                 'sync' => $this->getBackendUser()->check(
                                         'custom_options',

@@ -28,6 +28,10 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class ConfigurationRepositoryTest extends FunctionalTestCase
 {
+    protected $coreExtensionsToLoad = [
+            'scheduler',
+    ];
+
     protected $testExtensionsToLoad = [
             'typo3conf/ext/external_import',
             'typo3conf/ext/externalimport_test'

@@ -11,10 +11,7 @@ need to extend the TCA definition of some tables with the appropriate
 syntax and create specific connectors for the application you want to
 connect to.
 
-Automating the imports requires system extension "scheduler" or setting up
-cron jobs calling the command-line controller.
-
-TYPO3 CMS 9 or 10 is required.
+TYPO3 CMS 9 or 10 is required, as well as the "scheduler" system extension.
 
 
 .. _installation-compatibility:

@@ -59,14 +59,12 @@ class SchedulerRepository implements SingletonInterface
 
     public function __construct()
     {
-        if (ExtensionManagementUtility::isLoaded('scheduler')) {
-            $this->scheduler = GeneralUtility::makeInstance(Scheduler::class);
-            $allTasks = $this->scheduler->fetchTasksWithCondition('', true);
-            /** @var $aTaskObject AbstractTask */
-            foreach ($allTasks as $aTaskObject) {
-                if (get_class($aTaskObject) === self::$taskClassName) {
-                    $this->tasks[] = $aTaskObject;
-                }
+        $this->scheduler = GeneralUtility::makeInstance(Scheduler::class);
+        $allTasks = $this->scheduler->fetchTasksWithCondition('', true);
+        /** @var $aTaskObject AbstractTask */
+        foreach ($allTasks as $aTaskObject) {
+            if (get_class($aTaskObject) === self::$taskClassName) {
+                $this->tasks[] = $aTaskObject;
             }
         }
     }
@@ -145,21 +143,19 @@ class SchedulerRepository implements SingletonInterface
         $groups = [
                 0 => ''
         ];
-        if (ExtensionManagementUtility::isLoaded('scheduler')) {
-            try {
-                $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-                        ->getQueryBuilderForTable('tx_scheduler_task_group');
-                $rows = $queryBuilder->select('uid', 'groupName')
-                        ->from('tx_scheduler_task_group')
-                        ->orderBy('groupName')
-                        ->execute()
-                        ->fetchAll(\PDO::FETCH_ASSOC);
-                foreach ($rows as $row) {
-                    $groups[$row['uid']] = $row['groupName'];
-                }
-            } catch (\Exception $e) {
-                // Nothing to do, let an empty groups list be returned
+        try {
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+                    ->getQueryBuilderForTable('tx_scheduler_task_group');
+            $rows = $queryBuilder->select('uid', 'groupName')
+                    ->from('tx_scheduler_task_group')
+                    ->orderBy('groupName')
+                    ->execute()
+                    ->fetchAll(\PDO::FETCH_ASSOC);
+            foreach ($rows as $row) {
+                $groups[$row['uid']] = $row['groupName'];
             }
+        } catch (\Exception $e) {
+            // Nothing to do, let an empty groups list be returned
         }
         return $groups;
     }
@@ -213,17 +209,6 @@ class SchedulerRepository implements SingletonInterface
      */
     public function saveTask($taskData): void
     {
-        // Early exit if "scheduler" extension is not loaded
-        if (!ExtensionManagementUtility::isLoaded('scheduler')) {
-            throw new SchedulerRepositoryException(
-                    LocalizationUtility::translate(
-                            'schedulerNotLoaded',
-                            'external_import'
-                    ),
-                    1509896489
-            );
-        }
-
         if ($taskData['uid'] === 0) {
             // Create a new task instance and register the execution
             /** @var $task AutomatedSyncTask */
@@ -273,11 +258,6 @@ class SchedulerRepository implements SingletonInterface
      */
     public function deleteTask($uid): bool
     {
-        // Early exit if "scheduler" extension is not loaded
-        if (ExtensionManagementUtility::isLoaded('scheduler')) {
-            return false;
-        }
-
         $result = false;
         $uid = (int)$uid;
         if ($uid > 0) {

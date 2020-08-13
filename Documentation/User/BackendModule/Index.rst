@@ -152,10 +152,6 @@ executed one after the other, in the order of priority.
 
 The same input form appears as for individual automation settings.
 
-Defining a schedule is not enough. Proper user rights must also be
-considered. See the :ref:`User rights section <administration-user-rights>`
-in the "Administration" chapter.
-
 .. note::
 
    Of course, it is perfectly possible to define automation tasks

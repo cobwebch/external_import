@@ -225,13 +225,10 @@ class ConfigurationRepository
         $isSynchronizable = (bool)$isSynchronizable;
         $configurations = [];
 
-        // Get a list of all external import Scheduler tasks, if Scheduler is active
+        // Get a list of all external import Scheduler tasks
         $tasks = [];
-        if (ExtensionManagementUtility::isLoaded('scheduler')) {
-            /** @var $schedulerRepository SchedulerRepository */
-            $schedulerRepository = GeneralUtility::makeInstance(SchedulerRepository::class);
-            $tasks = $schedulerRepository->fetchAllTasks();
-        }
+        $schedulerRepository = GeneralUtility::makeInstance(SchedulerRepository::class);
+        $tasks = $schedulerRepository->fetchAllTasks();
 
         // Loop on all tables and extract external_import-related information from them
         $backendUser = $this->getBackendUser();

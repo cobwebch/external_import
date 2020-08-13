@@ -33,7 +33,6 @@ define(['jquery',
 	 * @param tableView
 	 */
 	ExternalImportDataModule.buildTableForSynchronizableList = function(tableView) {
-		var hasScheduler = tableView.data('hasScheduler');
 		var columns = [
 			// Icon
 			{
@@ -64,25 +63,17 @@ define(['jquery',
 			{
 				targets: 'column-actions',
 				orderable: false
+			},
+			// Scheduler information and actions
+			{
+				targets: 'column-autosync',
+				orderable: true
+			},
+			{
+				targets: 'column-autosync-actions',
+				orderable: false
 			}
 		];
-		// Add columns for Scheduler information if loaded
-		if (hasScheduler) {
-			// Information
-			columns.push(
-					{
-						targets: 'column-autosync',
-						orderable: true
-					}
-			);
-			// Action icons
-			columns.push(
-					{
-						targets: 'column-autosync-actions',
-						orderable: false
-					}
-			);
-		}
 		ExternalImportDataModule.table = tableView.DataTable({
 			dom: 't',
 			serverSide: false,
