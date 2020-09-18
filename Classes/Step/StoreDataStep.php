@@ -311,7 +311,7 @@ class StoreDataStep extends AbstractStep
                 );
                 $inserts = count($tce->substNEWwithIDs);
                 // Update the slug fields, if activated
-                if ($updateSlugs) {
+                if ($updateSlugs && count($updatedUids) > 0) {
                     $this->updateSlugs($table, $updatedUids);
                 }
 
