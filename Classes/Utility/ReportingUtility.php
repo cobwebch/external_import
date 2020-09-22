@@ -119,6 +119,8 @@ class ReportingUtility implements LoggerAwareInterface
             $messages = $this->importer->getMessages();
             $importContext = $this->importer->getContext();
             $now = new \DateTime();
+            $now->setTimestamp($this->context->getPropertyFromAspect('date', 'timestamp'));
+
             try {
                 $currentUser = $this->context->getPropertyFromAspect('backend.user', 'id');
             } catch (AspectNotFoundException $e) {
