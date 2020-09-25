@@ -69,7 +69,7 @@ Properties
 	pid_                                  integer           Store data
 	priority_                             integer           Display/automated import
 	referenceUid_                         string            Store data
-    updateSlugs_                          boolean           Store data
+	updateSlugs_                          boolean           Store data
 	useColumnIndex_                       string or integer Configuration
 	whereClause_                          string            Store data
 	===================================== ================= ========================
