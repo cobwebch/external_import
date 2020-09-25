@@ -1,3 +1,17 @@
+2020-09-25 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Release version 4.3.3
+
+2020-09-22 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Exclude resources from packaging (thanks to Mathias Brodala)
+	* Use immutable date in log entries (thanks Christoph Lehmann)
+	* Prevent SQL errors when no slugs need to be updated (thanks Christoph Lehmann)
+
+2020-08-13 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Release version 4.3.2
+
 2020-06-26 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix failing validation in case of multiple custom steps, resolves #128
