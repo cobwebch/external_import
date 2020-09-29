@@ -21,6 +21,11 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Code extracted from the \Cobweb\ExternalImport\Step\StoreDataStep class, related to MM relations (old-style).
+ * 
+ * @package Cobweb\ExternalImport\Utility
+ */
 class ManyToManyUtility
 {
     /**
