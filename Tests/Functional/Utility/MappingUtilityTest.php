@@ -42,8 +42,7 @@ class MappingUtilityTest extends FunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $objectManager->get(MappingUtility::class);
+        $this->subject = GeneralUtility::makeInstance(MappingUtility::class);
     }
 
     public function mappingConfigurationProvider(): array

@@ -140,28 +140,6 @@ class StoreDataStepTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getMappingsInitiallyReturnsEmptyArray(): void
-    {
-        self::assertSame(
-                [],
-                $this->subject->getMappings()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getFullMappingsInitiallyReturnsEmptyArray(): void
-    {
-        self::assertSame(
-                [],
-                $this->subject->getFullMappings()
-        );
-    }
-
     public function sortPagesProvider(): array
     {
         return [
