@@ -9,8 +9,8 @@ Columns configuration
 You also need an "external" syntax for each column to define
 which external data goes into that column and any handling that might
 apply. This is also an indexed array. Obviously indices used for each
-column must relate to the indices used in the "ctrl" section. In its
-simplest form this is just a reference to the external data's name:
+column must relate to the indices used in the :ref:`general configuration <administration-general-tca>`.
+In its simplest form this is just a reference to the external data's name:
 
 .. code-block:: php
 

@@ -20,6 +20,15 @@ Compatibility issues
 ^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-500:
+
+Upgrade to 5.0.0
+""""""""""""""""
+
+The general configuration must now be placed in :code:`$GLOBALS['TCA'][table-name]['external']['general']`
+instead of :code:`$GLOBALS['TCA'][table-name]['ctrl']['external']`. Backwards-compatibilit is ensured for now
+but code should be migrated as soon as possible, as support will be dropped in the future.
+
 .. _installation-upgrade-410:
 
 Upgrade to 4.1.0

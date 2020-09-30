@@ -8,7 +8,7 @@ Administration
 
 To start inserting data from an external source into your TYPO3 CMS
 tables, you must first extend their TCA with a specific syntax, with
-general information in the "ctrl" section and specific information for
+some general information and specific information for
 each column. Obviously you can also create new tables and put your
 data in there.
 

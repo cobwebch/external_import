@@ -9,13 +9,11 @@ Custom data handlers
 It is possible to use a custom data handler instead of the standard
 :code:`\Cobweb\ExternalImport\Importer::handleArray()` and
 :code:`\Cobweb\ExternalImport\Importer::handleXML()`. The value declared
-as a custom data handler:
+as a custom data handler is a class name:
 
 .. code-block:: php
 
-   $GLOBALS['TCA']['some_table']['ctrl']['external'][0]['data'] = Foo\MyExtension\DataHandler\CustomDataHandler::class;
-
-is a class name.
+   $GLOBALS['TCA']['some_table']['external']['general'][0]['data'] = Foo\MyExtension\DataHandler\CustomDataHandler::class;
 
 The class itself **must** implement the
 :php:`\Cobweb\ExternalImport\DataHandlerInterface` interface, which contains only

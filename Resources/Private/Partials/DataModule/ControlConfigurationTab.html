@@ -4,6 +4,9 @@
 
 	<ex:validateControlConfiguration configuration="{configuration}" as="results">
 		<f:alias map="{ctrlConfiguration: configuration.ctrlConfiguration}">
+			<f:if condition="{configuration.obsolete}">
+				<f:be.infobox state="1" title="{f:translate(id: 'migrationRequired')}" message="{f:translate(id: 'obsoleteGeneralConfiguration')}"/>
+			</f:if>
 			<table class="information-table">
 				<f:if condition="{ctrlConfiguration.connector}">
 					<tr>

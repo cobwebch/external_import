@@ -240,4 +240,83 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                 $this->subject->findOrderedConfigurations()
         );
     }
+
+    /**
+     * @test
+     */
+    public function findByTableAndIndexReturnsCtrlConfiguration(): void
+    {
+        // Use a very simple configuration as an example
+        $ctrlConfiguration = $this->subject->findByTableAndIndex(
+                'tx_externalimporttest_tag',
+                'api'
+        );
+        self::assertSame(
+                [
+                        'data' => 'array',
+                        'referenceUid' => 'code',
+                        'description' => 'Tags defined via the import API',
+                        'pid' => 0
+                ],
+                $ctrlConfiguration
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function findColumnsByTableAndIndexReturnsCtrlConfiguration(): void
+    {
+        $columnsConfiguration = $this->subject->findColumnsByTableAndIndex(
+                'tx_externalimporttest_order',
+                0
+        );
+        self::assertSame(
+                [
+                        'client_id' => [
+                                'field' => 'customer',
+                                'transformations' => [
+                                        10 => [
+                                                'trim' => true
+                                        ]
+                                ]
+                        ],
+                        'order_date' => [
+                                'field' => 'date',
+                                'transformations' => [
+                                        10 => [
+                                                'userFunc' => [
+                                                        'class' => \Cobweb\ExternalImport\Transformation\DateTimeTransformation::class,
+                                                        'method' => 'parseDate',
+                                                        'params' => [
+                                                                'enforceTimeZone' => true
+                                                        ]
+                                                ]
+                                        ]
+                                ]
+                        ],
+                        'order_id' => [
+                                'field' => 'order',
+                                'transformations' => [
+                                        10 => [
+                                                'trim' => true
+                                        ]
+                                ]
+                        ],
+                        'products' => [
+                                'field' => 'product',
+                                'MM' => [
+                                        'mapping' => [
+                                                'table' => 'tx_externalimporttest_product',
+                                                'referenceField' => 'sku'
+                                        ],
+                                        'additionalFields' => [
+                                                'quantity' => 'qty'
+                                        ]
+                                ]
+                        ]
+                ],
+                $columnsConfiguration
+        );
+    }
 }

@@ -31,7 +31,7 @@ configuration would be something like:
 
 .. code-block:: php
 
-   $GLOBALS['TCA']['tt_news']['ctrl']['external']['0']['clearCache'] = 'xx,yy';
+   $GLOBALS['TCA']['tt_news']['external']['general']['0']['clearCache'] = 'xx,yy';
 
 This will clear the cache for pages "xx" and "yy", but only after all
 records have been inserted, updated and deleted. The process still

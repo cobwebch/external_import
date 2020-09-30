@@ -270,6 +270,15 @@
 			<trans-unit id="taskSaveFailed" xml:space="preserve">
 				<source>Creating or updating the task has failed (I know this is not very helpful, sorry).</source>
 			</trans-unit>
+			<trans-unit id="migrationRequired" xml:space="preserve">
+				<source>Migration required</source>
+			</trans-unit>
+			<trans-unit id="obsoleteGeneralConfiguration" xml:space="preserve">
+				<source><![CDATA[
+					The general configuration must be placed in <code>$TCA[table-name]['external']['general']</code> and not in <code>$TCA[table-name]['ctrl']['external']</code> anymore. Support will be discontinued in the future. Please adapt your TCA.
+					]]>
+				</source>
+			</trans-unit>
 
 			<trans-unit id="logList" xml:space="preserve">
 				<source>Log entries</source>

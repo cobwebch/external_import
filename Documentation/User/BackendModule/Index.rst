@@ -42,10 +42,9 @@ Viewing configuration details
 
 Clicking on the information icon leads to a screen showing
 all the information about that particular configuration. The view
-consists of three tabs: the first one displays the configuration from
-the "ctrl" section of the TCA ("General information"), the second one
-displays the configuration for each column ("Columns mapping") and the
-third one displays the list of :ref:`steps that the process will go through <user-overview>`,
+consists of three tabs: the first one displays the :ref:`general configuration <administration-general-tca>`,
+the second one displays the :ref:`configuration for each column <administration-columns>`
+and the third one displays the list of :ref:`steps that the process will go through <user-overview>`,
 including any :ref:`custom steps <developer-steps>`.
 
 .. figure:: ../../Images/InformationInspector.png

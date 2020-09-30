@@ -51,6 +51,11 @@ class ConfigurationRepository
         $this->objectManager = $objectManager;
     }
 
+    public function __toString()
+    {
+        return self::class;
+    }
+
     /**
      * ConfigurationRepository constructor.
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
@@ -68,8 +73,14 @@ class ConfigurationRepository
      * @param string|integer $index Key of the configuration
      * @return array The relevant TCA configuration
      */
-    protected function findByTableAndIndex($table, $index): array
+    public function findByTableAndIndex($table, $index): array
     {
+        if (isset($GLOBALS['TCA'][$table]['external']['general'][$index])) {
+            return $this->processCtrlConfiguration(
+                    $GLOBALS['TCA'][$table]['external']['general'][$index]
+            );
+        }
+        // Check for legacy configuration
         if (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
             return $this->processCtrlConfiguration(
                     $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
@@ -79,13 +90,41 @@ class ConfigurationRepository
     }
 
     /**
+     * Checks if the general configuration is found in the "ctrl" part (which is deprecated) or not
+     *
+     * TODO: remove once backward-compatibility with "ctrl" section is dropped
+     *
+     * @param string $table Name of the table
+     * @param string|integer $index Key of the configuration
+     * @return bool
+     * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
+     */
+    public function isObsoleteGeneralConfiguration($table, $index): bool
+    {
+        if (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
+            return true;
+        }
+        if (isset($GLOBALS['TCA'][$table]['external']['general'][$index])) {
+            return false;
+        }
+        throw new \Cobweb\ExternalImport\Exception\NoConfigurationException(
+                sprintf(
+                        'No configuration found for table %s and index %s',
+                        $table,
+                        $index
+                ),
+                1601473068
+        );
+    }
+
+    /**
      * Returns the columns part of the external import configuration for the given table and index.
      *
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
      * @return array The relevant TCA configuration
      */
-    protected function findColumnsByTableAndIndex($table, $index): array
+    public function findColumnsByTableAndIndex($table, $index): array
     {
         $columns = [];
         if (isset($GLOBALS['TCA'][$table]['columns'])) {
@@ -109,8 +148,9 @@ class ConfigurationRepository
     {
         $externalTables = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-            if (isset($sections['ctrl']['external'])) {
-                foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
+            if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
+                $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
+                foreach ($generalConfiguration as $index => $externalConfig) {
                     if (!empty($externalConfig['connector'])) {
                         // Default priority if not defined, set to very low
                         $priority = $externalConfig['priority'] ?? Importer::DEFAULT_PRIORITY;
@@ -198,6 +238,13 @@ class ConfigurationRepository
     {
         $configuration = $this->objectManager->get(Configuration::class);
         $ctrlConfiguration = $this->findByTableAndIndex($table, $index);
+        try {
+            $configuration->setObsolete(
+                    $this->isObsoleteGeneralConfiguration($table, $index)
+            );
+        } catch (\Exception $e) {
+            // Nothing to do, the configuration does not exist anyway
+        }
 
         // Override the configuration index for columns, if so defined
         $columnIndex = $ctrlConfiguration['useColumnIndex'] ?? $index;
@@ -234,28 +281,28 @@ class ConfigurationRepository
         $backendUser = $this->getBackendUser();
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             // Check if table has external info and user has at least read-access to it
-            if (isset($sections['ctrl']['external']) && $backendUser->check('tables_select', $tableName)) {
-                $externalData = $sections['ctrl']['external'];
+            if ((isset($sections['external']['general']) || isset($sections['ctrl']['external'])) && $backendUser->check('tables_select', $tableName)) {
+                $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 $hasWriteAccess = $backendUser->check('tables_modify', $tableName);
-                foreach ($externalData as $index => $externalConfig) {
+                foreach ($generalConfiguration as $index => $externalConfiguration) {
                     // Synchronizable tables have a connector configuration
                     // Non-synchronizable tables don't
                     if (
-                            ($isSynchronizable && !empty($externalConfig['connector'])) ||
-                            (!$isSynchronizable && empty($externalConfig['connector']))
+                            ($isSynchronizable && !empty($externalConfiguration['connector'])) ||
+                            (!$isSynchronizable && empty($externalConfiguration['connector']))
                     ) {
                         // If priority is not defined, set to very low
                         // NOTE: the priority doesn't matter for non-synchronizable tables
                         $priority = Importer::DEFAULT_PRIORITY;
-                        if (isset($externalConfig['priority'])) {
-                            $priority = (int)$externalConfig['priority'];
+                        if (isset($externalConfiguration['priority'])) {
+                            $priority = (int)$externalConfiguration['priority'];
                         }
                         $description = '';
-                        if (isset($externalConfig['description'])) {
-                            if (strpos($externalConfig['description'], 'LLL:') === 0) {
-                                $description = LocalizationUtility::translate($externalConfig['description']);
+                        if (isset($externalConfiguration['description'])) {
+                            if (strpos($externalConfiguration['description'], 'LLL:') === 0) {
+                                $description = LocalizationUtility::translate($externalConfiguration['description']);
                             } else {
-                                $description = $externalConfig['description'];
+                                $description = $externalConfiguration['description'];
                             }
                         }
                         if (strpos($sections['ctrl']['title'], 'LLL:') === 0) {
@@ -267,14 +314,14 @@ class ConfigurationRepository
                         $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                         $configurationKey->setTableAndIndex($tableName, (string)$index);
                         $taskId = $configurationKey->getConfigurationKey();
-                        $groupKey = $externalConfig['group'] ? 'group:' . $externalConfig['group'] : '';
+                        $groupKey = $externalConfiguration['group'] ? 'group:' . $externalConfiguration['group'] : '';
                         $tableConfiguration = [
                                 'id' => $taskId,
                                 'table' => $tableName,
                                 'tableName' => $tableTitle,
                                 'index' => $index,
                                 'priority' => $priority,
-                                'group' => $externalConfig['group'],
+                                'group' => $externalConfiguration['group'],
                                 'description' => htmlspecialchars($description),
                                 'writeAccess' => $hasWriteAccess
                         ];

@@ -6,38 +6,45 @@
 General TCA configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Here is an example of a typical "ctrl" section syntax:
+Here is an example of a typical general section syntax. The general section can contain several configurations,
+each identified with a key (in the example below, :code:`0` and  :code:`'api'`. The same keys are found again
+in the :ref:`column configuration <administration-columns>`.
 
 .. code-block:: php
 
-        $extensionPath = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('externalimport_tut');
+	$GLOBALS['TCA']['tx_externalimporttest_tag'] = [
+        'external' => [
+             'general' => [
+                  0 => [
+                       'connector' => 'csv',
+                       'parameters' => [
+                            'filename' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Tags.txt',
+                            'delimiter' => ';',
+                            'text_qualifier' => '"',
+                            'encoding' => 'utf8',
+                            'skip_rows' => 1
+                       ],
+                       'data' => 'array',
+                       'referenceUid' => 'code',
+                       'priority' => 5000,
+                       'description' => 'List of tags'
+                  ],
+                  'api' => [
+                       'data' => 'array',
+                       'referenceUid' => 'code',
+                       'description' => 'Tags defined via the import API'
+                  ]
+             ]
+        ],
+	];
 
-	$GLOBALS['TCA']['tx_externalimporttut_departments'] = array(
-		'ctrl' => array(
-			'title' => 'LLL:EXT:externalimport_tut/locallang_db.xml:tx_externalimporttut_departments',
-			...
-			'external' => array(
-				0 => array(
-					'connector' => 'csv',
-					'parameters' => array(
-						'filename' => $extensionPath . 'res/departments.txt',
-						'delimiter' => "\t",
-						'text_qualifier' => '"',
-						'skip_rows' => 1,
-						'encoding' => 'latin1'
-					),
-					'data' => 'array',
-					'referenceUid' => 'code',
-					'priority' => 10,
-					'description' => 'Import of all company departments'
-				)
-			)
-		),
-	);
 
+All available properties are described below.
 
-The :code:`external` property is an indexed array. The available properties
-are described below.
+.. note::
+
+   The general configuration used to be stored in :code:`$GLOBALS['TCA'][table-name]['ctrl']['external']`. This is still
+   supported, but code should be migrated as soon as possible, as support will be dropped in the future.
 
 
 .. _administration-general-tca-properties:

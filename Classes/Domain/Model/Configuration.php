@@ -47,6 +47,13 @@ class Configuration
     protected $columnConfiguration;
 
     /**
+     * @var bool Whether the general configuration is defined in an obsolete way ("ctrl" section) or not
+     *
+     * TODO: remove once backward-compatibility with "ctrl" section is dropped
+     */
+    protected $obsolete = false;
+
+    /**
      * @var int ID of storage page
      */
     protected $storagePid;
@@ -214,6 +221,26 @@ class Configuration
             return $this->columnConfiguration[$column];
         }
         return [];
+    }
+
+    /**
+     * TODO: remove once backward-compatibility with "ctrl" section is dropped
+     *
+     * @return bool
+     */
+    public function isObsolete(): bool
+    {
+        return $this->obsolete;
+    }
+
+    /**
+     * TODO: remove once backward-compatibility with "ctrl" section is dropped
+     *
+     * @param bool $obsolete
+     */
+    public function setObsolete(bool $obsolete): void
+    {
+        $this->obsolete = $obsolete;
     }
 
     /**
