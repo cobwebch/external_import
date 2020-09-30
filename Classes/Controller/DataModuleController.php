@@ -285,7 +285,7 @@ class DataModuleController extends ActionController
                 $table,
                 $index
         );
-        $connector = $configuration->getCtrlConfigurationProperty('connector');
+        $connector = $configuration->getGeneralConfigurationProperty('connector');
         // Define which action to go back to for the close button (depends on whether the configuration is synchronizable or not)
         if (empty($connector)) {
             $returnAction = 'listNonSynchronizable';

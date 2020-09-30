@@ -253,7 +253,7 @@ class ConfigurationRepository
         // Set the values in the Configuration object
         $configuration->setTable($table);
         $configuration->setIndex($index);
-        $configuration->setCtrlConfiguration($ctrlConfiguration, $defaultSteps);
+        $configuration->setGeneralConfiguration($ctrlConfiguration, $defaultSteps);
         $configuration->setColumnConfiguration($columnsConfiguration);
         return $configuration;
     }

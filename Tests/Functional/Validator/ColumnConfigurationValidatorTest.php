@@ -170,7 +170,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
     public function isValidReturnsTrueForValidConfiguration($controlConfiguration, $columnConfiguration): void
     {
         $configuration = $this->objectManager->get(Configuration::class);
-        $configuration->setCtrlConfiguration($controlConfiguration);
+        $configuration->setGeneralConfiguration($controlConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         self::assertTrue(
                 $this->subject->isValid(
@@ -234,7 +234,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
     public function isValidRaisesMessageForInvalidConfiguration($controlConfiguration, $columnConfiguration, $severity): void
     {
         $configuration = $this->objectManager->get(Configuration::class);
-        $configuration->setCtrlConfiguration($controlConfiguration);
+        $configuration->setGeneralConfiguration($controlConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         $this->subject->isValid(
                 $configuration,

@@ -91,20 +91,20 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getCtrlConfigurationInitiallyReturnsNull(): void
+    public function getGenerallConfigurationInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getCtrlConfiguration()
+                $this->subject->getGeneralConfiguration()
         );
     }
 
     /**
      * @test
      */
-    public function getCtrlConfigurationPropertyInitiallyReturnsNull(): void
+    public function getGenerallConfigurationPropertyInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getCtrlConfigurationProperty('foo')
+                $this->subject->getGeneralConfigurationProperty('foo')
         );
     }
 
@@ -171,12 +171,12 @@ class ConfigurationTest extends FunctionalTestCase
      * @param array $additionalFields
      * @dataProvider ctrlConfigurationProvider
      */
-    public function setCtrlConfigurationSetsCtrlConfigurationAndMore($configuration, $pid, $additionalFields): void
+    public function setGeneralConfigurationSetsGeneralConfigurationAndMore($configuration, $pid, $additionalFields): void
     {
-        $this->subject->setCtrlConfiguration($configuration);
+        $this->subject->setGeneralConfiguration($configuration);
         self::assertSame(
                 $configuration,
-                $this->subject->getCtrlConfiguration()
+                $this->subject->getGeneralConfiguration()
         );
         self::assertEquals(
                 $pid,

@@ -162,7 +162,7 @@ class AutomatedSyncTask extends AbstractTask
                     LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'),
                     $this->table,
                     $this->index,
-                    $configuration->getCtrlConfigurationProperty('priority')
+                    $configuration->getGeneralConfigurationProperty('priority')
             );
         }
         return $info;

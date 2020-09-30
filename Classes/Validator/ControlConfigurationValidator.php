@@ -68,7 +68,7 @@ class ControlConfigurationValidator
     public function isValid(Configuration $configuration): bool
     {
         $this->table = $configuration->getTable();
-        $ctrlConfiguration = $configuration->getCtrlConfiguration();
+        $ctrlConfiguration = $configuration->getGeneralConfiguration();
 
         // Validate all properties on which conditions apply
         $this->validateDataProperty($ctrlConfiguration['data']);

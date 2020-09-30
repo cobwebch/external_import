@@ -101,7 +101,7 @@ class UidRepositoryTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/../../Fixtures/UidRepository.xml');
         $configurationObject = $this->objectManager->get(Configuration::class);
         $configurationObject->setTable('tt_content');
-        $configurationObject->setCtrlConfiguration($configuration);
+        $configurationObject->setGeneralConfiguration($configuration);
         if ($configuration['enforcePid']) {
             $configurationObject->setStoragePid(1);
         }

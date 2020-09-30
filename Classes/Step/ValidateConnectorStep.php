@@ -31,7 +31,7 @@ class ValidateConnectorStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
+        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
         if (empty($ctrlConfiguration['connector'])) {
             $this->importer->addMessage(
                     LocalizationUtility::translate(

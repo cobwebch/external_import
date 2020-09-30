@@ -51,7 +51,7 @@ class ColumnConfigurationValidator
         $columnConfiguration = $configuration->getConfigurationForColumn($column);
         // Validate properties used to choose the import value
         $this->validateDataSettingProperties(
-                $configuration->getCtrlConfiguration(),
+                $configuration->getGeneralConfiguration(),
                 $columnConfiguration
         );
         // Check for deprecated transformation properties

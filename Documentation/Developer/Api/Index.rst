@@ -98,8 +98,12 @@ table
 index
   The index of the configuration being used.
 
-ctrlConfiguration
-  The "ctrl" part of the External Import TCA configuration.
+generalConfiguration
+  The general part of the External Import TCA configuration.
+
+  .. note::
+
+     This is still availabe as `ctrlConfiguration` but support will be dropped in the future.
 
 columnConfiguration
   The columns configuration part of the External Import TCA configuration.

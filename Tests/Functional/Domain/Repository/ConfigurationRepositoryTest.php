@@ -163,12 +163,12 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
         self::assertSame(
                 $expectedCtrlValue,
-                $configuration->getCtrlConfigurationProperty('nodetype')
+                $configuration->getGeneralConfigurationProperty('nodetype')
         );
         self::assertSame(
                 $expectedColumnConfiguration,
                 $configuration->getConfigurationForColumn(
-                        $configuration->getCtrlConfigurationProperty('referenceUid')
+                        $configuration->getGeneralConfigurationProperty('referenceUid')
                 )
         );
     }

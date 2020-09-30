@@ -41,7 +41,7 @@ class ConnectorCallbackStep extends AbstractStep
                 $errorStatus = true;
             }
             $this->configuration->getConnector()->postProcessOperations(
-                    $this->configuration->getCtrlConfigurationProperty('parameters'),
+                    $this->configuration->getGeneralConfigurationProperty('parameters'),
                     $errorStatus
             );
         }

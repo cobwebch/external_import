@@ -37,7 +37,7 @@ class XmlHandler implements DataHandlerInterface
         $data = [];
         $counter = 0;
         $configuration = $importer->getExternalConfiguration();
-        $ctrlConfiguration = $configuration->getCtrlConfiguration();
+        $ctrlConfiguration = $configuration->getGeneralConfiguration();
         $columnConfiguration = $configuration->getColumnConfiguration();
 
         // Load the XML into a DOM object

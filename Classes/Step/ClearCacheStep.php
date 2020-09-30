@@ -32,7 +32,7 @@ class ClearCacheStep extends AbstractStep
      */
     public function run(): void
     {
-        $configuration = $this->configuration->getCtrlConfiguration();
+        $configuration = $this->configuration->getGeneralConfiguration();
         if (empty($configuration['clearCache'])) {
             $this->importer->setPreviewData(
                     [

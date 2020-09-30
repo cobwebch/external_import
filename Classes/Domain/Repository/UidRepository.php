@@ -73,7 +73,7 @@ class UidRepository
         }
 
         $table = $this->configuration->getTable();
-        $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
+        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
         $where = '1 = 1';
         // TODO: use QueryBuilder to add constraints properly (verify that whereClause indeed works)
         if ($ctrlConfiguration['enforcePid']) {

@@ -52,7 +52,7 @@ class ValidateConfigurationStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
+        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
         // If there's no "ctrl" configuration, issue error
         if (count($ctrlConfiguration) === 0) {
             $this->importer->addMessage(

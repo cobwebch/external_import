@@ -455,7 +455,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
     {
         $configurationObject = $this->objectManager->get(Configuration::class);
         $configurationObject->setTable($table);
-        $configurationObject->setCtrlConfiguration($configuration);
+        $configurationObject->setGeneralConfiguration($configuration);
         return $configurationObject;
     }
 }

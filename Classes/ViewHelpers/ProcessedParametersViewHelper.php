@@ -63,7 +63,7 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
                 $preProcessor = GeneralUtility::makeInstance($className);
                 $processedParameters = $preProcessor->processParameters(
-                        $configuration->getCtrlConfigurationProperty('parameters'),
+                        $configuration->getGeneralConfigurationProperty('parameters'),
                         $configuration
                 );
             }

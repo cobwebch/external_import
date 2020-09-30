@@ -56,7 +56,7 @@ class HandleDataStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->configuration->getCtrlConfiguration();
+        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
         $originalData = $this->getData()->getRawData();
         // Check for custom data handlers
         if (!empty($ctrlConfiguration['dataHandler'])) {

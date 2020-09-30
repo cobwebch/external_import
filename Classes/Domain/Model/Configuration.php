@@ -37,9 +37,9 @@ class Configuration
     protected $index;
 
     /**
-     * @var array "ctrl" part of the External Import configuration
+     * @var array General part of the External Import configuration
      */
-    protected $ctrlConfiguration;
+    protected $generalConfiguration;
 
     /**
      * @var array External Import configuration for each column
@@ -121,28 +121,30 @@ class Configuration
     }
 
     /**
+     * Returns the general external configuration
+     *
      * @return array|null
      */
-    public function getCtrlConfiguration(): ?array
+    public function getGeneralConfiguration(): ?array
     {
-        return $this->ctrlConfiguration;
+        return $this->generalConfiguration;
     }
 
     /**
-     * Sets the "ctrl" part of the configuration and performs extra processing
+     * Sets the general configuration and performs extra processing
      * on some properties.
      *
-     * @param array $ctrlConfiguration
+     * @param array $generalConfiguration
      * @param array $defaultSteps List of default steps (if null will be guessed by the repository)
      * @return void
      */
-    public function setCtrlConfiguration(array $ctrlConfiguration, $defaultSteps = null): void
+    public function setGeneralConfiguration(array $generalConfiguration, $defaultSteps = null): void
     {
-        $this->ctrlConfiguration = $ctrlConfiguration;
+        $this->generalConfiguration = $generalConfiguration;
         // Define the process default steps, depending on process type or the predefined value
         // NOTE: normally default steps should always be defined
         if ($defaultSteps === null) {
-            if (array_key_exists('connector', $ctrlConfiguration)) {
+            if (array_key_exists('connector', $generalConfiguration)) {
                 $steps = Importer::SYNCHRONYZE_DATA_STEPS;
             } else {
                 $steps = Importer::IMPORT_DATA_STEPS;
@@ -151,8 +153,8 @@ class Configuration
             $steps = $defaultSteps;
         }
         // Perform extra processing for custom steps
-        if (array_key_exists('customSteps', $ctrlConfiguration)) {
-            foreach ($ctrlConfiguration['customSteps'] as $customStepConfiguration) {
+        if (array_key_exists('customSteps', $generalConfiguration)) {
+            foreach ($generalConfiguration['customSteps'] as $customStepConfiguration) {
                 $steps = $this->stepUtility->insertStep($steps, $customStepConfiguration);
             }
         }
@@ -160,13 +162,13 @@ class Configuration
 
         // Store the storage pid from the configuration
         // It is stored in a separate variable as it might be overridden
-        $this->storagePid = $ctrlConfiguration['pid'];
+        $this->storagePid = $generalConfiguration['pid'];
 
         // Perform extra processing for additional fields
-        if (array_key_exists('additionalFields', $ctrlConfiguration)) {
+        if (array_key_exists('additionalFields', $generalConfiguration)) {
             $additionalFields = GeneralUtility::trimExplode(
                     ',',
-                    $ctrlConfiguration['additionalFields'],
+                    $generalConfiguration['additionalFields'],
                     true
             );
             $this->setAdditionalFields($additionalFields);
@@ -182,12 +184,65 @@ class Configuration
      * @param $key
      * @return mixed|null
      */
-    public function getCtrlConfigurationProperty($key)
+    public function getGeneralConfigurationProperty($key)
     {
-        if (array_key_exists($key, $this->ctrlConfiguration)) {
-            return $this->ctrlConfiguration[$key];
+        if (array_key_exists($key, $this->generalConfiguration)) {
+            return $this->generalConfiguration[$key];
         }
         return null;
+    }
+
+    /**
+     * TODO: remove once backward-compatibility is dropped
+     *
+     * @return array|null
+     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfiguration() instead
+     */
+    public function getCtrlConfiguration(): ?array
+    {
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::getCtrlConfiguration() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfiguration() instead.',
+            E_USER_DEPRECATED
+        );
+        return $this->getGeneralConfiguration();
+    }
+
+    /**
+     * Sets the "ctrl" configuration and performs extra processing
+     * on some properties.
+     *
+     * TODO: remove once backward-compatibility is dropped
+     *
+     * @param array $ctrlConfiguration
+     * @param array $defaultSteps List of default steps (if null will be guessed by the repository)
+     * @return void
+     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::setGeneralConfiguration() instead
+     */
+    public function setCtrlConfiguration(array $ctrlConfiguration, $defaultSteps = null): void
+    {
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::setCtrlConfiguration() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::setGeneralConfiguration() instead.',
+            E_USER_DEPRECATED
+        );
+        $this->setGeneralConfiguration($ctrlConfiguration, $defaultSteps);
+    }
+
+    /**
+     * Returns a specific property from the "ctrl" configuration.
+     *
+     * TODO: remove once backward-compatibility is dropped
+     *
+     * @param $key
+     * @return mixed|null
+     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfigurationProperty() instead
+     */
+    public function getCtrlConfigurationProperty($key)
+    {
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::getCtrlConfigurationProperty() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfigurationProperty() instead.',
+            E_USER_DEPRECATED
+        );
+        return $this->getGeneralConfigurationProperty($key);
     }
 
     /**

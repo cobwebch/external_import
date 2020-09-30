@@ -75,7 +75,7 @@ class StoreDataStep extends AbstractStep
         $existingUids = $existingUids ?? [];
         $currentPids = $currentPids ?? [];
 
-        $ctrlConfiguration = $this->getConfiguration()->getCtrlConfiguration();
+        $ctrlConfiguration = $this->getConfiguration()->getGeneralConfiguration();
         $columnConfiguration = $this->getConfiguration()->getColumnConfiguration();
         $table = $this->importer->getExternalConfiguration()->getTable();
         // Extract list of excluded fields
@@ -104,7 +104,7 @@ class StoreDataStep extends AbstractStep
         $countConfiguredAdditionalFields = $this->getConfiguration()->getCountAdditionalFields();
         $isUpdateAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'update');
         $isInsertAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'insert');
-        $updateSlugs = (bool)$this->getConfiguration()->getCtrlConfigurationProperty('updateSlugs');
+        $updateSlugs = (bool)$this->getConfiguration()->getGeneralConfigurationProperty('updateSlugs');
         foreach ($records as $theRecord) {
             $localAdditionalFields = [];
             $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
