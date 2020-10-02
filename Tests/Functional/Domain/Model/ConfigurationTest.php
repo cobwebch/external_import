@@ -158,8 +158,7 @@ class ConfigurationTest extends FunctionalTestCase
                                 'pid' => 42,
                                 'additionalFields' => 'foo,bar'
                         ],
-                        42,
-                        ['foo', 'bar']
+                        42
                 ]
         ];
     }
@@ -168,10 +167,9 @@ class ConfigurationTest extends FunctionalTestCase
      * @test
      * @param array $configuration
      * @param int $pid
-     * @param array $additionalFields
      * @dataProvider ctrlConfigurationProvider
      */
-    public function setGeneralConfigurationSetsGeneralConfigurationAndMore($configuration, $pid, $additionalFields): void
+    public function setGeneralConfigurationSetsGeneralConfigurationAndMore($configuration, $pid): void
     {
         $this->subject->setGeneralConfiguration($configuration);
         self::assertSame(
@@ -186,20 +184,13 @@ class ConfigurationTest extends FunctionalTestCase
                 Importer::SYNCHRONYZE_DATA_STEPS,
                 $this->subject->getSteps()
         );
-        self::assertSame(
-                $additionalFields,
-                $this->subject->getAdditionalFields()
-        );
-        self::assertEquals(
-                count($additionalFields),
-                $this->subject->getCountAdditionalFields()
-        );
     }
 
     public function columnConfigurationProvider(): array
     {
         return [
-                'sample configuration' => [
+                'configuration without additional fields' => [
+                        [],
                         [
                                 'foo' => [
                                         'field' => 'bar',
@@ -225,6 +216,31 @@ class ConfigurationTest extends FunctionalTestCase
                                         ]
                                 ]
                         ]
+                ],
+                'configuration with additional fields' => [
+                        [
+                                'baz' => [
+                                        'field' => 'baz'
+                                ]
+                        ],
+                        [
+                                'foo' => [
+                                        'field' => 'bar',
+                                        'transformations' => [
+                                                20 => [
+                                                        'value' => 3
+                                                ],
+                                                10 => [
+                                                        'value' => 4
+                                                ]
+                                        ]
+                                ]
+                        ],
+                        'baz',
+                        [
+                                'field' => 'baz',
+                                Configuration::DO_NOT_SAVE_KEY => true
+                        ]
                 ]
         ];
     }
@@ -232,13 +248,17 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      * @dataProvider columnConfigurationProvider
-     * @param array $configuration
+     * @param array $additionalFieldsConfiguration
+     * @param array $columnConfiguration
      * @param string $columnName
      * @param array $processedConfiguration
      */
-    public function setColumnConfigurationSetsConfigurationAndSortsTransformations($configuration, $columnName, $processedConfiguration): void
+    public function setColumnConfigurationSetsConfigurationAndSortsTransformations($additionalFieldsConfiguration, $columnConfiguration, $columnName, $processedConfiguration): void
     {
-        $this->subject->setColumnConfiguration($configuration);
+        if (count($additionalFieldsConfiguration) > 0) {
+            $this->subject->setAdditionalFields($additionalFieldsConfiguration);
+        }
+        $this->subject->setColumnConfiguration($columnConfiguration);
         self::assertSame(
                 $processedConfiguration,
                 $this->subject->getConfigurationForColumn($columnName)
@@ -250,8 +270,18 @@ class ConfigurationTest extends FunctionalTestCase
      */
     public function setAdditionalFieldsSetsFieldsAndCount(): void
     {
-        $additionalFields = ['foo', 'bar'];
+        $additionalFields = [
+                'foo' => [
+                        'field' => 'foo'
+                ],
+                'bar' => [
+                        'field' => 'bar'
+                ]
+        ];
         $this->subject->setAdditionalFields($additionalFields);
+        // When set, additional fields get extra data attached to them
+        $additionalFields['foo'][Configuration::DO_NOT_SAVE_KEY] = true;
+        $additionalFields['bar'][Configuration::DO_NOT_SAVE_KEY] = true;
         self::assertSame(
                 $additionalFields,
                 $this->subject->getAdditionalFields()

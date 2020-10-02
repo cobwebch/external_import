@@ -25,6 +25,12 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
  */
 class ArrayHandler implements DataHandlerInterface
 {
+
+    public function __toString()
+    {
+        return self::class;
+    }
+
     /**
      * Maps the incoming data to an associative array with TCA column names as keys.
      *
@@ -61,15 +67,6 @@ class ArrayHandler implements DataHandlerInterface
                     }
                     catch (\Exception $e) {
                         // Nothing to do, we ignore values that were not found
-                    }
-                }
-
-                // Get additional fields data, if any
-                if ($configuration->getCountAdditionalFields() > 0) {
-                    foreach ($configuration->getAdditionalFields() as $fieldName) {
-                        if (isset($theRecord[$fieldName])) {
-                            $data[$referenceCounter][$fieldName] = $theRecord[$fieldName];
-                        }
                     }
                 }
 

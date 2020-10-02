@@ -1,3 +1,7 @@
+2020-10-02 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve handling of additional fields, resolves #69
+
 2020-09-30 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Move general configuration to own "space" in the TCA, resolves #140

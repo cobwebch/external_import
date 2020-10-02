@@ -99,6 +99,9 @@
 			<trans-unit id="additionalFields" xml:space="preserve">
 				<source>Additional fields</source>
 			</trans-unit>
+			<trans-unit id="margedAdditionalFields" xml:space="preserve">
+				<source>Additional fields are merged with the column configuration</source>
+			</trans-unit>
 			<trans-unit id="enforce_pid" xml:space="preserve">
 				<source>Enforce PID</source>
 			</trans-unit>

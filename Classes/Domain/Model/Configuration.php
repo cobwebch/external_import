@@ -26,6 +26,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Configuration
 {
+    public const DO_NOT_SAVE_KEY = '_txexternalimport_doNotSave';
+
     /**
      * @var string Name of the table to which the configuration applies
      */
@@ -51,7 +53,14 @@ class Configuration
      *
      * TODO: remove once backward-compatibility with "ctrl" section is dropped
      */
-    protected $obsolete = false;
+    protected $obsoleteGeneralConfiguration = false;
+
+    /**
+     * @var bool Whether the additional fields configuration is defined in an obsolete way (comma-separated list) or not
+     *
+     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
+     */
+    protected $obsoleteAdditionalFieldsConfiguration = false;
 
     /**
      * @var int ID of storage page
@@ -82,6 +91,11 @@ class Configuration
      * @var StepUtility
      */
     protected $stepUtility;
+
+    public function __toString()
+    {
+        return self::class;
+    }
 
     public function injectStepUtility(StepUtility $stepUtility): void
     {
@@ -164,17 +178,22 @@ class Configuration
         // It is stored in a separate variable as it might be overridden
         $this->storagePid = $generalConfiguration['pid'];
 
-        // Perform extra processing for additional fields
+        // Handle old-style configuration (comma-separated list)
+        // TODO: remove once backward-compatibility is dropped
         if (array_key_exists('additionalFields', $generalConfiguration)) {
-            $additionalFields = GeneralUtility::trimExplode(
+            $this->setObsoleteAdditionalFieldsConfiguration(true);
+            $fields = GeneralUtility::trimExplode(
                     ',',
                     $generalConfiguration['additionalFields'],
                     true
             );
+            $additionalFields = [];
+            foreach ($fields as $field) {
+                $additionalFields[$field] = [
+                        'field' => $field
+                ];
+            }
             $this->setAdditionalFields($additionalFields);
-            $this->setCountAdditionalFields(
-                    count($additionalFields)
-            );
         }
     }
 
@@ -260,6 +279,10 @@ class Configuration
      */
     public function setColumnConfiguration(array $columnConfiguration): void
     {
+        // Merge with additional fields
+        if (count($this->additionalFields) > 0) {
+            $columnConfiguration = array_merge($columnConfiguration, $this->additionalFields);
+        }
         $this->columnConfiguration = $columnConfiguration;
         $this->sortTransformationProperties();
     }
@@ -279,23 +302,83 @@ class Configuration
     }
 
     /**
-     * TODO: remove once backward-compatibility with "ctrl" section is dropped
+     * Returns the list of columns that must not be saved to the database.
      *
-     * @return bool
+     * @return array
      */
-    public function isObsolete(): bool
+    public function getColumnsExcludedFromSaving(): array
     {
-        return $this->obsolete;
+        $columns = [];
+        foreach ($this->columnConfiguration as $name => $configuration) {
+            if (array_key_exists(self::DO_NOT_SAVE_KEY, $configuration)) {
+                $columns[] = $name;
+            }
+        }
+        return $columns;
+    }
+
+    /**
+     * Sets the column as excluded from saving to the database or not.
+     *
+     * NOTE: by default all columns are saved and all additional fields are excluded from saving
+     *
+     * @param string $column Name of the column
+     * @param bool $flag
+     * @throws \Cobweb\ExternalImport\Exception\NoSuchColumnException
+     */
+    public function setExcludedFromSavingFlagForColumn($column, $flag): void
+    {
+        if (array_key_exists($column, $this->columnConfiguration)) {
+            $this->columnConfiguration[$column][self::DO_NOT_SAVE_KEY] = $flag;
+        } else {
+            throw new \Cobweb\ExternalImport\Exception\NoSuchColumnException(
+                    sprintf(
+                        'The requested column (%s) does not exist.',
+                        $column
+                    ),
+                    1601633669
+            );
+        }
     }
 
     /**
      * TODO: remove once backward-compatibility with "ctrl" section is dropped
      *
-     * @param bool $obsolete
+     * @return bool
      */
-    public function setObsolete(bool $obsolete): void
+    public function isObsoleteGeneralConfiguration(): bool
     {
-        $this->obsolete = $obsolete;
+        return $this->obsoleteGeneralConfiguration;
+    }
+
+    /**
+     * TODO: remove once backward-compatibility with "ctrl" section is dropped
+     *
+     * @param bool $obsoleteGeneralConfiguration
+     */
+    public function setObsoleteGeneralConfiguration(bool $obsoleteGeneralConfiguration): void
+    {
+        $this->obsoleteGeneralConfiguration = $obsoleteGeneralConfiguration;
+    }
+
+    /**
+     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
+     *
+     * @return bool
+     */
+    public function isObsoleteAdditionalFieldsConfiguration(): bool
+    {
+        return $this->obsoleteAdditionalFieldsConfiguration;
+    }
+
+    /**
+     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
+     *
+     * @param bool $obsoleteAdditionalFieldsConfiguration
+     */
+    public function setObsoleteAdditionalFieldsConfiguration(bool $obsoleteAdditionalFieldsConfiguration): void
+    {
+        $this->obsoleteAdditionalFieldsConfiguration = $obsoleteAdditionalFieldsConfiguration;
     }
 
     /**
@@ -327,6 +410,9 @@ class Configuration
      */
     public function setAdditionalFields(array $additionalFields): void
     {
+        foreach ($additionalFields as $fieldName => $fieldConfiguration) {
+            $additionalFields[$fieldName][self::DO_NOT_SAVE_KEY] = true;
+        }
         $this->additionalFields = $additionalFields;
         $this->countAdditionalFields = count($additionalFields);
     }

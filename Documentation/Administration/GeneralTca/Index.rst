@@ -400,12 +400,8 @@ Type
   string
 
 Description
-  Comma-separated list of fields from the external source that should be
-  made available during the import process, but that will not be stored
-  in the internal table.
-
-  This is usually the case for fields which you want to use in the
-  transformation step, but that will not be stored eventually.
+  This property is not part of the general information anymore. Please refer to
+  :ref:`the dedicated chapter <administration-additionalfields>`.
 
 Scope
   Read data

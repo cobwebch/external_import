@@ -102,16 +102,6 @@ class XmlHandler implements DataHandlerInterface
                 }
             }
 
-            // Get additional fields data, if any
-            if ($configuration->getCountAdditionalFields() > 0) {
-                foreach ($configuration->getAdditionalFields() as $fieldName) {
-                    $node = $theRecord->getElementsByTagName($fieldName);
-                    if ($node->length > 0) {
-                        $data[$referenceCounter][$fieldName] = $node->item(0)->nodeValue;
-                    }
-                }
-            }
-
             // If values were found in substructures, denormalize the data
             if (count($rows) > 0) {
                 // First find the longest substructure result

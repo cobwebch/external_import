@@ -123,26 +123,38 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         return [
                 'simple configuration' => [
                         // Table
-                        'tx_externalimporttest_product',
+                        'tx_externalimporttest_order',
                         // Index
-                        'base',
-                        // Sample test value from the ctrl configuration (property: nodetype)
-                        'products',
-                        // Sample test value from the columns configuration (column corresponding to referenceUid property, i.e. "sku")
+                        0,
+                        // Sample test value from the ctrl configuration (property: referenceUid)
+                        'order_id',
+                        // Sample test value from the columns configuration (column corresponding to referenceUid property, i.e. "order_id")
                         [
-                                'xpath' => './self::*[@type="current"]/item',
-                                'attribute' => 'sku'
+                                'field' => 'order',
+                                'transformations' => [
+                                        10 => [
+                                                'trim' => true
+                                        ]
+                                ]
+                        ],
+                        [
+                                'quantity' => [
+                                        'field' => 'qty',
+                                        \Cobweb\ExternalImport\Domain\Model\Configuration::DO_NOT_SAVE_KEY => true
+                                ]
                         ]
                 ],
                 'configuration with useColumnIndex' => [
                         'tx_externalimporttest_product',
                         'stable',
-                        // Same values as above, since useColumnIndex property points to "base" configuration
-                        'products',
+                        'sku',
+                        // NOTE: this is expected to match information from the "base" configuration,
+                        // since the "stable" configuration has the useColumnIndex property pointing to "base" configuration
                         [
                                 'xpath' => './self::*[@type="current"]/item',
                                 'attribute' => 'sku'
-                        ]
+                        ],
+                        []
                 ]
         ];
     }
@@ -152,24 +164,29 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
      * @dataProvider findConfigurationProvider
      * @param string $table
      * @param mixed $index
-     * @param string $expectedCtrlValue
+     * @param string $expectedGeneralValue
      * @param array $expectedColumnConfiguration
+     * @param array $expectedAdditionalFieldsConfiguration
      */
-    public function findConfigurationObjectReturnsExpectedConfiguration($table, $index, $expectedCtrlValue, $expectedColumnConfiguration): void
+    public function findConfigurationObjectReturnsExpectedConfiguration($table, $index, $expectedGeneralValue, $expectedColumnConfiguration, $expectedAdditionalFieldsConfiguration): void
     {
         $configuration = $this->subject->findConfigurationObject(
                 $table,
                 $index
         );
         self::assertSame(
-                $expectedCtrlValue,
-                $configuration->getGeneralConfigurationProperty('nodetype')
+                $expectedGeneralValue,
+                $configuration->getGeneralConfigurationProperty('referenceUid')
         );
         self::assertSame(
                 $expectedColumnConfiguration,
                 $configuration->getConfigurationForColumn(
                         $configuration->getGeneralConfigurationProperty('referenceUid')
                 )
+        );
+        self::assertSame(
+                $expectedAdditionalFieldsConfiguration,
+                $configuration->getAdditionalFields()
         );
     }
 
@@ -244,79 +261,80 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function findByTableAndIndexReturnsCtrlConfiguration(): void
+    public function findByTableAndIndexReturnsExternalConfiguration(): void
     {
-        // Use a very simple configuration as an example
-        $ctrlConfiguration = $this->subject->findByTableAndIndex(
-                'tx_externalimporttest_tag',
-                'api'
-        );
-        self::assertSame(
-                [
-                        'data' => 'array',
-                        'referenceUid' => 'code',
-                        'description' => 'Tags defined via the import API',
-                        'pid' => 0
-                ],
-                $ctrlConfiguration
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function findColumnsByTableAndIndexReturnsCtrlConfiguration(): void
-    {
-        $columnsConfiguration = $this->subject->findColumnsByTableAndIndex(
+        $externalConfiguration = $this->subject->findByTableAndIndex(
                 'tx_externalimporttest_order',
                 0
         );
         self::assertSame(
                 [
-                        'client_id' => [
-                                'field' => 'customer',
-                                'transformations' => [
-                                        10 => [
-                                                'trim' => true
-                                        ]
+                        'general' => [
+                                'connector' => 'csv',
+                                'parameters' => [
+                                        'filename' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Orders.csv',
+                                        'delimiter' => "\t",
+                                        'text_qualifier' => '',
+                                        'encoding' => 'utf8',
+                                        'skip_rows' => 1
+                                ],
+                                'data' => 'array',
+                                'referenceUid' => 'order_id',
+                                'priority' => 5300,
+                                'description' => 'List of orders',
+                                'pid' => 0
+                        ],
+                        'additionalFields' => [
+                                'quantity' => [
+                                        'field' => 'qty'
                                 ]
                         ],
-                        'order_date' => [
-                                'field' => 'date',
-                                'transformations' => [
-                                        10 => [
-                                                'userFunc' => [
-                                                        'class' => \Cobweb\ExternalImport\Transformation\DateTimeTransformation::class,
-                                                        'method' => 'parseDate',
-                                                        'params' => [
-                                                                'enforceTimeZone' => true
+                        'columns' => [
+                                'client_id' => [
+                                        'field' => 'customer',
+                                        'transformations' => [
+                                                10 => [
+                                                        'trim' => true
+                                                ]
+                                        ]
+                                ],
+                                'order_date' => [
+                                        'field' => 'date',
+                                        'transformations' => [
+                                                10 => [
+                                                        'userFunc' => [
+                                                                'class' => \Cobweb\ExternalImport\Transformation\DateTimeTransformation::class,
+                                                                'method' => 'parseDate',
+                                                                'params' => [
+                                                                        'enforceTimeZone' => true
+                                                                ]
                                                         ]
                                                 ]
                                         ]
-                                ]
-                        ],
-                        'order_id' => [
-                                'field' => 'order',
-                                'transformations' => [
-                                        10 => [
-                                                'trim' => true
+                                ],
+                                'order_id' => [
+                                        'field' => 'order',
+                                        'transformations' => [
+                                                10 => [
+                                                        'trim' => true
+                                                ]
                                         ]
-                                ]
-                        ],
-                        'products' => [
-                                'field' => 'product',
-                                'MM' => [
-                                        'mapping' => [
-                                                'table' => 'tx_externalimporttest_product',
-                                                'referenceField' => 'sku'
-                                        ],
-                                        'additionalFields' => [
-                                                'quantity' => 'qty'
+                                ],
+                                'products' => [
+                                        'field' => 'product',
+                                        'MM' => [
+                                                'mapping' => [
+                                                        'table' => 'tx_externalimporttest_product',
+                                                        'referenceField' => 'sku'
+                                                ],
+                                                'additionalFields' => [
+                                                        'quantity' => 'quantity'
+                                                ]
                                         ]
                                 ]
                         ]
                 ],
-                $columnsConfiguration
+                $externalConfiguration
         );
     }
 }

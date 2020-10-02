@@ -84,6 +84,9 @@ class ControlConfigurationValidator
                 $ctrlConfiguration['customSteps'],
                 $ctrlConfiguration
         );
+        $this->validateAdditionalFieldsProperty(
+                $configuration->isObsoleteAdditionalFieldsConfiguration()
+        );
 
         // Validate properties for pull-only configurations
         if (!empty($ctrlConfiguration['connector'])) {
@@ -427,6 +430,28 @@ class ControlConfigurationValidator
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * Validates the "additionalFields" property.
+     *
+     * Actually this just mentions an obsolete configuration.
+     *
+     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
+     *
+     * @param bool $isObsolete
+     */
+    public function validateAdditionalFieldsProperty($isObsolete): void
+    {
+        if ($isObsolete) {
+            $this->results->add(
+                    'additionalFields',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:obsoleteAdditionalFieldsProperty'
+                    ),
+                    AbstractMessage::NOTICE
+            );
         }
     }
 

@@ -127,6 +127,11 @@ connector
 
 There are getters and setters for each of these.
 
+Furthermore the :code:`setExcludedFromSavingFlagForColumn()` method makes it possible to
+programmatically exclude (or re-include) a field from being saved to the database.
+By default, all :ref:`additional fields <administration-additionalfields>` are excluded.
+Using this method should not be necessary is most normal usage scenarios.
+
 
 .. _developer-api-importer-class:
 

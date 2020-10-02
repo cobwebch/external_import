@@ -26,8 +26,17 @@ Upgrade to 5.0.0
 """"""""""""""""
 
 The general configuration must now be placed in :code:`$GLOBALS['TCA'][table-name]['external']['general']`
-instead of :code:`$GLOBALS['TCA'][table-name]['ctrl']['external']`. Backwards-compatibilit is ensured for now
+instead of :code:`$GLOBALS['TCA'][table-name]['ctrl']['external']`. Backwards-compatibility is ensured for now
 but code should be migrated as soon as possible, as support will be dropped in the future.
+
+The "additionalFields" property from the general configuration (and not from the "MM" property)
+has been moved to its own configuration space. Rather than
+:code:`$GLOBALS['TCA'][table-name]['ctrl']['external'][some-index]['additionalFields]`
+it is now :code:`$GLOBALS['TCA'][table-name]['external']['additionalFields'][some-index]`.
+Furthermore, it is no longer a simple comma-separated list of fields, but an array structure
+with all the same options as standard column mappings. Backwards-compatibility is ensured for now.
+For more details, :ref:`see the relevant chapter <administration-additionalfields>`.
+
 
 .. _installation-upgrade-410:
 

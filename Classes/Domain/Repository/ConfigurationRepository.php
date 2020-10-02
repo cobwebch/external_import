@@ -67,7 +67,7 @@ class ConfigurationRepository
     }
 
     /**
-     * Returns the "ctrl" part of the external import configuration for the given table and index.
+     * Returns the various sections of the external import configuration for the given table and index.
      *
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
@@ -75,18 +75,43 @@ class ConfigurationRepository
      */
     public function findByTableAndIndex($table, $index): array
     {
+        $configuration = [
+                'general' => [],
+                'additionalFields' => [],
+                'columns' => []
+        ];
+
+        // General configuration
         if (isset($GLOBALS['TCA'][$table]['external']['general'][$index])) {
-            return $this->processCtrlConfiguration(
+            $configuration['general'] = $this->processGeneralConfiguration(
                     $GLOBALS['TCA'][$table]['external']['general'][$index]
             );
-        }
-        // Check for legacy configuration
-        if (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
-            return $this->processCtrlConfiguration(
+        // Check for legacy general configuration
+        } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
+            $configuration['general'] = $this->processGeneralConfiguration(
                     $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
             );
         }
-        return [];
+
+        // Load additional fields configuration
+        if (isset($GLOBALS['TCA'][$table]['external']['additionalFields'][$index])) {
+            $configuration['additionalFields'] = $GLOBALS['TCA'][$table]['external']['additionalFields'][$index];
+        }
+
+        // Load columns configuration
+        // Override the configuration index for columns, if so defined
+        $columnIndex = $configuration['general']['useColumnIndex'] ?? $index;
+        if (isset($GLOBALS['TCA'][$table]['columns'])) {
+            $columnsConfiguration = $GLOBALS['TCA'][$table]['columns'];
+            ksort($columnsConfiguration);
+            foreach ($columnsConfiguration as $columnName => $columnData) {
+                if (isset($columnData['external'][$columnIndex])) {
+                    $configuration['columns'][$columnName] = $columnData['external'][$columnIndex];
+                }
+            }
+        }
+
+        return $configuration;
     }
 
     /**
@@ -115,28 +140,6 @@ class ConfigurationRepository
                 ),
                 1601473068
         );
-    }
-
-    /**
-     * Returns the columns part of the external import configuration for the given table and index.
-     *
-     * @param string $table Name of the table
-     * @param string|integer $index Key of the configuration
-     * @return array The relevant TCA configuration
-     */
-    public function findColumnsByTableAndIndex($table, $index): array
-    {
-        $columns = [];
-        if (isset($GLOBALS['TCA'][$table]['columns'])) {
-            $columnsConfiguration = $GLOBALS['TCA'][$table]['columns'];
-            ksort($columnsConfiguration);
-            foreach ($columnsConfiguration as $columnName => $columnData) {
-                if (isset($columnData['external'][$index])) {
-                    $columns[$columnName] = $columnData['external'][$index];
-                }
-            }
-        }
-        return $columns;
     }
 
     /**
@@ -231,30 +234,31 @@ class ConfigurationRepository
      *
      * @param string $table Name of the table
      * @param string|integer $index Key of the configuration
-     * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
+     * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return Configuration
      */
     public function findConfigurationObject($table, $index, $defaultSteps = null): Configuration
     {
         $configuration = $this->objectManager->get(Configuration::class);
-        $ctrlConfiguration = $this->findByTableAndIndex($table, $index);
+        $externalConfiguration = $this->findByTableAndIndex($table, $index);
         try {
-            $configuration->setObsolete(
+            $configuration->setObsoleteGeneralConfiguration(
                     $this->isObsoleteGeneralConfiguration($table, $index)
             );
         } catch (\Exception $e) {
             // Nothing to do, the configuration does not exist anyway
         }
 
-        // Override the configuration index for columns, if so defined
-        $columnIndex = $ctrlConfiguration['useColumnIndex'] ?? $index;
-        $columnsConfiguration = $this->findColumnsByTableAndIndex($table, $columnIndex);
-
         // Set the values in the Configuration object
         $configuration->setTable($table);
         $configuration->setIndex($index);
-        $configuration->setGeneralConfiguration($ctrlConfiguration, $defaultSteps);
-        $configuration->setColumnConfiguration($columnsConfiguration);
+        $configuration->setGeneralConfiguration($externalConfiguration['general'], $defaultSteps);
+        // NOTE: this test is only necessary as long as we handle old-style configuration in the call above
+        // TODO: remove once backward-compatibility with "ctrl" section is dropped
+        if (count($externalConfiguration['additionalFields'])) {
+            $configuration->setAdditionalFields($externalConfiguration['additionalFields']);
+        }
+        $configuration->setColumnConfiguration($externalConfiguration['columns']);
         return $configuration;
     }
 
@@ -392,12 +396,12 @@ class ConfigurationRepository
     }
 
     /**
-     * Performs some processing on the "ctrl" configuration, like taking global values into account.
+     * Performs some processing on the general configuration, like taking global values into account.
      *
      * @param array $configuration The external import configuration to process
      * @return array The processed configuration
      */
-    protected function processCtrlConfiguration($configuration): array
+    protected function processGeneralConfiguration($configuration): array
     {
         // If the pid is not set in the current configuration, use global storage pid
         $pid = 0;

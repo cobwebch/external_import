@@ -50,13 +50,13 @@ class ArrayHandlerTest extends FunctionalTestCase
                                 'brand' => [
                                         'arrayPath' => 'brand|name',
                                         'arrayPathSeparator' => '|'
+                                ],
+                                'special' => [
+                                        'field' => 'special_field',
+                                        Configuration::DO_NOT_SAVE_KEY => true
                                 ]
                         ]
                 );
-        $configuration->method('getCountAdditionalFields')
-                ->willReturn(1);
-        $configuration->method('getAdditionalFields')
-                ->willReturn(['special_field']);
         $this->importer = $this->createMock(Importer::class);
         $this->importer->method('getExternalConfiguration')
                 ->willReturn($configuration);
@@ -141,11 +141,11 @@ class ArrayHandlerTest extends FunctionalTestCase
                         [
                                 [
                                         'name' => 2,
-                                        'special_field' => 'foo'
+                                        'special' => 'foo'
                                 ],
                                 [
                                         'name' => 1,
-                                        'special_field' => 'bar'
+                                        'special' => 'bar'
                                 ]
                         ]
                 ]

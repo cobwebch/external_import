@@ -263,49 +263,49 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'order_date' => '2014-08-07 14:32',
                                         'order_id' => '000001',
                                         'products' => '000001',
-                                        'qty' => '3'
+                                        'quantity' => '3'
                                 ],
                                 [
                                         'client_id' => 'Conan the Barbarian',
                                         'order_date' => '2014-08-07 14:32',
                                         'order_id' => '000001',
                                         'products' => '000005',
-                                        'qty' => '1'
+                                        'quantity' => '1'
                                 ],
                                 [
                                         'client_id' => 'Conan the Barbarian',
                                         'order_date' => '2014-08-07 14:32',
                                         'order_id' => '000001',
                                         'products' => '000101',
-                                        'qty' => '10'
+                                        'quantity' => '10'
                                 ],
                                 [
                                         'client_id' => 'Conan the Barbarian',
                                         'order_date' => '2014-08-07 14:32',
                                         'order_id' => '000001',
                                         'products' => '000102',
-                                        'qty' => '2'
+                                        'quantity' => '2'
                                 ],
                                 [
                                         'client_id' => 'Sonja the Red',
                                         'order_date' => '2014-08-08 06:48',
                                         'order_id' => '000002',
                                         'products' => '000001',
-                                        'qty' => '1'
+                                        'quantity' => '1'
                                 ],
                                 [
                                         'client_id' => 'Sonja the Red',
                                         'order_date' => '2014-08-08 06:48',
                                         'order_id' => '000002',
                                         'products' => '000005',
-                                        'qty' => '2'
+                                        'quantity' => '2'
                                 ],
                                 [
                                         'client_id' => 'Sonja the Red',
                                         'order_date' => '2014-08-08 06:48',
                                         'order_id' => '000002',
                                         'products' => '000202',
-                                        'qty' => '1'
+                                        'quantity' => '1'
                                 ]
                         ]
                 ]

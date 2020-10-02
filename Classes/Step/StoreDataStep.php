@@ -97,16 +97,16 @@ class StoreDataStep extends AbstractStep
         $tceCommands = [
                 $table => []
         ];
-        $savedAdditionalFields = [];
+        $savedExcludedColumns = [];
         // Prepare some data before the loop
         $storagePid = $this->getConfiguration()->getStoragePid();
-        $configuredAdditionalFields = $this->getConfiguration()->getAdditionalFields();
-        $countConfiguredAdditionalFields = $this->getConfiguration()->getCountAdditionalFields();
+        $columnsExcludedFromSaving = $this->getConfiguration()->getColumnsExcludedFromSaving();
+        $countColumnsExcludedFromSaving = count($columnConfiguration);
         $isUpdateAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'update');
         $isInsertAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'insert');
         $updateSlugs = (bool)$this->getConfiguration()->getGeneralConfigurationProperty('updateSlugs');
         foreach ($records as $theRecord) {
-            $localAdditionalFields = [];
+            $localExcludedColumns = [];
             $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
             // Skip handling of already handled records (this can happen with denormalized structures)
             // NOTE: using isset() on index instead of in_array() offers far better performance
@@ -130,9 +130,9 @@ class StoreDataStep extends AbstractStep
 
             // Remove additional fields data, if any. They must not be saved to database
             // They are saved locally however, for later use
-            if ($countConfiguredAdditionalFields > 0) {
-                foreach ($configuredAdditionalFields as $fieldName) {
-                    $localAdditionalFields[$fieldName] = $theRecord[$fieldName];
+            if ($countColumnsExcludedFromSaving > 0) {
+                foreach ($columnsExcludedFromSaving as $fieldName) {
+                    $localExcludedColumns[$fieldName] = $theRecord[$fieldName];
                     unset($theRecord[$fieldName]);
                 }
             }
@@ -242,7 +242,7 @@ class StoreDataStep extends AbstractStep
             // Store local additional fields into general additional fields array
             // keyed to proper id's (if the record was processed)
             if (!empty($theID)) {
-                $savedAdditionalFields[$theID] = $localAdditionalFields;
+                $savedExcludedColumns[$theID] = $localExcludedColumns;
             }
         }
         // If the target table is pages, perform some special sorting to ensure that parent pages
@@ -318,7 +318,7 @@ class StoreDataStep extends AbstractStep
                             }
                             // Restore additional fields, if any
                             if ($this->getConfiguration()->getCountAdditionalFields() > 0) {
-                                foreach ($savedAdditionalFields[$id] as $fieldName => $fieldValue) {
+                                foreach ($savedExcludedColumns[$id] as $fieldName => $fieldValue) {
                                     $record[$fieldName] = $fieldValue;
                                 }
                             }
