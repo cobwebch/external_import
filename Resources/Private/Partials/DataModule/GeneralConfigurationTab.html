@@ -2,29 +2,29 @@
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
 
-	<ex:validateControlConfiguration configuration="{configuration}" as="results">
-		<f:alias map="{ctrlConfiguration: configuration.ctrlConfiguration}">
+	<ex:validateGeneralConfiguration configuration="{configuration}" as="results">
+		<f:alias map="{generalConfiguration: configuration.generalConfiguration}">
 			<f:if condition="{configuration.obsoleteGeneralConfiguration}">
 				<f:be.infobox state="1" title="{f:translate(id: 'migrationRequired')}" message="{f:translate(id: 'obsoleteGeneralConfiguration')}"/>
 			</f:if>
 			<table class="information-table">
-				<f:if condition="{ctrlConfiguration.connector}">
+				<f:if condition="{generalConfiguration.connector}">
 					<tr>
 						<td><f:translate id="connector" /></td>
 						<td>
-							{ctrlConfiguration.connector}
+							{generalConfiguration.connector}
 							<f:if condition="{results.connector}">
 								<ex:displayValidationResult result="{results.connector}" />
 							</f:if>
 						</td>
 					</tr>
 				</f:if>
-				<f:if condition="{ctrlConfiguration.parameters}">
+				<f:if condition="{generalConfiguration.parameters}">
 					<tr>
 						<td><f:translate id="connector.details" /></td>
 						<td>
 							<ex:processedParameters configuration="{configuration}">
-								<ex:twinDump originalArray="{ctrlConfiguration.parameters}" modifiedArray="{processedParameters}" />
+								<ex:twinDump originalArray="{generalConfiguration.parameters}" modifiedArray="{processedParameters}" />
 							</ex:processedParameters>
 							<f:if condition="{results.parameters}">
 								<ex:displayValidationResult result="{results.parameters}" />
@@ -35,9 +35,9 @@
 				<tr>
 					<td><f:translate id="group" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.group}">
+						<f:if condition="{generalConfiguration.group}">
 							<f:then>
-								<f:translate id="{ctrlConfiguration.group}" default="{ctrlConfiguration.group}" />
+								<f:translate id="{generalConfiguration.group}" default="{generalConfiguration.group}" />
 							</f:then>
 							<f:else>
 								<f:translate id="none" />
@@ -48,7 +48,7 @@
 				<tr>
 					<td><f:translate id="data_type" /></td>
 					<td>
-						{ctrlConfiguration.data}
+						{generalConfiguration.data}
 						<f:if condition="{results.data}">
 							<ex:displayValidationResult result="{results.data}" />
 						</f:if>
@@ -57,17 +57,17 @@
 				<tr>
 					<td><f:translate id="priority" /></td>
 					<td>
-						{ctrlConfiguration.priority}
+						{generalConfiguration.priority}
 						<f:if condition="{results.priority}">
 							<ex:displayValidationResult result="{results.priority}" />
 						</f:if>
 					</td>
 				</tr>
-				<f:if condition="{ctrlConfiguration.dataHandler}">
+				<f:if condition="{generalConfiguration.dataHandler}">
 					<tr>
 						<td><f:translate id="data_handler" /></td>
 						<td>
-							{ctrlConfiguration.dataHandler}
+							{generalConfiguration.dataHandler}
 							<f:if condition="{results.dataHandler}">
 								<ex:displayValidationResult result="{results.dataHandler}" />
 							</f:if>
@@ -75,13 +75,13 @@
 					</tr>
 				</f:if>
 				<!-- Nodetype property may be missing which creates an error for XML-type data. So we need to explicitely check for a validation error. -->
-				<f:if condition="{ctrlConfiguration.nodetype} || {ctrlConfiguration.nodepath} || {results.nodetype}">
+				<f:if condition="{generalConfiguration.nodetype} || {generalConfiguration.nodepath} || {results.nodetype}">
 					<tr>
 						<td><f:translate id="reference_node" /></td>
 						<td>
-							<f:if condition="{ctrlConfiguration.nodetype}">
+							<f:if condition="{generalConfiguration.nodetype}">
 								<f:then>
-									{ctrlConfiguration.nodetype}
+									{generalConfiguration.nodetype}
 								</f:then>
 								<f:else>-</f:else>
 							</f:if>
@@ -93,27 +93,27 @@
 					<tr>
 						<td><f:translate id="reference_nodepath" /></td>
 						<td>
-							<f:if condition="{ctrlConfiguration.nodepath}">
+							<f:if condition="{generalConfiguration.nodepath}">
 								<f:then>
-									{ctrlConfiguration.nodepath}
+									{generalConfiguration.nodepath}
 								</f:then>
 								<f:else>-</f:else>
 							</f:if>
 						</td>
 					</tr>
 				</f:if>
-				<f:if condition="{ctrlConfiguration.namespaces}">
+				<f:if condition="{generalConfiguration.namespaces}">
 					<tr>
 						<td><f:translate id="namespaces" /></td>
 						<td>
-							<ex:dump array="{ctrlConfiguration.namespaces}" />
+							<ex:dump array="{generalConfiguration.namespaces}" />
 						</td>
 					</tr>
 				</f:if>
 				<tr>
 					<td><f:translate id="external_key" /></td>
 					<td>
-						{ctrlConfiguration.referenceUid}
+						{generalConfiguration.referenceUid}
 						<f:if condition="{results.referenceUid}">
 							<ex:displayValidationResult result="{results.referenceUid}" />
 						</f:if>
@@ -122,7 +122,7 @@
 				<tr>
 					<td><f:translate id="storage_pid" /></td>
 					<td>
-						<ex:be.pageLink page="{ctrlConfiguration.pid}" />
+						<ex:be.pageLink page="{generalConfiguration.pid}" />
 						<f:if condition="{results.pid}">
 							<ex:displayValidationResult result="{results.pid}" />
 						</f:if>
@@ -131,7 +131,7 @@
 				<tr>
 					<td><f:translate id="enforce_pid" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.enforcePid}">
+						<f:if condition="{generalConfiguration.enforcePid}">
 							<f:then>
 								<f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:yes" />
 							</f:then>
@@ -144,7 +144,7 @@
 				<tr>
 					<td><f:translate id="disableLog" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.disableLog}">
+						<f:if condition="{generalConfiguration.disableLog}">
 							<f:then>
 								<f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:yes" />
 							</f:then>
@@ -157,9 +157,9 @@
 				<tr>
 					<td><f:translate id="additionalFields" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.additionalFields}">
+						<f:if condition="{generalConfiguration.additionalFields}">
 							<f:then>
-								{ctrlConfiguration.additionalFields}
+								{generalConfiguration.additionalFields}
 							</f:then>
 							<f:else>
 								-
@@ -173,9 +173,9 @@
 				<tr>
 					<td><f:translate id="where_clause" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.whereClause}">
+						<f:if condition="{generalConfiguration.whereClause}">
 							<f:then>
-								{ctrlConfiguration.whereClause}
+								{generalConfiguration.whereClause}
 							</f:then>
 							<f:else>
 								-
@@ -189,9 +189,9 @@
 				<tr>
 					<td><f:translate id="disabled_operations" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.disabledOperations}">
+						<f:if condition="{generalConfiguration.disabledOperations}">
 							<f:then>
-								{ctrlConfiguration.disabledOperations}
+								{generalConfiguration.disabledOperations}
 							</f:then>
 							<f:else>
 								<f:translate id="none" />
@@ -202,9 +202,9 @@
 				<tr>
 					<td><f:translate id="minimum_records" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.minimumRecords}">
+						<f:if condition="{generalConfiguration.minimumRecords}">
 							<f:then>
-								{ctrlConfiguration.minimumRecords}
+								{generalConfiguration.minimumRecords}
 							</f:then>
 							<f:else>
 								-
@@ -215,9 +215,9 @@
 				<tr>
 					<td><f:translate id="clearCache" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.clearCache}">
+						<f:if condition="{generalConfiguration.clearCache}">
 							<f:then>
-								{ctrlConfiguration.clearCache}
+								{generalConfiguration.clearCache}
 							</f:then>
 							<f:else>
 								-
@@ -228,7 +228,7 @@
 				<tr>
 					<td><f:translate id="updateSlugs" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.updateSlugs}">
+						<f:if condition="{generalConfiguration.updateSlugs}">
 							<f:then>
 								<f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:yes" />
 							</f:then>
@@ -241,9 +241,9 @@
 				<tr>
 					<td><f:translate id="columnIndex" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.useColumnIndex}">
+						<f:if condition="{generalConfiguration.useColumnIndex}">
 							<f:then>
-								{ctrlConfiguration.useColumnIndex}
+								{generalConfiguration.useColumnIndex}
 								<f:if condition="{results.useColumnIndex}">
 									<ex:displayValidationResult result="{results.useColumnIndex}" />
 								</f:if>
@@ -257,9 +257,9 @@
 				<tr>
 					<td><f:translate id="customSteps" /></td>
 					<td>
-						<f:if condition="{ctrlConfiguration.customSteps}">
+						<f:if condition="{generalConfiguration.customSteps}">
 							<f:then>
-								<ex:dump array="{ctrlConfiguration.customSteps}" />
+								<ex:dump array="{generalConfiguration.customSteps}" />
 								<f:if condition="{results.customSteps}">
 									<ex:displayValidationResult result="{results.customSteps}" />
 								</f:if>
@@ -272,5 +272,5 @@
 				</tr>
 			</table>
 		</f:alias>
-	</ex:validateControlConfiguration>
+	</ex:validateGeneralConfiguration>
 </html>

@@ -17,7 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Functional\Validator;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Importer;
-use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
+use Cobweb\ExternalImport\Validator\GeneralConfigurationValidator;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
@@ -28,7 +28,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
 {
 
     /**
-     * @var ControlConfigurationValidator
+     * @var GeneralConfigurationValidator
      */
     protected $subject;
 
@@ -44,7 +44,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $this->objectManager->get(ControlConfigurationValidator::class);
+        $this->subject = $this->objectManager->get(GeneralConfigurationValidator::class);
     }
 
     public function validConfigurationProvider(): array

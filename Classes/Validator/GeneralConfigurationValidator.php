@@ -25,14 +25,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
- * This class parses the "ctrl" part of an External Import configuration
+ * This class parses the general part of an External Import configuration
  * and reports errors and other glitches.
  *
  * NOTE: this is not a strict Extbase Validator.
  *
  * @package Cobweb\ExternalImport\Validator
  */
-class ControlConfigurationValidator
+class GeneralConfigurationValidator
 {
     /**
      * @var string Name of the table for which the configuration is checked
@@ -172,7 +172,7 @@ class ControlConfigurationValidator
      * @param string $connector Type of connector
      * @param array $property Parameters for the connector
      * @return void
-     * @see \Cobweb\ExternalImport\Validator\ControlConfigurationValidator::validateConnectorProperty
+     * @see \Cobweb\ExternalImport\Validator\GeneralConfigurationValidator::validateConnectorProperty
      */
     public function validateConnectorConfigurationProperty($connector, $property): void
     {

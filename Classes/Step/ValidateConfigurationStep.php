@@ -15,7 +15,7 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
-use Cobweb\ExternalImport\Validator\ControlConfigurationValidator;
+use Cobweb\ExternalImport\Validator\GeneralConfigurationValidator;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -26,18 +26,18 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class ValidateConfigurationStep extends AbstractStep
 {
     /**
-     * @var ControlConfigurationValidator
+     * @var GeneralConfigurationValidator
      */
-    protected $ctrlValidator;
+    protected $generalValidator;
 
     /**
      * @var ColumnConfigurationValidator
      */
     protected $columnValidator;
 
-    public function injectCtrlValidator(\Cobweb\ExternalImport\Validator\ControlConfigurationValidator $validator): void
+    public function injectCtrlValidator(\Cobweb\ExternalImport\Validator\GeneralConfigurationValidator $validator): void
     {
-        $this->ctrlValidator = $validator;
+        $this->generalValidator = $validator;
     }
 
     public function injectColumnValidator(\Cobweb\ExternalImport\Validator\ColumnConfigurationValidator $validator): void
@@ -52,9 +52,9 @@ class ValidateConfigurationStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
-        // If there's no "ctrl" configuration, issue error
-        if (count($ctrlConfiguration) === 0) {
+        $generalConfiguration = $this->configuration->getGeneralConfiguration();
+        // If there's no general configuration, issue error
+        if (count($generalConfiguration) === 0) {
             $this->importer->addMessage(
                     sprintf(
                             LocalizationUtility::translate(
@@ -68,7 +68,7 @@ class ValidateConfigurationStep extends AbstractStep
             $this->abortFlag = true;
         } else {
             // Check the general configuration. If ok, proceed with columns configuration
-            if ($this->ctrlValidator->isValid($this->configuration)) {
+            if ($this->generalValidator->isValid($this->configuration)) {
                 $columnConfiguration = $this->configuration->getColumnConfiguration();
                 // If there's no column configuration at all, issue error
                 if (count($columnConfiguration) === 0) {
