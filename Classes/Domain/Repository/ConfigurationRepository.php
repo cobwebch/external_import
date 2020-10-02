@@ -185,8 +185,9 @@ class ConfigurationRepository
     {
         $externalTables = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-            if (isset($sections['ctrl']['external'])) {
-                foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
+            if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
+                $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
+                foreach ($generalConfiguration as $index => $externalConfig) {
                     if (!empty($externalConfig['connector']) && $externalConfig['group'] === $group) {
                         // Default priority if not defined, set to very low
                         $priority = $externalConfig['priority'] ?? Importer::DEFAULT_PRIORITY;
@@ -216,8 +217,9 @@ class ConfigurationRepository
     {
         $groups = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
-            if (isset($sections['ctrl']['external'])) {
-                foreach ($sections['ctrl']['external'] as $index => $externalConfig) {
+            if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
+                $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
+                foreach ($generalConfiguration as $index => $externalConfig) {
                     if (!empty($externalConfig['connector']) && !empty($externalConfig['group'])) {
                         $groups[] = $externalConfig['group'];
                     }
