@@ -73,16 +73,8 @@ class UidRepository
         }
 
         $table = $this->configuration->getTable();
-        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
-        $where = '1 = 1';
-        // TODO: use QueryBuilder to add constraints properly (verify that whereClause indeed works)
-        if ($ctrlConfiguration['enforcePid']) {
-            $where = 'pid = ' . (int)$this->configuration->getStoragePid();
-        }
-        if (!empty($ctrlConfiguration['whereClause'])) {
-            $where .= ' AND ' . $ctrlConfiguration['whereClause'];
-        }
-        $referenceUidField = $ctrlConfiguration['referenceUid'];
+        $generalConfiguration = $this->configuration->getGeneralConfiguration();
+        $referenceUidField = $generalConfiguration['referenceUid'];
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()
                 ->removeAll()
@@ -91,10 +83,19 @@ class UidRepository
                                 DeletedRestriction::class
                         )
                 );
-        $res = $queryBuilder->select($referenceUidField, 'uid', 'pid')
-                ->from($table)
-                ->where($where)
-                ->execute();
+        $queryBuilder->select($referenceUidField, 'uid', 'pid')
+                ->from($table);
+        $constraints = [];
+        if ($generalConfiguration['enforcePid']) {
+            $constraints[] = $queryBuilder->expr()->eq('pid', (int)$this->configuration->getStoragePid());
+        }
+        if (!empty($generalConfiguration['whereClause'])) {
+            $constraints[] = $generalConfiguration['whereClause'];
+        }
+        if (count($constraints) > 0) {
+            $queryBuilder->where(...$constraints);
+        }
+        $res = $queryBuilder->execute();
         if ($res) {
             while ($row = $res->fetch(\PDO::FETCH_ASSOC)) {
                 // Don't consider records with empty references, as they can't be matched

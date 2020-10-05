@@ -1,3 +1,7 @@
+2020-10-05 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Use Query Builder consistently in UidRepository
+
 2020-10-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve handling of additional fields, resolves #69
