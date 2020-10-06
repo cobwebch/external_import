@@ -44,6 +44,7 @@ return [
                         'config' => [
                                 'readOnly' => true,
                                 'type' => 'select',
+                                'renderType' => 'selectSingle',
                                 'size' => 1,
                                 'foreign_table' => 'be_users',
                                 'maxitems' => 1
