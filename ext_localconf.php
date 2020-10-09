@@ -10,6 +10,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Cobweb\External
         'description' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:scheduler.description',
         'additionalFields' => \Cobweb\ExternalImport\Task\AutomatedSyncAdditionalFieldProvider::class
 ];
+// Set up garbage collection
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\TYPO3\CMS\Scheduler\Task\TableGarbageCollectionTask::class]['options']['tables']['tx_externalimport_domain_model_log'] = [
+    'dateField' => 'crdate',
+    'expirePeriod' => 180,
+];
 
 // Add custom permission options for the backend module
 $GLOBALS['TYPO3_CONF_VARS']['BE']['customPermOptions'] = [

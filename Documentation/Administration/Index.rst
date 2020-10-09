@@ -1,4 +1,4 @@
-﻿.. include:: ../Includes.txt
+.. include:: ../Includes.txt
 
 
 .. _administration:
@@ -38,3 +38,4 @@ each example (in the Tutorial).
    Transformations/Index
    Mapping/Index
    MmRelations/Index
+   LogCleanup/Index
