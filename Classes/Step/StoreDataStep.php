@@ -15,8 +15,10 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Cobweb\ExternalImport\Domain\Repository\UidRepository;
+use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Domain\Repository\ChildrenRepository;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ManyToManyUtility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -39,14 +41,50 @@ class StoreDataStep extends AbstractStep
     protected $fieldsExcludedFromUpdates = [];
 
     /**
-     * @var array List of fields found in the "substructureFields" that should not be saved.
+     * @var array List of substructure fields for each column (if any)
      */
     protected $substructureFields = [];
 
     /**
-     * @var UidRepository
+     * @var array List of primary keys of existing records (must be queried a single time during this step,
+     * because new records are actually created at some point)
      */
-    protected $uidRepository;
+    protected $existingUids = [];
+
+    /**
+     * @var array Temporary storage for the values that are not saved and that are restored after saving
+     */
+    protected $valuesExcludedFromSaving = [];
+
+    /**
+     * @var array Map of internal id (maybe "NEW***" for new records) to external id (reference uid in the external data)
+     */
+    protected $idToExternalIdMap = [];
+
+    /**
+     * @var array List of all columns having a "children" configuration (preloaded to avoid looping on the whole structure everytime)
+     */
+    protected $childColumns = [];
+
+    /**
+     * @var bool True if at least one column has a "children" configuration (preloaded to avoid looping on the whole structure everytime)
+     */
+    protected $hasChildColumns = false;
+
+    /**
+     * @var array List of child records that need to be deleted
+     */
+    protected $childRecordsToDelete = [];
+
+    public function __toString()
+    {
+        return self::class;
+    }
+
+    public function setImporter(Importer $importer): void
+    {
+        parent::setImporter($importer);
+    }
 
     /**
      * Stores the data to the database using DataHandler.
@@ -56,66 +94,60 @@ class StoreDataStep extends AbstractStep
      */
     public function run(): void
     {
-        $manyToManyUtility = GeneralUtility::makeInstance(ManyToManyUtility::class);
-        $manyToManyUtility->setImporter($this->importer);
         $records = $this->getData()->getRecords();
-        $storedRecords = [];
         $this->importer->debug(
                 'Data received for storage',
                 0,
                 $records
         );
 
-        // Get the list of existing uids for the table
-        $this->uidRepository = $this->importer->getUidRepository();
-        $this->uidRepository->setConfiguration($this->getConfiguration());
-        $existingUids = $this->uidRepository->getExistingUids();
-        $currentPids = $this->uidRepository->getCurrentPids();
-        // Make sure this list is an array (it may be null)
-        $existingUids = $existingUids ?? [];
-        $currentPids = $currentPids ?? [];
+        // Load the list of existing uids for the table
+        $currentPids = $this->importer->getUidRepository()->getCurrentPids() ?? [];
 
-        $ctrlConfiguration = $this->getConfiguration()->getGeneralConfiguration();
-        $columnConfiguration = $this->getConfiguration()->getColumnConfiguration();
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
+        $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
         $table = $this->importer->getExternalConfiguration()->getTable();
         // Extract list of excluded fields
         $this->prepareStructuredInformation($columnConfiguration);
-        // Handle many-to-many relations
-        $manyToManyUtility->handleMmRelations($ctrlConfiguration, $columnConfiguration, $records);
+
+        // Handle many-to-many relations (old-style)
+        // TODO: remove once support for legacy MM handling is dropped
+        $manyToManyUtility = GeneralUtility::makeInstance(ManyToManyUtility::class);
+        $manyToManyUtility->setImporter($this->importer);
+        $manyToManyUtility->handleMmRelations($generalConfiguration, $columnConfiguration, $records);
         $mappings = $manyToManyUtility->getMappings();
         $hasMMRelations = count($mappings);
 
-        // Insert or update records depending on existing uids
+        // Initialize some variables
         $inserts = 0;
         $updates = 0;
         $moves = 0;
         $updatedUids = [];
-        $handledUids = [];
         $tceData = [
                 $table => []
         ];
         $tceCommands = [
                 $table => []
         ];
-        $savedExcludedColumns = [];
+        $storedRecords = [
+                $table => []
+        ];
+
         // Prepare some data before the loop
-        $storagePid = $this->getConfiguration()->getStoragePid();
-        $columnsExcludedFromSaving = $this->getConfiguration()->getColumnsExcludedFromSaving();
-        $countColumnsExcludedFromSaving = count($columnConfiguration);
-        $isUpdateAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'update');
-        $isInsertAllowed = !GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'insert');
-        $updateSlugs = (bool)$this->getConfiguration()->getGeneralConfigurationProperty('updateSlugs');
-        foreach ($records as $theRecord) {
-            $localExcludedColumns = [];
-            $externalUid = $theRecord[$ctrlConfiguration['referenceUid']];
-            // Skip handling of already handled records (this can happen with denormalized structures)
-            // NOTE: using isset() on index instead of in_array() offers far better performance
-            if (isset($handledUids[$externalUid])) {
-                continue;
-            }
-            $handledUids[$externalUid] = $externalUid;
+        $storagePid = $this->importer->getExternalConfiguration()->getStoragePid();
+        $updateSlugs = (bool)$generalConfiguration['updateSlugs'];
+
+        // Prepare the data to store
+        $dateToStore = $this->prepareDataToStore();
+
+        foreach ($dateToStore as $id => $theRecord) {
+            $isExistingRecord = strpos($id, 'NEW') === false;
+
+            // TODO: this is used for legacy MM handling and current pids, but current pids could be changed to use $id, so this could be dropped at a later point
+            $externalUid = $this->idToExternalIdMap[$id];
 
             // Prepare MM-fields, if any
+            // TODO: remove once support for legacy MM handling is dropped
             if ($hasMMRelations) {
                 foreach ($mappings as $columnName => $columnMappings) {
                     if (isset($columnMappings[$externalUid])) {
@@ -128,69 +160,95 @@ class StoreDataStep extends AbstractStep
                 }
             }
 
-            // Remove additional fields data, if any. They must not be saved to database
-            // They are saved locally however, for later use
-            if ($countColumnsExcludedFromSaving > 0) {
-                foreach ($columnsExcludedFromSaving as $fieldName) {
-                    $localExcludedColumns[$fieldName] = $theRecord[$fieldName];
-                    unset($theRecord[$fieldName]);
-                }
-            }
-            // Also remove fields coming from substructures.
-            // These, however, are not saved for later use.
-            // Question: should this saving of additional fields be actually deprecated? It does not seem very useful...
-            foreach ($this->substructureFields as $field) {
-                unset($theRecord[$field]);
+            // Gather the record's pid
+            // Existing records have their own (unless they have been moved)
+            if ($isExistingRecord) {
+                $recordPid = $theRecord['pid'] ?? $currentPids[$externalUid];
+            // New records have their own or fall back to the general storage pid
+            } else {
+                $recordPid = $theRecord['pid'] ?? $storagePid;
             }
 
-            $theID = '';
-            // Reference uid is found, perform an update (if not disabled)
-            if (isset($existingUids[$externalUid])) {
-                if ($isUpdateAllowed) {
-                    // First call a pre-processing hook
-                    if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'])) {
-                        foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'] as $className) {
-                            try {
-                                $preProcessor = GeneralUtility::makeInstance($className);
-                                $theRecord = $preProcessor->processBeforeUpdate($theRecord, $this->importer);
-                            } catch (CriticalFailureException $e) {
-                                $this->abortFlag = true;
-                                return;
-                            } catch (\Exception $e) {
-                                $this->importer->debug(
-                                        sprintf(
-                                                'Could not instantiate class %s for hook %s',
-                                                $className,
-                                                'updatePreProcess'
-                                        ),
-                                        1
-                                );
-                            }
+            // Move child records into their proper position
+            if ($this->hasChildColumns) {
+                foreach ($this->childColumns as $columnName => $columnConfiguration) {
+                    $childTable = $columnConfiguration['table'];
+                    if (!isset($tceData[$childTable])) {
+                        $tceData[$childTable] = [];
+                        $storedRecords[$childTable] = [];
+                    }
+                    // Create TCE entries for each child record
+                    $childrenList = [];
+                    if (isset($theRecord['__children__'][$columnName][$childTable])) {
+                        foreach ($theRecord['__children__'][$columnName][$childTable] as $childId => $childData) {
+                            $childrenList[] = $childId;
+                            // Child records need to be stored in the same page as their parent
+                            $childData['pid'] = $recordPid;
+                            $tceData[$childTable][$childId] = $childData;
+                            $storedRecords[$childTable][] = array_merge(
+                                    ['uid' => $childId],
+                                    $childData
+                            );
                         }
                     }
+                    // The actual column value should be a comma-separated list of child ids
+                    // In case of updates, it must not be set at all if the list is empty
+                    if ($isExistingRecord && count($childrenList) === 0) {
+                        unset($theRecord[$columnName]);
+                    } else {
+                        $theRecord[$columnName] = implode(',', $childrenList);
+                    }
+                }
+                // Remove the temporary child records information
+                unset($theRecord['__children__']);
+            }
 
-                    // Remove the fields which must be excluded from updates
-                    if (count($this->fieldsExcludedFromUpdates) > 0) {
-                        foreach ($this->fieldsExcludedFromUpdates as $excludedField) {
-                            unset($theRecord[$excludedField]);
+            // Register record for update
+            if ($isExistingRecord) {
+                // First call a pre-processing hook
+                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'])) {
+                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'] as $className) {
+                        try {
+                            $preProcessor = GeneralUtility::makeInstance($className);
+                            $theRecord = $preProcessor->processBeforeUpdate($theRecord, $this->importer);
+                        } catch (CriticalFailureException $e) {
+                            $this->abortFlag = true;
+                            return;
+                        } catch (\Exception $e) {
+                            $this->importer->debug(
+                                    sprintf(
+                                            'Could not use class %s for hook %s (error: %s, code: %d)',
+                                            $className,
+                                            'updatePreProcess',
+                                            $e->getMessage(),
+                                            $e->getCode()
+                                    ),
+                                    1
+                            );
                         }
                     }
-
-                    $theID = $existingUids[$externalUid];
-                    $tceData[$table][$theID] = $theRecord;
-                    // Check if some records have a changed "pid", in which case a "move" action is also needed
-                    if (array_key_exists('pid', $theRecord) && (int)$theRecord['pid'] !== $currentPids[$externalUid]) {
-                        $tceCommands[$table][$theID] = [
-                                'move' => (int)$theRecord['pid']
-                        ];
-                        $moves++;
-                    }
-                    $updatedUids[] = $theID;
-                    $updates++;
                 }
 
-                // Reference uid not found, perform an insert (if not disabled)
-            } elseif ($isInsertAllowed) {
+                // Remove the fields which must be excluded from updates
+                if (count($this->fieldsExcludedFromUpdates) > 0) {
+                    foreach ($this->fieldsExcludedFromUpdates as $excludedField) {
+                        unset($theRecord[$excludedField]);
+                    }
+                }
+
+                $tceData[$table][$id] = $theRecord;
+                // Check if some records have a changed "pid", in which case a "move" action is also needed
+                if (array_key_exists('pid', $theRecord) && (int)$theRecord['pid'] !== $currentPids[$externalUid]) {
+                    $tceCommands[$table][$id] = [
+                            'move' => (int)$theRecord['pid']
+                    ];
+                    $moves++;
+                }
+                $updatedUids[] = $id;
+                $updates++;
+
+            // Register record for insert
+            } else {
 
                 // First call a pre-processing hook
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'])) {
@@ -204,9 +262,11 @@ class StoreDataStep extends AbstractStep
                         } catch (\Exception $e) {
                             $this->importer->debug(
                                     sprintf(
-                                            'Could not instantiate class %s for hook %s',
+                                            'Could not use class %s for hook %s (error: %s, code: %d)',
                                             $className,
-                                            'insertPreProcess'
+                                            'insertPreProcess',
+                                            $e->getMessage(),
+                                            $e->getCode()
                                     ),
                                     1
                             );
@@ -226,24 +286,12 @@ class StoreDataStep extends AbstractStep
                 if (!isset($theRecord['pid'])) {
                     $theRecord['pid'] = $storagePid;
                 }
-                // If a temporary key was already defined, use it, otherwise create a new one.
-                // Temporary keys may exist if self-referential mapping was handled beforehand (see mapData())
-                if ($this->importer->hasTemporaryKey($externalUid)) {
-                    $theID = $this->importer->getTemporaryKeyForValue($externalUid);
-                } else {
-                    $theID = $this->importer->generateTemporaryKey();
-                }
-                $tceData[$table][$theID] = $theRecord;
+                $tceData[$table][$id] = $theRecord;
             }
-            $storedRecords[] = array_merge(
-                    ['uid' => $theID],
+            $storedRecords[$table][] = array_merge(
+                    ['uid' => $id],
                     $theRecord
             );
-            // Store local additional fields into general additional fields array
-            // keyed to proper id's (if the record was processed)
-            if (!empty($theID)) {
-                $savedExcludedColumns[$theID] = $localExcludedColumns;
-            }
         }
         // If the target table is pages, perform some special sorting to ensure that parent pages
         // are created before their children
@@ -267,8 +315,8 @@ class StoreDataStep extends AbstractStep
         // Check if TCEmain logging should be turned on or off
         $extensionConfiguration = $this->importer->getExtensionConfiguration();
         $disableLogging = empty($extensionConfiguration['disableLog']) ? false : true;
-        if (array_key_exists('disableLog', $ctrlConfiguration)) {
-            $disableLogging = empty($ctrlConfiguration['disableLog']) ? false : true;
+        if (array_key_exists('disableLog', $generalConfiguration)) {
+            $disableLogging = empty($generalConfiguration['disableLog']) ? false : true;
         }
         $tce->enableLogging = !$disableLogging;
         // If the table has a sorting field, reverse the data array,
@@ -297,9 +345,11 @@ class StoreDataStep extends AbstractStep
                 }
 
                 // Substitute NEW temporary keys with actual IDs in the "stored records" array
-                foreach ($storedRecords as $index => $record) {
-                    if (isset($tce->substNEWwithIDs[$record['uid']]) && strpos($record['uid'], 'NEW') === 0) {
-                        $storedRecords[$index]['uid'] = $tce->substNEWwithIDs[$record['uid']];
+                foreach ($storedRecords as $table => $listOfRecords) {
+                    foreach ($listOfRecords as $index => $record) {
+                        if (isset($tce->substNEWwithIDs[$record['uid']])) {
+                            $storedRecords[$table][$index]['uid'] = $tce->substNEWwithIDs[$record['uid']];
+                        }
                     }
                 }
 
@@ -316,9 +366,9 @@ class StoreDataStep extends AbstractStep
                             } else {
                                 $record['tx_externalimport:status'] = 'update';
                             }
-                            // Restore additional fields, if any
-                            if ($this->getConfiguration()->getCountAdditionalFields() > 0) {
-                                foreach ($savedExcludedColumns[$id] as $fieldName => $fieldValue) {
+                            // Restore excluded fields, if any
+                            if (isset($this->valuesExcludedFromSaving[$id])) {
+                                foreach ($this->valuesExcludedFromSaving[$id] as $fieldName => $fieldValue) {
                                     $record[$fieldName] = $fieldValue;
                                 }
                             }
@@ -351,12 +401,27 @@ class StoreDataStep extends AbstractStep
             }
         }
 
-        // Mark as deleted records with existing uids that were not in the import data anymore
+        $tceDeleteCommands = [];
+        $deletes = 0;
+        // Register all child records marked for deletion
+        foreach ($this->childRecordsToDelete as $childTable => $childList) {
+            $tceDeleteCommands = [
+                    $childTable => []
+            ];
+            foreach ($childList as $child) {
+                $tceDeleteCommands[$childTable][$child] = [
+                        'delete' => 1
+                ];
+                $deletes++;
+            }
+        }
+        // Now for the main table, mark as deleted those records with existing uids that were not in the import data anymore
         // (if automatic delete is activated)
-        if (GeneralUtility::inList($ctrlConfiguration['disabledOperations'], 'delete')) {
-            $deletes = 0;
-        } else {
-            $absentUids = array_diff($existingUids, $updatedUids);
+        if (!GeneralUtility::inList($generalConfiguration['disabledOperations'], 'delete')) {
+            $absentUids = array_diff(
+                    $this->existingUids,
+                    $updatedUids
+            );
             // Call a pre-processing hook
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'])) {
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'] as $className) {
@@ -378,57 +443,56 @@ class StoreDataStep extends AbstractStep
                     }
                 }
             }
-            $deletes = count($absentUids);
-            if ($deletes > 0) {
-                $tceDeleteCommands = [
-                        $table => []
-                ];
+            if (count($absentUids) > 0) {
+                $tceDeleteCommands[$table] = [];
                 foreach ($absentUids as $id) {
                     $tceDeleteCommands[$table][$id] = [
                             'delete' => 1
                     ];
+                    $deletes++;
                 }
-                $this->importer->debug(
-                        'TCEmain commands',
-                        0,
-                        $tceDeleteCommands
-                );
-                // Actually delete the records, if not in preview mode
-                if (!$this->importer->isPreview()) {
-                    $tce->start([], $tceDeleteCommands);
-                    try {
-                        $tce->process_cmdmap();
-                        // Call a post-processing hook
-                        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
-                            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
-                                try {
-                                    $postProcessor = GeneralUtility::makeInstance($className);
-                                    $absentUids = $postProcessor->cmdmapPostProcess($table, $absentUids, $this->importer);
-                                } catch (CriticalFailureException $e) {
-                                    $this->abortFlag = true;
-                                    return;
-                                } catch (\Exception $e) {
-                                    $this->importer->debug(
-                                            sprintf(
-                                                    'Could not instantiate class %s for hook %s',
-                                                    $className,
-                                                    'cmdmapPostProcess'
-                                            ),
-                                            1
-                                    );
-                                }
-                            }
+            }
+        }
+        $this->importer->debug(
+                'TCEmain commands',
+                0,
+                $tceDeleteCommands
+        );
+        // Actually delete the records, if not in preview mode
+        if ($deletes > 0 && !$this->importer->isPreview()) {
+            $tce->start([], $tceDeleteCommands);
+            try {
+                $tce->process_cmdmap();
+                // Call a post-processing hook
+                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
+                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
+                        try {
+                            $postProcessor = GeneralUtility::makeInstance($className);
+                            $absentUids = $postProcessor->cmdmapPostProcess($table, $absentUids, $this->importer);
+                        } catch (CriticalFailureException $e) {
+                            $this->abortFlag = true;
+                            return;
+                        } catch (\Exception $e) {
+                            $this->importer->debug(
+                                    sprintf(
+                                            'Could not instantiate class %s for hook %s',
+                                            $className,
+                                            'cmdmapPostProcess'
+                                    ),
+                                    1
+                            );
                         }
-                    } catch (\Exception $e) {
-                        // Abort the process and report about the error
-                        $this->handleTceException($e);
-                        return;
                     }
                 }
+            } catch (\Exception $e) {
+                // Abort the process and report about the error
+                $this->handleTceException($e);
+                return;
             }
         }
 
         // Perform post-processing of MM-relations if necessary and if not in preview mode
+        // TODO: remove once support for legacy MM relations is dropped
         if (!$this->importer->isPreview() && count($manyToManyUtility->getFullMappings()) > 0) {
             $manyToManyUtility->postProcessMmRelations();
         }
@@ -511,6 +575,257 @@ class StoreDataStep extends AbstractStep
     }
 
     /**
+     * Assembles all the values to save from the external data, dropping the values that must not be stored into the
+     * database and collapsing multiple values coming from denormalized data.
+     *
+     * Also creates the "child" sub-structure for IRRE relations.
+     *
+     * @return array
+     */
+    public function prepareDataToStore(): array
+    {
+        $records = $this->getData()->getRecords();
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
+        $referenceUid = $generalConfiguration['referenceUid'];
+        $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
+        $table = $this->importer->getExternalConfiguration()->getTable();
+        $isUpdateAllowed = !GeneralUtility::inList($generalConfiguration['disabledOperations'], 'update');
+        $isInsertAllowed = !GeneralUtility::inList($generalConfiguration['disabledOperations'], 'insert');
+
+        // Check if at least one column expects denormalized data
+        $denormalizedColumns = [];
+        foreach ($columnConfiguration as $name => $configuration) {
+            if ($configuration['multipleRows']) {
+                $denormalizedColumns[] = $name;
+            }
+        }
+        $countDenormalizedColumns = count($denormalizedColumns);
+        // Loop on all records to keep only data to store and assemble the list of multiple values (if any)
+        $dataToStore = [];
+        $multipleValues = [];
+        foreach ($records as $record) {
+            $externalId = $record[$referenceUid];
+            // Get the existing uid or generate a key if no uid is found (e.g. it's a new record)
+            if (isset($this->existingUids[$externalId])) {
+                // If update is not allowed, skip this record
+                if (!$isUpdateAllowed) {
+                    continue;
+                }
+                $id = $this->existingUids[$externalId];
+            } else {
+                // If insert is not allowed, skip this record
+                if (!$isInsertAllowed) {
+                    continue;
+                }
+                // If a temporary key was already defined, use it, otherwise create a new one.
+                // Temporary keys may exist if self-referential mapping was handled beforehand (see mapData())
+                // or in case of denormalized data (the same external id appears several times)
+                if ($this->importer->getTemporaryKeyRepository()->hasTemporaryKey($externalId, $table)) {
+                    $id = $this->importer->getTemporaryKeyRepository()->getTemporaryKeyForValue($externalId, $table);
+                } else {
+                    $id = $this->importer->getTemporaryKeyRepository()->generateTemporaryKey();
+                    $this->importer->getTemporaryKeyRepository()->addTemporaryKey($externalId, $id, $table);
+                }
+            }
+            // Store correspondence between internal id and external id
+            $this->idToExternalIdMap[$id] = $externalId;
+            // If the record has not been handled yet, store all the values that are not to be excluded
+            if (!isset($dataToStore[$id])) {
+                $dataToStore[$id] = [];
+                $this->valuesExcludedFromSaving[$id] = [];
+                foreach ($columnConfiguration as $name => $configuration) {
+                    // The values that are excluded are temporarily stored for later restoration
+                    if ($configuration[Configuration::DO_NOT_SAVE_KEY]) {
+                        $this->valuesExcludedFromSaving[$id][$name] = $record[$name];
+                    // Make sure a value actually exists
+                    } elseif (isset($record[$name])) {
+                        $dataToStore[$id][$name] = $record[$name];
+                    }
+                }
+            }
+            // Handle multiple values, if any
+            if ($countDenormalizedColumns > 0) {
+                if (!isset($multipleValues[$id])) {
+                    $multipleValues[$id] = [];
+                }
+                foreach ($denormalizedColumns as $name) {
+                    if (!isset($multipleValues[$id][$name])) {
+                        $multipleValues[$id][$name] = [];
+                    }
+                    $multipleValues[$id][$name][] = $record[$name];
+                }
+            }
+            // Assemble children records, if any
+            if ($this->hasChildColumns) {
+                if (!isset($dataToStore[$id]['__children__'])) {
+                    $dataToStore[$id]['__children__'] = [];
+                }
+                foreach ($this->childColumns as $mainColumnName => $childColumnConfiguration) {
+                    // Generate the child structure only if the record has a value for the given column,
+                    // else incomplete data will ensue
+                    if (isset($record[$mainColumnName])) {
+                        $childTable = $childColumnConfiguration['table'];
+                        $childConfiguration = $childColumnConfiguration['columns'];
+                        if (!isset($dataToStore[$id]['__children__'][$mainColumnName])) {
+                            $dataToStore[$id]['__children__'][$mainColumnName] = [];
+                        }
+                        if (!isset($dataToStore[$id]['__children__'][$mainColumnName][$childTable])) {
+                            $dataToStore[$id]['__children__'][$mainColumnName][$childTable] = [];
+                        }
+                        $childStructure = $this->prepareChildStructure(
+                                $childConfiguration,
+                                $id,
+                                $record
+                        );
+                        $dataToStore[$id]['__children__'][$mainColumnName][$childTable][key($childStructure)] = current($childStructure);
+                    }
+                }
+            }
+        }
+        // If there are any multiple values, loop again on all records and implode them
+        if ($countDenormalizedColumns > 0) {
+            foreach ($dataToStore as $id => $data) {
+                foreach ($denormalizedColumns as $name) {
+                    $dataToStore[$id][$name] = implode(',', array_unique($multipleValues[$id][$name]));
+                }
+            }
+        }
+        // Review all children records for updates and deletions
+        return $this->reviewChildRecords($dataToStore);
+    }
+
+    /**
+     * Prepares the data structure for an IRRE child record.
+     *
+     * @param array $childConfiguration Configuration for the child record fields
+     * @param mixed $parentId Id of the parent record
+     * @param array $parentData Data of the parent record
+     * @return array[]
+     */
+    public function prepareChildStructure(array $childConfiguration, $parentId, array $parentData): array
+    {
+        // NOTE: all child records are assembled here as if they were new. They are filtered later on.
+        $temporaryKey = $this->importer->getTemporaryKeyRepository()->generateTemporaryKey();
+        $childStructure = [
+                $temporaryKey => []
+        ];
+        foreach ($childConfiguration as $name => $configuration) {
+            // If it is a value, use it as is
+            if (isset($configuration['value'])) {
+                $childStructure[$temporaryKey][$name] = $configuration['value'];
+            // If it is a field, get the value from the field, if defined
+            // (if it's the special value "__parent.id__", use the parent record's id)
+            } elseif (isset($configuration['field'])) {
+                if ($configuration['field'] === '__parent.id__') {
+                    $childStructure[$temporaryKey][$name] = $parentId;
+                } elseif (isset($parentData[$configuration['field']])) {
+                    $childStructure[$temporaryKey][$name] = $parentData[$configuration['field']];
+                }
+            }
+        }
+        return $childStructure;
+    }
+
+    /**
+     * Goes through all children records (if any) and checks which are already existing and which should
+     * be deleted.
+     *
+     * @param array $dataToStore Structured data for storage
+     * @return array New structured data for storage (NOTE: child records to be deleted are stored separately)
+     */
+    public function reviewChildRecords(array $dataToStore): array
+    {
+        $newDataToStore = [];
+        $childrenRepository = GeneralUtility::makeInstance(ChildrenRepository::class);
+
+        // Loop on all the data to store
+        foreach ($dataToStore as $id => $record) {
+            // Act only if the parent record is not new (if it is new, all its child records will be new too)
+            // and if it has child records. Otherwise, keep as is.
+            $newDataToStore[$id] = $record;
+            if (strpos($id, 'NEW') === false && isset($record['__children__']) && count($record['__children__']) > 0) {
+                // Reset the children list
+                $newDataToStore[$id]['__children__'] = [];
+                foreach ($record['__children__'] as $column => $childrenListForTable) {
+                    foreach ($childrenListForTable as $table => $children) {
+                        $iterator = 0;
+                        $updatedChildren = [];
+                        $allExistingChildren = [];
+                        foreach ($children as $childId => $childData) {
+                            // If no columns were defined for checking existing records, don't bother and consider the record to be new
+                            if (count($this->childColumns[$column]['controlColumnsForUpdate']) === 0) {
+                                $newDataToStore[$id]['__children__'][$column][$table][$childId] = $childData;
+                            } else {
+                                // If deletion is not disabled, grab existing records
+                                // (this is done once, but we need the data from one child record)
+                                if ($iterator === 0 && !$this->childColumns[$column]['disabledOperations']['delete'] && count($this->childColumns[$column]['controlColumnsForDelete']) > 0) {
+                                    $controlValues = [];
+                                    foreach ($this->childColumns[$column]['controlColumnsForDelete'] as $name) {
+                                        $controlValues[$name] = $childData[$name];
+                                    }
+                                    $allExistingChildren = $childrenRepository->findAllExistingRecords(
+                                            $table,
+                                            $controlValues
+                                    );
+                                }
+                                // Check if the child record already exists
+                                $controlValues = [];
+                                $hasAllControlValues = true;
+                                foreach ($this->childColumns[$column]['controlColumnsForUpdate'] as $name) {
+                                    if (isset($childData[$name])) {
+                                        $controlValues[$name] = $childData[$name];
+                                    } else {
+                                        // If a control value is missing, we can't check this record
+                                        $hasAllControlValues = false;
+                                        break;
+                                    }
+                                }
+                                // If all control values were found, proceed with existence check
+                                if ($hasAllControlValues) {
+                                    try {
+                                        $existingId = $childrenRepository->findFirstExistingRecord(
+                                                $table,
+                                                $controlValues
+                                        );
+                                        $updatedChildren[] = $existingId;
+                                        // If update operation is allowed, keep the child record but replace its "NEW***" temporary key
+                                        // so that it gets updated
+                                        if (!$this->childColumns[$column]['disabledOperations']['update']) {
+                                            $newDataToStore[$id]['__children__'][$column][$table][$existingId] = $childData;
+                                        }
+                                    } catch (\Exception $e) {
+                                        // The relation does not exist yet, keep record as is, if insert operation is allowed
+                                        if (!$this->childColumns[$column]['disabledOperations']['insert']) {
+                                            $newDataToStore[$id]['__children__'][$column][$table][$childId] = $childData;
+                                        }
+                                    }
+                                // If a control value was missing, let the record be considered to be new (if inserts are allowed)
+                                // This will probably create a database error at at later point, but the user
+                                // will get to see it in the logs
+                                } elseif (!$this->childColumns[$column]['disabledOperations']['insert']) {
+                                    $newDataToStore[$id]['__children__'][$column][$table][$childId] = $childData;
+                                }
+                            }
+                            $iterator++;
+                        }
+                        // Mark existing records that were not updated for deletion (if allowed)
+                        if (!$this->childColumns[$column]['disabledOperations']['delete']) {
+                            $childrenToDelete = array_diff($allExistingChildren, $updatedChildren);
+                            if (!isset($this->childRecordsToDelete[$table])) {
+                                $this->childRecordsToDelete[$table] = [];
+                            }
+                            foreach ($childrenToDelete as $item) {
+                                $this->childRecordsToDelete[$table][] = $item;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $newDataToStore;
+    }
+
+    /**
      * Parses the column configuration and prepares various lists of properties for better performance.
      *
      * @param array $columnConfiguration External Import configuration for the columns
@@ -518,16 +833,6 @@ class StoreDataStep extends AbstractStep
     public function prepareStructuredInformation($columnConfiguration): void
     {
         foreach ($columnConfiguration as $columnName => $columnData) {
-            // Assemble the list of fields defined with the "substructureFields" property
-            // These fields must be removed from the incoming data before it is saved to the database
-            if (isset($columnData['substructureFields'])) {
-                foreach ($columnData['substructureFields'] as $fieldName => $fieldConfiguration) {
-                    // Ignore fields which match the column name. These must stay and be saved.
-                    if ($fieldName !== $columnName) {
-                        $this->substructureFields[] = $fieldName;
-                    }
-                }
-            }
             if (array_key_exists('disabledOperations', $columnData)) {
                 if (GeneralUtility::inList($columnData['disabledOperations'], 'insert')) {
                     $this->fieldsExcludedFromInserts[] = $columnName;
@@ -536,7 +841,32 @@ class StoreDataStep extends AbstractStep
                     $this->fieldsExcludedFromUpdates[] = $columnName;
                 }
             }
+            if (array_key_exists('children', $columnData)) {
+                $childrenData = $columnData['children'];
+                // Reformat some information for easier access later
+                $childrenData['controlColumnsForUpdate'] = isset($childrenData['controlColumnsForUpdate']) ? GeneralUtility::trimExplode(',', $childrenData['controlColumnsForUpdate']) : [];
+                $childrenData['controlColumnsForDelete'] = isset($childrenData['controlColumnsForDelete']) ? GeneralUtility::trimExplode(',', $childrenData['controlColumnsForDelete']) : [];
+                $disabledOperations = [
+                        'insert' => false,
+                        'update' => false,
+                        'delete' => false
+                ];
+                if (isset($childrenData['disabledOperations'])) {
+                    $operations = GeneralUtility::trimExplode(',', $childrenData['disabledOperations']);
+                    foreach ($operations as $operation) {
+                        $disabledOperations[$operation] = true;
+                    }
+                }
+                $childrenData['disabledOperations'] = $disabledOperations;
+                // Store the updated information
+                $this->childColumns[$columnName] = $childrenData;
+            }
+            $this->hasChildColumns = count($this->childColumns) > 0;
+            if (array_key_exists('substructureFields', $columnData)) {
+                $this->substructureFields[$columnName] = array_keys($columnData['substructureFields']);
+            }
         }
+        $this->existingUids = $this->importer->getUidRepository()->getExistingUids() ?? [];
     }
 
     /**
@@ -559,7 +889,7 @@ class StoreDataStep extends AbstractStep
                             $queryBuilder->expr()->eq(
                                     'tablename',
                                     $queryBuilder->createNamedParameter(
-                                            $this->getConfiguration()->getTable()
+                                            $this->importer->getExternalConfiguration()->getTable()
                                     )
                             )
                     )
@@ -727,16 +1057,6 @@ class StoreDataStep extends AbstractStep
                 3,
                 $e->getTraceAsString()
         );
-    }
-
-    /**
-     * Returns the list of fields having defined with the "substructureFields" property.
-     *
-     * @return array
-     */
-    public function getSubstructureFields(): array
-    {
-        return $this->substructureFields;
     }
 
     /**

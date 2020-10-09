@@ -32,6 +32,7 @@ abstract class AbstractStep
 
     /**
      * @var Configuration Current External Import configuration
+     * @deprecated don't call directly, use $this->importer->getExternalConfiguration() instead
      */
     protected $configuration;
 
@@ -83,17 +84,27 @@ abstract class AbstractStep
 
     /**
      * @return Configuration
+     * @deprecated use $this->importer->getExternalConfiguration() instead
      */
     public function getConfiguration(): Configuration
     {
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Step\AbstractStep::getConfiguration is deprecated. Use \Cobweb\ExternalImport\Importer::getExternalConfiguration() instead.',
+            E_USER_DEPRECATED
+        );
         return $this->configuration;
     }
 
     /**
      * @param Configuration $configuration
+     * @deprecated this was used mostly during testing, do not use anymore
      */
     public function setConfiguration(Configuration $configuration): void
     {
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Step\AbstractStep::setConfiguration is deprecated without replacement. Do not use anymore.',
+            E_USER_DEPRECATED
+        );
         $this->configuration = $configuration;
     }
 

@@ -15,15 +15,16 @@ namespace Cobweb\ExternalImport;
  */
 
 use Cobweb\ExternalImport\Context\AbstractCallContext;
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -63,7 +64,7 @@ class Importer implements LoggerAwareInterface
     protected $configurationRepository;
 
     /**
-     * @var \Cobweb\ExternalImport\Domain\Model\Configuration Full External Import configuration
+     * @var Configuration Full External Import configuration
      */
     protected $externalConfiguration;
 
@@ -78,24 +79,14 @@ class Importer implements LoggerAwareInterface
     protected $uidRepository;
 
     /**
-     * @var Random
+     * @var TemporaryKeyRepository
      */
-    protected $randomGenerator;
+    protected $temporaryKeyRepository;
 
     /**
      * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
      */
     protected $forcedStoragePid;
-
-    /**
-     * @var array List of temporary keys created on the fly for new records. Used in DataHandler data map.
-     */
-    protected $temporaryKeys = [];
-
-    /**
-     * @var int Incremental number to be used for temporary keys during test mode (used for unit testing)
-     */
-    static protected $forcedTemporaryKeySerial = 0;
 
     /**
      * @var string Context in which the import run is executed
@@ -217,14 +208,14 @@ class Importer implements LoggerAwareInterface
         $this->reportingUtility->setImporter($this);
     }
 
-    public function injectUidRepository(UidRepository $uidRepository): void
+    public function injectUidRepository(UidRepository $repository): void
     {
-        $this->uidRepository = $uidRepository;
+        $this->uidRepository = $repository;
     }
 
-    public function injectRandomGenerator(Random $random): void
+    public function injectTemporaryKeyRepository(TemporaryKeyRepository $repository): void
     {
-        $this->randomGenerator = $random;
+        $this->temporaryKeyRepository = $repository;
     }
 
     /**
@@ -386,7 +377,6 @@ class Importer implements LoggerAwareInterface
             /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
             $step = $this->objectManager->get($stepClass);
             $step->setImporter($this);
-            $step->setConfiguration($this->externalConfiguration);
             $step->setData($data);
             $step->run();
             // Abort process if step required it
@@ -417,11 +407,23 @@ class Importer implements LoggerAwareInterface
     /**
      * Returns the model object containing the whole External Import configuration.
      *
-     * @return \Cobweb\ExternalImport\Domain\Model\Configuration|null
+     * @return Configuration|null
      */
     public function getExternalConfiguration(): ?Domain\Model\Configuration
     {
         return $this->externalConfiguration;
+    }
+
+    /**
+     * Set the External Import configuration.
+     *
+     * This is meant for testing. Do not use unless you really know what you're doing.
+     *
+     * @param Configuration $configuration
+     */
+    public function setExternalConfiguration(Configuration $configuration): void
+    {
+        $this->externalConfiguration = $configuration;
     }
 
     /**
@@ -450,46 +452,75 @@ class Importer implements LoggerAwareInterface
      * Returns the list of all temporary keys.
      *
      * @return array
+     * @deprecated use $this->getTemporaryKeyRepository()->getTemporaryKeys() instead
      */
     public function getTemporaryKeys(): array
     {
-        return $this->temporaryKeys;
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Importer::getTemporaryKeys is deprecated. Use Importer::getTemporaryKeyRepository()->getTemporaryKeys() instead.',
+            E_USER_DEPRECATED
+        );
+        return $this->temporaryKeyRepository->getTemporaryKeys();
     }
 
     /**
      * Checks whether a temporary key exists for the given value.
      *
      * @param int $value Value for which we want to find a key
+     * @param string $table Name of the table for which the key is used (fall back to main table for backwards-compatibility)
      * @return bool
+     * @deprecated use $this->getTemporaryKeyRepository()->hasTemporaryKey() instead
      */
-    public function hasTemporaryKey($value): bool
+    public function hasTemporaryKey($value, $table = ''): bool
     {
-        return array_key_exists($value, $this->temporaryKeys);
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Importer::hasTemporaryKey is deprecated. Use Importer::getTemporaryKeyRepository()->hasTemporaryKey() instead.',
+            E_USER_DEPRECATED
+        );
+        if (empty($table)) {
+            $table = $this->externalConfiguration->getTable();
+        }
+        return $this->temporaryKeyRepository->hasTemporaryKey($value, $table);
     }
 
     /**
      * Gets the temporary key for the given value.
      *
      * @param int $value Value for which we want to find a key
+     * @param string $table Name of the table in which the key is used (fall back to main table for backwards-compatibility)
      * @return string
+     * @deprecated use $this->getTemporaryKeyRepository()->getTemporaryKeyForValue() instead
      */
-    public function getTemporaryKeyForValue($value): ?string
+    public function getTemporaryKeyForValue($value, $table = ''): ?string
     {
-        if (array_key_exists($value, $this->temporaryKeys)) {
-            return $this->temporaryKeys[$value];
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Importer::getTemporaryKeyForValue is deprecated. Use Importer::getTemporaryKeyRepository()->getTemporaryKeyForValue() instead.',
+            E_USER_DEPRECATED
+        );
+        if (empty($table)) {
+            $table = $this->externalConfiguration->getTable();
         }
-        return null;
+        return $this->temporaryKeyRepository->getTemporaryKeyForValue($value, $table);
     }
 
     /**
      * Adds a temporary key for the given value.
      *
-     * @param int $value
-     * @param string $key
+     * @param int $value Value for which the key should be added
+     * @param string $key Key to add
+     * @param string $table Name of the table for which the key is used (fall back to main table for backwards-compatibility)
+     * @deprecated use $this->getTemporaryKeyRepository()->addTemporaryKey() instead
      */
-    public function addTemporaryKey($value, $key): void
+    public function addTemporaryKey($value, $key, string $table): void
     {
-        $this->temporaryKeys[$value] = $key;
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Importer::addTemporaryKey is deprecated. Use Importer::getTemporaryKeyRepository()->addTemporaryKey() instead.',
+            E_USER_DEPRECATED
+        );
+        if (empty($table)) {
+            $table = $this->externalConfiguration->getTable();
+        }
+        $this->temporaryKeyRepository->addTemporaryKey($value, $key, $table);
     }
 
     /**
@@ -500,14 +531,15 @@ class Importer implements LoggerAwareInterface
      * to have predictable results for functional testing.
      *
      * @return string
+     * @deprecated use $this->getTemporaryKeyRepository()->generateTemporaryKey() instead
      */
     public function generateTemporaryKey(): string
     {
-        if ($this->isTestMode()) {
-            self::$forcedTemporaryKeySerial++;
-            return 'NEW' . self::$forcedTemporaryKeySerial;
-        }
-        return 'NEW' . $this->randomGenerator->generateRandomHexString(20);
+        trigger_error(
+            'Using \Cobweb\ExternalImport\Importer::generateTemporaryKey is deprecated. Use Importer::getTemporaryKeyRepository()->generateTemporaryKey() instead.',
+            E_USER_DEPRECATED
+        );
+        return $this->temporaryKeyRepository->generateTemporaryKey();
     }
 
     /**
@@ -619,11 +651,21 @@ class Importer implements LoggerAwareInterface
     /**
      * Returns the uid repository.
      *
-     * @return Domain\Repository\UidRepository
+     * @return UidRepository
      */
-    public function getUidRepository(): Domain\Repository\UidRepository
+    public function getUidRepository(): UidRepository
     {
         return $this->uidRepository;
+    }
+
+    /**
+     * Returns the temporary key repository.
+     *
+     * @return TemporaryKeyRepository
+     */
+    public function getTemporaryKeyRepository(): TemporaryKeyRepository
+    {
+        return $this->temporaryKeyRepository;
     }
 
     /**
@@ -826,6 +868,10 @@ class Importer implements LoggerAwareInterface
     public function setTestMode(bool $mode): void
     {
         $this->testMode = $mode;
+        // Cascade the test mode to the temporary key repository (if initialized)
+        if ($this->temporaryKeyRepository) {
+            $this->temporaryKeyRepository->setTestMode($mode);
+        }
     }
 
     /**

@@ -56,13 +56,13 @@ class HandleDataStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         $originalData = $this->getData()->getRawData();
         // Check for custom data handlers
-        if (!empty($ctrlConfiguration['dataHandler'])) {
+        if (!empty($generalConfiguration['dataHandler'])) {
             try {
                 /** @var $dataHandler DataHandlerInterface */
-                $dataHandler = GeneralUtility::makeInstance($ctrlConfiguration['dataHandler']);
+                $dataHandler = GeneralUtility::makeInstance($generalConfiguration['dataHandler']);
                 if ($dataHandler instanceof DataHandlerInterface) {
                     $records = $dataHandler->handleData(
                             $originalData,
@@ -73,7 +73,7 @@ class HandleDataStep extends AbstractStep
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler',
                             'external_import',
-                            array($ctrlConfiguration['dataHandler'])
+                            array($generalConfiguration['dataHandler'])
                     );
                     return;
                 }
@@ -83,7 +83,7 @@ class HandleDataStep extends AbstractStep
                 LocalizationUtility::translate(
                         'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler',
                         'external_import',
-                        array($ctrlConfiguration['dataHandler'])
+                        array($generalConfiguration['dataHandler'])
                 );
                 return;
             }
@@ -92,7 +92,7 @@ class HandleDataStep extends AbstractStep
         } else {
 
             // Prepare the data, depending on result type
-            switch ($ctrlConfiguration['data']) {
+            switch ($generalConfiguration['data']) {
                 case 'xml':
                     $records = $this->xmlHandler->handleData(
                             $originalData,

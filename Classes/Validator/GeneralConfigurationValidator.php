@@ -68,40 +68,40 @@ class GeneralConfigurationValidator
     public function isValid(Configuration $configuration): bool
     {
         $this->table = $configuration->getTable();
-        $ctrlConfiguration = $configuration->getGeneralConfiguration();
+        $generalConfiguration = $configuration->getGeneralConfiguration();
 
         // Validate all properties on which conditions apply
-        $this->validateDataProperty($ctrlConfiguration['data']);
-        $this->validateConnectorProperty($ctrlConfiguration['connector']);
-        $this->validateDataHandlerProperty($ctrlConfiguration['dataHandler']);
-        $this->validateReferenceUidProperty($ctrlConfiguration['referenceUid']);
+        $this->validateDataProperty($generalConfiguration['data']);
+        $this->validateConnectorProperty($generalConfiguration['connector']);
+        $this->validateDataHandlerProperty($generalConfiguration['dataHandler']);
+        $this->validateReferenceUidProperty($generalConfiguration['referenceUid']);
         $this->validatePidProperty($configuration->getStoragePid());
         $this->validateUseColumnIndexProperty(
-                $ctrlConfiguration['useColumnIndex'],
+                $generalConfiguration['useColumnIndex'],
                 $configuration->getColumnConfiguration()
         );
         $this->validateCustomStepsProperty(
-                $ctrlConfiguration['customSteps'],
-                $ctrlConfiguration
+                $generalConfiguration['customSteps'],
+                $generalConfiguration
         );
         $this->validateAdditionalFieldsProperty(
                 $configuration->isObsoleteAdditionalFieldsConfiguration()
         );
 
         // Validate properties for pull-only configurations
-        if (!empty($ctrlConfiguration['connector'])) {
-            $this->validatePriorityProperty($ctrlConfiguration['priority']);
+        if (!empty($generalConfiguration['connector'])) {
+            $this->validatePriorityProperty($generalConfiguration['priority']);
             $this->validateConnectorConfigurationProperty(
-                    $ctrlConfiguration['connector'],
-                    $ctrlConfiguration['parameters']
+                    $generalConfiguration['connector'],
+                    $generalConfiguration['parameters']
             );
         }
 
         // Validate properties specific to the "xml"-type data
-        if ($ctrlConfiguration['data'] === 'xml') {
+        if ($generalConfiguration['data'] === 'xml') {
             $this->validateNodeProperty(
-                    $ctrlConfiguration['nodetype'],
-                    $ctrlConfiguration['nodepath']
+                    $generalConfiguration['nodetype'],
+                    $generalConfiguration['nodepath']
             );
         }
         // Return the global validation result

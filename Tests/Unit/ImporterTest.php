@@ -275,19 +275,6 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      */
-    public function generateTemporaryKeyInTestModeGeneratesPredictableKey(): void
-    {
-        // NOTE: any step will do
-        $this->subject->setTestMode(true);
-        self::assertEquals(
-                'NEW1',
-                $this->subject->generateTemporaryKey()
-        );
-    }
-
-    /**
-     * @test
-     */
     public function getStartTimeInitiallyReturnsZero(): void
     {
         self::assertEquals(

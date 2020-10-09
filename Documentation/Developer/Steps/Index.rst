@@ -44,6 +44,11 @@ configuration
   Instance of the current External Import configuration
   (:php:`\Cobweb\ExternalImport\Domain\Model\Configuration`).
 
+  .. warning::
+
+     This has been deprecated in External Import 5.0.0. Please use
+     :code:`$this->importer->getExternalConfiguration()` instead.
+
 data
   Instance of the object model encapsulating the data being processed
   (:php:`\Cobweb\ExternalImport\Domain\Model\Data`).

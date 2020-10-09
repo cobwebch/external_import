@@ -6,7 +6,9 @@
 Known problems
 --------------
 
-Please report bugs and improvements as usual to:
+Nested imports (with the :ref:`children <administration-columns-properties-children>`
+property) are a new feature from 5.0 and certainly not all scenarios have been
+explored. This could be a source of bugs.
+
+In general please report bugs and improvements at:
 https://github.com/cobwebch/external_import/issues.
-
-

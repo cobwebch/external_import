@@ -57,7 +57,7 @@ class TransformDataStep extends AbstractStep
 
         $records = $this->getData()->getRecords();
 
-        $columnConfiguration = $this->getConfiguration()->getColumnConfiguration();
+        $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
         // Loop on all tables to find any defined transformations. This might be mappings and/or user functions
         foreach ($columnConfiguration as $columnName => $columnData) {
             if (isset($columnData['transformations'])) {
@@ -169,7 +169,7 @@ class TransformDataStep extends AbstractStep
     {
         return $this->mappingUtility->mapData(
                 $records,
-                $this->configuration->getTable(),
+                $this->importer->getExternalConfiguration()->getTable(),
                 $name,
                 $configuration
         );

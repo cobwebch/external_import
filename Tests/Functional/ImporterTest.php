@@ -152,6 +152,11 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importBaseProductsWithImporterStoresTwoRecordsAndCreatesRelations(): void
     {
+        $resourceFactory = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ResourceFactory::class);
+        $storage = $resourceFactory->getDefaultStorage();
+        if (!$storage->hasFolder('imported_images')) {
+            $storage->createFolder('imported_images');
+        }
         // Import tags and categories first, so that relations can be created to them from products
         $this->subject->synchronize(
                 'tx_externalimporttest_tag',
@@ -185,9 +190,16 @@ class ImporterTest extends FunctionalTestCase
                 'sys_category_record_mm',
                 'tablenames = \'tx_externalimporttest_product\''
         );
+        // Get the number of sys_file_reference records created
+        $countFiles = $this->getDatabaseConnection()->selectCount(
+                'uid_local',
+                'sys_file_reference',
+                'tablenames = \'tx_externalimporttest_product\''
+        );
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(2, $countProducts, serialize($messages));
         self::assertEquals(2, $countRelations);
+        self::assertEquals(2, $countFiles);
         self::assertSame(
                 [
                         1 => '1,3',
@@ -401,9 +413,9 @@ class ImporterTest extends FunctionalTestCase
     }
 
     /**
-     * Imports the "stores" and checks whether we have the right count or not
-     * (2 expected). Also checks relations between products and stores,
-     * including the "stock" additional field.
+     * Imports the "orders" and checks whether we have the right count or not
+     * (2 expected). Also checks relations between products and orders,
+     * including the "quantity" additional field.
      *
      * @test
      */
@@ -436,7 +448,7 @@ class ImporterTest extends FunctionalTestCase
         /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
                 ->select('uid_local', 'quantity')
-                ->from('tx_externalimporttest_order_items_mm')
+                ->from('tx_externalimporttest_order_items')
                 // Ensure consistent order for safe comparison
                 ->orderBy('uid_local', 'ASC')
                 ->execute();

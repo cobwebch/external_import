@@ -52,7 +52,7 @@ class ValidateConfigurationStep extends AbstractStep
      */
     public function run(): void
     {
-        $generalConfiguration = $this->configuration->getGeneralConfiguration();
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         // If there's no general configuration, issue error
         if (count($generalConfiguration) === 0) {
             $this->importer->addMessage(
@@ -61,15 +61,15 @@ class ValidateConfigurationStep extends AbstractStep
                                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingCtrlConfigurationError',
                                     'external_import'
                             ),
-                            $this->configuration->getTable(),
-                            $this->configuration->getIndex()
+                            $this->importer->getExternalConfiguration()->getTable(),
+                            $this->importer->getExternalConfiguration()->getIndex()
                     )
             );
             $this->abortFlag = true;
         } else {
             // Check the general configuration. If ok, proceed with columns configuration
-            if ($this->generalValidator->isValid($this->configuration)) {
-                $columnConfiguration = $this->configuration->getColumnConfiguration();
+            if ($this->generalValidator->isValid($this->importer->getExternalConfiguration())) {
+                $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
                 // If there's no column configuration at all, issue error
                 if (count($columnConfiguration) === 0) {
                     $this->importer->addMessage(
@@ -78,8 +78,8 @@ class ValidateConfigurationStep extends AbstractStep
                                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingColumnConfigurationError',
                                             'external_import'
                                     ),
-                                    $this->configuration->getTable(),
-                                    $this->configuration->getIndex()
+                                    $this->importer->getExternalConfiguration()->getTable(),
+                                    $this->importer->getExternalConfiguration()->getIndex()
                             )
                     );
                     $this->abortFlag = true;
@@ -87,7 +87,7 @@ class ValidateConfigurationStep extends AbstractStep
                     // Loop on the table columns to check if their external configuration is valid
                     foreach ($columnConfiguration as $columnName => $columnData) {
                         $isValid = $this->columnValidator->isValid(
-                                $this->configuration,
+                                $this->importer->getExternalConfiguration(),
                                 $columnName
                         );
                         // If the column configuration is not valid, issue error message and return false

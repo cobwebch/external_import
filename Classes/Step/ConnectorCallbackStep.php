@@ -34,14 +34,14 @@ class ConnectorCallbackStep extends AbstractStep
     public function run(): void
     {
         // Call connector's post-processing with a rough error status
-        if ($this->configuration->getConnector() !== null) {
+        if ($this->importer->getExternalConfiguration()->getConnector() !== null) {
             $errorStatus = false;
             $messages = $this->importer->getMessages();
             if (count($messages[AbstractMessage::ERROR]) > 0) {
                 $errorStatus = true;
             }
-            $this->configuration->getConnector()->postProcessOperations(
-                    $this->configuration->getGeneralConfigurationProperty('parameters'),
+            $this->importer->getExternalConfiguration()->getConnector()->postProcessOperations(
+                    $this->importer->getExternalConfiguration()->getGeneralConfigurationProperty('parameters'),
                     $errorStatus
             );
         }

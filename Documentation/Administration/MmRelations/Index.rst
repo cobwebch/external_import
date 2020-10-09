@@ -9,11 +9,14 @@ MM-relations configuration
 Things get a bit more complicated with MM-relations, where additional
 configuration is required. The related properties are described below.
 
-.. tip::
+.. warning::
 
-   If all this seems a bit confusing, please refer to the
-   :ref:`chapter about mapping MM relations <user-mapping-data-mm>`.
-   Hopefully it will help (this is not a simple topic).
+   This property is deprecated. Use :ref:`multipleRows <administration-columns-properties-multiple-rows`
+   or :ref:`children <administration-columns-properties-children>` according to your needs.
+
+   Depending on how you used this property, there's no fallback and you will need to change your code.
+   If your need was to enrich a MM table with additional information, change your TCA to use an IRRE
+   structure instead.
 
 
 .. _administration-mm-properties:
@@ -105,25 +108,6 @@ Description
 
 Scope
   Store data
-
-
-.. _administration-mm-notes:
-
-Additional notes
-""""""""""""""""
-
-When the :ref:`additionalFields <administration-mm-properties-additional-fields>`
-and/or :ref:`multiple <administration-mm-properties-multiple>`
-properties are used, additional database operations are performed to honour these
-settings, as it is not traditional behaviour for TYPO3 MM-relations.
-It should be possible with IRRE, but this isn't supported yet.
-
-Also note that these extra operations assume that the MM-relation
-is defined as originating **from** the currently imported table.
-This means that if you are importing table "foo" and its relations
-to table "bar", the import script assumes that the foreign keys of
-table "foo" are going into the :code:`uid_local` column. Importing
-from the "other" side is not supported yet.
 
 
 .. _administration-mm-example:

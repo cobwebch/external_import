@@ -102,13 +102,13 @@ class MappingUtility
                             // If the relation is self-referential, use a temporary key
                             if ($isSelfReferential) {
                                 // Check if a temporary key was already created for that external key
-                                if ($this->importer->hasTemporaryKey($singleValue)) {
-                                    $temporaryKey = $this->importer->getTemporaryKeyForValue($singleValue);
+                                if ($this->importer->getTemporaryKeyRepository()->hasTemporaryKey($singleValue, $table)) {
+                                    $temporaryKey = $this->importer->getTemporaryKeyRepository()->getTemporaryKeyForValue($singleValue, $table);
 
                                 // If not, create a new temporary key
                                 } else {
-                                    $temporaryKey = $this->importer->generateTemporaryKey();
-                                    $this->importer->addTemporaryKey($singleValue, $temporaryKey);
+                                    $temporaryKey = $this->importer->getTemporaryKeyRepository()->generateTemporaryKey();
+                                    $this->importer->getTemporaryKeyRepository()->addTemporaryKey($singleValue, $temporaryKey, $table);
                                 }
                                 // Use temporary key
                                 $mappedExternalValues[] = $temporaryKey;

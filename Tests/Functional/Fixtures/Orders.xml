@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+	<!-- Orders for testing the update and deletion of child records -->
+	<tx_externalimporttest_order>
+		<uid>1</uid>
+		<pid>1</pid>
+		<order_id>000001</order_id>
+		<order_date>1596810720</order_date>
+		<client_id>Conan the Barbarian</client_id>
+	</tx_externalimporttest_order>
+	<!-- This item will be updated -->
+	<tx_externalimporttest_order_items>
+		<uid_local>1</uid_local>
+		<uid_foreign>1</uid_foreign>
+		<quantity>2</quantity>
+		<pid>1</pid>
+	</tx_externalimporttest_order_items>
+	<!-- This item will be deleted -->
+	<tx_externalimporttest_order_items>
+		<uid_local>1</uid_local>
+		<uid_foreign>5</uid_foreign>
+		<quantity>4</quantity>
+		<pid>1</pid>
+	</tx_externalimporttest_order_items>
+</dataset>

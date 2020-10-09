@@ -34,11 +34,11 @@ class ReadDataStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         // Check if there are any services of the given type
         $services = ExtensionManagementUtility::findService(
                 'connector',
-                $ctrlConfiguration['connector']
+                $generalConfiguration['connector']
         );
 
         // The service is not available
@@ -54,7 +54,7 @@ class ReadDataStep extends AbstractStep
             /** @var $connector ConnectorBase */
             $connector = GeneralUtility::makeInstanceService(
                     'connector',
-                    $ctrlConfiguration['connector']
+                    $generalConfiguration['connector']
             );
 
             // The service was instantiated, but an error occurred while initiating the connection
@@ -87,12 +87,12 @@ class ReadDataStep extends AbstractStep
             // The connection is established, get the data
             } else {
                 // Store a reference to the connector object for the callback step
-                $this->configuration->setConnector($connector);
+                $this->importer->getExternalConfiguration()->setConnector($connector);
                 $data = [];
 
                 // Pre-process connector parameters
                 try {
-                    $parameters = $this->processParameters($ctrlConfiguration['parameters']);
+                    $parameters = $this->processParameters($generalConfiguration['parameters']);
                 } catch (CriticalFailureException $e) {
                     // If a critical failure occurred during hook execution, set the abort flag and return to controller
                     $this->setAbortFlag(true);
@@ -101,7 +101,7 @@ class ReadDataStep extends AbstractStep
 
                 // A problem may happen while fetching the data
                 // If so, the import process has to be aborted
-                switch ($ctrlConfiguration['data']) {
+                switch ($generalConfiguration['data']) {
                     case 'xml':
                         try {
                             $data = $connector->fetchXML($parameters);

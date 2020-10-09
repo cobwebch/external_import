@@ -54,10 +54,12 @@ Properties
 	arrayPathSeparator_       string                                                                 Handle data (array)
 	attribute_                string                                                                 Handle data (XML)
 	attributeNS_              string                                                                 Handle data (XML)
+   children_                 :ref:`Children records configuration <administration-children>`        Store data
 	disabledOperations_       string                                                                 Store data
 	field_                    string                                                                 Handle data
 	fieldNS_                  string                                                                 Handle data (XML)
 	MM_                       :ref:`MM configuration <administration-mm>`                            Store data
+   multipleRows_             boolean                                                                Store data
 	substructureFields_       array                                                                  Handle data
 	transformations_          :ref:`Transformations configuration <administration-transformations>`  Transform data
 	xmlValue_                 boolean                                                                Handle data (XML)
@@ -382,6 +384,9 @@ Description
    +--------+------------+---------------------+----------+----------+
 
    Obviously if you have a single element in the nested structure, no denormalisation happens.
+   Due to this denormalisation you probably want to use this property in conjunction with the
+   :ref:`multipleRows <administration-columns-properties-multiple-rows` or
+   :ref:`children <administration-columns-properties-children>` properties.
 
    .. note::
 
@@ -405,8 +410,52 @@ Description
    Definition of MM-relations, see :ref:`specific reference <administration-mm>`
    for more details.
 
+   .. warning::
+
+      This property is deprecated. Use :ref:`multipleRows <administration-columns-properties-multiple-rows`
+      or :ref:`children <administration-columns-properties-children>` according to your needs.
+
 Scope
   Transform data
+
+
+.. _administration-columns-properties-multiple-rows:
+
+multipleRows
+~~~~~~~~~~~~
+
+Type
+  boolean
+
+Description
+   Set to :code:`true` if you have denormalized data. This will tell the import
+   process that there may be more than one row per record to import and that all
+   values for the given column must be gathered and collapsed into a comme-separated
+   list of values.
+
+Scope
+  Store data
+
+
+.. _administration-columns-properties-children:
+
+children
+~~~~~~~~
+
+Type
+  array (see :ref:`Children records configuration <administration-children>`)
+
+Description
+   This property makes it possible to create nested structures and import them
+   in one go. This may typically be "sys_file_reference" records for a field
+   containing images. This should be used anytime you are using a MM table into
+   which you need to write specific properties (like "sys_file_reference").
+   For simple MM tables (like "sys_category_record_mm"), you don't need to create
+   this children sub-structure for the MM table. It is enough to gather a comma-separated
+   list of "sys_category" primary keys.
+
+Scope
+  Store data
 
 
 .. _administration-columns-properties-transformations:
@@ -425,7 +474,7 @@ Description
 
   .. code-block:: php
 
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = array(
+		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
 				0 => [
 						'field' => 'start_date',
 						'transformations => [

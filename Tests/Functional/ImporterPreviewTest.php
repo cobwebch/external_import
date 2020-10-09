@@ -217,7 +217,18 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'categories' => 'USEFUL',
                                         'name' => 'Long sword',
                                         'sku' => '000001',
-                                        'tags' => 'attack,metal'
+                                        'tags' => 'attack,metal',
+                                        'pictures' => 'https://loremflickr.com/320/240/scotland',
+                                        'picture_title' => 'View from the left'
+                                ],
+                                [
+                                        'attributes' => "\n\t\t\t<quality>Robust</quality>\n\t\t\t<quality>Stylish</quality>\n\t\t\t<quality>Reliable</quality>\n\t\t",
+                                        'categories' => 'USEFUL',
+                                        'name' => 'Long sword',
+                                        'sku' => '000001',
+                                        'tags' => 'attack,metal',
+                                        'pictures' => 'https://loremflickr.com/320/240/volcano',
+                                        'picture_title' => 'View from above'
                                 ],
                                 [
                                         'attributes' => "\n\t\t\t<quality>Not too cumbersome</quality>\n\t\t\t<quality>Lets the air flow</quality>\n\t\t",
@@ -260,52 +271,52 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'result' => [
                                 [
                                         'client_id' => 'Conan the Barbarian',
-                                        'order_date' => '2014-08-07 14:32',
+                                        'order_date' => '2020-08-07 14:32',
                                         'order_id' => '000001',
                                         'products' => '000001',
-                                        'quantity' => '3'
+                                        'quantity' => 3
                                 ],
                                 [
                                         'client_id' => 'Conan the Barbarian',
-                                        'order_date' => '2014-08-07 14:32',
+                                        'order_date' => '2020-08-07 14:32',
                                         'order_id' => '000001',
                                         'products' => '000005',
-                                        'quantity' => '1'
+                                        'quantity' => 1
                                 ],
                                 [
                                         'client_id' => 'Conan the Barbarian',
-                                        'order_date' => '2014-08-07 14:32',
+                                        'order_date' => '2020-08-07 14:32',
                                         'order_id' => '000001',
                                         'products' => '000101',
-                                        'quantity' => '10'
+                                        'quantity' => 10
                                 ],
                                 [
                                         'client_id' => 'Conan the Barbarian',
-                                        'order_date' => '2014-08-07 14:32',
+                                        'order_date' => '2020-08-07 14:32',
                                         'order_id' => '000001',
                                         'products' => '000102',
-                                        'quantity' => '2'
+                                        'quantity' => 2
                                 ],
                                 [
                                         'client_id' => 'Sonja the Red',
-                                        'order_date' => '2014-08-08 06:48',
+                                        'order_date' => '2020-08-08 06:48',
                                         'order_id' => '000002',
                                         'products' => '000001',
-                                        'quantity' => '1'
+                                        'quantity' => 1
                                 ],
                                 [
                                         'client_id' => 'Sonja the Red',
-                                        'order_date' => '2014-08-08 06:48',
+                                        'order_date' => '2020-08-08 06:48',
                                         'order_id' => '000002',
                                         'products' => '000005',
-                                        'quantity' => '2'
+                                        'quantity' => 2
                                 ],
                                 [
                                         'client_id' => 'Sonja the Red',
-                                        'order_date' => '2014-08-08 06:48',
+                                        'order_date' => '2020-08-08 06:48',
                                         'order_id' => '000002',
                                         'products' => '000202',
-                                        'quantity' => '1'
+                                        'quantity' => 1
                                 ]
                         ]
                 ]
@@ -384,13 +395,24 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                         'categories' => '',
                                         'name' => 'Long sword (base)',
-                                        'sku' => '000001'
+                                        'sku' => '000001',
+                                        'pictures' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                        'picture_title' => 'View from the left'
+                                ],
+                                [
+                                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
+                                        'categories' => '',
+                                        'name' => 'Long sword (base)',
+                                        'sku' => '000001',
+                                        'pictures' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                        'picture_title' => 'View from above'
                                 ],
                                 [
                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
                                         'categories' => '',
                                         'name' => 'Chain mail (base)',
-                                        'sku' => '000005'
+                                        'sku' => '000005',
+                                        'pictures' => null
                                 ]
                         ]
                 ]
@@ -490,16 +512,38 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Long sword (base)',
+                                                        'pictures' => 'NEW2,NEW3',
                                                         'sku' => '000001',
                                                         'tags' => '1,3',
                                                         'pid' => 1
                                                 ],
-                                                'NEW2' => [
+                                                'NEW4' => [
                                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Chain mail (base)',
                                                         'sku' => '000005',
                                                         'tags' => '2,3',
+                                                        'pictures' => '',
+                                                        'pid' => 1
+                                                ]
+                                        ],
+                                        'sys_file_reference' => [
+                                                'NEW2' => [
+                                                        'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                                        'uid_foreign' => 'NEW1',
+                                                        'title' => 'View from the left',
+                                                        'tablenames' => 'tx_externalimporttest_product',
+                                                        'fieldname' => 'pictures',
+                                                        'table_local' => 'sys_file',
+                                                        'pid' => 1
+                                                ],
+                                                'NEW3' => [
+                                                        'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                                        'uid_foreign' => 'NEW1',
+                                                        'title' => 'View from above',
+                                                        'tablenames' => 'tx_externalimporttest_product',
+                                                        'fieldname' => 'pictures',
+                                                        'table_local' => 'sys_file',
                                                         'pid' => 1
                                                 ]
                                         ]
@@ -529,7 +573,8 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Long sword (base)',
-                                                        'sku' => '000001',
+                                                        'pictures' => 'NEW1,NEW2',
+                                                        'sku' => '000001'
                                                 ],
                                                 '2' => [
                                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
@@ -537,9 +582,35 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'name' => 'Chain mail (base)',
                                                         'sku' => '000005'
                                                 ]
+                                        ],
+                                        // Normally this should not contain new records, as images have been imported during the prerequisite
+                                        // import. However, since we are in preview mode, the ImageTransformation class does not
+                                        // return proper uids for the sys_file (since it does not really save the images) and
+                                        // thus the sys_file_references cannot be matched
+                                        'sys_file_reference' => [
+                                                'NEW1' => [
+                                                    'uid_local' => 'Preview mode. Image not handled, nor saved.',
+                                                    'uid_foreign' => 1,
+                                                    'title' => 'View from the left',
+                                                    'tablenames' => 'tx_externalimporttest_product',
+                                                    'fieldname' => 'pictures',
+                                                    'table_local' => 'sys_file',
+                                                    'pid' => 1
+                                                ],
+                                                'NEW2' => [
+                                                    'uid_local' => 'Preview mode. Image not handled, nor saved.',
+                                                    'uid_foreign' => 1,
+                                                    'title' => 'View from above',
+                                                    'tablenames' => 'tx_externalimporttest_product',
+                                                    'fieldname' => 'pictures',
+                                                    'table_local' => 'sys_file',
+                                                    'pid' => 1
+                                                ]
                                         ]
                                 ],
-                                'commands-delete' => [],
+                                'commands-delete' => [
+                                        'sys_file_reference' => []
+                                ],
                                 'commands-move' => [
                                         'tx_externalimporttest_product' => []
                                 ]
@@ -630,6 +701,102 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'tx_externalimporttest_bundle' => []
                                 ]
                         ]
+                ],
+                'orders' => [
+                        'fixtures' => [
+                                __DIR__ . '/Fixtures/Orders.xml'
+                        ],
+                        'prerequisites' => [
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'base'
+                                ],
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'more'
+                                ],
+                                [
+                                        'table' => 'tx_externalimporttest_product',
+                                        'index' => 'stable'
+                                ]
+                        ],
+                        'table' => 'tx_externalimporttest_order',
+                        'index' => 0,
+                        'testDatabase' => true,
+                        'recordsCount' => 1,
+                        'result' => [
+                                'data' => [
+                                        'tx_externalimporttest_order' => [
+                                                1 => [
+                                                        'client_id' => 'Conan the Barbarian',
+                                                        'order_date' => 1596810720,
+                                                        'order_id' => '000001',
+                                                        'products' => '1,NEW2,NEW3,NEW4'
+                                                ],
+                                                'NEW5' => [
+                                                        'client_id' => 'Sonja the Red',
+                                                        'order_date' => 1596869280,
+                                                        'order_id' => '000002',
+                                                        'products' => 'NEW6,NEW7,NEW8',
+                                                        'pid' => 1
+                                                ]
+                                        ],
+                                        'tx_externalimporttest_order_items' => [
+                                                1 => [
+                                                        'uid_local' => 1,
+                                                        'uid_foreign' => '1',
+                                                        'quantity' => 3,
+                                                        'pid' => 1
+                                                ],
+                                                'NEW2' => [
+                                                        'uid_local' => 1,
+                                                        'uid_foreign' => '2',
+                                                        'quantity' => 1,
+                                                        'pid' => 1
+                                                ],
+                                                'NEW3' => [
+                                                        'uid_local' => 1,
+                                                        'uid_foreign' => '3',
+                                                        'quantity' => 10,
+                                                        'pid' => 1
+                                                ],
+                                                'NEW4' => [
+                                                        'uid_local' => 1,
+                                                        'uid_foreign' => '4',
+                                                        'quantity' => 2,
+                                                        'pid' => 1
+                                                ],
+                                                'NEW6' => [
+                                                        'uid_local' => 'NEW5',
+                                                        'uid_foreign' => '1',
+                                                        'quantity' => 1,
+                                                        'pid' => 1
+                                                ],
+                                                'NEW7' => [
+                                                        'uid_local' => 'NEW5',
+                                                        'uid_foreign' => '2',
+                                                        'quantity' => 2,
+                                                        'pid' => 1
+                                                ],
+                                                'NEW8' => [
+                                                        'uid_local' => 'NEW5',
+                                                        'uid_foreign' => '6',
+                                                        'quantity' => 1,
+                                                        'pid' => 1
+                                                ],
+                                        ]
+                                ],
+                                'commands-delete' => [
+                                        'tx_externalimporttest_order_items' => [
+                                                2 => [
+                                                        'delete' => 1
+                                                ]
+                                        ]
+                                ],
+                                'commands-move' => [
+                                        'tx_externalimporttest_order' => []
+                                ]
+                        ]
                 ]
         ];
     }
@@ -655,8 +822,10 @@ class ImporterPreviewTest extends FunctionalTestCase
                 } catch (\Exception $e) {
                     self::markTestSkipped(
                             sprintf(
-                                    'Could not load fixture file %s',
-                                    $fixture
+                                    'Could not load fixture file %s (error: %s [%d)',
+                                    $fixture,
+                                    $e->getMessage(),
+                                    $e->getCode()
                             )
                     );
                 }

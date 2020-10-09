@@ -35,10 +35,10 @@ class ValidationResult
      */
     public function add($property, $message, $severity = AbstractMessage::WARNING): void
     {
-        $this->results[$property] = array(
+        $this->results[$property] = [
             'severity' => $severity,
             'message' => $message
-        );
+        ];
     }
 
     /**

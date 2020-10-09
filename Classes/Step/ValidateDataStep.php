@@ -34,7 +34,7 @@ class ValidateDataStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->configuration->getGeneralConfiguration();
+        $ctrlConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         $records = $this->getData()->getRecords();
 
         // Check if number of records is larger than or equal to the minimum required number of records

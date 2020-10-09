@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Validator;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Step\TransformDataStep;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -54,10 +55,18 @@ class ColumnConfigurationValidator
                 $configuration->getGeneralConfiguration(),
                 $columnConfiguration
         );
+        // Validate children configuration
+        if (isset($columnConfiguration['children'])) {
+            $this->validateChildrenProperty($columnConfiguration['children']);
+        }
         // Check for deprecated transformation properties
         $this->validateTransformationProperties(
                 $columnConfiguration
         );
+        // Check for deprecated MM property
+        if (isset($columnConfiguration['MM'])) {
+            $this->validateMMProperty();
+        }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
         $errorResults = $this->results->getForSeverity(AbstractMessage::ERROR);
@@ -74,13 +83,13 @@ class ColumnConfigurationValidator
      * even if the "value" property is considered to be a transformation property.
      * Users should be made aware of such potential conflicts.
      *
-     * @param array $ctrlConfiguration "ctrl" configuration to check
+     * @param array $generalConfiguration General configuration to check
      * @param array $columnConfiguration Column configuration to check (unused when checking a "ctrl" configuration)
      */
-    public function validateDataSettingProperties($ctrlConfiguration, $columnConfiguration): void
+    public function validateDataSettingProperties(array $generalConfiguration, array $columnConfiguration): void
     {
         $hasValueProperty = $this->hasValueProperty($columnConfiguration);
-        if ($ctrlConfiguration['data'] === 'array') {
+        if ($generalConfiguration['data'] === 'array') {
             // For data of type "array", either a "field", "value" or a "arrayPath" property are needed
             if (!$hasValueProperty && !isset($columnConfiguration['field']) && !isset($columnConfiguration['arrayPath'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
@@ -104,7 +113,7 @@ class ColumnConfigurationValidator
                         AbstractMessage::NOTICE
                 );
             }
-        } elseif ($ctrlConfiguration['data'] === 'xml') {
+        } elseif ($generalConfiguration['data'] === 'xml') {
             // It is okay to have no configuration for a column. Just make sure this is really what the user wanted.
             if (!$hasValueProperty && !isset($columnConfiguration['field']) && !isset($columnConfiguration['attribute']) && !isset($columnConfiguration['xpath'])) {
                 // NOTE: validation result is arbitrarily added to the "field" property
@@ -168,6 +177,188 @@ class ColumnConfigurationValidator
                     AbstractMessage::NOTICE
             );
         }
+    }
+
+    public function validateChildrenProperty($childrenConfiguration): void
+    {
+        // Issue error right away if structure is not an array
+        if (!is_array($childrenConfiguration)) {
+            // NOTE: validation result is arbitrarily added to the "field" property
+            $this->results->add(
+                    'field',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyIsNotAnArray',
+                            'external_import'
+                    ),
+                    AbstractMessage::ERROR
+            );
+            // There's nothing else to check
+            return;
+        }
+        // Check the existence of the "table" property
+        if (!array_key_exists('table', $childrenConfiguration)) {
+            $this->results->add(
+                    'field',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyMissingTableInformation',
+                            'external_import'
+                    ),
+                    AbstractMessage::ERROR
+            );
+            // Given the current structure of the validator, only one message per property can be registered, so stop here
+            return;
+        }
+        // Check the existence of the "columns" property
+        $columns = [];
+        if (!array_key_exists('columns', $childrenConfiguration)) {
+            $this->results->add(
+                    'field',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyMissingColumnsInformation',
+                            'external_import'
+                    ),
+                    AbstractMessage::ERROR
+            );
+            // Given the current structure of the validator, only one message per property can be registered, so stop here
+            return;
+        // If it exists check that individual configuration uses only "value" and "field" sub-properties
+        } else {
+            $columns = array_keys($childrenConfiguration['columns']);
+            foreach ($childrenConfiguration['columns'] as $column) {
+                if (is_array($column)) {
+                    $key = key($column);
+                    if ($key !== 'value' && $key !== 'field') {
+                        $this->results->add(
+                                'field',
+                                LocalizationUtility::translate(
+                                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyColumnsInformationWrongSubproperties',
+                                        'external_import',
+                                        [$key]
+                                ),
+                                AbstractMessage::ERROR
+                        );
+                        // Given the current structure of the validator, only one message per property can be registered, so stop here
+                        return;
+                    }
+                } else {
+                    $this->results->add(
+                            'field',
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyColumnsInformationNotAnArray',
+                                    'external_import'
+                            ),
+                            AbstractMessage::ERROR
+                    );
+                    // Given the current structure of the validator, only one message per property can be registered, so stop here
+                    return;
+                }
+            }
+        }
+        // Check the "controlColumnsForUpdate" property
+        if (array_key_exists('controlColumnsForUpdate', $childrenConfiguration)) {
+            $controlColumns = GeneralUtility::trimExplode(',', $childrenConfiguration['controlColumnsForUpdate']);
+            if (count($controlColumns) > 0) {
+                $missingColumns = array_diff($controlColumns, $columns);
+                if (count($missingColumns) > 0) {
+                    $this->results->add(
+                            'field',
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForUpdateContainsInvalidColumns',
+                                    'external_import',
+                                    [
+                                            implode(', ', $missingColumns)
+                                    ]
+                            ),
+                            AbstractMessage::ERROR
+                    );
+                    // Given the current structure of the validator, only one message per property can be registered, so stop here
+                    return;
+                }
+            } else {
+                $this->results->add(
+                        'field',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForUpdateMissing',
+                                'external_import'
+                        ),
+                        AbstractMessage::NOTICE
+                );
+                // Given the current structure of the validator, only one message per property can be registered, so stop here
+                return;
+            }
+        } else {
+            $this->results->add(
+                    'field',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForUpdateMissing',
+                            'external_import'
+                    ),
+                    AbstractMessage::NOTICE
+            );
+            // Given the current structure of the validator, only one message per property can be registered, so stop here
+            return;
+        }
+        // Check the "controlColumnsForDelete" property
+        if (array_key_exists('controlColumnsForDelete', $childrenConfiguration)) {
+            $controlColumns = GeneralUtility::trimExplode(',', $childrenConfiguration['controlColumnsForDelete']);
+            if (count($controlColumns) > 0) {
+                $missingColumns = array_diff($controlColumns, $columns);
+                if (count($missingColumns) > 0) {
+                    $this->results->add(
+                            'field',
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForDeleteContainsInvalidColumns',
+                                    'external_import',
+                                    [
+                                            implode(', ', $missingColumns)
+                                    ]
+                            ),
+                            AbstractMessage::ERROR
+                    );
+                    // Given the current structure of the validator, only one message per property can be registered, so stop here
+                    return;
+                }
+            } else {
+                $this->results->add(
+                        'field',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForDeleteMissing',
+                                'external_import'
+                        ),
+                        AbstractMessage::NOTICE
+                );
+                // Given the current structure of the validator, only one message per property can be registered, so stop here
+                return;
+            }
+        } else {
+            $this->results->add(
+                    'field',
+                    LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForDeleteMissing',
+                            'external_import'
+                    ),
+                    AbstractMessage::NOTICE
+            );
+            // Given the current structure of the validator, only one message per property can be registered, so stop here
+            return;
+        }
+    }
+
+    /**
+     * Issues a notice about the MM property being deprecated (not a real validation).
+     *
+     * @return void
+     */
+    public function validateMMProperty(): void
+    {
+        $this->results->add(
+                'field',
+                LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:mmPropertyDeprecated',
+                        'external_import'
+                ),
+                AbstractMessage::NOTICE
+        );
     }
 
     /**

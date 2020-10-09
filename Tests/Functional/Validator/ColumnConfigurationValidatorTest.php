@@ -18,7 +18,7 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
@@ -157,20 +157,39 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                         'field' => 'hello'
                                 ]
                         ]
+                ],
+                'Children definition' => [
+                        // No need for a general configuration
+                        [],
+                        [
+                                'col' => [
+                                        'children' => [
+                                                'table' => 'foo',
+                                                'columns' => [
+                                                        'column1' => [
+                                                                'value' => 'bar'
+                                                        ],
+                                                        'column2' => [
+                                                                'field' => 'baz'
+                                                        ]
+                                                ]
+                                        ]
+                                ]
+                        ]
                 ]
         ];
     }
 
     /**
-     * @param array $controlConfiguration
+     * @param array $generalConfiguration
      * @param array $columnConfiguration
      * @test
      * @dataProvider validConfigurationProvider
      */
-    public function isValidReturnsTrueForValidConfiguration($controlConfiguration, $columnConfiguration): void
+    public function isValidReturnsTrueForValidConfiguration(array $generalConfiguration, array $columnConfiguration): void
     {
         $configuration = $this->objectManager->get(Configuration::class);
-        $configuration->setGeneralConfiguration($controlConfiguration);
+        $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         self::assertTrue(
                 $this->subject->isValid(
@@ -188,14 +207,14 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                 'data' => 'array'
                         ],
                         [],
-                        FlashMessage::ERROR
+                        AbstractMessage::ERROR
                 ],
                 'Data type "xml": missing data-setting properties' => [
                         [
                                 'data' => 'xml'
                         ],
                         [],
-                        FlashMessage::NOTICE
+                        AbstractMessage::NOTICE
                 ],
                 'Data type "array": conflicting data-setting properties' => [
                         [
@@ -207,7 +226,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                         'field' => 'foo'
                                 ]
                         ],
-                        FlashMessage::NOTICE
+                        AbstractMessage::NOTICE
                 ],
                 'Data type "xml": conflicting data-setting properties' => [
                         [
@@ -219,22 +238,127 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                         'xpath' => 'item'
                                 ]
                         ],
-                        FlashMessage::NOTICE
+                        AbstractMessage::NOTICE
+                ],
+                'Children definition: no "table" property' => [
+                        // No need for a general configuration
+                        [],
+                        [
+                                'col' => [
+                                        'children' => [
+                                                'columns' => [
+                                                        'column1' => [
+                                                                'value' => 'bar'
+                                                        ],
+                                                        'column2' => [
+                                                                'field' => 'baz'
+                                                        ]
+                                                ],
+                                                'controlColumnsForUpdate' => 'column1',
+                                                'controlColumnsForDelete' => 'column1'
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
+                ],
+                'Children definition: no "columns" property' => [
+                        // No need for a general configuration
+                        [],
+                        [
+                                'col' => [
+                                        'children' => [
+                                                'table' => 'foo'
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
+                ],
+                'Children definition: "columns" sub-property not an array' => [
+                        // No need for a general configuration
+                        [],
+                        [
+                                'col' => [
+                                        'children' => [
+                                                'table' => 'foo',
+                                                'columns' => [
+                                                        'column1' => 'bar'
+                                                ],
+                                                'controlColumnsForUpdate' => 'column1',
+                                                'controlColumnsForDelete' => 'column1'
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
+                ],
+                'Children definition: wrong "columns" sub-property' => [
+                        // No need for a general configuration
+                        [],
+                        [
+                                'col' => [
+                                        'children' => [
+                                                'table' => 'foo',
+                                                'columns' => [
+                                                        'column1' => [
+                                                                'bar' => 'baz'
+                                                        ]
+                                                ],
+                                                'controlColumnsForUpdate' => 'column1',
+                                                'controlColumnsForDelete' => 'column1'
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
+                ],
+                'Children definition: wrong "controlColumnsForUpdate" sub-property' => [
+                        // No need for a general configuration
+                        [],
+                        [
+                                'col' => [
+                                        'children' => [
+                                                'table' => 'foo',
+                                                'columns' => [
+                                                        'column1' => [
+                                                                'bar' => 'baz'
+                                                        ]
+                                                ],
+                                                'controlColumnsForUpdate' => 'columnX'
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
+                ],
+                'Children definition: wrong "controlColumnsForDelete" sub-property' => [
+                        // No need for a general configuration
+                        [],
+                        [
+                                'col' => [
+                                        'children' => [
+                                                'table' => 'foo',
+                                                'columns' => [
+                                                        'column1' => [
+                                                                'bar' => 'baz'
+                                                        ]
+                                                ],
+                                                'controlColumnsForDelete' => 'columnX'
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
                 ]
         ];
     }
 
     /**
-     * @param array $controlConfiguration
+     * @param array $generalConfiguration
      * @param array $columnConfiguration
      * @param int $severity
      * @test
      * @dataProvider invalidConfigurationProvider
      */
-    public function isValidRaisesMessageForInvalidConfiguration($controlConfiguration, $columnConfiguration, $severity): void
+    public function isValidRaisesMessageForInvalidConfiguration(array $generalConfiguration, array $columnConfiguration, int $severity): void
     {
         $configuration = $this->objectManager->get(Configuration::class);
-        $configuration->setGeneralConfiguration($controlConfiguration);
+        $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         $this->subject->isValid(
                 $configuration,

@@ -123,14 +123,14 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         return [
                 'simple configuration' => [
                         // Table
-                        'tx_externalimporttest_order',
+                        'tx_externalimporttest_bundle',
                         // Index
                         0,
                         // Sample test value from the ctrl configuration (property: referenceUid)
-                        'order_id',
-                        // Sample test value from the columns configuration (column corresponding to referenceUid property, i.e. "order_id")
+                        'bundle_code',
+                        // Sample test value from the columns configuration (column corresponding to referenceUid property, i.e. "bundle_code")
                         [
-                                'field' => 'order',
+                                'field' => 'code',
                                 'transformations' => [
                                         10 => [
                                                 'trim' => true
@@ -138,8 +138,16 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                                 ]
                         ],
                         [
-                                'quantity' => [
-                                        'field' => 'qty',
+                                'position' => [
+                                        'field' => 'position',
+                                        'transformations' => [
+                                                10 => [
+                                                        'userFunc' => [
+                                                                'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                                                                'method' => 'stripPositionMarker'
+                                                        ]
+                                                ]
+                                        ],
                                         \Cobweb\ExternalImport\Domain\Model\Configuration::DO_NOT_SAVE_KEY => true
                                 ]
                         ]
@@ -264,56 +272,54 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     public function findByTableAndIndexReturnsExternalConfiguration(): void
     {
         $externalConfiguration = $this->subject->findByTableAndIndex(
-                'tx_externalimporttest_order',
+                'tx_externalimporttest_bundle',
                 0
         );
         self::assertSame(
                 [
                         'general' => [
-                                'connector' => 'csv',
+                                'connector' => 'json',
                                 'parameters' => [
-                                        'filename' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Orders.csv',
-                                        'delimiter' => "\t",
-                                        'text_qualifier' => '',
-                                        'encoding' => 'utf8',
-                                        'skip_rows' => 1
+                                        'uri' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Bundles.json'
                                 ],
                                 'data' => 'array',
-                                'referenceUid' => 'order_id',
-                                'priority' => 5300,
-                                'description' => 'List of orders',
+                                'referenceUid' => 'bundle_code',
+                                'priority' => 5200,
+                                'description' => 'List of bundles',
                                 'pid' => 0
                         ],
                         'additionalFields' => [
-                                'quantity' => [
-                                        'field' => 'qty'
+                                'position' => [
+                                        'field' => 'position',
+                                        'transformations' => [
+                                                10 => [
+                                                        'userFunc' => [
+                                                                'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                                                                'method' => 'stripPositionMarker'
+                                                        ]
+                                                ]
+                                        ]
                                 ]
                         ],
                         'columns' => [
-                                'client_id' => [
-                                        'field' => 'customer',
+                                'bundle_code' => [
+                                        'field' => 'code',
                                         'transformations' => [
                                                 10 => [
                                                         'trim' => true
                                                 ]
                                         ]
                                 ],
-                                'order_date' => [
-                                        'field' => 'date',
+                                'maker' => [
+                                        'arrayPath' => 'maker/name',
                                         'transformations' => [
                                                 10 => [
-                                                        'userFunc' => [
-                                                                'class' => \Cobweb\ExternalImport\Transformation\DateTimeTransformation::class,
-                                                                'method' => 'parseDate',
-                                                                'params' => [
-                                                                        'enforceTimeZone' => true
-                                                                ]
-                                                        ]
+                                                        'trim' => true
                                                 ]
                                         ]
                                 ],
-                                'order_id' => [
-                                        'field' => 'order',
+                                'name' => [
+                                        'field' => 'name',
                                         'transformations' => [
                                                 10 => [
                                                         'trim' => true
@@ -327,9 +333,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                                                         'table' => 'tx_externalimporttest_product',
                                                         'referenceField' => 'sku'
                                                 ],
-                                                'additionalFields' => [
-                                                        'quantity' => 'quantity'
-                                                ]
+                                                'sorting' => 'position'
                                         ]
                                 ]
                         ]

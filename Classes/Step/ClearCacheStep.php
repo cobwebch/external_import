@@ -32,7 +32,7 @@ class ClearCacheStep extends AbstractStep
      */
     public function run(): void
     {
-        $configuration = $this->configuration->getGeneralConfiguration();
+        $configuration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         if (empty($configuration['clearCache'])) {
             $this->importer->setPreviewData(
                     [

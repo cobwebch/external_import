@@ -83,6 +83,36 @@
 			<trans-unit id="automaticTransformationPropertiesUpdate" xml:space="preserve">
 				<source>A backwards-compatibility layer currently updates your configuration automatically, but it will be removed in the next major version. Please update your configuration.</source>
 			</trans-unit>
+			<trans-unit id="childrenProperyIsNotAnArray" xml:space="preserve">
+				<source>The "children" property must be an array.</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyMissingTableInformation" xml:space="preserve">
+				<source>The "children" property must have a "table" information.</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyMissingColumnsInformation" xml:space="preserve">
+				<source>The "children" property must have a "columns" information.</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyColumnsInformationNotAnArray" xml:space="preserve">
+				<source>The "columns" information of the "children" property must be an array.</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyColumnsInformationWrongSubproperties" xml:space="preserve">
+				<source>The "columns" information of the "children" property must use "field" or "value" as key, not "%s".</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyControlColumnsForUpdateMissing" xml:space="preserve">
+				<source>The "controlColumnsForUpdate" information of the "children" property is not set or is empty. This means that all child records will be considered to be new.</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyControlColumnsForUpdateContainsInvalidColumns" xml:space="preserve">
+				<source>The "controlColumnsForUpdate" information of the "children" property contains one or more reference to columns that are not defined in the "columns" information: %s</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyControlColumnsForDeleteMissing" xml:space="preserve">
+				<source>The "controlColumnsForDelete" information of the "children" property is not set or is empty. This means that existing child records will never be deleted.</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyControlColumnsForDeleteContainsInvalidColumns" xml:space="preserve">
+				<source>The "controlColumnsForDelete" information of the "children" property contains one or more reference to columns that are not defined in the "columns" information: %s</source>
+			</trans-unit>
+			<trans-unit id="mmPropertyDeprecated" xml:space="preserve">
+				<source>The MM property is deprecated. Do not use it anymore. Switch to "multipleRows" or "children" instead.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

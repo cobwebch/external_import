@@ -37,5 +37,6 @@ each example (in the Tutorial).
    AdditionalFields/Index
    Transformations/Index
    Mapping/Index
+   Children/Index
    MmRelations/Index
    LogCleanup/Index

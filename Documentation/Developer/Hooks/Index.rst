@@ -124,11 +124,19 @@ updatePreProcess
 
   This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
 
+  .. note::
+
+     This hook receives records only from the main table, not from any child table.
+
 insertPreProcess
   Similar to the "updatePreProcess" hook, but for
   the insert operation.
 
   This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
+
+  .. note::
+
+     This hook receives records only from the main table, not from any child table.
 
 deletePreProcess
   This hook can be used to modify the list of
@@ -140,6 +148,11 @@ deletePreProcess
 
   This hook may throw the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
   However note that the data will already have been saved.
+
+  .. note::
+
+     This hook receives only the list of records to be deleted from the main table,
+     not from any child table.
 
 datamapPostProcess
   This hook is called after all records have
