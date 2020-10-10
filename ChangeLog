@@ -1,3 +1,11 @@
+2020-10-10 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Import nested structures, resolves #68
+
+2020-10-09 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Allow garbage collection of log entries (thanks to Mathias Brodala)
+
 2020-10-05 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Use Query Builder consistently in UidRepository
