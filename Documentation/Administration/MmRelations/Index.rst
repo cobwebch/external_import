@@ -18,6 +18,8 @@ configuration is required. The related properties are described below.
    If your need was to enrich a MM table with additional information, change your TCA to use an IRRE
    structure instead.
 
+   See the :ref:`Mapping data <user-mapping-data>` chapter for an overview of alternatives.
+
 
 .. _administration-mm-properties:
 

@@ -431,7 +431,8 @@ Description
    Set to :code:`true` if you have denormalized data. This will tell the import
    process that there may be more than one row per record to import and that all
    values for the given column must be gathered and collapsed into a comme-separated
-   list of values.
+   list of values. See the :ref:`Mapping data <user-mapping-data>` chapter for
+   explanations about the impact of this flag.
 
 Scope
   Store data

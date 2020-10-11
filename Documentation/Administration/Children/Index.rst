@@ -11,6 +11,9 @@ MM tables where additional information needs to be stored. This will
 correspond to :ref:`inline-type ("IRRE") fields <t3tca:columns-inline>`
 with MM tables having a primary key field ("uid").
 
+See the :ref:`Mapping data <user-mapping-data>` chapter for an overview of import
+scenarios which may help understand this feature.
+
 
 **Example:**
 

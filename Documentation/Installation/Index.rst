@@ -42,6 +42,10 @@ The "MM" property is deprecated. It should not be used anymore. Instead the new
 :ref:`children <administration-columns-properties-children>` properties
 should be used according to your import scenario.
 
+Check out the revamped :ref:`Mapping data <user-mapping-data>` chapter which should
+hopefully help you get a better picture of what is possible with External Import
+and how different properties can be combined.
+
 
 .. _installation-upgrade-500-breaking-changes:
 
