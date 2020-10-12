@@ -1,6 +1,7 @@
 2020-10-12 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Actually delete records when "insert" and "update" operations are disabled, resolves #88
+	* Move old upgrade instructions to an appendix, resolves #138
 
 2020-10-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
