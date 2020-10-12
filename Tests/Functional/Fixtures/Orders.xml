@@ -8,6 +8,14 @@
 		<order_date>1596810720</order_date>
 		<client_id>Conan the Barbarian</client_id>
 	</tx_externalimporttest_order>
+	<!-- This order will be deleted -->
+	<tx_externalimporttest_order>
+		<uid>12</uid>
+		<pid>1</pid>
+		<order_id>000005</order_id>
+		<order_date>1596810720</order_date>
+		<client_id>Attila the Hun</client_id>
+	</tx_externalimporttest_order>
 	<!-- This item will be updated -->
 	<tx_externalimporttest_order_items>
 		<uid_local>1</uid_local>

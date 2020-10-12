@@ -46,12 +46,6 @@ class StoreDataStep extends AbstractStep
     protected $substructureFields = [];
 
     /**
-     * @var array List of primary keys of existing records (must be queried a single time during this step,
-     * because new records are actually created at some point)
-     */
-    protected $existingUids = [];
-
-    /**
      * @var array Temporary storage for the values that are not saved and that are restored after saving
      */
     protected $valuesExcludedFromSaving = [];
@@ -70,6 +64,11 @@ class StoreDataStep extends AbstractStep
      * @var bool True if at least one column has a "children" configuration (preloaded to avoid looping on the whole structure everytime)
      */
     protected $hasChildColumns = false;
+
+    /**
+     * @var array List of records from the main table that need to be deleted
+     */
+    protected $mainRecordsToDelete = [];
 
     /**
      * @var array List of child records that need to be deleted
@@ -306,7 +305,7 @@ class StoreDataStep extends AbstractStep
         $this->importer->debug(
                 'TCEmain commands',
                 0,
-                (count($tceCommands[$table]) > 0) ? $tceCommands : null
+                $tceCommands
         );
 
         // Create an instance of DataHandler and process the data
@@ -418,10 +417,7 @@ class StoreDataStep extends AbstractStep
         // Now for the main table, mark as deleted those records with existing uids that were not in the import data anymore
         // (if automatic delete is activated)
         if (!GeneralUtility::inList($generalConfiguration['disabledOperations'], 'delete')) {
-            $absentUids = array_diff(
-                    $this->existingUids,
-                    $updatedUids
-            );
+            $absentUids = $this->mainRecordsToDelete;
             // Call a pre-processing hook
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'])) {
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'] as $className) {
@@ -584,6 +580,7 @@ class StoreDataStep extends AbstractStep
      */
     public function prepareDataToStore(): array
     {
+        $existingUids = $this->importer->getUidRepository()->getExistingUids() ?? [];
         $records = $this->getData()->getRecords();
         $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         $referenceUid = $generalConfiguration['referenceUid'];
@@ -603,15 +600,18 @@ class StoreDataStep extends AbstractStep
         // Loop on all records to keep only data to store and assemble the list of multiple values (if any)
         $dataToStore = [];
         $multipleValues = [];
+        $handledUids = [];
         foreach ($records as $record) {
             $externalId = $record[$referenceUid];
             // Get the existing uid or generate a key if no uid is found (e.g. it's a new record)
-            if (isset($this->existingUids[$externalId])) {
+            if (isset($existingUids[$externalId])) {
+                $id = $existingUids[$externalId];
+                // Even if update is not allowed, mark the record as having been handled
+                $handledUids[] = $id;
                 // If update is not allowed, skip this record
                 if (!$isUpdateAllowed) {
                     continue;
                 }
-                $id = $this->existingUids[$externalId];
             } else {
                 // If insert is not allowed, skip this record
                 if (!$isInsertAllowed) {
@@ -690,6 +690,10 @@ class StoreDataStep extends AbstractStep
                 }
             }
         }
+
+        // Store the existing records that were not handled for later deletion
+        $this->mainRecordsToDelete = array_diff($existingUids, $handledUids);
+
         // Review all children records for updates and deletions
         return $this->reviewChildRecords($dataToStore);
     }
@@ -866,7 +870,6 @@ class StoreDataStep extends AbstractStep
                 $this->substructureFields[$columnName] = array_keys($columnData['substructureFields']);
             }
         }
-        $this->existingUids = $this->importer->getUidRepository()->getExistingUids() ?? [];
     }
 
     /**

@@ -493,6 +493,31 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 ]
                         ]
                 ],
+                'tags (only delete)' => [
+                        'fixtures' => [
+                                __DIR__ . '/Fixtures/StoreDataStepPreviewTest.xml'
+                        ],
+                        'prerequisistes' => [],
+                        'table' => 'tx_externalimporttest_tag',
+                        'index' => 'only-delete',
+                        'testDatabase' => true,
+                        'recordsCount' => 1,
+                        'result' => [
+                                'data' => [
+                                        'tx_externalimporttest_tag' => []
+                                ],
+                                'commands-delete' => [
+                                        'tx_externalimporttest_tag' => [
+                                                2 => [
+                                                        'delete' => 1
+                                                ]
+                                        ]
+                                ],
+                                'commands-move' => [
+                                        'tx_externalimporttest_tag' => []
+                                ]
+                        ]
+                ],
                 'base products (insert)' => [
                         'fixtures' => [],
                         'prerequisistes' => [
@@ -723,7 +748,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'table' => 'tx_externalimporttest_order',
                         'index' => 0,
                         'testDatabase' => true,
-                        'recordsCount' => 1,
+                        'recordsCount' => 2,
                         'result' => [
                                 'data' => [
                                         'tx_externalimporttest_order' => [
@@ -789,6 +814,11 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'commands-delete' => [
                                         'tx_externalimporttest_order_items' => [
                                                 2 => [
+                                                        'delete' => 1
+                                                ]
+                                        ],
+                                        'tx_externalimporttest_order' => [
+                                                12 => [
                                                         'delete' => 1
                                                 ]
                                         ]

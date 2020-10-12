@@ -42,6 +42,12 @@ The "MM" property is deprecated. It should not be used anymore. Instead the new
 :ref:`children <administration-columns-properties-children>` properties
 should be used according to your import scenario.
 
+If both "insert" and "update" operations are disabled in the general configuration
+(using the :ref:`disabledOperations property <administration-general-tca-properties-disabledoperations>`),
+External Import will now delete records that were not marked for update (even if the
+actual update does not take place). Previously, no records would have been deleted,
+because the entire matching of existing records was skipped.
+
 Check out the revamped :ref:`Mapping data <user-mapping-data>` chapter which should
 hopefully help you get a better picture of what is possible with External Import
 and how different properties can be combined.
