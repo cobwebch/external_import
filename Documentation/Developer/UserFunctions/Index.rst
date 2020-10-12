@@ -45,12 +45,3 @@ for user functions to check if the current run is operating in preview mode or i
 The function may throw the special exception :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
 This will cause the "Transform Data" step to abort. More details in the chapter about
 :ref:`critical exceptions <developer-critical-exceptions>`.
-
-.. note::
-
-   When adding a new user function, you may suddenly be faced with an autoloading
-   error, which is not solved by a flushing of the cache. Indeed TYPO3 CMS builds
-   autoloading information which is not considered to use a cache. So flushing
-   all the cache will not help TYPO3 CMS to detect your new class. You will need to
-   either uninstall and reinstall the extension to which your class belongs
-   or recreate the autoloading information cache using the Install Tool.

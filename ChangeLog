@@ -2,6 +2,7 @@
 
 	* Actually delete records when "insert" and "update" operations are disabled, resolves #88
 	* Move old upgrade instructions to an appendix, resolves #138
+	* Remove obsolete note about autoloading, resolves #141
 
 2020-10-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
