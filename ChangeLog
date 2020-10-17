@@ -2,6 +2,7 @@
 
 	* Ship own version of DataTables, resolves #144
 	* Rely only on default mail address for sending report, resolves #139
+	* Adapt to changed mail API
 
 2020-10-12 Francois Suter (Idéative)  <typo3@ideative.ch>
 

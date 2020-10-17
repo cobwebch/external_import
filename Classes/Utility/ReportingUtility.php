@@ -28,6 +28,7 @@ use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
@@ -221,7 +222,13 @@ class ReportingUtility implements LoggerAwareInterface
                         ]
                 );
                 $mailObject->setSubject($subject);
-                $mailObject->setBody($body);
+                // Adapt to changing mail API
+                // TODO: remove check once compat with v9 is droppped
+                if (VersionNumberUtility::convertVersionNumberToInteger(VersionNumberUtility::getNumericTypo3Version()) > 10000000) {
+                    $mailObject->text($body);
+                } else {
+                    $mailObject->setBody($body);
+                }
                 // Send mail
                 $result = $mailObject->send();
                 $message = '';
