@@ -126,6 +126,10 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
                 }
             }
         }
+        $fileName = $this->storageFolders[$parameters['storage']]->getStorage()->sanitizeFileName(
+                $fileName,
+                $this->storageFolders[$parameters['storage']]
+        );
         // Check if the file already exists
         if ($this->storageFolders[$parameters['storage']]->hasFile($fileName)) {
             $fileObject = $this->resourceFactory->getFileObjectFromCombinedIdentifier(
