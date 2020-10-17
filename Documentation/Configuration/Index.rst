@@ -29,14 +29,11 @@ Force time limit
 Email for reporting
   If an email address is entered here, a detailed
   report will be sent to this address after every automated
-  synchronization. Mails are not sent after synchronizations started
-  manually from the BE module. Note that the mail reporting feature needs
-  a valid e-mail address to be available for sending from. This will
-  either be the mail of the :code:`_cli_` user
-  or the default mail address of the TYPO3 installation
-  (:code:`$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']`). If
-  neither of these mails are available, the report will not be sent and
-  an error will appear in the **SYSTEM > Log**.
+  synchronization. Mails are not sent after manual synchronizations started
+  from the BE module. The mail address used for sending the report is
+  (:code:`$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']`).
+  If it is not defined, the report will not be sent and
+  an error will will be logged.
 
 Subject of email report
   A label that will be prepended to the subject of the reporting mail.

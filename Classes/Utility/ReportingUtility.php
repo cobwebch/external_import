@@ -196,42 +196,15 @@ class ReportingUtility implements LoggerAwareInterface
     public function sendMail($subject, $body): void
     {
         $result = 0;
-        // Define sender mail and name
-        $senderMail = '';
-        $senderName = '';
-        // First try to get the current backend user
-        try {
-            $currentUser = $this->context->getPropertyFromAspect('backend.user', 'id');
-            $currentUserRecord = BackendUtility::getRecord(
-                    'be_users',
-                    $currentUser,
-                    'email, username, realName'
-            );
-        } catch (AspectNotFoundException $e) {
-            $currentUserRecord = [];
-        }
-
-        if (!empty($currentUserRecord['email'])) {
-            $senderMail = $currentUserRecord['email'];
-            if (empty($currentUserRecord['realName'])) {
-                $senderName = $currentUserRecord['username'];
-            } else {
-                $senderName = $currentUserRecord['realName'];
-            }
-        } elseif (!empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'])) {
-            $senderMail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
-            if (empty($GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'])) {
-                $senderName = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
-            } else {
-                $senderName = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'];
-            }
-        }
+        // Get default mail configuration for sending the report
+        $senderMail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'] ?? '';
+        $senderName = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'] ?? $senderMail;
         // If no mail could be found, avoid sending the mail
         // The message will be logged as an error
         if (empty($senderMail)) {
-            $message = 'No sender mail defined. Please check the manual.';
+            $message = 'No sender mail defined. Please define $GLOBALS[\'TYPO3_CONF_VARS\'][\'MAIL\'][\'defaultMailFromAddress\'] and $GLOBALS[\'TYPO3_CONF_VARS\'][\'MAIL\'][\'defaultMailFromName\'].';
 
-            // Proceed with sending the mail
+        // Proceed with sending the mail
         } else {
             // Instantiate and initialize the mail object
             /** @var $mailObject MailMessage */
