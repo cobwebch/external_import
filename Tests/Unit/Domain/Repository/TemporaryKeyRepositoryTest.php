@@ -55,7 +55,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         $this->subject->addTemporaryKey(
                 'foo',
                 $this->subject->generateTemporaryKey(),
-                'bar',
+                'bar'
         );
         self::assertTrue(
                 $this->subject->hasTemporaryKey('foo', 'bar')
@@ -82,12 +82,12 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         $this->subject->addTemporaryKey(
                 1,
                 $this->subject->generateTemporaryKey(),
-                'foo',
+                'foo'
         );
         $this->subject->addTemporaryKey(
                 2,
                 $this->subject->generateTemporaryKey(),
-                'bar',
+                'bar'
         );
         self::assertSame(
                 [
@@ -137,12 +137,12 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         $this->subject->addTemporaryKey(
                 1,
                 $this->subject->generateTemporaryKey(),
-                'foo',
+                'foo'
         );
         $this->subject->addTemporaryKey(
                 2,
                 $this->subject->generateTemporaryKey(),
-                'bar',
+                'bar'
         );
         self::assertEquals(
                 'NEW1',

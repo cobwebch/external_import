@@ -81,7 +81,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         return [
                 'sync is true' => [
                         true,
-                        15
+                        16
                 ],
                 'sync is false' => [
                         false,
@@ -258,6 +258,9 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                 ],
                 5810 => [
                         ['table' => 'tx_externalimporttest_product', 'index' => 'updated_products', 'group' => '-']
+                ],
+                5900 => [
+                        ['table' => 'tx_externalimporttest_tag', 'index' => 'only-delete', 'group' => '-']
                 ]
         ];
         self::assertSame(
