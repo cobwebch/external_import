@@ -400,7 +400,7 @@ Type
   string
 
 Description
-  This property is not part of the general information anymore. Please refer to
+  This property is not part of the general configuration anymore. Please refer to
   :ref:`the dedicated chapter <administration-additionalfields>`.
 
 Scope

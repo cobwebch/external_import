@@ -96,4 +96,14 @@ extension. You will get mentioned here.
   `State of Vaud <http://vd.ch>`_.
 
 - The :ref:`xmlValue <administration-columns-properties-xmlvalue>`
-  property was sponsored by `Bendoo e-work solutions <http://www.bendoo.nl/en/>`_.
+  property was sponsored by `Bendoo e-work solutions <https://www.bendoo.nl/en/>`_.
+
+- The development of version 5.0 benefited from much sponsoring:
+
+  - `Idéative <https://www.ideative.ch/>`_
+  - `Bendoo e-work solutions <https://www.bendoo.nl/en/>`_
+  - `mehrwert intermediale kommunikation GmbH <https://www.mehrwert.de/>`_
+  - Benni Mack
+  - Tomas Norre
+
+  Without these companies and people, it would never have been such a great update!

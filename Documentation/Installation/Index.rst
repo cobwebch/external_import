@@ -38,7 +38,7 @@ with all the same options as standard column mappings. Backwards-compatibility i
 For more details, :ref:`see the relevant chapter <administration-additionalfields>`.
 
 The "MM" property is deprecated. It should not be used anymore. Instead the new
-:ref:`multipleRows <administration-columns-properties-multiple-rows` or
+:ref:`multipleRows <administration-columns-properties-multiple-rows>` or
 :ref:`children <administration-columns-properties-children>` properties
 should be used according to your import scenario.
 
@@ -59,7 +59,7 @@ Breaking changes
 ~~~~~~~~~~~~~~~~
 
 The :php:`\Cobweb\ExternalImport\Step\StoreDataStep` class puts the list of stored
-records into the "records" member variable of the `\Cobweb\ExternalImport\Domain\Model\Data`
+records into the "records" member variable of the :php:`\Cobweb\ExternalImport\Domain\Model\Data`
 object. This used to be a simple list of records for the imported table. Since child
 tables are now supported, the structure has changed so that there's now a list of
 records for each table that was imported. The table name is the key in the first

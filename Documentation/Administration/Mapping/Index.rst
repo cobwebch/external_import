@@ -201,7 +201,7 @@ Description
   .. note::
 
      This property does nothing when used in combination with the
-     :ref:`MM property <administration-mm>`, because we expect denoramlized
+     :ref:`MM property <administration-mm>`, because we expect normalized
      data with one and denormalized data with the other. The chapter about
      :ref:`mapping data <user-mapping-data-mm>` hopefully helps understand this.
 

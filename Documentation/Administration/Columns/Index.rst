@@ -47,25 +47,25 @@ Properties
 
 .. container:: ts-properties
 
-	========================= ====================================================================== ===================
-	Property                  Data type                                                              Step/Scope
-	========================= ====================================================================== ===================
-	arrayPath_                string                                                                 Handle data (array)
-	arrayPathSeparator_       string                                                                 Handle data (array)
-	attribute_                string                                                                 Handle data (XML)
-	attributeNS_              string                                                                 Handle data (XML)
+   ========================= ====================================================================== ===================
+   Property                  Data type                                                              Step/Scope
+   ========================= ====================================================================== ===================
+   arrayPath_                string                                                                 Handle data (array)
+   arrayPathSeparator_       string                                                                 Handle data (array)
+   attribute_                string                                                                 Handle data (XML)
+   attributeNS_              string                                                                 Handle data (XML)
    children_                 :ref:`Children records configuration <administration-children>`        Store data
-	disabledOperations_       string                                                                 Store data
-	field_                    string                                                                 Handle data
-	fieldNS_                  string                                                                 Handle data (XML)
-	MM_                       :ref:`MM configuration <administration-mm>`                            Store data
+   disabledOperations_       string                                                                 Store data
+   field_                    string                                                                 Handle data
+   fieldNS_                  string                                                                 Handle data (XML)
+   MM_                       :ref:`MM configuration <administration-mm>`                            Store data
    multipleRows_             boolean                                                                Store data
    multipleSorting_          string                                                                 Store data
-	substructureFields_       array                                                                  Handle data
-	transformations_          :ref:`Transformations configuration <administration-transformations>`  Transform data
-	xmlValue_                 boolean                                                                Handle data (XML)
-	xpath_                    string                                                                 Handle data (XML)
-	========================= ====================================================================== ===================
+   substructureFields_       array                                                                  Handle data
+   transformations_          :ref:`Transformations configuration <administration-transformations>`  Transform data
+   xmlValue_                 boolean                                                                Handle data (XML)
+   xpath_                    string                                                                 Handle data (XML)
+   ========================= ====================================================================== ===================
 
 
 .. _administration-columns-properties-field:
@@ -386,7 +386,7 @@ Description
 
    Obviously if you have a single element in the nested structure, no denormalisation happens.
    Due to this denormalisation you probably want to use this property in conjunction with the
-   :ref:`multipleRows <administration-columns-properties-multiple-rows` or
+   :ref:`multipleRows <administration-columns-properties-multiple-rows>` or
    :ref:`children <administration-columns-properties-children>` properties.
 
    .. note::
@@ -413,7 +413,7 @@ Description
 
    .. warning::
 
-      This property is deprecated. Use :ref:`multipleRows <administration-columns-properties-multiple-rows`
+      This property is deprecated. Use :ref:`multipleRows <administration-columns-properties-multiple-rows>`
       or :ref:`children <administration-columns-properties-children>` according to your needs.
 
 Scope

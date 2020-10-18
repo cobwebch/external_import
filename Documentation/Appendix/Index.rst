@@ -78,40 +78,40 @@ This is an ordered array, which makes it possible to use transformation properti
 on the same field (e.g. calling several user functions) and to do that in a precise order.
 As an example, usage of such properties should be changed from:
 
-  .. code-block:: php
+.. code-block:: php
 
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
-				0 => [
-						'field' => 'start_date',
-						'trim' => true
-						'userFunc' => [
-								'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
-								'method' => 'parseDate'
-						]
-				]
-		];
+   $GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
+         0 => [
+               'field' => 'start_date',
+               'trim' => true
+               'userFunc' => [
+                     'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+                     'method' => 'parseDate'
+               ]
+         ]
+   ];
 
 
 to:
 
-  .. code-block:: php
+.. code-block:: php
 
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
-				0 => [
-						'field' => 'start_date',
-						'transformations => [
-								10 => [
-										'trim' => true
-								],
-								20 => [
-										'userFunc' => [
-												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
-												'method' => 'parseDate'
-										]
-								]
-						]
-				]
-		];
+   $GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
+         0 => [
+               'field' => 'start_date',
+               'transformations => [
+                     10 => [
+                           'trim' => true
+                     ],
+                     20 => [
+                           'userFunc' => [
+                                 'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+                                 'method' => 'parseDate'
+                           ]
+                     ]
+               ]
+         ]
+   ];
 
 
 If you want to preserve "old-style" order, the transformation properties were called in the

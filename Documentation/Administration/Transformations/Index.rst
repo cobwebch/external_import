@@ -135,13 +135,13 @@ Description
 				]
 		];
 
-  A user function requires three parameters:
+  The definition of a user function takes three parameters:
 
   class
-    *(string)* Name of the class to be instantiated.
+    *(string)* Required. Name of the class to be instantiated.
 
   method
-    *(string)* Defines which method of the class should be called.
+    *(string)* Required. Name of the method that should be called.
 
   params
     *(array)* Optional. Can contain any number of data, which will be passed

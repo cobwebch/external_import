@@ -59,10 +59,10 @@ Properties
 
 .. container:: ts-properties
 
-	========================= ==================== ===================
-	Property                  Data type            Step/Scope
-	========================= ==================== ===================
-	table_                    string               Store data
+   ========================= ==================== ===================
+   Property                  Data type            Step/Scope
+   ========================= ==================== ===================
+   table_                    string               Store data
    columns_                  array                Store data
    controlColumnsForUpdate_  string               Store data
    controlColumnsForDelete_  string               Store data
