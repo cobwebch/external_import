@@ -34,6 +34,7 @@ return [
                         'config' => [
                                 'readOnly' => true,
                                 'type' => 'input',
+                                'renderType' => 'inputDateTime',
                                 'size' => 20,
                                 'eval' => 'datetime',
                         ]
