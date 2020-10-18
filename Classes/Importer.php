@@ -378,6 +378,9 @@ class Importer implements LoggerAwareInterface
             $step = $this->objectManager->get($stepClass);
             $step->setImporter($this);
             $step->setData($data);
+            if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
+                $step->setParameters($this->externalConfiguration->getParametersForStep($stepClass));
+            }
             $step->run();
             // Abort process if step required it
             if ($step->isAbortFlag()) {

@@ -132,6 +132,43 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
+    public function hasParametersForStepInitiallyReturnsFalse(): void
+    {
+        self::assertFalse(
+                $this->subject->hasParametersForStep(\Cobweb\ExternalImport\Step\StoreDataStep::class)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getParametersForStepInitiallyReturnsEmptyArray(): void
+    {
+        self::assertSame(
+                [],
+                $this->subject->getParametersForStep(\Cobweb\ExternalImport\Step\StoreDataStep::class)
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setParametersForStepSetsParameters(): void
+    {
+        $parameters = ['foo', 'bar' => 'baz'];
+        $this->subject->setParametersForStep(
+                $parameters,
+                \Cobweb\ExternalImport\Step\StoreDataStep::class
+        );
+        self::assertSame(
+                $parameters,
+                $this->subject->getParametersForStep(\Cobweb\ExternalImport\Step\StoreDataStep::class)
+        );
+    }
+
+    /**
+     * @test
+     */
     public function getStoragePidInitiallyReturnsNull(): void
     {
         self::assertNull(

@@ -52,6 +52,9 @@ Check out the revamped :ref:`Mapping data <user-mapping-data>` chapter which sho
 hopefully help you get a better picture of what is possible with External Import
 and how different properties can be combined.
 
+:ref:`Custom steps <administration-general-tca-properties-customsteps>` can now
+receive an array of arbitrary parameters.
+
 
 .. _installation-upgrade-500-breaking-changes:
 

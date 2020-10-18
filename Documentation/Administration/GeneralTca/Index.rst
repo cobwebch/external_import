@@ -341,21 +341,26 @@ Description
   steps).
 
   The configuration is a simple array, each entry being itself an array with
-  two properties: "class" referring to the PHP class containing the custom step
-  code and "position" stating when the new step should happen. The syntax for
-  position is made of the keyword :code:`before` or :code:`after`, followed by
-  a colon (:code:`:`) and the name of an existing step class.
+  three properties:
+
+  - **class (required)**: name of the PHP class containing the custom step.
+  - **position (required)**: states when the new step should happen. The syntax for
+    position is made of the keyword :code:`before` or :code:`after`, followed by
+    a colon (:code:`:`) and the name of an existing step class.
+  - **parameters (optional)**: array which is passed as is to the custom step class
+    when it is called during the import process. Inside the step, it can be accessed
+    using :code:`$this->parameters`.
 
   Example:
 
   .. code-block:: php
 
-       'customSteps' => array(
-               array(
+       'customSteps' => [
+               [
                        'class' => \Cobweb\ExternalimportTest\Step\EnhanceDataStep::class,
                        'position' => 'after:' . \Cobweb\ExternalImport\Step\ValidateDataStep::class
-               )
-       ),
+               ]
+       ],
 
   If any element of the custom step declaration is invalid, the step will be
   ignored. More information is given in the :ref:`Developer's Guide <developer-steps>`.

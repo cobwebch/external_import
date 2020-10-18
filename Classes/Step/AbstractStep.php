@@ -47,6 +47,11 @@ abstract class AbstractStep
     protected $importer;
 
     /**
+     * @var array List of parameters specific to the step. NOTE: this is for custom steps. Standard steps never have any parameter.
+     */
+    protected $parameters = [];
+
+    /**
      * Performs the actual tasks of the step.
      *
      * @return void
@@ -138,5 +143,36 @@ abstract class AbstractStep
     public function setImporter(Importer $importer): void
     {
         $this->importer = $importer;
+    }
+
+    /**
+     * Sets the list of parameters for the (custom) step.
+     *
+     * @param array $parameters
+     */
+    public function setParameters(array $parameters): void
+    {
+        $this->parameters = $parameters;
+    }
+
+    /**
+     * Returns the list of parameters.
+     *
+     * @return array
+     */
+    public function getParameters(): array
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * Returns a specific parameter.
+     *
+     * @param mixed $key Key/index of the parameter
+     * @return mixed
+     */
+    public function getParameter($key)
+    {
+        return $this->parameters[$key];
     }
 }

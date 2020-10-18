@@ -56,6 +56,9 @@ data
 importer
   Back-reference to the current instance of the :php:`\Cobweb\ExternalImport\Importer` class.
 
+parameters
+  Array of parameters declared in the configuration of the custom step.
+
 See the :ref:`API chapter <developer-api>` for more information about these classes.
 
 Furthermore, the custom step class can access a member variable called :code:`abortFlag`.

@@ -83,6 +83,11 @@ class Configuration
     protected $steps = [];
 
     /**
+     * @var array List of parameters associated with custom steps (if any)
+     */
+    protected $stepParameters = [];
+
+    /**
      * @var ConnectorBase Reference to the connector object
      */
     protected $connector;
@@ -170,6 +175,12 @@ class Configuration
         if (array_key_exists('customSteps', $generalConfiguration)) {
             foreach ($generalConfiguration['customSteps'] as $customStepConfiguration) {
                 $steps = $this->stepUtility->insertStep($steps, $customStepConfiguration);
+                if (array_key_exists('parameters', $customStepConfiguration)) {
+                    $this->setParametersForStep(
+                            $customStepConfiguration['parameters'],
+                            $customStepConfiguration['class']
+                    );
+                }
             }
         }
         $this->steps = $steps;
@@ -443,6 +454,39 @@ class Configuration
     public function getSteps(): array
     {
         return $this->steps;
+    }
+
+    /**
+     * Checks if there are parameters for the given step.
+     *
+     * @param string $step Name of a step class
+     * @return bool
+     */
+    public function hasParametersForStep(string $step): bool
+    {
+        return isset($this->stepParameters[$step]);
+    }
+
+    /**
+     * Returns the parameters for the given step.
+     *
+     * @param string $step Name of a step class
+     * @return array
+     */
+    public function getParametersForStep(string $step): array
+    {
+        return $this->stepParameters[$step] ?? [];
+    }
+
+    /**
+     * Sets the list of parameters for the given step.
+     *
+     * @param array $parameters List of parameters
+     * @param string $step Name of a step class
+     */
+    public function setParametersForStep(array $parameters, string $step): void
+    {
+        $this->stepParameters[$step] = $parameters;
     }
 
     /**
