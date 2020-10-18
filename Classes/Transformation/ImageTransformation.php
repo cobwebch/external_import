@@ -26,6 +26,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Transformation class for External Import offering example user functions for storing images
  * during an import process. Use as is or as an inspiration for your own needs.
  *
+ * The critical part is that the function is expected to return the uid of a sys_file record.
+ *
  * @package Cobweb\ExternalImport\Transformation
  */
 class ImageTransformation implements SingletonInterface, ImporterAwareInterface
@@ -149,5 +151,99 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         }
         // Return the file's ID
         return $fileObject->getUid();
+    }
+
+    /**
+     * Gets an image from a base64-encoded string and saves it into the given file storage and path.
+     *
+     * The parameters array is expected to contain the following information:
+     *
+     *      - "storage": a combined FAL identifier to a folder (e.g. "1:imported_images")
+     *      - "nameField": the external data field from which the name for the file should be taken. If empty, the file's basename is used
+     *      - "defaultExtension": a file extension in case it cannot be found in the URI (e.g. "jpg")
+     *
+     * @param array $record The full record that is being transformed
+     * @param string $index The index of the field to transform
+     * @param array $parameters Additional parameters from the TCA
+     * @return mixed Uid of the saved sys_file record (or a message in preview mode)
+     */
+    public function saveImageFromBase64(array $record, string $index, array $parameters)
+    {
+        // If there's no value to handle, return null
+        if (!isset($record[$index])) {
+            return null;
+        }
+
+        // In preview mode, we don't want to handle or save images and just return a dummy string
+        if ($this->importer->isPreview()) {
+            return self::$previewMessage;
+        }
+
+        // Get the storage folder
+        $folder = $this->initializeStorageFolder($parameters['storage']);
+
+        // Assemble a file name
+        if (isset($parameters['nameField'], $record[$parameters['nameField']])) {
+            $fileName = $record[$parameters['nameField']];
+        } else {
+            $fileName = sha1($record[$index]);
+        }
+        if (isset($parameters['defaultExtension'])) {
+            $fileName .= '.' . $parameters['defaultExtension'];
+        } else {
+            throw new \InvalidArgumentException(
+                    sprintf(
+                            'Default extension parameter not set for file %s',
+                            $fileName
+                    ),
+                    1603033956
+            );
+        }
+        try {
+            $fileName = $folder->getStorage()->sanitizeFileName(
+                    $fileName,
+                    $this->storageFolders[$parameters['storage']]
+            );
+        } catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException $e) {
+            // A file with this name already exists, this is handled below
+        }
+
+        // Check if the file already exists
+        if ($folder->hasFile($fileName)) {
+            $fileObject = $this->resourceFactory->getFileObjectFromCombinedIdentifier(
+                    $parameters['storage'] . '/' . $fileName
+            );
+        // If the file does not yet exist locally, grab it from the remote server and add it to predefined storage
+        } else {
+            $fileObject = $folder->createFile($fileName);
+            $fileObject->setContents(base64_decode($record[$index]));
+        }
+        // Return the file's ID
+        return $fileObject->getUid();
+    }
+
+    /**
+     * Initializes a Folder object given a combined identifier.
+     *
+     * @param string $storagePath
+     * @return Folder
+     */
+    public function initializeStorageFolder($storagePath): Folder
+    {
+        // Throw an exception if storage is not defined
+        if (empty($storagePath)) {
+            throw new \InvalidArgumentException(
+                    'No storage given for importing files',
+                    1602170223
+            );
+        }
+
+        // Ensure the storage folder is loaded (we keep a local cache of folder objects for efficiency)
+        if ($this->storageFolders[$storagePath] === null) {
+            $this->storageFolders[$storagePath] = $this->resourceFactory->getFolderObjectFromCombinedIdentifier(
+                    $storagePath
+            );
+        }
+        return $this->storageFolders[$storagePath];
     }
 }

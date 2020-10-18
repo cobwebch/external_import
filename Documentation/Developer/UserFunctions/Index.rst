@@ -7,8 +7,10 @@ User functions
 ^^^^^^^^^^^^^^
 
 The external import extension can call user functions for any field
-where external data is imported. A sample function is provided in
-:file:`Classes/Transformation/DateTimeTransformation.php`.
+where external data is imported. Some sample functions are provided in
+:file:`Classes/Transformation/DateTimeTransformation.php`
+and :file:`Classes/Transformation/ImageTransformation.php`.
+
 Basically, the function receives three parameters:
 
 +----------+---------+-----------------------------------------------------------------------+
@@ -36,6 +38,8 @@ The function is expected to return only the value of the transformed field.
    already gone through renaming the fields. That means the names of the
    fields are not those of the external data, but those of the TYPO3 CMS
    fields.
+
+   If unsure, use the Preview mode to look at the results of the Handle Data step.
 
 The class containing the user function may implement the :php:`\Cobweb\ExternalImport\ImporterAwareInterface`
 (using the :php:`\Cobweb\ExternalImport\ImporterAwareTrait` or not). In such a case, it will have access to
