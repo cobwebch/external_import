@@ -67,6 +67,7 @@ Properties
    controlColumnsForUpdate_  string               Store data
    controlColumnsForDelete_  string               Store data
    disabledOperations_       string               Store data
+   ========================= ==================== ===================
 
 
 .. _administration-children-properties-table:
