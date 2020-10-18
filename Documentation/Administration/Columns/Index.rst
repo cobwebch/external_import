@@ -60,6 +60,7 @@ Properties
 	fieldNS_                  string                                                                 Handle data (XML)
 	MM_                       :ref:`MM configuration <administration-mm>`                            Store data
    multipleRows_             boolean                                                                Store data
+   multipleSorting_          string                                                                 Store data
 	substructureFields_       array                                                                  Handle data
 	transformations_          :ref:`Transformations configuration <administration-transformations>`  Transform data
 	xmlValue_                 boolean                                                                Handle data (XML)
@@ -433,6 +434,31 @@ Description
    values for the given column must be gathered and collapsed into a comme-separated
    list of values. See the :ref:`Mapping data <user-mapping-data>` chapter for
    explanations about the impact of this flag.
+
+   If these values need to be sorted, use the :ref:`multipleSorting <administration-columns-properties-multiple-sorting>`
+   property.
+
+Scope
+  Store data
+
+
+.. _administration-columns-properties-multiple-sorting:
+
+multipleSorting
+~~~~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+   If the :ref:`multipleRows <administration-columns-properties-multiple-rows>` need to be sorted,
+   use this property to name the field which should be used for sorting. This can be any of the
+   mapped fields, additional fields or substructure fields.
+
+   .. note::
+
+      The sorting is done using the PHP function :code:`strnatcasecmp()`, so make sure
+      that your data plays well with it.
 
 Scope
   Store data

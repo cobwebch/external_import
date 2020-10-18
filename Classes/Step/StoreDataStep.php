@@ -591,9 +591,13 @@ class StoreDataStep extends AbstractStep
 
         // Check if at least one column expects denormalized data
         $denormalizedColumns = [];
+        $denormalizedSorting = [];
         foreach ($columnConfiguration as $name => $configuration) {
             if ($configuration['multipleRows']) {
                 $denormalizedColumns[] = $name;
+            }
+            if ($configuration['multipleSorting']) {
+                $denormalizedSorting[$name] = $configuration['multipleSorting'];
             }
         }
         $countDenormalizedColumns = count($denormalizedColumns);
@@ -652,7 +656,18 @@ class StoreDataStep extends AbstractStep
                     if (!isset($multipleValues[$id][$name])) {
                         $multipleValues[$id][$name] = [];
                     }
-                    $multipleValues[$id][$name][] = $record[$name];
+                    // If the multiple values need to be sorted, store the value of the sorting field
+                    // The value becomes an array, otherwise it remains a simple value (we gain performance
+                    // later when actually using the multiple values)
+                    if (isset($denormalizedSorting[$name])) {
+                        $multipleEntry = [
+                                'value' => $record[$name],
+                                'sorting' => $record[$denormalizedSorting[$name]]
+                        ];
+                    } else {
+                        $multipleEntry = $record[$name];
+                    }
+                    $multipleValues[$id][$name][] = $multipleEntry;
                 }
             }
             // Assemble children records, if any
@@ -682,11 +697,27 @@ class StoreDataStep extends AbstractStep
                 }
             }
         }
+
         // If there are any multiple values, loop again on all records and implode them
         if ($countDenormalizedColumns > 0) {
             foreach ($dataToStore as $id => $data) {
                 foreach ($denormalizedColumns as $name) {
-                    $dataToStore[$id][$name] = implode(',', array_unique($multipleValues[$id][$name]));
+                    // Using the first entry, check if the multiple values are an array
+                    // If yes, perform sorting and extract the values
+                    if (is_array($multipleValues[$id][$name][0])) {
+                        usort($multipleValues[$id][$name], function ($a, $b) {
+                            return strnatcasecmp($a['sorting'], $b['sorting']);
+                        });
+                        $values = [];
+                        foreach ($multipleValues[$id][$name] as $multipleValue) {
+                            $values[] = $multipleValue['value'];
+                        }
+                    // Otherwise use the values as is
+                    } else {
+                        $values = $multipleValues[$id][$name];
+                    }
+                    // Extract the values and implode them
+                    $dataToStore[$id][$name] = implode(',', array_unique($values));
                 }
             }
         }

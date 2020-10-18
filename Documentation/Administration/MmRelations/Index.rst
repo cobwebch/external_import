@@ -12,7 +12,8 @@ configuration is required. The related properties are described below.
 .. warning::
 
    This property is deprecated. Use :ref:`multipleRows <administration-columns-properties-multiple-rows`
-   or :ref:`children <administration-columns-properties-children>` according to your needs.
+   or :ref:`children <administration-columns-properties-children>` according to your needs. If you used
+   the "sorting" property, use :ref:`multipleSorting <administration-columns-properties-multiple-sorting` instead.
 
    Depending on how you used this property, there's no fallback and you will need to change your code.
    If your need was to enrich a MM table with additional information, change your TCA to use an IRRE
