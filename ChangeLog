@@ -1,3 +1,7 @@
+2020-10-19 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Use ImporterAwareTrait in AbstractStep, resolves #149
+
 2020-10-18 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add example function for importing images in base64 format, resolves #145

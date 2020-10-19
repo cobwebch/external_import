@@ -47,7 +47,7 @@ configuration
   .. warning::
 
      This has been deprecated in External Import 5.0.0. Please use
-     :code:`$this->importer->getExternalConfiguration()` instead.
+     :code:`$this->getImporter()->getExternalConfiguration()` instead.
 
 data
   Instance of the object model encapsulating the data being processed

@@ -16,15 +16,18 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
-use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\ImporterAwareInterface;
+use Cobweb\ExternalImport\ImporterAwareTrait;
 
 /**
  * Abstract class from which all External Import process steps **must** inherit.
  *
  * @package Cobweb\ExternalImport\Step
  */
-abstract class AbstractStep
+abstract class AbstractStep implements ImporterAwareInterface
 {
+    use ImporterAwareTrait;
+
     /**
      * @var Data Object encapsulating the data being imported/processed
      */
@@ -40,11 +43,6 @@ abstract class AbstractStep
      * @var bool The import process is aborted if this flag is set to true during the current step
      */
     protected $abortFlag = false;
-
-    /**
-     * @var Importer Back-reference to the Importer
-     */
-    protected $importer;
 
     /**
      * @var array List of parameters specific to the step. NOTE: this is for custom steps. Standard steps never have any parameter.
@@ -127,22 +125,6 @@ abstract class AbstractStep
     public function setAbortFlag($abortFlag): void
     {
         $this->abortFlag = $abortFlag;
-    }
-
-    /**
-     * @return Importer
-     */
-    public function getImporter(): Importer
-    {
-        return $this->importer;
-    }
-
-    /**
-     * @param Importer $importer
-     */
-    public function setImporter(Importer $importer): void
-    {
-        $this->importer = $importer;
     }
 
     /**

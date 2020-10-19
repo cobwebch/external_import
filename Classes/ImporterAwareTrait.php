@@ -29,11 +29,21 @@ trait ImporterAwareTrait
 
     /**
      * Set the internal Importer instance.
-     * 
+     *
      * @param Importer $importer
      */
-    public function setImporter(Importer $importer)
+    public function setImporter(Importer $importer): void
     {
         $this->importer = $importer;
+    }
+
+    /**
+     * Returns the internal Importer instance.
+     *
+     * @return Importer
+     */
+    public function getImporter(): Importer
+    {
+        return $this->importer;
     }
 }
