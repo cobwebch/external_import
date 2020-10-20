@@ -295,6 +295,8 @@ class Configuration
             $columnConfiguration = array_merge($columnConfiguration, $this->additionalFields);
         }
         $this->columnConfiguration = $columnConfiguration;
+        // TODO: remove once backwards-compatibility is dropped
+        $this->updateDeprecatedTransformationProperties();
         $this->sortTransformationProperties();
     }
 
@@ -503,6 +505,37 @@ class Configuration
     public function setConnector(ConnectorBase $connector): void
     {
         $this->connector = $connector;
+    }
+
+    /**
+     * Takes care of migrating old "userFunc" and "params" configuration into
+     * "userFunction" and "parameters" configuration.
+     *
+     * NOTE: we don't unset the old properties because we want them to be caught during validation
+     * for outputting deprecation notices.
+     */
+    protected function updateDeprecatedTransformationProperties(): void
+    {
+        $updatedConfiguration = [];
+        foreach ($this->columnConfiguration as $name => $configuration) {
+            $updatedConfiguration[$name] = $configuration;
+            if (isset($configuration['transformations'])) {
+                $transformationConfiguration = [];
+                foreach ($configuration['transformations'] as $index => $property) {
+                    $transformationConfiguration[$index] = $property;
+                    foreach ($property as $key => $propertyConfiguration) {
+                        if ($key === 'userFunc') {
+                            if (isset($propertyConfiguration['params'])) {
+                                $propertyConfiguration['parameters'] = $propertyConfiguration['params'];
+                            }
+                            $transformationConfiguration[$index]['userFunction'] = $propertyConfiguration;
+                        }
+                    }
+                }
+                $updatedConfiguration[$name]['transformations'] = $transformationConfiguration;
+            }
+        }
+        $this->columnConfiguration = $updatedConfiguration;
     }
 
     /**

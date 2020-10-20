@@ -42,6 +42,10 @@ The "MM" property is deprecated. It should not be used anymore. Instead the new
 :ref:`children <administration-columns-properties-children>` properties
 should be used according to your import scenario.
 
+The "userFunc" property of the transformations configuration has been renamed to
+:ref:`userFunction <administration-transformations-properties-userfunction>` and
+its sub-property "params" has been renamed "parameters". Backwards-compatibility is ensured for now.
+
 If both "insert" and "update" operations are disabled in the general configuration
 (using the :ref:`disabledOperations property <administration-general-tca-properties-disabledoperations>`),
 External Import will now delete records that were not marked for update (even if the

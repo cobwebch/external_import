@@ -83,6 +83,15 @@
 			<trans-unit id="automaticTransformationPropertiesUpdate" xml:space="preserve">
 				<source>A backwards-compatibility layer currently updates your configuration automatically, but it will be removed in the next major version. Please update your configuration.</source>
 			</trans-unit>
+			<trans-unit id="deprecatedUserFuncProperty" xml:space="preserve">
+				<source>The "userFunc" transformations property has been renamed to "userFunction". Backwards-compatibility is ensured for now. Please update your configuration.</source>
+			</trans-unit>
+			<trans-unit id="deprecatedParamsProperty" xml:space="preserve">
+				<source>The "params" sub-property of the "userFunc" transformations property has been renamed to "parameters". Backwards-compatibility is ensured for now. Please update your configuration.</source>
+			</trans-unit>
+			<trans-unit id="deprecatedUserFuncAndParamsProperty" xml:space="preserve">
+				<source>The "userFunc" transformations property has been renamed to "userFunction" and its "params" sub-property has been renamed to "parameters". Backwards-compatibility is ensured for now. Please update your configuration.</source>
+			</trans-unit>
 			<trans-unit id="childrenProperyIsNotAnArray" xml:space="preserve">
 				<source>The "children" property must be an array.</source>
 			</trans-unit>

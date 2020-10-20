@@ -509,7 +509,7 @@ Description
 										'trim' => true
 								],
 								10 => [
-										'userFunc' => [
+										'userFunction' => [
 												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
 												'method' => 'parseDate'
 										]
@@ -518,7 +518,7 @@ Description
 				]
 		];
 
-  The "userFunc" will be executed first (:code:`10`) and the "trim" next (:code:`20`).
+  The "userFunction" will be executed first (:code:`10`) and the "trim" next (:code:`20`).
 
 Scope
   Transform data

@@ -142,7 +142,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                                         'field' => 'position',
                                         'transformations' => [
                                                 10 => [
-                                                        'userFunc' => [
+                                                        'userFunction' => [
                                                                 'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
                                                                 'method' => 'stripPositionMarker'
                                                         ]
@@ -296,7 +296,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                                         'field' => 'position',
                                         'transformations' => [
                                                 10 => [
-                                                        'userFunc' => [
+                                                        'userFunction' => [
                                                                 'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
                                                                 'method' => 'stripPositionMarker'
                                                         ]

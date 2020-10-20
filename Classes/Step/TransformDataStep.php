@@ -37,7 +37,12 @@ class TransformDataStep extends AbstractStep
     /**
      * @var array List of transformation properties
      */
-    static public $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunc'];
+    static public $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
+
+    public function __toString(): string
+    {
+        return self::class;
+    }
 
     public function injectMappingUtility(MappingUtility $mappingUtility): void
     {
@@ -93,7 +98,7 @@ class TransformDataStep extends AbstractStep
                                             $records
                                     );
                                     break;
-                                case 'userFunc':
+                                case 'userFunction':
                                     $records = $this->applyUserFunction(
                                             $columnName,
                                             $configuration,
@@ -225,7 +230,7 @@ class TransformDataStep extends AbstractStep
             try {
                 $userObject = GeneralUtility::makeInstance($configuration['class']);
                 $methodName = $configuration['method'];
-                $parameters = $configuration['params'] ?? [];
+                $parameters = $configuration['parameters'] ?? [];
                 foreach ($records as $index => $record) {
                     try {
                         if ($userObject instanceof ImporterAwareInterface) {

@@ -25,6 +25,7 @@ Properties
 	rteEnabled_               boolean                                               Transform data
 	trim_                     boolean                                               Transform data
 	userFunc_                 array                                                 Transform data
+	userFunction_             array                                                 Transform data
 	value_                    simple type (string, integer, boolean)                Transform data
 	========================= ===================================================== =================
 
@@ -111,6 +112,23 @@ Type
   array
 
 Description
+  This property has been renamed :ref:`userFunction <administration-transformations-properties-userfunction>`.
+  Backwards-compatibility is ensured for now, but please update your
+  configuration as soon as possible.
+
+Scope
+  Transform data
+
+
+.. _administration-transformations-properties-userfunction:
+
+userFunction
+~~~~~~~~~~~~
+
+Type
+  array
+
+Description
   This property can be used to define a function that will be called on
   each record to transform the data from the given field. See example
   below.
@@ -126,7 +144,7 @@ Description
 						'field' => 'start_date',
 						'transformations' => [
 								10 => [
-										'userFunc' => [
+										'userFunction' => [
 												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
 												'method' => 'parseDate'
 										]
@@ -143,9 +161,10 @@ Description
   method
     *(string)* Required. Name of the method that should be called.
 
-  params
+  parameters (formerly "params")
     *(array)* Optional. Can contain any number of data, which will be passed
-    to the method.
+    to the method. This used to be called "params". Backwards-compatibility is
+    ensured for now, but please update your configuration as soon as possible.
 
   In the example above we are using a sample class provided by
   External Import that can be used to parse a date and either return it
@@ -153,7 +172,7 @@ Description
   :code:`date()` or :code:`strftime()` .
 
   For more details about creating a user function, please refer to the
-  :ref:`Developer's Guide <developer>`.
+  :ref:`Developer's Guide <developer-user-functions>`.
 
 Scope
   Transform data

@@ -60,9 +60,11 @@ class ColumnConfigurationValidator
             $this->validateChildrenProperty($columnConfiguration['children']);
         }
         // Check for deprecated transformation properties
-        $this->validateTransformationProperties(
-                $columnConfiguration
-        );
+        if (isset($columnConfiguration['transformations'])) {
+            $this->validateTransformationProperties(
+                $columnConfiguration['transformations']
+            );
+        }
         // Check for deprecated MM property
         if (isset($columnConfiguration['MM'])) {
             $this->validateMMProperty();
@@ -146,40 +148,56 @@ class ColumnConfigurationValidator
     /**
      * Checks if there are deprecated transformation properties.
      *
-     * @param array $columnConfiguration
+     * @param array $transformationProperties
      */
-    public function validateTransformationProperties($columnConfiguration): void
+    public function validateTransformationProperties(array $transformationProperties): void
     {
-        // Check if any transformation property is defined at column-level (rather than in the "transformations" property)
-        $properties = array_keys($columnConfiguration);
-        $transformationProperties = array_intersect($properties, TransformDataStep::$transformationProperties);
-        // If yes, issue deprecation notice
-        if (count($transformationProperties) > 0) {
-            $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedTransformationProperties';
-            if (count($transformationProperties) === 1) {
-                $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedTransformationProperty';
+        // "userFunc" is now "userFunctions" and its sub-property "params" is now "parameters"
+        $userFuncOccurrences = 0;
+        $paramsOccurrences = 0;
+        foreach ($transformationProperties as $property) {
+            foreach ($property as $key => $configuration) {
+                if ($key === 'userFunc' || $key === 'userFunction') {
+                    if ($key === 'userFunc') {
+                        $userFuncOccurrences++;
+                    }
+                    foreach ($configuration as $subKey => $subProperty) {
+                        if ($subKey === 'params') {
+                            $paramsOccurrences++;
+                        }
+                    }
+                }
             }
+        }
+        // Prepare message according to the results found
+        $message = '';
+        if ($userFuncOccurrences > 0 && $paramsOccurrences > 0) {
+            $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedUserFuncAndParamsProperty';
+        } elseif ($userFuncOccurrences > 0) {
+            $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedUserFuncProperty';
+        } elseif ($paramsOccurrences > 0) {
+            $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedParamsProperty';
+        }
+        // If needed, issue deprecation notice
+        if ($message !== '') {
             // NOTE: validation result is arbitrarily added to the "field" property
             $this->results->add(
                     'field',
-                    sprintf(
-                        LocalizationUtility::translate(
-                                $message,
-                                'external_import'
-                        ),
-                        implode(', ', $transformationProperties)
-                    ) . ' ' .
                     LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:automaticTransformationPropertiesUpdate',
+                            $message,
                             'external_import'
-                    )
-                    ,
+                    ),
                     AbstractMessage::NOTICE
             );
         }
     }
 
-    public function validateChildrenProperty($childrenConfiguration): void
+    /**
+     * Validates the "children" property.
+     *
+     * @param array $childrenConfiguration
+     */
+    public function validateChildrenProperty(array $childrenConfiguration): void
     {
         // Issue error right away if structure is not an array
         if (!is_array($childrenConfiguration)) {

@@ -84,7 +84,11 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                         [
                                 'col' => [
-                                        'value' => 17
+                                        'transformations' => [
+                                                10 => [
+                                                        'value' => 17
+                                                ]
+                                        ]
                                 ]
                         ]
                 ],
@@ -94,7 +98,11 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                         [
                                 'col' => [
-                                        'value' => 'bar'
+                                        'transformations' => [
+                                                10 => [
+                                                        'value' => 'bar'
+                                                ]
+                                        ]
                                 ]
                         ]
                 ],
@@ -222,8 +230,12 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                         [
                                 'col' => [
-                                        'value' => 42,
-                                        'field' => 'foo'
+                                        'field' => 'foo',
+                                        'transformations' => [
+                                                10 => [
+                                                        'value' => 42
+                                                ]
+                                        ]
                                 ]
                         ],
                         AbstractMessage::NOTICE
@@ -234,8 +246,12 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                         [
                                 'col' => [
-                                        'value' => 42,
-                                        'xpath' => 'item'
+                                        'xpath' => 'item',
+                                        'transformations' => [
+                                                10 => [
+                                                        'value' => 42
+                                                ]
+                                        ]
                                 ]
                         ],
                         AbstractMessage::NOTICE

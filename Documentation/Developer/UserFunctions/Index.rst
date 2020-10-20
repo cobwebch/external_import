@@ -13,29 +13,29 @@ and :file:`Classes/Transformation/ImageTransformation.php`.
 
 Basically, the function receives three parameters:
 
-+----------+---------+-----------------------------------------------------------------------+
-| Name     | Type    | Description                                                           |
-+==========+=========+=======================================================================+
-| $record  | array   | The complete record being handled. This makes it possible to refer to |
-|          |         | other fields of the same record during the transformation, if needed. |
-+----------+---------+-----------------------------------------------------------------------+
-| $index   | string  | The key of the field to transform. Modifying other fields in the      |
-|          |         | record is not possible since the record is passed by value and not by |
-|          |         | reference. Only the field corresponding to this key should be         |
-|          |         | transformed and returned.                                             |
-+----------+---------+-----------------------------------------------------------------------+
-| $params  | array   | Additional parameters passed to the function. This will be very       |
-|          |         | specific to each function and can even be completely omitted.         |
-|          |         | External import will pass an empty array to the user function if the  |
-|          |         | "params" property is not defined.                                     |
-+----------+---------+-----------------------------------------------------------------------+
++--------------+---------+-----------------------------------------------------------------------+
+| Name         | Type    | Description                                                           |
++==============+=========+=======================================================================+
+| $record      | array   | The complete record being handled. This makes it possible to refer to |
+|              |         | other fields of the same record during the transformation, if needed. |
++--------------+---------+-----------------------------------------------------------------------+
+| $index       | string  | The key of the field to transform. Modifying other fields in the      |
+|              |         | record is not possible since the record is passed by value and not by |
+|              |         | reference. Only the field corresponding to this key should be         |
+|              |         | transformed and returned.                                             |
++--------------+---------+-----------------------------------------------------------------------+
+| $parameters  | array   | Additional parameters passed to the function. This will be very       |
+|              |         | specific to each function and can even be completely omitted.         |
+|              |         | External import will pass an empty array to the user function if the  |
+|              |         | "parameters" property is not defined.                                 |
++--------------+---------+-----------------------------------------------------------------------+
 
 The function is expected to return only the value of the transformed field.
 
 .. warning::
 
    The record received as input into the user function has
-   already gone through renaming the fields. That means the names of the
+   already gone through the renaming the fields. That means the names of the
    fields are not those of the external data, but those of the TYPO3 CMS
    fields.
 
@@ -43,7 +43,7 @@ The function is expected to return only the value of the transformed field.
 
 The class containing the user function may implement the :php:`\Cobweb\ExternalImport\ImporterAwareInterface`
 (using the :php:`\Cobweb\ExternalImport\ImporterAwareTrait` or not). In such a case, it will have access to
-the :php:`Importer` instance simply by accessing :php:`$this->importer`. In particular, this makes it possible
+the :php:`Importer` instance simply by using :php:`$this->getImporter()`. In particular, this makes it possible
 for user functions to check if the current run is operating in preview mode or in debug mode.
 
 The function may throw the special exception :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.

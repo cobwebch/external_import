@@ -322,7 +322,7 @@ class TransformDataStepTest extends FunctionalTestCase
                         [
                                 'class' => DateTimeTransformation::class,
                                 'method' => 'parseDate',
-                                'params' => [
+                                'parameters' => [
                                         'function' => 'date',
                                         'format' => 'U'
                                 ]

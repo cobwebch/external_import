@@ -84,7 +84,7 @@ As an example, usage of such properties should be changed from:
          0 => [
                'field' => 'start_date',
                'trim' => true
-               'userFunc' => [
+               'userFunction' => [
                      'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
                      'method' => 'parseDate'
                ]
