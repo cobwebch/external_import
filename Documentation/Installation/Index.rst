@@ -15,9 +15,10 @@ TYPO3 CMS 9 or 10 is required, as well as the "scheduler" system extension.
 
 
 .. _installation-compatibility:
+.. _installation-upgrading:
 
-Compatibility issues
-^^^^^^^^^^^^^^^^^^^^
+Upgrading and what's new
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 .. _installation-upgrade-500:
@@ -25,16 +26,27 @@ Compatibility issues
 Upgrade to 5.0.0
 """"""""""""""""
 
+There are many changes in version 5.0.0, but backwards-compatibility has been
+provided for all them (except the minor breaking change mentioned below). Please
+make sure to update your configuration as soon as possible, backwards-compatibility
+will be dropped in version 5.1.0. Messages for deprecated configuration appear in
+the backend module when viewing the details of a configuration.
+
+
+.. _installation-upgrade-500-changes:
+
+Changes
+~~~~~~~
+
 The general configuration must now be placed in :code:`$GLOBALS['TCA'][table-name]['external']['general']`
-instead of :code:`$GLOBALS['TCA'][table-name]['ctrl']['external']`. Backwards-compatibility is ensured for now
-but code should be migrated as soon as possible, as support will be dropped in the future.
+instead of :code:`$GLOBALS['TCA'][table-name]['ctrl']['external']`.
 
 The "additionalFields" property from the general configuration (and not from the "MM" property)
 has been moved to its own configuration space. Rather than
 :code:`$GLOBALS['TCA'][table-name]['ctrl']['external'][some-index]['additionalFields]`
 it is now :code:`$GLOBALS['TCA'][table-name]['external']['additionalFields'][some-index]`.
 Furthermore, it is no longer a simple comma-separated list of fields, but an array structure
-with all the same options as standard column mappings. Backwards-compatibility is ensured for now.
+with all the same options as standard column configurations.
 For more details, :ref:`see the relevant chapter <administration-additionalfields>`.
 
 The "MM" property is deprecated. It should not be used anymore. Instead the new
@@ -44,7 +56,7 @@ should be used according to your import scenario.
 
 The "userFunc" property of the transformations configuration has been renamed to
 :ref:`userFunction <administration-transformations-properties-userfunction>` and
-its sub-property "params" has been renamed "parameters". Backwards-compatibility is ensured for now.
+its sub-property "params" has been renamed "parameters".
 
 If both "insert" and "update" operations are disabled in the general configuration
 (using the :ref:`disabledOperations property <administration-general-tca-properties-disabledoperations>`),
@@ -52,9 +64,30 @@ External Import will now delete records that were not marked for update (even if
 actual update does not take place). Previously, no records would have been deleted,
 because the entire matching of existing records was skipped.
 
+Accessing the external configuration inside a custom step with
+:code:`$this->configuration` or :code:`$this->getConfiguration()` is deprecated.
+:code:`$this->getImporter()->getExternalConfiguration()` instead.
+
+The "scheduler" system extension is required instead of just being suggested.
+
+
+.. _installation-upgrade-500-new:
+
+New stuff
+~~~~~~~~~
+
+It is possible to import nested structures using the
+:ref:`children <administration-columns-properties-children>` property. For example,
+you can now import data into some table and its images all in one go by creating
+a nested structure for the "sys\_file\_reference" table.
+
+The :ref:`multipleRows <administration-columns-properties-multiple-rows>` and
+:ref:`multipleSorting <administration-columns-properties-multiple-sorting>` properties
+allow for a much clearer handling of denormalized external sources.
+
 Check out the revamped :ref:`Mapping data <user-mapping-data>` chapter which should
 hopefully help you get a better picture of what is possible with External Import
-and how different properties can be combined.
+and how different properties (especially the new ones) can be combined.
 
 :ref:`Custom steps <administration-general-tca-properties-customsteps>` can now
 receive an array of arbitrary parameters.

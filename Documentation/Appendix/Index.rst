@@ -45,10 +45,10 @@ name of the current table and index from the :php:`\Cobweb\ExternalImport\Import
 using :code:`Importer::getTableName()` and :code:`Importer::getIndex()`. Such methods
 were deprecated and should not be used anymore. Use instead:
 
-  .. code-block:: php
+.. code-block:: php
 
-		$table = $importer->getExternalConfiguration()->getTable();
-		$index = $importer->getExternalConfiguration()->getIndex();
+   $table = $importer->getExternalConfiguration()->getTable();
+   $index = $importer->getExternalConfiguration()->getIndex();
 
 
 The :code:`Importer::synchronizeData()` method was renamed to :code:`Importer::synchronize()` and

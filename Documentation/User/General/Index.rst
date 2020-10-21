@@ -39,4 +39,4 @@ Note that it is perfectly possible to also push data towards
 synchronizable tables. The reverse is not true (non-synchronizable
 tables cannot pull data).
 
-Synchornizations can be run in preview mode
+Synchronizations can be run in preview mode.

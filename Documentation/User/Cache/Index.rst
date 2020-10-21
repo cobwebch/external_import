@@ -38,7 +38,7 @@ records have been inserted, updated and deleted. The process still
 relies on DataHandler for clearing the cache of each page, so you may rely
 on the usual clear cache hooks if needed.
 
-Besides pages numbers, you can also use more general cache identifiers
+Besides page numbers, you can also use more general cache identifiers
 like "pages" (to clear the cache for all pages), cache tags, or any
 other value that can be used with
 :ref:`TCEMAIN.clearCacheCmd <t3tsconfig:pagetcemain-clearcachecmd>`.

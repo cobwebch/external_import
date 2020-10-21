@@ -189,4 +189,4 @@ Substructure fields may be used to fill children columns.
 .. note::
 
    It is perfectly possible to create child records from "normal" denormalized
-   data.
+   data. Using substructure fields is just an example.

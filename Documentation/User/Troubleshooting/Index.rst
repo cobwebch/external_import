@@ -20,8 +20,8 @@ example). If the previous synchronization has not finished, the
 Scheduler will prevent the new one from taking place. The symptom is a
 message like "[scheduler]: Event is already running and multiple
 executions are not allowed, skipping! CRID: xyz, UID: nn" in the
-system log (**SYSTEM > Log**). In this case you should delete the
-existing schedule and set up a new one.
+system log (**SYSTEM > Log**). In this case you should stop the current
+execution in the Scheduler backend module.
 
 
 .. _user-backend-troubleshooting-neverending:

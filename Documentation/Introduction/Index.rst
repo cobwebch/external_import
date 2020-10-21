@@ -52,11 +52,8 @@ https://github.com/fsuter/externalimport_test
 Questions and support
 ^^^^^^^^^^^^^^^^^^^^^
 
-If you have any questions about this extension, please ask them in the
-TYPO3 English mailing list, so that others can benefit from the
-answers. Please use the bug tracker on GitHub to report
-problems or suggest features
-(https://github.com/cobwebch/external_import/issues).
+If you have any questions about this extension, use the TYPO3 Slack workspace
+or the issue tracker on GitHub (https://github.com/cobwebch/external_import/issues).
 
 
 .. _happy-developer:

@@ -147,7 +147,7 @@ This has two implications:
 
    .. code-block:: php
 
-		$this->importer->setPreviewData(...);
+		$this->getImporter()->setPreviewData(...);
 
    The preview data can be of any type.
 
@@ -157,7 +157,7 @@ This has two implications:
 
    .. code-block:: php
 
-		$this->importer->isPreview();
+		$this->getImporter()->isPreview();
 
 
 .. _developer-steps-example:

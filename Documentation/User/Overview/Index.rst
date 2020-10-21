@@ -62,7 +62,7 @@ Handle data
   This step takes the raw data, which may be a XML structure or a PHP array,
   and makes it into an associative PHP array. The keys are the names of the
   columns being mapped and any additional fields declared with the
-  :ref:`additionalFields property <administration-general-tca-properties-additional-fields>`.
+  :ref:`additionalFields property <administration-additionalfields>`.
   The values are those of the external data. The results are stored in the
   "records" of the :php:`\Cobweb\ExternalImport\Domain\Model\Data` object.
 
