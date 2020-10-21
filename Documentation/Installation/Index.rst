@@ -119,7 +119,7 @@ you find all the old upgrade instructions in the :ref:`Appendix <appendix-old-up
 Other requirements
 ^^^^^^^^^^^^^^^^^^
 
-As was mentioned in the introduction, this extension makes heavy use
+As is mentioned in the introduction, this extension makes heavy use
 of an extended syntax for the TCA. If you are not familiar with the
 TCA, you are strongly advised to read up on it in the
 :ref:`TCA Reference manual <t3tca:start>`.
