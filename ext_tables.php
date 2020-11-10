@@ -75,3 +75,10 @@ $iconRegistry->registerIcon(
                 'spinning' => true
         ]
 );
+$iconRegistry->registerIcon(
+        'tx_external_import-process-arrow',
+        \TYPO3\CMS\Core\Imaging\IconProvider\FontawesomeIconProvider::class,
+        [
+                'name' => 'arrow-circle-right'
+        ]
+);

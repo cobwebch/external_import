@@ -1,12 +1,39 @@
 <html data-namespace-typo3-fluid="true"
+	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
 
 	<p>
 		<f:translate id="stepsIntro" />
 	</p>
-	<ol>
-		<f:for each="{steps}" as="step">
-			<li>{step}</li>
+	<div class="external-import-steps">
+		<f:for each="{configuration.differentiatedSteps}" key="step" as="type" iteration="iterator">
+			<div class="external-import-step external-import-step-{type}">
+				<span class="external-import-step-number">{iterator.cycle}</span>
+				<core:icon identifier="tx_external_import-process-arrow"/>
+				{step}
+			</div>
 		</f:for>
-	</ol>
+	</div>
+	<h4>
+		<f:translate id="stepsLegend"/>
+	</h4>
+	<div class="external-import-steps external-import-steps-legend">
+		<div class="external-import-step external-import-step-default pull-left"><f:translate id="defaultStep"/></div>
+		<div class="external-import-step external-import-step-custom pull-left"><f:translate id="customStep"/></div>
+	</div>
+	<div class="clearfix"></div>
+
+	<f:if condition="{configuration.invalidSteps->f:count()} > 0">
+		<h3>
+			<f:translate id="invalidSteps"/>
+		</h3>
+		<p>
+			<f:translate id="invalidStepsIntro"/>
+		</p>
+		<div class="external-import-steps">
+			<f:for each="{configuration.invalidSteps}" as="step">
+				<div class="external-import-step external-import-step-error">{step}</div>
+			</f:for>
+		</div>
+	</f:if>
 </html>

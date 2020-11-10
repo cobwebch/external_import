@@ -63,3 +63,37 @@ a.next {
 		transform: rotate(360deg);
 	}
 }
+
+.external-import-steps .external-import-step {
+	border: 1px solid #628138;
+	padding: 8px;
+	border-radius: 1rem;
+	font-weight: bold;
+	margin-bottom: 1rem;
+}
+.external-import-steps .external-import-step-default {
+	background-color: #79a548;
+}
+.external-import-steps .external-import-step-custom {
+	background: repeating-linear-gradient(
+			135deg,
+			#79a548,
+			#79a548 10px,
+			#86b342 10px,
+			#86b342 20px
+	);
+}
+.external-import-steps .external-import-step-error {
+	border: 1px solid #a02f2f;
+	background: repeating-linear-gradient(
+			135deg,
+			#c83c3c,
+			#c83c3c 10px,
+			#b73636 10px,
+			#b73636 20px
+	);
+	color: #ffffff;
+}
+.external-import-steps-legend .external-import-step {
+	margin-right: 1rem;
+}

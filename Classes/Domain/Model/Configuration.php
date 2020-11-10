@@ -83,6 +83,16 @@ class Configuration
     protected $steps = [];
 
     /**
+     * @var array List of default steps for the process
+     */
+    protected $defaultSteps = [];
+
+    /**
+     * @var array List of all custom steps (valid or not)
+     */
+    protected $customSteps = [];
+
+    /**
      * @var array List of parameters associated with custom steps (if any)
      */
     protected $stepParameters = [];
@@ -171,10 +181,12 @@ class Configuration
         } else {
             $steps = $defaultSteps;
         }
+        $this->defaultSteps = $steps;
         // Perform extra processing for custom steps
         if (array_key_exists('customSteps', $generalConfiguration)) {
             foreach ($generalConfiguration['customSteps'] as $customStepConfiguration) {
                 $steps = $this->stepUtility->insertStep($steps, $customStepConfiguration);
+                $this->customSteps[] = $customStepConfiguration['class'];
                 if (array_key_exists('parameters', $customStepConfiguration)) {
                     $this->setParametersForStep(
                             $customStepConfiguration['parameters'],
@@ -456,6 +468,41 @@ class Configuration
     public function getSteps(): array
     {
         return $this->steps;
+    }
+
+    /**
+     * Returns the list of process steps, marked as default steps or valid custom steps.
+     *
+     * This is used in the configuration detail view in the backend module, for visual feedback.
+     *
+     * @return array
+     */
+    public function getDifferentiatedSteps(): array
+    {
+        $differentatiedSteps = [];
+        // Loop on all registered, valid steps
+        // Each is either default or custom
+        foreach ($this->steps as $step) {
+            if (in_array($step, $this->defaultSteps, true)) {
+                $differentatiedSteps[$step] = 'default';
+            } else {
+                $differentatiedSteps[$step] = 'custom';
+            }
+        }
+        return $differentatiedSteps;
+    }
+
+    /**
+     * Returns the list of invalid custom steps.
+     *
+     * This is used in the configuration detail view in the backend module, for visual feedback.
+     *
+     * @return array
+     */
+    public function getInvalidSteps(): array
+    {
+        // Custom steps that are not among the registered steps are invalid
+        return array_diff($this->customSteps, $this->steps);
     }
 
     /**

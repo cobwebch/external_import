@@ -150,6 +150,21 @@
 			<trans-unit id="stepsIntro" xml:space="preserve">
 				<source>The import process will go through the following steps:</source>
 			</trans-unit>
+			<trans-unit id="defaultStep" xml:space="preserve">
+				<source>Default step</source>
+			</trans-unit>
+			<trans-unit id="customStep" xml:space="preserve">
+				<source>Custom step</source>
+			</trans-unit>
+			<trans-unit id="stepsLegend" xml:space="preserve">
+				<source>Legend</source>
+			</trans-unit>
+			<trans-unit id="invalidSteps" xml:space="preserve">
+				<source>Invalid steps</source>
+			</trans-unit>
+			<trans-unit id="invalidStepsIntro" xml:space="preserve">
+				<source>The following custom steps are registered with errors. They are not part of the import process. Check the "General information" tab for details.</source>
+			</trans-unit>
 			<trans-unit id="synchronise" xml:space="preserve">
 				<source>Synchronize</source>
 			</trans-unit>
