@@ -1,3 +1,7 @@
+2020-11-10 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Consider custom steps for preview in backend module, resolves #152
+
 2020-10-21 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Release version 5.0.0

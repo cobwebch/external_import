@@ -244,6 +244,12 @@ class DataModuleController extends ActionController
         // Add a close button to the toolbar
         $this->prepareCloseButton('listSynchronizable');
 
+        // Load the configuration
+        $configuration = $this->configurationRepository->findConfigurationObject(
+                $table,
+                $index
+        );
+
         $previewData = null;
         if ($stepClass !== '') {
             // Synchronize the chosen configuration in preview mode
@@ -256,7 +262,7 @@ class DataModuleController extends ActionController
             $previewData = $importer->getPreviewData();
         }
         // The step list should use the class names also as keys
-        $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+        $steps = $configuration->getSteps();
         $stepList = [];
         foreach ($steps as $step) {
             $stepList[$step] = $step;
