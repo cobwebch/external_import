@@ -71,7 +71,7 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
     public function saveImageFromUri(array $record, string $index, array $parameters)
     {
         // If there's no value to handle, return null
-        if (!isset($record[$index])) {
+        if (empty($record[$index])) {
             return null;
         }
 
@@ -170,7 +170,7 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
     public function saveImageFromBase64(array $record, string $index, array $parameters)
     {
         // If there's no value to handle, return null
-        if (!isset($record[$index])) {
+        if (empty($record[$index])) {
             return null;
         }
 

@@ -1,3 +1,9 @@
+2020-12-19 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix image transformation methods to consider empty data as null too
+	* Update composer manifest for Composer 2.0
+	* Release version 5.0.1
+
 2020-11-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Consider custom steps for preview in backend module, resolves #152

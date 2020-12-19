@@ -235,7 +235,9 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'categories' => 'USEFUL',
                                         'name' => 'Chain mail',
                                         'sku' => '000005',
-                                        'tags' => 'defense,metal'
+                                        'tags' => 'defense,metal',
+                                        'pictures' => '',
+                                        'picture_title' => ''
                                 ]
                         ]
                 ],
@@ -412,7 +414,8 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'categories' => '',
                                         'name' => 'Chain mail (base)',
                                         'sku' => '000005',
-                                        'pictures' => null
+                                        'pictures' => null,
+                                        'picture_title' => ''
                                 ]
                         ]
                 ]
