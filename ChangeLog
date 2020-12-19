@@ -1,3 +1,7 @@
+2020-12-20 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Style process steps tab, resolves #153
+
 2020-12-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix image transformation methods to consider empty data as null too
@@ -7,7 +11,6 @@
 2020-11-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Consider custom steps for preview in backend module, resolves #152
-	* Style process steps tab, resolves #153
 
 2020-10-21 Francois Suter (Idéative)  <typo3@ideative.ch>
 
