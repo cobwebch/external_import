@@ -1,6 +1,7 @@
 2020-12-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix image transformation methods to consider empty data as null too
+	* Update composer manifest for Composer 2.0
 
 2020-11-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
