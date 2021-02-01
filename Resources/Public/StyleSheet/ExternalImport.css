@@ -64,6 +64,10 @@ a.next {
 	}
 }
 
+.external-import-messages {
+	margin-top: 0.25rem;
+}
+
 .external-import-steps .external-import-step {
 	border: 1px solid #628138;
 	padding: 8px;

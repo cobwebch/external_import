@@ -52,17 +52,21 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-        $result = $arguments['result'];
+        $results = $arguments['result'];
         $classes = [
                 FlashMessage::NOTICE => 'alert-notice',
                 FlashMessage::WARNING => 'alert-warning',
                 FlashMessage::ERROR => 'alert-danger'
         ];
         $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert %1$s">%2$s</li></ul></div>';
-        return sprintf(
-                $message,
-                $classes[$result['severity']],
-                $result['message']
-        );
+        $output = '';
+        foreach ($results as $result) {
+            $output .= sprintf(
+                    $message,
+                    $classes[$result['severity']],
+                    $result['message']
+            );
+        }
+        return $output;
     }
 }

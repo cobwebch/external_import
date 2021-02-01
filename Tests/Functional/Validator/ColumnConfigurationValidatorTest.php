@@ -24,6 +24,9 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ColumnConfigurationValidatorTest extends FunctionalTestCase
 {
+    protected $testExtensionsToLoad = [
+            'typo3conf/ext/external_import'
+    ];
 
     /**
      * @var ColumnConfigurationValidator
@@ -40,6 +43,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         parent::setUp();
         // Connector services need a global LanguageService object
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+        $GLOBALS['LANG']->init('en');
 
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->subject = $this->objectManager->get(ColumnConfigurationValidator::class);
@@ -383,7 +387,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         $results = $this->subject->getResults()->getAll();
         self::assertSame(
                 $severity,
-                $results['field']['severity']
+                $results['field'][0]['severity']
         );
     }
 }

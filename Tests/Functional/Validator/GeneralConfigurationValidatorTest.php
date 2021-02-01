@@ -24,8 +24,11 @@ use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-class ControlConfigurationValidatorTest extends FunctionalTestCase
+class GeneralConfigurationValidatorTest extends FunctionalTestCase
 {
+    protected $testExtensionsToLoad = [
+            'typo3conf/ext/external_import'
+    ];
 
     /**
      * @var GeneralConfigurationValidator
@@ -42,6 +45,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
         parent::setUp();
         // Connector services need a global LanguageService object
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+        $GLOBALS['LANG']->init('en');
 
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->subject = $this->objectManager->get(GeneralConfigurationValidator::class);
@@ -166,10 +170,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         $configuration
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('data');
+        $results = $this->subject->getResults()->getForProperty('data');
         self::assertSame(
                 FlashMessage::ERROR,
-                $result['severity']
+                $results[0]['severity']
         );
     }
 
@@ -187,10 +191,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         ]
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('connector');
+        $results = $this->subject->getResults()->getForProperty('connector');
         self::assertSame(
                 FlashMessage::ERROR,
-                $result['severity']
+                $results[0]['severity']
         );
     }
 
@@ -223,10 +227,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         $configuration
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('dataHandler');
+        $results = $this->subject->getResults()->getForProperty('dataHandler');
         self::assertSame(
                 FlashMessage::NOTICE,
-                $result['severity']
+                $results[0]['severity']
         );
     }
 
@@ -243,10 +247,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         ]
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('nodetype');
+        $results = $this->subject->getResults()->getForProperty('nodetype');
         self::assertSame(
                 FlashMessage::ERROR,
-                $result['severity']
+                $results[0]['severity']
         );
     }
 
@@ -261,10 +265,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         []
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('referenceUid');
+        $results = $this->subject->getResults()->getForProperty('referenceUid');
         self::assertSame(
                 FlashMessage::ERROR,
-                $result['severity']
+                $results[0]['severity']
         );
     }
 
@@ -281,10 +285,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         ]
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('priority');
+        $results = $this->subject->getResults()->getForProperty('priority');
         self::assertSame(
                 FlashMessage::NOTICE,
-                $result['severity']
+                $results[0]['severity']
         );
     }
 
@@ -303,10 +307,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         ]
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('pid');
+        $results = $this->subject->getResults()->getForProperty('pid');
         self::assertSame(
                 FlashMessage::NOTICE,
-                $result['severity']
+                $results[0]['severity']
         );
     }
 
@@ -350,10 +354,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         $configuration
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('pid');
+        $results = $this->subject->getResults()->getForProperty('pid');
         self::assertSame(
                 FlashMessage::ERROR,
-                $result['severity']
+                $results[0]['severity']
         );
     }
 
@@ -370,77 +374,10 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
                         ]
                 )
         );
-        $result = $this->subject->getResults()->getForProperty('useColumnIndex');
+        $results = $this->subject->getResults()->getForProperty('useColumnIndex');
         self::assertSame(
                 FlashMessage::ERROR,
-                $result['severity']
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function addResultAddsResults(): void
-    {
-        $results = [
-                'foo' => [
-                        'severity' => FlashMessage::WARNING,
-                        'message' => 'Something went wrong'
-                ]
-        ];
-        $this->subject->getResults()->add(
-                'foo',
-                $results['foo']['message']
-        );
-        self::assertSame(
-                $results,
-                $this->subject->getResults()->getAll()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function addResultForPropertyAddsResultsForProperty(): void
-    {
-        $results = [
-                'foo' => [
-                        'severity' => FlashMessage::WARNING,
-                        'message' => 'Something went wrong'
-                ]
-        ];
-        $this->subject->getResults()->add(
-                'foo',
-                $results['foo']['message']
-        );
-        $resultForProperty = $this->subject->getResults()->getForProperty('foo');
-        self::assertSame(
-                $results['foo'],
-                $resultForProperty
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function addResultForSeverityAddsResultsForSeverity(): void
-    {
-        $results = [
-                'foo' => [
-                        'severity' => FlashMessage::WARNING,
-                        'message' => 'Something went wrong'
-                ]
-        ];
-        $this->subject->getResults()->add(
-                'foo',
-                $results['foo']['message']
-        );
-        $resultForProperty = $this->subject->getResults()->getForSeverity(FlashMessage::WARNING);
-        self::assertSame(
-                [
-                        'foo' => $results['foo']['message']
-                ],
-                $resultForProperty
+                $results[0]['severity']
         );
     }
 
@@ -456,6 +393,7 @@ class ControlConfigurationValidatorTest extends FunctionalTestCase
         $configurationObject = $this->objectManager->get(Configuration::class);
         $configurationObject->setTable($table);
         $configurationObject->setGeneralConfiguration($configuration);
+        $configurationObject->setColumnConfiguration([]);
         return $configurationObject;
     }
 }

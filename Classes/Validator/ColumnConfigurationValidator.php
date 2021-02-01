@@ -47,7 +47,7 @@ class ColumnConfigurationValidator
      * @param string $column Name of the column to check
      * @return bool
      */
-    public function isValid(Configuration $configuration, $column): bool
+    public function isValid(Configuration $configuration, string $column): bool
     {
         $columnConfiguration = $configuration->getConfigurationForColumn($column);
         // Validate properties used to choose the import value
@@ -71,9 +71,7 @@ class ColumnConfigurationValidator
         }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
-        $errorResults = $this->results->getForSeverity(AbstractMessage::ERROR);
-        $warningResults = $this->results->getForSeverity(AbstractMessage::WARNING);
-        return count($errorResults) + count($warningResults) === 0;
+        return $this->results->countForSeverity(AbstractMessage::ERROR) + $this->results->countForSeverity(AbstractMessage::WARNING) === 0;
     }
 
     /**
@@ -195,9 +193,9 @@ class ColumnConfigurationValidator
     /**
      * Validates the "children" property.
      *
-     * @param array $childrenConfiguration
+     * @param mixed $childrenConfiguration
      */
-    public function validateChildrenProperty(array $childrenConfiguration): void
+    public function validateChildrenProperty($childrenConfiguration): void
     {
         // Issue error right away if structure is not an array
         if (!is_array($childrenConfiguration)) {
@@ -223,8 +221,6 @@ class ColumnConfigurationValidator
                     ),
                     AbstractMessage::ERROR
             );
-            // Given the current structure of the validator, only one message per property can be registered, so stop here
-            return;
         }
         // Check the existence of the "columns" property
         $columns = [];
@@ -237,8 +233,6 @@ class ColumnConfigurationValidator
                     ),
                     AbstractMessage::ERROR
             );
-            // Given the current structure of the validator, only one message per property can be registered, so stop here
-            return;
         // If it exists check that individual configuration uses only "value" and "field" sub-properties
         } else {
             $columns = array_keys($childrenConfiguration['columns']);
@@ -255,8 +249,6 @@ class ColumnConfigurationValidator
                                 ),
                                 AbstractMessage::ERROR
                         );
-                        // Given the current structure of the validator, only one message per property can be registered, so stop here
-                        return;
                     }
                 } else {
                     $this->results->add(
@@ -267,8 +259,6 @@ class ColumnConfigurationValidator
                             ),
                             AbstractMessage::ERROR
                     );
-                    // Given the current structure of the validator, only one message per property can be registered, so stop here
-                    return;
                 }
             }
         }
@@ -289,8 +279,6 @@ class ColumnConfigurationValidator
                             ),
                             AbstractMessage::ERROR
                     );
-                    // Given the current structure of the validator, only one message per property can be registered, so stop here
-                    return;
                 }
             } else {
                 $this->results->add(
@@ -301,8 +289,6 @@ class ColumnConfigurationValidator
                         ),
                         AbstractMessage::NOTICE
                 );
-                // Given the current structure of the validator, only one message per property can be registered, so stop here
-                return;
             }
         } else {
             $this->results->add(
@@ -313,8 +299,6 @@ class ColumnConfigurationValidator
                     ),
                     AbstractMessage::NOTICE
             );
-            // Given the current structure of the validator, only one message per property can be registered, so stop here
-            return;
         }
         // Check the "controlColumnsForDelete" property
         if (array_key_exists('controlColumnsForDelete', $childrenConfiguration)) {
@@ -333,8 +317,6 @@ class ColumnConfigurationValidator
                             ),
                             AbstractMessage::ERROR
                     );
-                    // Given the current structure of the validator, only one message per property can be registered, so stop here
-                    return;
                 }
             } else {
                 $this->results->add(
@@ -345,8 +327,6 @@ class ColumnConfigurationValidator
                         ),
                         AbstractMessage::NOTICE
                 );
-                // Given the current structure of the validator, only one message per property can be registered, so stop here
-                return;
             }
         } else {
             $this->results->add(
@@ -357,8 +337,6 @@ class ColumnConfigurationValidator
                     ),
                     AbstractMessage::NOTICE
             );
-            // Given the current structure of the validator, only one message per property can be registered, so stop here
-            return;
         }
     }
 
@@ -385,7 +363,7 @@ class ColumnConfigurationValidator
      * @param array $columnConfiguration
      * @return bool
      */
-    public function hasValueProperty($columnConfiguration): bool
+    public function hasValueProperty(array $columnConfiguration): bool
     {
         if (isset($columnConfiguration['transformations'])) {
             foreach ($columnConfiguration['transformations'] as $transformation) {

@@ -106,18 +106,16 @@ class GeneralConfigurationValidator
         }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
-        $errorResults = $this->results->getForSeverity(AbstractMessage::ERROR);
-        $warningResults = $this->results->getForSeverity(AbstractMessage::WARNING);
-        return count($errorResults) + count($warningResults) === 0;
+        return $this->results->countForSeverity(AbstractMessage::ERROR) + $this->results->countForSeverity(AbstractMessage::WARNING) === 0;
     }
 
     /**
      * Validates the "data" property.
      *
-     * @param string $property Property value
+     * @param string|null $property Property value
      * @return void
      */
-    public function validateDataProperty($property): void
+    public function validateDataProperty(?string $property): void
     {
         if (empty($property)) {
             $this->results->add(
@@ -144,10 +142,10 @@ class GeneralConfigurationValidator
      * NOTE: an empty connector is okay, it just means data is being pushed instead of pulled
      * (of course, this may be wrong, but we have no way to guess the user's intent ;-) ).
      *
-     * @param string $property Property value
+     * @param string|null $property Property value
      * @return void
      */
-    public function validateConnectorProperty($property): void
+    public function validateConnectorProperty(?string $property): void
     {
         if (!empty($property)) {
             $services = ExtensionManagementUtility::findService(
@@ -174,7 +172,7 @@ class GeneralConfigurationValidator
      * @return void
      * @see \Cobweb\ExternalImport\Validator\GeneralConfigurationValidator::validateConnectorProperty
      */
-    public function validateConnectorConfigurationProperty($connector, $property): void
+    public function validateConnectorConfigurationProperty(string $connector, $property): void
     {
         $connectorService = GeneralUtility::makeInstanceService(
                 'connector',
@@ -199,10 +197,10 @@ class GeneralConfigurationValidator
     /**
      * Validates the "dataHandler" property.
      *
-     * @param string $property Property value
+     * @param string|null $property Property value
      * @return void
      */
-    public function validateDataHandlerProperty($property): void
+    public function validateDataHandlerProperty(?string $property): void
     {
         if (!empty($property)) {
             if (class_exists($property)) {
@@ -263,10 +261,10 @@ class GeneralConfigurationValidator
     /**
      * Validates the "referenceUid" property.
      *
-     * @param string $property Property value
+     * @param string|null $property Property value
      * @return void
      */
-    public function validateReferenceUidProperty($property): void
+    public function validateReferenceUidProperty(?string $property): void
     {
         if (empty($property)) {
             $this->results->add(
@@ -282,7 +280,7 @@ class GeneralConfigurationValidator
     /**
      * Validates the "priority" property.
      *
-     * @param string $property Property value
+     * @param mixed $property Property value
      * @return void
      */
     public function validatePriorityProperty($property): void
@@ -305,11 +303,12 @@ class GeneralConfigurationValidator
     /**
      * Validates the "pid" property.
      *
-     * @param string $property Property value
+     * @param mixed $property Property value
      * @return void
      */
     public function validatePidProperty($property): void
     {
+        $property = (int)$property;
         // TCA property rootLevel defaults to 0
         $rootLevelFlag = $GLOBALS['TCA'][$this->table]['ctrl']['rootLevel'] ?? 0;
         // If the pid is 0, data will be stored on root page.
@@ -370,11 +369,11 @@ class GeneralConfigurationValidator
     /**
      * Validates the "useColumnIndex" property.
      *
-     * @param string $property Property value
+     * @param mixed $property Property value
      * @param array $columns List of column configurations
      * @return void
      */
-    public function validateUseColumnIndexProperty($property, $columns): void
+    public function validateUseColumnIndexProperty($property, array $columns): void
     {
         // If useColumnIndex is defined, it needs to match an existing index for the same table
         // If there's no column configuration using that index, issue an error
@@ -397,11 +396,11 @@ class GeneralConfigurationValidator
     /**
      * Validates the "customSteps" property.
      *
-     * @param array $property Property value
+     * @param array|null $property Property value
      * @param array $ctrlConfiguration Full "ctrl" configuration
      * @return void
      */
-    public function validateCustomStepsProperty($property, $ctrlConfiguration): void
+    public function validateCustomStepsProperty(?array $property, array $ctrlConfiguration): void
     {
         if ($property !== null && is_array($property) && count($property) > 0) {
             // Define the process default steps, depending on process type
@@ -442,7 +441,7 @@ class GeneralConfigurationValidator
      *
      * @param bool $isObsolete
      */
-    public function validateAdditionalFieldsProperty($isObsolete): void
+    public function validateAdditionalFieldsProperty(bool $isObsolete): void
     {
         if ($isObsolete) {
             $this->results->add(

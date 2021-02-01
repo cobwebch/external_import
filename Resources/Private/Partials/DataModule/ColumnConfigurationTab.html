@@ -6,7 +6,7 @@
 		<f:if condition="{configuration.columnConfiguration->f:count()} == 0">
 			<!-- If no column configurations exist, issue error -->
 			<f:then>
-				<ex:displayValidationResult result="{severity: 2, message: '{f:translate(key: \'noColumnConfigurationError\')}'}" />
+				<ex:displayValidationResult result="{0: {severity: 2, message: '{f:translate(key: \'noColumnConfigurationError\')}'}}" />
 			</f:then>
 			<f:else>
 				<f:for each="{configuration.columnConfiguration}" as="columnConfiguration" key="column">
@@ -16,9 +16,7 @@
 							<td>
 								<ex:dump array="{columnConfiguration}" />
 								<f:if condition="{results->f:count()}">
-									<f:for each="{results}" as="result">
-										<ex:displayValidationResult result="{result}" />
-									</f:for>
+									<ex:displayValidationResult result="{results.field}" />
 								</f:if>
 							</td>
 						</tr>

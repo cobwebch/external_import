@@ -639,9 +639,9 @@ class ImporterTest extends FunctionalTestCase
     public function wrongConfigurationNames(): array
     {
         return [
-                'Wrong ctrl configuration' => [
+                'Wrong general configuration' => [
                         'tx_externalimporttest_product',
-                        'control_configuration_errors'
+                        'general_configuration_errors'
                 ],
                 'Wrong column configuration' => [
                         'sys_categories',

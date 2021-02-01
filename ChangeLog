@@ -1,3 +1,7 @@
+2021-02-01 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Allow for multiple validation messages per property, resolves #151
+
 2020-12-20 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Style process steps tab, resolves #153

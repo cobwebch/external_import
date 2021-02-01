@@ -23,7 +23,10 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
  */
 class ValidationResult
 {
-    protected $results = array();
+    /**
+     * @var array List of validation results
+     */
+    protected $results = [];
 
     /**
      * Adds a result to the results array.
@@ -33,9 +36,12 @@ class ValidationResult
      * @param int $severity
      * @return void
      */
-    public function add($property, $message, $severity = AbstractMessage::WARNING): void
+    public function add(string $property, string $message, $severity = AbstractMessage::WARNING): void
     {
-        $this->results[$property] = [
+        if (!isset($this->results[$property])) {
+            $this->results[$property] = [];
+        }
+        $this->results[$property][] = [
             'severity' => $severity,
             'message' => $message
         ];
@@ -48,18 +54,31 @@ class ValidationResult
      */
     public function getAll(): array
     {
+        $this->sortResults();
         return $this->results;
     }
 
     /**
-     * Returns the validation result for the given property.
+     * Returns the validation results for the given property.
      *
      * @param string $property Name of the property
      * @return array|null
      */
-    public function getForProperty($property): ?array
+    public function getForProperty(string $property): ?array
     {
+        $this->sortResults();
         return $this->results[$property] ?? null;
+    }
+
+    /**
+     * Returns the number of validation results for the given property.
+     *
+     * @param string $property Name of the property
+     * @return int
+     */
+    public function countForProperty(string $property): int
+    {
+        return $this->results[$property] ? count($this->results[$property]) : 0;
     }
 
     /**
@@ -68,14 +87,76 @@ class ValidationResult
      * @param int $severity Severity level
      * @return array
      */
-    public function getForSeverity($severity): array
+    public function getForSeverity(int $severity): array
     {
-        $results = array();
-        foreach ($this->results as $property => $result) {
-            if ($result['severity'] === $severity) {
-                $results[$property] = $result['message'];
+        $listOfResults = [];
+        foreach ($this->results as $property => $results) {
+            $listOfResults[$property] = [];
+            foreach ($results as $result) {
+                if ($result['severity'] === $severity) {
+                    $listOfResults[$property][] = $result['message'];
+                }
             }
         }
-        return $results;
+        return $listOfResults;
+    }
+
+    /**
+     * Returns the number of results for a given severity level.
+     *
+     * @param int $severity Severity level
+     * @return int
+     */
+    public function countForSeverity(int $severity): int
+    {
+        $count = 0;
+        foreach ($this->results as $property => $results) {
+            foreach ($results as $result) {
+                if ($result['severity'] === $severity) {
+                    $count++;
+                }
+            }
+        }
+        return $count;
+    }
+
+    /**
+     * Sorts the result list by decreasing severity for each property.
+     *
+     * Should be used before returning any list of results for properties.
+     */
+    public function sortResults(): void
+    {
+        foreach ($this->results as $property => $results) {
+            usort(
+                    $results,
+                    [
+                            self::class,
+                            'compareSeverity'
+                    ]
+            );
+            $this->results[$property] = $results;
+        }
+    }
+
+    /**
+     * Sorts two messages according to severity, so that more important severity comes first.
+     *
+     * NOTE: the higher the severity value the more important it is (see \TYPO3\CMS\Core\Messaging\AbstractMessage).
+     * So in terms of values, we want to sort by decreasing values of severity.
+     *
+     * @param array $a
+     * @param array $b
+     * @return int
+     */
+    public static function compareSeverity(array $a, array $b): int
+    {
+        if ($a['severity'] > $b['severity']) {
+            return -1;
+        }
+        if ($a['severity'] < $b['severity']) {
+            return 1;
+        }
+        return 0;
     }
 }

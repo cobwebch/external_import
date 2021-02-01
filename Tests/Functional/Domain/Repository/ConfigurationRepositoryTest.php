@@ -217,7 +217,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     {
         $expectedList = [
                 1000 => [
-                        ['table' => 'tx_externalimporttest_product', 'index' => 'control_configuration_errors', 'group' => '-']
+                        ['table' => 'tx_externalimporttest_product', 'index' => 'general_configuration_errors', 'group' => '-']
                 ],
                 5000 => [
                         ['table' => 'tx_externalimporttest_tag', 'index' => 0, 'group' => '-']
