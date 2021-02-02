@@ -328,6 +328,16 @@ class ColumnConfigurationValidator
                         AbstractMessage::NOTICE
                 );
             }
+            if (!array_key_exists('controlColumnsForUpdate', $childrenConfiguration)) {
+                $this->results->add(
+                        'field',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForDeleteSetButNotControlColumnsForUpdate',
+                                'external_import'
+                        ),
+                        AbstractMessage::NOTICE
+                );
+            }
         } else {
             $this->results->add(
                     'field',

@@ -14,7 +14,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -54,9 +54,9 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
     {
         $results = $arguments['result'];
         $classes = [
-                FlashMessage::NOTICE => 'alert-notice',
-                FlashMessage::WARNING => 'alert-warning',
-                FlashMessage::ERROR => 'alert-danger'
+                AbstractMessage::NOTICE => 'alert-notice',
+                AbstractMessage::WARNING => 'alert-warning',
+                AbstractMessage::ERROR => 'alert-danger'
         ];
         $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert %1$s">%2$s</li></ul></div>';
         $output = '';

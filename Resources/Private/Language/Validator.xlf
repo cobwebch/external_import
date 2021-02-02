@@ -108,7 +108,7 @@
 				<source>The "columns" information of the "children" property must use "field" or "value" as key, not "%s".</source>
 			</trans-unit>
 			<trans-unit id="childrenProperyControlColumnsForUpdateMissing" xml:space="preserve">
-				<source>The "controlColumnsForUpdate" information of the "children" property is not set or is empty. This means that all child records will be considered to be new.</source>
+				<source>The "controlColumnsForUpdate" information of the "children" property is not set or is empty. This means that all child records will be considered to be new and be created unless the "insert" operation has been disabled.</source>
 			</trans-unit>
 			<trans-unit id="childrenProperyControlColumnsForUpdateContainsInvalidColumns" xml:space="preserve">
 				<source>The "controlColumnsForUpdate" information of the "children" property contains one or more reference to columns that are not defined in the "columns" information: %s</source>
@@ -118,6 +118,9 @@
 			</trans-unit>
 			<trans-unit id="childrenProperyControlColumnsForDeleteContainsInvalidColumns" xml:space="preserve">
 				<source>The "controlColumnsForDelete" information of the "children" property contains one or more reference to columns that are not defined in the "columns" information: %s</source>
+			</trans-unit>
+			<trans-unit id="childrenProperyControlColumnsForDeleteSetButNotControlColumnsForUpdate" xml:space="preserve">
+				<source>The "controlColumnsForDelete" information of the "children" property is set but not the "controlColumnsForUpdate" property. This means that all child records will be deleted unless the "delete" operation has been disabled.</source>
 			</trans-unit>
 			<trans-unit id="mmPropertyDeprecated" xml:space="preserve">
 				<source>The MM property is deprecated. Do not use it anymore. Switch to "multipleRows" or "children" instead.</source>
