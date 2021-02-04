@@ -85,7 +85,8 @@ class GeneralConfigurationValidator
                 $generalConfiguration
         );
         $this->validateAdditionalFieldsProperty(
-                $configuration->isObsoleteAdditionalFieldsConfiguration()
+                $configuration->isObsoleteAdditionalFieldsConfiguration(),
+                $configuration->getCountAdditionalFields()
         );
 
         // Validate properties for pull-only configurations
@@ -435,13 +436,15 @@ class GeneralConfigurationValidator
     /**
      * Validates the "additionalFields" property.
      *
-     * Actually this just mentions an obsolete configuration.
+     * Actually this just mentions an obsolete configuration and points to the Columns tab
+     * for the new configuration.
      *
      * TODO: remove once backward-compatibility with comma-separated syntax is dropped
      *
      * @param bool $isObsolete
+     * @param int $countAdditionalFields
      */
-    public function validateAdditionalFieldsProperty(bool $isObsolete): void
+    public function validateAdditionalFieldsProperty(bool $isObsolete, int $countAdditionalFields): void
     {
         if ($isObsolete) {
             $this->results->add(
@@ -451,6 +454,19 @@ class GeneralConfigurationValidator
                     ),
                     AbstractMessage::NOTICE
             );
+        } else {
+            // If there are additional fields and the obsolete configuration is *not* used,
+            // point the user to the "Columns" tab in the detail view to help them get used to
+            // the new behavior.
+            if ($countAdditionalFields > 0) {
+                $this->results->add(
+                        'additionalFields',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:additionalFieldsInColumTab'
+                        ),
+                        AbstractMessage::INFO
+                );
+            }
         }
     }
 

@@ -68,7 +68,7 @@ class Configuration
     protected $storagePid;
 
     /**
-     * @var array List of fields that must be read from distant stored, but will not be stored to DB
+     * @var array List of fields that must be read from distant source, but will not be stored to DB
      */
     protected $additionalFields = [];
 

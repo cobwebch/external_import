@@ -54,6 +54,7 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
     {
         $results = $arguments['result'];
         $classes = [
+                AbstractMessage::INFO => 'alert-info',
                 AbstractMessage::NOTICE => 'alert-notice',
                 AbstractMessage::WARNING => 'alert-warning',
                 AbstractMessage::ERROR => 'alert-danger'

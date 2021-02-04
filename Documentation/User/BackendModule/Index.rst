@@ -44,6 +44,7 @@ Clicking on the information icon leads to a screen showing
 all the information about that particular configuration. The view
 consists of three tabs: the first one displays the :ref:`general configuration <administration-general-tca>`,
 the second one displays the :ref:`configuration for each column <administration-columns>`
+(including the :ref:`additional fields <administration-additionalfields>`)
 and the third one displays the list of :ref:`steps that the process will go through <user-overview>`,
 including any :ref:`custom steps <developer-steps>`.
 

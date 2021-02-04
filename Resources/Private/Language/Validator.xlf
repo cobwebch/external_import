@@ -50,6 +50,9 @@
 			<trans-unit id="obsoleteAdditionalFieldsProperty" xml:space="preserve">
 				<source>Property "additionalFields" still uses a comma-separated syntax. It should be moved to the new syntax (see documentation). Backwards-compatibility will be dropped in the future.</source>
 			</trans-unit>
+			<trans-unit id="additionalFieldsInColumTab" xml:space="preserve">
+				<source>Additional fields configuration is now displayed alongside that of other fields in the "Columns mapping" tab.</source>
+			</trans-unit>
 			<trans-unit id="invalidCustomStepsProperty" xml:space="preserve">
 				<source>Property "customSteps" contains an erroneous configuration. Invalid custom steps are ignored. Reported error is: %1$s (exception code: %2$d).</source>
 			</trans-unit>
