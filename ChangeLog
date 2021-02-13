@@ -1,6 +1,7 @@
 2021-02-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix Scheduler additional field provider compatibility with TYPO3 v10, resolves #156
+	* Fix TCE structure being overwritten by reused variable, resolves #157
 
 2021-02-04 Francois Suter (Idéative)  <typo3@ideative.ch>
 

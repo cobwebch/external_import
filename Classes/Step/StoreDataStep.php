@@ -105,7 +105,7 @@ class StoreDataStep extends AbstractStep
 
         $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
-        $table = $this->importer->getExternalConfiguration()->getTable();
+        $mainTable = $this->importer->getExternalConfiguration()->getTable();
         // Extract list of excluded fields
         $this->prepareStructuredInformation($columnConfiguration);
 
@@ -123,13 +123,13 @@ class StoreDataStep extends AbstractStep
         $moves = 0;
         $updatedUids = [];
         $tceData = [
-                $table => []
+                $mainTable => []
         ];
         $tceCommands = [
-                $table => []
+                $mainTable => []
         ];
         $storedRecords = [
-                $table => []
+                $mainTable => []
         ];
 
         // Prepare some data before the loop
@@ -235,10 +235,10 @@ class StoreDataStep extends AbstractStep
                     }
                 }
 
-                $tceData[$table][$id] = $theRecord;
+                $tceData[$mainTable][$id] = $theRecord;
                 // Check if some records have a changed "pid", in which case a "move" action is also needed
                 if (array_key_exists('pid', $theRecord) && (int)$theRecord['pid'] !== $currentPids[$externalUid]) {
-                    $tceCommands[$table][$id] = [
+                    $tceCommands[$mainTable][$id] = [
                             'move' => (int)$theRecord['pid']
                     ];
                     $moves++;
@@ -285,9 +285,9 @@ class StoreDataStep extends AbstractStep
                 if (!isset($theRecord['pid'])) {
                     $theRecord['pid'] = $storagePid;
                 }
-                $tceData[$table][$id] = $theRecord;
+                $tceData[$mainTable][$id] = $theRecord;
             }
-            $storedRecords[$table][] = array_merge(
+            $storedRecords[$mainTable][] = array_merge(
                     ['uid' => $id],
                     $theRecord
             );
@@ -321,7 +321,7 @@ class StoreDataStep extends AbstractStep
         // If the table has a sorting field, reverse the data array,
         // otherwise the first record will come last (because TCEmain
         // itself inverts the incoming order)
-        if (!empty($GLOBALS['TCA'][$table]['ctrl']['sortby'])) {
+        if (!empty($GLOBALS['TCA'][$mainTable]['ctrl']['sortby'])) {
             $tce->reverseOrder = true;
         }
         $savedData = [];
@@ -340,7 +340,7 @@ class StoreDataStep extends AbstractStep
                 $inserts = count($tce->substNEWwithIDs);
                 // Update the slug fields, if activated
                 if ($updateSlugs && count($updatedUids) > 0) {
-                    $this->updateSlugs($table, $updatedUids);
+                    $this->updateSlugs($mainTable, $updatedUids);
                 }
 
                 // Substitute NEW temporary keys with actual IDs in the "stored records" array
@@ -377,7 +377,7 @@ class StoreDataStep extends AbstractStep
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] as $className) {
                         try {
                             $postProcessor = GeneralUtility::makeInstance($className);
-                            $postProcessor->datamapPostProcess($table, $savedData, $this->importer);
+                            $postProcessor->datamapPostProcess($mainTable, $savedData, $this->importer);
                         } catch (CriticalFailureException $e) {
                             $this->abortFlag = true;
                             return;
@@ -423,7 +423,7 @@ class StoreDataStep extends AbstractStep
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'] as $className) {
                     try {
                         $preProcessor = GeneralUtility::makeInstance($className);
-                        $absentUids = $preProcessor->processBeforeDelete($table, $absentUids, $this->importer);
+                        $absentUids = $preProcessor->processBeforeDelete($mainTable, $absentUids, $this->importer);
                     } catch (CriticalFailureException $e) {
                         $this->abortFlag = true;
                         return;
@@ -440,9 +440,9 @@ class StoreDataStep extends AbstractStep
                 }
             }
             if (count($absentUids) > 0) {
-                $tceDeleteCommands[$table] = [];
+                $tceDeleteCommands[$mainTable] = [];
                 foreach ($absentUids as $id) {
-                    $tceDeleteCommands[$table][$id] = [
+                    $tceDeleteCommands[$mainTable][$id] = [
                             'delete' => 1
                     ];
                     $deletes++;
@@ -464,7 +464,7 @@ class StoreDataStep extends AbstractStep
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
                         try {
                             $postProcessor = GeneralUtility::makeInstance($className);
-                            $absentUids = $postProcessor->cmdmapPostProcess($table, $absentUids, $this->importer);
+                            $absentUids = $postProcessor->cmdmapPostProcess($mainTable, $absentUids, $this->importer);
                         } catch (CriticalFailureException $e) {
                             $this->abortFlag = true;
                             return;

@@ -414,13 +414,24 @@ class ImporterTest extends FunctionalTestCase
 
     /**
      * Imports the "orders" and checks whether we have the right count or not
-     * (2 expected). Also checks relations between products and orders,
+     * (2 expected = 2 imported and 1 existing deleted). Also checks relations between products and orders,
      * including the "quantity" additional field.
      *
      * @test
      */
-    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelations(): void
+    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelationsAndDeletesExistingOrder(): void
     {
+        try {
+            $this->importDataSet(__DIR__ . '/Fixtures/Orders.xml');
+        } catch (\Exception $e) {
+            self::markTestSkipped(
+                    sprintf(
+                            'Orders fixture could not be loaded (Exception: %s [%d])',
+                            $e->getMessage(),
+                            $e->getCode()
+                    )
+            );
+        }
         // First import all products, so that relations can be created
         $this->subject->synchronize(
                 'tx_externalimporttest_product',
