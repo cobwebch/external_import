@@ -1,3 +1,7 @@
+2021-02-13 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix Scheduler additional field provider compatibility with TYPO3 v10, resolves #156
+
 2021-02-04 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add info about additional fields being displayed as regular columns, resolves #154

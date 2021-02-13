@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Task;
 
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -43,7 +44,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
      * @param AbstractTask $task When editing, reference to the current task object. Null when adding.
-     * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $moduleController Reference to the calling object (Scheduler's BE module)
      * @return array Array containing all the information pertaining to the additional fields
      *               The array is multidimensional, keyed to the task class name and each field's id
      *               For each field it provides an associative sub-array with the following:
@@ -52,14 +53,14 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *                   ['cshKey']        => The CSH key for the field
      *                   ['cshLabel']    => The code of the CSH label
      */
-    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $parentObject)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $moduleController)
     {
 
         // Initialize extra field value
         if (empty($taskInfo[self::$fieldName])) {
-            if ($parentObject->CMD === 'add') {
+            if (CompatibilityUtility::isSchedulerCommand($moduleController, 'add')) {
                 $taskInfo[self::$fieldName] = 'all';
-            } elseif ($parentObject->CMD === 'edit') {
+            } elseif (CompatibilityUtility::isSchedulerCommand($moduleController, 'edit')) {
                 // In case of edit, set to internal value if no data was submitted already
                 $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                 $configurationKey->setTableAndIndex($task->table, (string)$task->index);
@@ -129,10 +130,10 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      * If the task class is not relevant, the method is expected to return true
      *
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param SchedulerModuleController $parentObject Reference to the calling object (Scheduler's BE module)
-     * @return boolean True if validation was ok (or selected class is not relevant), false otherwise
+     * @param SchedulerModuleController $moduleController Reference to the calling object (Scheduler's BE module)
+     * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $parentObject)
+    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $moduleController)
     {
         // Since only a valid value could be chosen from the selected, always return true
         return true;

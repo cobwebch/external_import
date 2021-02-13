@@ -15,6 +15,8 @@ namespace Cobweb\ExternalImport\Utility;
  */
 
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
+use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
 
 /**
  * Small class for encapsulating methods related to backwards-compatibility.
@@ -24,14 +26,40 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 class CompatibilityUtility
 {
     /**
-     * Checks whether we are running TYPO3 v8 or not (i.e. more, TYPO3 v9).
-     *
-     * NOTE: this method is currently unused, but is kept as boilerplate for when the next compat check is needed.
+     * Checks whether we are running TYPO3 v9 or not (i.e. more, TYPO3 v10).
      *
      * @return bool
      */
-    public static function isV8(): bool
+    public static function isV9(): bool
     {
-        return !(VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch) >= VersionNumberUtility::convertVersionNumberToInteger('9.0.0'));
+        return !(VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch) >= VersionNumberUtility::convertVersionNumberToInteger('10.0.0'));
+    }
+
+    /**
+     * Checks whether the Scheduler's module controller has issued the specified command.
+     *
+     * Compatibility for mechanism change between TYPO3 v9 and v10.
+     *
+     * @param SchedulerModuleController $controller
+     * @param string $command Expected to be "add" or "edit". Other strings are unchecked and will return false.
+     * @return bool
+     */
+    public static function isSchedulerCommand(SchedulerModuleController $controller, string $command): bool
+    {
+        $status = false;
+        if (self::isV9()) {
+            if ($command === 'add' && $controller->CMD === 'add') {
+                $status = true;
+            } elseif ($command === 'edit' && $controller->CMD === 'edit') {
+                $status = true;
+            }
+        } else {
+            if ($command === 'add' && $controller->getCurrentAction()->equals(Action::ADD)) {
+                $status = true;
+            } elseif ($command === 'edit' && $controller->getCurrentAction()->equals(Action::EDIT)) {
+                $status = true;
+            }
+        }
+        return $status;
     }
 }
