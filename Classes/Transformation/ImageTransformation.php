@@ -67,6 +67,8 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
      * @param string $index The index of the field to transform
      * @param array $parameters Additional parameters from the TCA
      * @return mixed Uid of the saved sys_file record (or a message in preview mode)
+     * @throws \TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException
+     * @throws \TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException
      */
     public function saveImageFromUri(array $record, string $index, array $parameters)
     {
@@ -140,9 +142,28 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         // If the file does not yet exist locally, grab it from the remote server and add it to predefined storage
         } else {
             $temporaryFile = GeneralUtility::tempnam('external_import_upload');
+            $file = GeneralUtility::getUrl($record[$index], 0, null, $report);
+            // If the file could not be fetched, report and throw an exception
+            if ($file === false) {
+                $error = sprintf(
+                        'File %s could not be fetched.',
+                        $record[$index]
+                );
+                if (isset($report['message'])) {
+                    $error .= ' ' . sprintf(
+                            'Reason: %s (code: %s)',
+                            $report['message'],
+                            $report['error'] ?? 0
+                    );
+                }
+                throw new \TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException(
+                        $error,
+                        1613555057
+                );
+            }
             GeneralUtility::writeFileToTypo3tempDir(
                     $temporaryFile,
-                    GeneralUtility::getUrl($record[$index])
+                    $file
             );
             $fileObject = $this->storageFolders[$parameters['storage']]->addFile(
                     $temporaryFile,

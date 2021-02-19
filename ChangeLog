@@ -1,6 +1,7 @@
 2021-02-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve error reporting of failed user functions, resolves #159
+	* Properly report about missing images in image transformation function, resolves #160
 
 2021-02-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 

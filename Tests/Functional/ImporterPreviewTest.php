@@ -231,6 +231,15 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'picture_title' => 'View from above'
                                 ],
                                 [
+                                        'attributes' => "\n\t\t\t<quality>Robust</quality>\n\t\t\t<quality>Stylish</quality>\n\t\t\t<quality>Reliable</quality>\n\t\t",
+                                        'categories' => 'USEFUL',
+                                        'name' => 'Long sword',
+                                        'sku' => '000001',
+                                        'tags' => 'attack,metal',
+                                        'pictures' => 'https://sdnfjwrthioweorg.gdsg/wtf',
+                                        'picture_title' => 'View that does not exist'
+                                ],
+                                [
                                         'attributes' => "\n\t\t\t<quality>Not too cumbersome</quality>\n\t\t\t<quality>Lets the air flow</quality>\n\t\t",
                                         'categories' => 'USEFUL',
                                         'name' => 'Chain mail',
@@ -410,6 +419,14 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'picture_title' => 'View from above'
                                 ],
                                 [
+                                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
+                                        'categories' => '',
+                                        'name' => 'Long sword (base)',
+                                        'sku' => '000001',
+                                        'pictures' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                        'picture_title' => 'View that does not exist'
+                                ],
+                                [
                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
                                         'categories' => '',
                                         'name' => 'Chain mail (base)',
@@ -540,12 +557,12 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Long sword (base)',
-                                                        'pictures' => 'NEW2,NEW3',
+                                                        'pictures' => 'NEW2,NEW3,NEW4',
                                                         'sku' => '000001',
                                                         'tags' => '1,3',
                                                         'pid' => 1
                                                 ],
-                                                'NEW4' => [
+                                                'NEW5' => [
                                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Chain mail (base)',
@@ -569,6 +586,15 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
                                                         'uid_foreign' => 'NEW1',
                                                         'title' => 'View from above',
+                                                        'tablenames' => 'tx_externalimporttest_product',
+                                                        'fieldname' => 'pictures',
+                                                        'table_local' => 'sys_file',
+                                                        'pid' => 1
+                                                ],
+                                                'NEW4' => [
+                                                        'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                                        'uid_foreign' => 'NEW1',
+                                                        'title' => 'View that does not exist',
                                                         'tablenames' => 'tx_externalimporttest_product',
                                                         'fieldname' => 'pictures',
                                                         'table_local' => 'sys_file',
@@ -601,7 +627,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
                                                         'categories' => '',
                                                         'name' => 'Long sword (base)',
-                                                        'pictures' => 'NEW1,NEW2',
+                                                        'pictures' => 'NEW1,NEW2,NEW3',
                                                         'sku' => '000001'
                                                 ],
                                                 '2' => [
@@ -633,6 +659,15 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                     'fieldname' => 'pictures',
                                                     'table_local' => 'sys_file',
                                                     'pid' => 1
+                                                ],
+                                                'NEW3' => [
+                                                        'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                                        'uid_foreign' => 1,
+                                                        'title' => 'View that does not exist',
+                                                        'tablenames' => 'tx_externalimporttest_product',
+                                                        'fieldname' => 'pictures',
+                                                        'table_local' => 'sys_file',
+                                                        'pid' => 1
                                                 ]
                                         ]
                                 ],
