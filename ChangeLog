@@ -1,3 +1,7 @@
+2021-02-19 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve error reporting of failed user functions, resolves #159
+
 2021-02-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix Scheduler additional field provider compatibility with TYPO3 v10, resolves #156

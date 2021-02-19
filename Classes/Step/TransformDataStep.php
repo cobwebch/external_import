@@ -243,10 +243,14 @@ class TransformDataStep extends AbstractStep
                     } catch (\Exception $e) {
                         $this->importer->debug(
                                 LocalizationUtility::translate(
-                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailed',
-                                        'external_import'
+                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailedWithMessage',
+                                        'external_import',
+                                        [
+                                                $e->getMessage(),
+                                                $e->getCode()
+                                        ]
                                 ),
-                                2,
+                                3,
                                 [
                                         'user function' => $configuration,
                                         'record' => $record
