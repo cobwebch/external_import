@@ -2,6 +2,7 @@
 
 	* Improve error reporting of failed user functions, resolves #159
 	* Properly report about missing images in image transformation function, resolves #160
+	* Unset value when user function transformation fails, resolves #161
 
 2021-02-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 

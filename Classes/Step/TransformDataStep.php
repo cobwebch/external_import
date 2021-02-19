@@ -241,6 +241,8 @@ class TransformDataStep extends AbstractStep
                         // This exception must not be caught here, but thrown further up
                         throw $e;
                     } catch (\Exception $e) {
+                        // If the value could not be transformed, remove it from the imported dataset
+                        unset($records[$index][$name]);
                         $this->importer->debug(
                                 LocalizationUtility::translate(
                                         'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailedWithMessage',
