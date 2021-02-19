@@ -171,6 +171,13 @@ Description
   as a timestamp or format it using either of the PHP functions
   :code:`date()` or :code:`strftime()` .
 
+  .. note::
+
+     Since External Import 5.1.0, if the user function throws an exception while
+     handling a value, that value will be unset and thus removed from the imported
+     dataset. The rationale is that such a value is considered invalid and should not
+     be further processed nor saved to the database.
+
   For more details about creating a user function, please refer to the
   :ref:`Developer's Guide <developer-user-functions>`.
 
