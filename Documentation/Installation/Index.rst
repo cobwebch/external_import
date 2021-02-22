@@ -21,6 +21,17 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-510:
+
+Upgrade to 5.1.0
+""""""""""""""""
+
+There is a single change in version 5.1.0 that may affect existing imports:
+when a user function fails to handle the value it was supposed to transform
+(by throwing an exception), that value is now removed from the imported dataset.
+Before that it was left unchanged.
+
+
 .. _installation-upgrade-500:
 
 Upgrade to 5.0.0

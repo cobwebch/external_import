@@ -1,14 +1,8 @@
 <?php
 
-/***************************************************************
- * Extension Manager/Repository config file for ext "external_import".
- *
- * Auto generated 31-03-2017 20:45
- *
- * Manual updates:
- * Only the data in the array - everything else is removed by next
- * writing. "version" and "dependencies" must not be touched!
- ***************************************************************/
+/***********************************************************************
+ * Extension Manager/Repository config file for ext "external_import". *
+ ***********************************************************************/
 
 $EM_CONF[$_EXTKEY] = [
         'title' => 'External Data Import',
@@ -21,7 +15,7 @@ $EM_CONF[$_EXTKEY] = [
         'createDirs' => '',
         'clearCacheOnLoad' => 0,
         'author_company' => '',
-        'version' => '5.0.1',
+        'version' => '5.1.0',
         'constraints' =>
                 [
                         'depends' =>

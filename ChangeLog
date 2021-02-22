@@ -1,3 +1,8 @@
+2021-02-22 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix link to repository for documentation editing (thanks to Mathias Brodala)
+	* Release version 5.1.0
+
 2021-02-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve error reporting of failed user functions, resolves #159
