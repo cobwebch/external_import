@@ -419,7 +419,7 @@ class ImporterTest extends FunctionalTestCase
      *
      * @test
      */
-    public function importOrdersWithImporterStoresTwoRecordsAndCreatesRelationsAndDeletesExistingOrder(): void
+    public function importOrdersWithImporterStoresThreeRecordsAndCreatesRelationsAndDeletesExistingOrder(): void
     {
         try {
             $this->importDataSet(__DIR__ . '/Fixtures/Orders.xml');
@@ -470,7 +470,7 @@ class ImporterTest extends FunctionalTestCase
             $quantities[] = $row['quantity'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(2, $countOrders, serialize($messages));
+        self::assertEquals(3, $countOrders, serialize($messages));
         self::assertEquals(7, $countRelations);
         self::assertSame(
                 [3, 1, 10, 2, 1, 2, 1],

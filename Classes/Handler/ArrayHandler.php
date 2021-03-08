@@ -61,6 +61,9 @@ class ArrayHandler implements DataHandlerInterface
                                     $theValue,
                                     $columnData['substructureFields']
                             );
+                            // Prepare for the case where no substructure was found
+                            // If one was found, it is added later
+                            $data[$referenceCounter][$columnName] = null;
                         } else {
                             $data[$referenceCounter][$columnName] = $theValue;
                         }
@@ -77,22 +80,28 @@ class ArrayHandler implements DataHandlerInterface
                     foreach ($rows as $column => $items) {
                         $maxItems = max($maxItems, count($items));
                     }
-                    // Add as many records to the import data as the highest count, while filling in with the values found in each substructure
-                    // NOTE: this is not equivalent to a full denormalization, but is enough for the needs of External Import
-                    for ($i = 0; $i < $maxItems; $i++) {
-                        // Base data is the first entry of the $theData array
-                        // NOTE: the first pass is a neutral operation
-                        $data[$counter] = $data[$referenceCounter];
-                        // Add a value from each structure field to each row, if it exists
-                        foreach ($rows as $column => $items) {
-                            if (isset($items[$i])) {
-                                foreach ($items[$i] as $key => $item) {
-                                    $data[$counter][$key] = $item;
+                    // If no additional row needs to be created, increase the counter to move on to the next record
+                    if ($maxItems === 0) {
+                        $counter++;
+                    } else {
+                        // Add as many records to the import data as the highest count, while filling in with the values found in each substructure
+                        // NOTE: this is not equivalent to a full denormalization, but is enough for the needs of External Import
+                        for ($i = 0; $i < $maxItems; $i++) {
+                            // Base data is the first entry of the $theData array
+                            // NOTE: the first pass is a neutral operation
+                            $data[$counter] = $data[$referenceCounter];
+                            // Add a value from each structure field to each row, if it exists
+                            foreach ($rows as $column => $items) {
+                                if (isset($items[$i])) {
+                                    foreach ($items[$i] as $key => $item) {
+                                        $data[$counter][$key] = $item;
+                                    }
                                 }
                             }
+                            $counter++;
                         }
-                        $counter++;
                     }
+                // No substructure data, increase the counter to move on to the next record
                 } else {
                     $counter++;
                 }

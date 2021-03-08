@@ -309,6 +309,12 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'quantity' => 2
                                 ],
                                 [
+                                        'client_id' => 'Empty basket',
+                                        'order_date' => '2021-03-07 17:56',
+                                        'order_id' => '000003',
+                                        'products' => null
+                                ],
+                                [
                                         'client_id' => 'Sonja the Red',
                                         'order_date' => '2020-08-08 06:48',
                                         'order_id' => '000002',
@@ -797,10 +803,17 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'products' => '1,NEW2,NEW3,NEW4'
                                                 ],
                                                 'NEW5' => [
+                                                        'client_id' => 'Empty basket',
+                                                        'order_date' => 1615139760,
+                                                        'order_id' => '000003',
+                                                        'products' => '',
+                                                        'pid' => 1
+                                                ],
+                                                'NEW6' => [
                                                         'client_id' => 'Sonja the Red',
                                                         'order_date' => 1596869280,
                                                         'order_id' => '000002',
-                                                        'products' => 'NEW6,NEW7,NEW8',
+                                                        'products' => 'NEW7,NEW8,NEW9',
                                                         'pid' => 1
                                                 ]
                                         ],
@@ -829,20 +842,20 @@ class ImporterPreviewTest extends FunctionalTestCase
                                                         'quantity' => 2,
                                                         'pid' => 1
                                                 ],
-                                                'NEW6' => [
-                                                        'uid_local' => 'NEW5',
+                                                'NEW7' => [
+                                                        'uid_local' => 'NEW6',
                                                         'uid_foreign' => '1',
                                                         'quantity' => 1,
                                                         'pid' => 1
                                                 ],
-                                                'NEW7' => [
-                                                        'uid_local' => 'NEW5',
+                                                'NEW8' => [
+                                                        'uid_local' => 'NEW6',
                                                         'uid_foreign' => '2',
                                                         'quantity' => 2,
                                                         'pid' => 1
                                                 ],
-                                                'NEW8' => [
-                                                        'uid_local' => 'NEW5',
+                                                'NEW9' => [
+                                                        'uid_local' => 'NEW6',
                                                         'uid_foreign' => '6',
                                                         'quantity' => 1,
                                                         'pid' => 1

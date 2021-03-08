@@ -1,3 +1,7 @@
+2021-03-08 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix handling of substructure fields when substructure is empty, resolves #162
+
 2021-02-22 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix link to repository for documentation editing (thanks to Mathias Brodala)
