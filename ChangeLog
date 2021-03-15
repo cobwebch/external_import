@@ -1,3 +1,7 @@
+2021-03-15 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve validation results API
+
 2021-03-08 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix handling of substructure fields when substructure is empty, resolves #162

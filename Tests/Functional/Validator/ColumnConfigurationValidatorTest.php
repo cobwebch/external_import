@@ -384,10 +384,10 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 $configuration,
                 'col'
         );
-        $results = $this->subject->getResults()->getAll();
-        self::assertSame(
-                $severity,
-                $results['field'][0]['severity']
+        $results = $this->subject->getResults()->getForPropertyAndSeverity('field', $severity);
+        self::assertGreaterThan(
+                0,
+                count($results)
         );
     }
 }

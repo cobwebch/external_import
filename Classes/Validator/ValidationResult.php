@@ -102,6 +102,28 @@ class ValidationResult
     }
 
     /**
+     * Returns the validation results for the given property and severity.
+     *
+     * NOTE: this is mostly used for testing, to better target results.
+     *
+     * @param string $property Name of the property
+     * @param int $severity Severity level
+     * @return array
+     */
+    public function getForPropertyAndSeverity(string $property, int $severity): array
+    {
+        $listOfResults = [];
+        if (array_key_exists($property, $this->results)) {
+            foreach ($this->results[$property] as $result) {
+                if ($result['severity'] === $severity) {
+                    $listOfResults[] = $result['message'];
+                }
+            }
+        }
+        return $listOfResults;
+    }
+
+    /**
      * Returns the number of results for a given severity level.
      *
      * @param int $severity Severity level

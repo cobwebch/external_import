@@ -1,6 +1,6 @@
 <?php
 
-namespace Cobweb\ExternalImport\Tests\Unit\Utility;
+namespace Cobweb\ExternalImport\Tests\Unit\Validator;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -473,6 +473,57 @@ class ValidationResultTest extends UnitTestCase
         self::assertSame(
                 $expectedTotal,
                 $this->subject->countForSeverity($severity)
+        );
+    }
+
+    public function getForPropertyAndSeverityProvider(): array
+    {
+        return array_merge_recursive(
+                $this->getSampleMessages(),
+                [
+                        'single message' => [
+                                'property' => 'foo',
+                                'severity' => AbstractMessage::NOTICE,
+                                'count' => 1
+                        ],
+                        'single message, not requested property, not requested severity' => [
+                                'property' => 'foo',
+                                'severity' => AbstractMessage::NOTICE,
+                                'count' => 0
+                        ],
+                        'two messages, same property, same severity' => [
+                                'property' => 'foo',
+                                'severity' => AbstractMessage::NOTICE,
+                                'count' => 2
+                        ],
+                        'two messages, same property, different severity' => [
+                                'property' => 'foo',
+                                'severity' => AbstractMessage::NOTICE,
+                                'count' => 1
+                        ],
+                        'two messages, different property, same severity' => [
+                                'property' => 'foo',
+                                'severity' => AbstractMessage::NOTICE,
+                                'count' => 1
+                        ]
+                ]
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider getForPropertyAndSeverityProvider
+     * @param array $messages
+     * @param string $property
+     * @param int $severity
+     * @param int $count
+     */
+    public function getForPropertyAndSeverityReturnsAllMessagesForPropertyAndSeverity(array $messages, string $property, int $severity, int $count): void
+    {
+        $this->loadMessages($messages);
+        self::assertCount(
+                $count,
+                $this->subject->getForPropertyAndSeverity($property, $severity)
         );
     }
 
