@@ -1,3 +1,7 @@
+2021-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Add validation of substructureFields property
+
 2021-03-15 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve validation results API

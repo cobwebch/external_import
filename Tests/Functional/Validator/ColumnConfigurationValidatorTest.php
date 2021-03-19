@@ -188,6 +188,35 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                         ]
                                 ]
                         ]
+                ],
+                'Substructure fields: valid structure and properties for "array" data type' => [
+                        [
+                                'data' => 'array'
+                        ],
+                        [
+                                'col' => [
+                                        'field' => 'foo',
+                                        'substructureFields' => [
+                                                'foo' => [
+                                                        'arrayPath' => 'bar'
+                                                ]
+                                        ]
+                                ]
+                        ]
+                ],
+                'Substructure fields: valid structure and properties for "xml" data type' => [
+                        [
+                                'data' => 'xml'
+                        ],
+                        [
+                                'col' => [
+                                        'substructureFields' => [
+                                                'foo' => [
+                                                        'xpath' => 'bar'
+                                                ]
+                                        ]
+                                ]
+                        ]
                 ]
         ];
     }
@@ -207,7 +236,8 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 $this->subject->isValid(
                         $configuration,
                         'col'
-                )
+                ),
+                serialize($this->subject->getResults()->getAll())
         );
     }
 
@@ -364,6 +394,66 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                 ]
                         ],
                         AbstractMessage::ERROR
+                ],
+                'Substructure fields: wrong structure' => [
+                        [
+                                'data' => 'array'
+                        ],
+                        [
+                                'col' => [
+                                        'field' => 'foo',
+                                        'substructureFields' => [
+                                                'field' => 'foo'
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
+                ],
+                'Substructure fields: empty configuration for "array" data type' => [
+                        [
+                                'data' => 'array'
+                        ],
+                        [
+                                'col' => [
+                                        'field' => 'foo',
+                                        'substructureFields' => [
+                                                'foo' => []
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
+                ],
+                'Substructure fields: invalid properties for "array" data type' => [
+                        [
+                                'data' => 'array'
+                        ],
+                        [
+                                'col' => [
+                                        'field' => 'foo',
+                                        'substructureFields' => [
+                                                'foo' => [
+                                                        'xpath' => 'bar'
+                                                ]
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
+                ],
+                'Substructure fields: invalid properties for "xml" data type' => [
+                        [
+                                'data' => 'xml'
+                        ],
+                        [
+                                'col' => [
+                                        'field' => 'foo',
+                                        'substructureFields' => [
+                                                'foo' => [
+                                                        'arrayPath' => 'bar'
+                                                ]
+                                        ]
+                                ]
+                        ],
+                        AbstractMessage::ERROR
                 ]
         ];
     }
@@ -387,7 +477,8 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         $results = $this->subject->getResults()->getForPropertyAndSeverity('field', $severity);
         self::assertGreaterThan(
                 0,
-                count($results)
+                count($results),
+                serialize($this->subject->getResults()->getAll())
         );
     }
 }

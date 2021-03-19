@@ -31,6 +31,16 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class ColumnConfigurationValidator
 {
     /**
+     * @var string[] List of properties allowed for substructureFields when handling array-type data
+     */
+    static protected $substructurePropertiesForArrayType = ['field', 'arrayPath', 'arrayPathSeparator'];
+
+    /**
+     * @var string[] List of properties allowed for substructureFields when handling XML-type data
+     */
+    static protected $substructurePropertiesForXmlType = ['field', 'fieldNS', 'attribute', 'attributeNS', 'xpath', 'xmlValue'];
+
+    /**
      * @var ValidationResult
      */
     protected $results;
@@ -58,6 +68,13 @@ class ColumnConfigurationValidator
         // Validate children configuration
         if (isset($columnConfiguration['children'])) {
             $this->validateChildrenProperty($columnConfiguration['children']);
+        }
+        // Validate substructureFields configuration
+        if (isset($columnConfiguration['substructureFields'])) {
+            $this->validateSubstructureFieldsProperty(
+                    $configuration->getGeneralConfiguration(),
+                    $columnConfiguration['substructureFields']
+            );
         }
         // Check for deprecated transformation properties
         if (isset($columnConfiguration['transformations'])) {
@@ -347,6 +364,92 @@ class ColumnConfigurationValidator
                     ),
                     AbstractMessage::NOTICE
             );
+        }
+    }
+
+    /**
+     * Validates the "substructureField" property.
+     *
+     * @param array $generalConfiguration External Import general configuration
+     * @param array $property substructureFields configuration
+     */
+    public function validateSubstructureFieldsProperty(array $generalConfiguration, array $property): void
+    {
+        // Check that the configuration for each field is itself an array
+        foreach ($property as $field => $configuration) {
+            if (!is_array($configuration)) {
+                $this->results->add(
+                        'field',
+                        LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:substructureFieldsPropertyNotAnArrayForField',
+                                'external_import',
+                                [
+                                        $field
+                                ]
+                        ),
+                        AbstractMessage::ERROR
+                );
+            }
+        }
+        // Check that valid properties are used for each field, depending on the overall data type
+        if ($generalConfiguration['data'] === 'array') {
+            foreach ($property as $field => $configuration) {
+                // Empty configuration is not allowed for array-type data
+                if (count($configuration) === 0) {
+                    $this->results->add(
+                            'field',
+                            LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:substructureFieldsPropertyWithEmptyConfigurationForArrayTypeData',
+                                    'external_import',
+                                    [
+                                            $property
+                                    ]
+                            ),
+                            AbstractMessage::ERROR
+                    );
+                } else {
+                    // Check that all keys match the allowed properties
+                    $keys = array_keys($configuration);
+                    $wrongKeys = array_diff($keys, self::$substructurePropertiesForArrayType);
+                    if (count($wrongKeys) > 0) {
+                        $this->results->add(
+                                'field',
+                                LocalizationUtility::translate(
+                                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:substructureFieldsPropertyWithWrongConfigurationForArrayTypeData',
+                                        'external_import',
+                                        [
+                                                implode(', ', $wrongKeys),
+                                                implode(', ', self::$substructurePropertiesForArrayType)
+                                        ]
+                                ),
+                                AbstractMessage::ERROR
+                        );
+                    }
+                }
+            }
+        } else {
+            foreach ($property as $field => $configuration) {
+                // An empty configuration is okay for XML-type data
+                if (count($configuration) > 0) {
+                    // Check that all keys match the allowed properties
+                    $keys = array_keys($configuration);
+                    $wrongKeys = array_diff($keys, self::$substructurePropertiesForXmlType);
+                    if (count($wrongKeys) > 0) {
+                        $this->results->add(
+                                'field',
+                                LocalizationUtility::translate(
+                                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:substructureFieldsPropertyWithWrongConfigurationForXmlTypeData',
+                                        'external_import',
+                                        [
+                                                implode(', ', $wrongKeys),
+                                                implode(', ', self::$substructurePropertiesForXmlType)
+                                        ]
+                                ),
+                                AbstractMessage::ERROR
+                        );
+                    }
+                }
+            }
         }
     }
 
