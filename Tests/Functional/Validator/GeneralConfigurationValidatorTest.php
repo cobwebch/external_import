@@ -26,6 +26,10 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class GeneralConfigurationValidatorTest extends FunctionalTestCase
 {
+    protected $coreExtensionsToLoad = [
+            'frontend'
+    ];
+
     protected $testExtensionsToLoad = [
             'typo3conf/ext/external_import'
     ];
