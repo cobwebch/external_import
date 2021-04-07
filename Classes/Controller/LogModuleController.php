@@ -17,6 +17,8 @@ namespace Cobweb\ExternalImport\Controller;
 
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
@@ -75,18 +77,15 @@ class LogModuleController extends ActionController
             parent::initializeView($view);
         }
         $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
-        $pageRenderer->addCssFile('EXT:external_import/Resources/Public/StyleSheet/ExternalImport.css');
-        // For TYPO3 v10, load datatables from local contrib folder
-        // TODO: remove check once compat with v9 is droppped
-        if (VersionNumberUtility::convertVersionNumberToInteger(VersionNumberUtility::getNumericTypo3Version()) > 10000000) {
-            $pageRenderer->addRequireJsConfiguration(
-                    [
-                            'paths' => [
-                                    'datatables' => '../typo3conf/ext/external_import/Resources/Public/JavaScript/Contrib/jquery.dataTables'
-                            ]
-                    ]
-            );
-        }
+        $publicResourcesPath = PathUtility::getAbsoluteWebPath(ExtensionManagementUtility::extPath('external_import')) . 'Resources/Public/';
+        $pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
+        $pageRenderer->addRequireJsConfiguration(
+                [
+                        'paths' => [
+                                'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
+                        ]
+                ]
+        );
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/LogModule');
         $pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
     }

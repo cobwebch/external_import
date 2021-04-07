@@ -1,8 +1,4 @@
 <?php
-if (!defined('TYPO3_MODE')) {
-    die ('Access denied.');
-}
-
 // Register handler calls for Scheduler
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Cobweb\ExternalImport\Task\AutomatedSyncTask::class] = [
         'extension' => 'external_import',
@@ -10,6 +6,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\Cobweb\External
         'description' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:scheduler.description',
         'additionalFields' => \Cobweb\ExternalImport\Task\AutomatedSyncAdditionalFieldProvider::class
 ];
+
 // Set up garbage collection
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\TYPO3\CMS\Scheduler\Task\TableGarbageCollectionTask::class]['options']['tables']['tx_externalimport_domain_model_log'] = [
     'dateField' => 'crdate',

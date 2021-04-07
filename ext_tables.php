@@ -1,11 +1,8 @@
 <?php
-if (!defined('TYPO3_MODE')) {
-    die ('Access denied.');
-}
 
 // First register a main module
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-        'Cobweb.ExternalImport',
+        'ExternalImport',
         // New main module
         'ExternalImport',
         '',
@@ -18,9 +15,8 @@ if (!defined('TYPO3_MODE')) {
         ]
 );
 // Register the "Data Import" backend module
-/** @noinspection TranslationMissingInspection */
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-        'Cobweb.ExternalImport',
+        'ExternalImport',
         // Make it a submodule of 'ExternalImport'
         'ExternalImport',
         // Submodule key
@@ -28,8 +24,7 @@ if (!defined('TYPO3_MODE')) {
         // Position
         '',
         [
-                // An array holding the controller-action-combinations that are accessible
-                'DataModule' => 'listSynchronizable, listNonSynchronizable, synchronize, preview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
+                \Cobweb\ExternalImport\Controller\DataModuleController::class => 'listSynchronizable, listNonSynchronizable, synchronize, preview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
         ],
         [
                 'access' => 'user,group',
@@ -39,7 +34,7 @@ if (!defined('TYPO3_MODE')) {
 );
 // Register the "Log" backend module
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-        'Cobweb.ExternalImport',
+        'ExternalImport',
         // Make it a submodule of 'ExternalImport'
         'ExternalImport',
         // Submodule key
@@ -47,8 +42,7 @@ if (!defined('TYPO3_MODE')) {
         // Position
         '',
         [
-                // An array holding the controller-action-combinations that are accessible
-                'LogModule' => 'list, get'
+                \Cobweb\ExternalImport\Controller\LogModuleController::class => 'list, get'
         ],
         [
                 'access' => 'user,group',

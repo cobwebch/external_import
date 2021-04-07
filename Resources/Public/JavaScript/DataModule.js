@@ -19,11 +19,11 @@ define(['jquery',
 		'TYPO3/CMS/Backend/Modal',
 		'TYPO3/CMS/Backend/Notification',
 		'datatables',
-		'TYPO3/CMS/Backend/jquery.clearable'
+		'TYPO3/CMS/Backend/Input/Clearable'
 	   ], function($, Modal, Notification) {
 	'use strict';
 
-	var ExternalImportDataModule = {
+	let ExternalImportDataModule = {
 		table: null
 	};
 
@@ -33,7 +33,7 @@ define(['jquery',
 	 * @param tableView
 	 */
 	ExternalImportDataModule.buildTableForSynchronizableList = function(tableView) {
-		var columns = [
+		let columns = [
 			// Icon
 			{
 				targets: 'column-icon',
@@ -93,7 +93,7 @@ define(['jquery',
 	 * @param tableView
 	 */
 	ExternalImportDataModule.buildTableForNonSynchronizableList = function(tableView) {
-		var columns = [
+		let columns = [
 			// Icon
 			{
 				targets: 'column-icon',
@@ -132,7 +132,7 @@ define(['jquery',
 	 * Initializes the search field (make it clearable and reactive to input).
 	 */
 	ExternalImportDataModule.initializeSearchField = function() {
-		var searchField = $('#tx_externalimport_search');
+		let searchField = $('#tx_externalimport_search');
 		// Restore existing filter
 		searchField.val(ExternalImportDataModule.table.search());
 
@@ -140,16 +140,17 @@ define(['jquery',
 			.on('input', function() {
 				ExternalImportDataModule.table.search($(this).val()).draw();
 			})
-			.clearable({
-				onClear: function() {
-					if (ExternalImportDataModule.table !== null) {
-						ExternalImportDataModule.table.search('').draw();
-					}
-				}
-			})
 			.parents('form').on('submit', function() {
 				return false;
 			});
+
+		searchField[0].clearable({
+      onClear: function() {
+        if (ExternalImportDataModule.table !== null) {
+          ExternalImportDataModule.table.search('').draw();
+        }
+      }
+    });
 	};
 
 	/**
@@ -160,12 +161,12 @@ define(['jquery',
 	ExternalImportDataModule.raiseErrorsOnTab = function(detailView) {
 		// Inspect each tab
 		detailView.find('.tab-pane').each(function() {
-			var tabPanel = $(this);
+			let tabPanel = $(this);
 			// Count the number of alerts (of level "danger")
-			var alerts = tabPanel.find('.alert-danger');
+			let alerts = tabPanel.find('.alert-danger');
 			if (alerts.length > 0) {
 				// Using the tab's id, grab the corresponding anchor and add an error class to it
-				var tabId = tabPanel.attr('id');
+				let tabId = tabPanel.attr('id');
 				detailView.find('a[href="#' + tabId + '"]').parent('li').addClass('has-validation-error');
 			}
 		});
@@ -189,11 +190,11 @@ define(['jquery',
 	 * Initialize this module
 	 */
 	$(function() {
-		var tableView = $('#tx_externalimport_list');
-		var detailView = $('#tx_externalimport_details');
+		let tableView = $('#tx_externalimport_list');
+		let detailView = $('#tx_externalimport_details');
 		if (tableView.length) {
 			// Activate DataTable
-			var listType = tableView.data('listType');
+			let listType = tableView.data('listType');
 			if (listType === 'nosync') {
 				ExternalImportDataModule.buildTableForNonSynchronizableList(tableView);
 			} else {

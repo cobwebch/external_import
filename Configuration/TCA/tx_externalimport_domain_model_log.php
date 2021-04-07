@@ -13,9 +13,6 @@ return [
                         'default' => 'tx_external_import-log'
                 ]
         ],
-        'interface' => [
-                'showRecordFieldList' => 'status, crdate, cruser_id, configuration, message'
-        ],
         'columns' => [
                 'status' => [
                         'exclude' => 0,

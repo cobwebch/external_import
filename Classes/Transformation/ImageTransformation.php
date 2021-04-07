@@ -142,22 +142,14 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         // If the file does not yet exist locally, grab it from the remote server and add it to predefined storage
         } else {
             $temporaryFile = GeneralUtility::tempnam('external_import_upload');
-            $file = GeneralUtility::getUrl($record[$index], 0, null, $report);
+            $file = GeneralUtility::getUrl($record[$index]);
             // If the file could not be fetched, report and throw an exception
             if ($file === false) {
-                $error = sprintf(
-                        'File %s could not be fetched.',
-                        $record[$index]
-                );
-                if (isset($report['message'])) {
-                    $error .= ' ' . sprintf(
-                            'Reason: %s (code: %s)',
-                            $report['message'],
-                            $report['error'] ?? 0
-                    );
-                }
                 throw new \TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException(
-                        $error,
+                        $error = sprintf(
+                                'File %s could not be fetched.',
+                                $record[$index]
+                        ),
                         1613555057
                 );
             }
