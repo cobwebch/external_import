@@ -976,13 +976,7 @@ class ImporterPreviewTest extends FunctionalTestCase
     public function runPreviewOnClearCacheStepReturnsCacheListAndClearsNothing($table, $index, $result): void
     {
         try {
-            if (VersionNumberUtility::convertVersionNumberToInteger(VersionNumberUtility::getNumericTypo3Version()) > 10000000) {
-                $cacheTable = 'cache_pages_tags';
-                $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest_v10.xml');
-            } else {
-                $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.xml');
-                $cacheTable = 'cf_cache_pages_tags';
-            }
+            $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.xml');
         } catch (\Exception $e) {
             self::markTestSkipped(
                     sprintf(
@@ -1004,7 +998,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         // The cache item created with the fixture should not be have been cleared
         $countCacheItems = $this->getDatabaseConnection()->selectCount(
                 'id',
-                $cacheTable
+                'cache_pages_tags'
         );
         self::assertEquals(1, $countCacheItems);
     }

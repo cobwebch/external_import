@@ -23,6 +23,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
+use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
 
 /**
  * Additional fields provider class for the Scheduler.
@@ -44,7 +45,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
      * @param AbstractTask $task When editing, reference to the current task object. Null when adding.
-     * @param SchedulerModuleController $moduleController Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return array Array containing all the information pertaining to the additional fields
      *               The array is multidimensional, keyed to the task class name and each field's id
      *               For each field it provides an associative sub-array with the following:
@@ -53,14 +54,14 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *                   ['cshKey']        => The CSH key for the field
      *                   ['cshLabel']    => The code of the CSH label
      */
-    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $moduleController)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule)
     {
 
         // Initialize extra field value
         if (empty($taskInfo[self::$fieldName])) {
-            if (CompatibilityUtility::isSchedulerCommand($moduleController, 'add')) {
+            if ($schedulerModule->getCurrentAction()->equals(Action::ADD)) {
                 $taskInfo[self::$fieldName] = 'all';
-            } elseif (CompatibilityUtility::isSchedulerCommand($moduleController, 'edit')) {
+            } elseif ($schedulerModule->getCurrentAction()->equals(Action::EDIT)) {
                 // In case of edit, set to internal value if no data was submitted already
                 $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                 $configurationKey->setTableAndIndex($task->table, (string)$task->index);

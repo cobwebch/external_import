@@ -194,13 +194,7 @@ class ReportingUtility implements LoggerAwareInterface
                         ]
                 );
                 $mailObject->setSubject($subject);
-                // Adapt to changing mail API
-                // TODO: remove check once compat with v9 is droppped
-                if (VersionNumberUtility::convertVersionNumberToInteger(VersionNumberUtility::getNumericTypo3Version()) > 10000000) {
-                    $mailObject->text($body);
-                } else {
-                    $mailObject->setBody($body);
-                }
+                $mailObject->text($body);
                 // Send mail
                 $result = $mailObject->send();
                 $message = '';
