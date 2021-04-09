@@ -49,13 +49,9 @@ class GeneralConfigurationValidator
      */
     protected $stepUtility;
 
-    public function injectValidationResult(ValidationResult $result): void
+    public function __construct(ValidationResult $result, StepUtility $stepUtility)
     {
         $this->results = $result;
-    }
-
-    public function injectStepUtility(StepUtility $stepUtility): void
-    {
         $this->stepUtility = $stepUtility;
     }
 

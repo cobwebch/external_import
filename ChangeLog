@@ -1,3 +1,7 @@
+2021-04-09 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Use Symfony dependency injection instead of Extbase's ObjectManager, references #164
+
 2021-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add validation of substructureFields property

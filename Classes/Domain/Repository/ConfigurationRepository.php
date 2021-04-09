@@ -41,16 +41,6 @@ class ConfigurationRepository
      */
     protected $extensionConfiguration = [];
 
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
-    public function injectObjectManager(ObjectManager $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
-
     public function __toString()
     {
         return self::class;
@@ -241,7 +231,7 @@ class ConfigurationRepository
      */
     public function findConfigurationObject($table, $index, $defaultSteps = null): Configuration
     {
-        $configuration = $this->objectManager->get(Configuration::class);
+        $configuration = GeneralUtility::makeInstance(Configuration::class);
         $externalConfiguration = $this->findByTableAndIndex($table, $index);
         try {
             $configuration->setObsoleteGeneralConfiguration(

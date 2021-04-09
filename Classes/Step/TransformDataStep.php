@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\MappingUtility;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -39,14 +40,25 @@ class TransformDataStep extends AbstractStep
      */
     static public $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
 
+    public function __construct(MappingUtility $mappingUtility)
+    {
+        $this->mappingUtility = $mappingUtility;
+    }
+
     public function __toString(): string
     {
         return self::class;
     }
 
-    public function injectMappingUtility(MappingUtility $mappingUtility): void
+    /**
+     * Sets the Importer instance (using the parent method) and passes to the mapping utility.
+     *
+     * @param Importer $importer
+     */
+    public function setImporter(Importer $importer): void
     {
-        $this->mappingUtility = $mappingUtility;
+        parent::setImporter($importer);
+        $this->mappingUtility->setImporter($this->importer);
     }
 
     /**
@@ -57,9 +69,6 @@ class TransformDataStep extends AbstractStep
      */
     public function run(): void
     {
-        // First of all, set the Importer (it seems like this cannot be done in the inject method; it happens too early)
-        $this->mappingUtility->setImporter($this->importer);
-
         $records = $this->getData()->getRecords();
 
         $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();

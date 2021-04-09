@@ -45,7 +45,7 @@ class ColumnConfigurationValidator
      */
     protected $results;
 
-    public function injectValidationResult(ValidationResult $result): void
+    public function __construct(ValidationResult $result)
     {
         $this->results = $result;
     }

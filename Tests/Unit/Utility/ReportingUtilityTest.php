@@ -14,8 +14,10 @@ namespace Cobweb\ExternalImport\Tests\Unit\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -33,7 +35,18 @@ class ReportingUtilityTest extends UnitTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(ReportingUtility::class);
+        $this->subject = GeneralUtility::makeInstance(
+                ReportingUtility::class,
+                $this->getAccessibleMock(
+                        LogRepository::class,
+                        [],
+                        [],
+                        '',
+                        // Don't call the original constructor to avoid a cascade of dependencies
+                        false
+                ),
+                $this->getAccessibleMock(Context::class)
+        );
     }
 
     /**

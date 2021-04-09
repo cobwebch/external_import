@@ -529,9 +529,6 @@ class StoreDataStepTest extends FunctionalTestCase
     public function getFieldsExcludedFromInsertsReturnsExcludedFields(): void
     {
         $importer = $this->createMock(Importer::class);
-        $uidRepository = $this->createMock(\Cobweb\ExternalImport\Domain\Repository\UidRepository::class);
-        $uidRepository->method('getExistingUids')->willReturn([]);
-        $importer->injectUidRepository($uidRepository);
         $this->subject->setImporter($importer);
         $fakeConfiguration = [
                 'foo' => [
@@ -555,9 +552,6 @@ class StoreDataStepTest extends FunctionalTestCase
     public function getFieldsExcludedFromUpdatesReturnsExcludedFields(): void
     {
         $importer = $this->createMock(Importer::class);
-        $uidRepository = $this->createMock(\Cobweb\ExternalImport\Domain\Repository\UidRepository::class);
-        $uidRepository->method('getExistingUids')->willReturn([]);
-        $importer->injectUidRepository($uidRepository);
         $this->subject->setImporter($importer);
         $fakeConfiguration = [
                 'foo' => [

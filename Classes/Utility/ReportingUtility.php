@@ -21,16 +21,12 @@ use Cobweb\ExternalImport\Exception\UnknownReportingKeyException;
 use Cobweb\ExternalImport\Importer;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
-use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
  * This class performs various reporting actions after a data import has taken place.
@@ -57,42 +53,18 @@ class ReportingUtility implements LoggerAwareInterface
     protected $reportingValues = [];
 
     /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
-    /**
      * @var LogRepository
      */
     protected $logRepository;
-
-    /**
-     * @var PersistenceManager
-     */
-    protected $persistenceManager;
 
     /**
      * @var Context
      */
     protected $context;
 
-    public function injectObjectManager(ObjectManager $objectManager): void
-    {
-        $this->objectManager = $objectManager;
-    }
-
-    public function injectLogRepository(LogRepository $logRepository): void
+    public function __construct(LogRepository $logRepository, Context $context)
     {
         $this->logRepository = $logRepository;
-    }
-
-    public function injectPersistenceManager(PersistenceManager $persistenceManager): void
-    {
-        $this->persistenceManager = $persistenceManager;
-    }
-
-    public function injectContext(Context $context): void
-    {
         $this->context = $context;
     }
 
@@ -130,7 +102,7 @@ class ReportingUtility implements LoggerAwareInterface
             foreach ($messages as $status => $messageList) {
                 foreach ($messageList as $message) {
                     /** @var Log $logEntry */
-                    $logEntry = $this->objectManager->get(Log::class);
+                    $logEntry = GeneralUtility::makeInstance(Log::class);
                     $logEntry->setPid($this->extensionConfiguration['logStorage']);
                     $logEntry->setStatus($status);
                     $logEntry->setCrdate($now);
@@ -153,7 +125,7 @@ class ReportingUtility implements LoggerAwareInterface
             }
             // Make sure the entries are persisted (this will not happen automatically
             // when called from the command line)
-            $this->persistenceManager->persistAll();
+            $this->logRepository->persist();
         }
     }
 

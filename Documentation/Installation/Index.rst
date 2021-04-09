@@ -11,7 +11,7 @@ need to extend the TCA definition of some tables with the appropriate
 syntax and create specific connectors for the application you want to
 connect to.
 
-TYPO3 CMS 9 or 10 is required, as well as the "scheduler" system extension.
+TYPO3 CMS 10 or 11 is required, as well as the "scheduler" system extension.
 
 
 .. _installation-compatibility:
@@ -19,6 +19,18 @@ TYPO3 CMS 9 or 10 is required, as well as the "scheduler" system extension.
 
 Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. _installation-upgrade-600:
+
+Upgrade to 6.0.0
+""""""""""""""""
+
+External Import is now configured for using the standard (Symfony)
+dependency injection mechanism. This means it is not necessary to instantiate the
+:php:`\Cobweb\ExternalImport\Importer` class must using Extbase's
+:php:`\TYPO3\CMS\Extbase\Object\ObjectManager` anymore whe using the Importer
+as an API.
 
 
 .. _installation-upgrade-510:

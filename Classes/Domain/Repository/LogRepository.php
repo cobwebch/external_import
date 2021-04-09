@@ -43,7 +43,7 @@ class LogRepository extends Repository
     }
 
     /**
-     * Performs a search on the database based, with ordering and pagination.
+     * Performs a search on the database based on given criteria, with ordering and pagination.
      *
      * @param QueryParameters $queryParameters
      * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
@@ -80,7 +80,7 @@ class LogRepository extends Repository
     }
 
     /**
-     * Performs a search on the database based, with ordering and pagination.
+     * Performs a search on the database based on given criteria, with ordering and pagination.
      *
      * This method is similar to findBySearch, but returns the full possible record
      * count, i.e. it does not apply offset nor limit.
@@ -127,5 +127,13 @@ class LogRepository extends Repository
             );
         }
         return $searchConditions;
+    }
+
+    /**
+     * Forces persisting changes, useful when repository is used outside Extbase context.
+     */
+    public function persist(): void
+    {
+        $this->persistenceManager->persistAll();
     }
 }

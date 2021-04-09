@@ -27,7 +27,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Runs the External Import process from the command line.
@@ -40,11 +39,6 @@ class ImportCommand extends Command
      * @var SymfonyStyle
      */
     protected $io;
-
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
 
     /**
      * @var ConfigurationRepository
@@ -127,18 +121,17 @@ class ImportCommand extends Command
 
         try {
 
-            $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $this->configurationRepository = $this->objectManager->get(ConfigurationRepository::class);
+            $this->configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
 
             $list = $input->getOption('list');
             // Call up the list and print it out
             if ($list) {
                 $this->printConfigurationList();
             } else {
-                $this->importer = $this->objectManager->get(Importer::class);
+                $this->importer = GeneralUtility::makeInstance(Importer::class);
                 $this->importer->setContext('cli');
                 /** @var AbstractCallContext $callContext */
-                $callContext = $this->objectManager->get(
+                $callContext = GeneralUtility::makeInstance(
                         CommandLineCallContext::class,
                         $this->importer
                 );

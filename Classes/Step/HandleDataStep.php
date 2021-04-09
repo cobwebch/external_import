@@ -29,25 +29,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class HandleDataStep extends AbstractStep
 {
-    /**
-     * @var ArrayHandler
-     */
-    protected $arrayHandler;
-
-    /**
-     * @var XmlHandler
-     */
-    protected $xmlHandler;
-
-    public function injectArrayHandler(ArrayHandler $handler): void
-    {
-        $this->arrayHandler = $handler;
-    }
-
-    public function injectXmlHander(XmlHandler $handler): void
-    {
-        $this->xmlHandler = $handler;
-    }
 
     /**
      * Maps the external data to TCA fields.
@@ -94,13 +75,15 @@ class HandleDataStep extends AbstractStep
             // Prepare the data, depending on result type
             switch ($generalConfiguration['data']) {
                 case 'xml':
-                    $records = $this->xmlHandler->handleData(
+                    $xmlHandler = GeneralUtility::makeInstance(XmlHandler::class);
+                    $records = $xmlHandler->handleData(
                             $originalData,
                             $this->importer
                     );
                     break;
                 case 'array':
-                    $records = $this->arrayHandler->handleData(
+                    $arrayHandler = GeneralUtility::makeInstance(ArrayHandler::class);
+                    $records = $arrayHandler->handleData(
                             $originalData,
                             $this->importer
                     );

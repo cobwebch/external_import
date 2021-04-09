@@ -24,17 +24,10 @@ to assemble data in a format that External Import can understand (XML structure 
 PHP array) and call the appropriate method. All you need is an
 instance of class :php:`\Cobweb\ExternalImport\Importer` and a single call.
 
-.. warning::
-
-   Since version 4.0.0, the :php:`\Cobweb\ExternalImport\Importer` class must
-   be instantiated using Extbase's :php:`\TYPO3\CMS\Extbase\Object\ObjectManager`
-   due to its usage of dependency injection.
-
 
 .. code-block:: php
 
-	$objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
-	$importer = $objectManager->get(\Cobweb\ExternalImport\Importer::class);
+	$importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Cobweb\ExternalImport\Importer::class);
 	$messages = $importer->import($table, $index, $rawData);
 
 

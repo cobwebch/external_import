@@ -15,7 +15,11 @@ namespace Cobweb\ExternalImport\Tests\Unit;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
+use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -37,9 +41,21 @@ class ImporterTest extends UnitTestCase
 
     protected function setUp()
     {
-        // Note: the Importer class normally needs to be instantiated via the ObjectManager,
-        // but we don't need all the dependency injection for unit tests.
-        $this->subject = GeneralUtility::makeInstance(Importer::class);
+        // For unit testing, don't inject all dependencies
+        $this->subject = GeneralUtility::makeInstance(
+                Importer::class,
+                $this->getAccessibleMock(ConfigurationRepository::class),
+                $this->getAccessibleMock(
+                        ReportingUtility::class,
+                        [],
+                        [],
+                        '',
+                        // Don't call the original constructor to avoid a cascade of dependencies
+                        false
+                ),
+                $this->getAccessibleMock(UidRepository::class),
+                $this->getAccessibleMock(TemporaryKeyRepository::class)
+        );
     }
 
     /**

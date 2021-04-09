@@ -27,7 +27,6 @@ use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -42,11 +41,6 @@ class Importer implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     public const DEFAULT_PRIORITY = 1000;
-
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
 
     /**
      * @var array Extension configuration
@@ -167,8 +161,13 @@ class Importer implements LoggerAwareInterface
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
-    public function __construct()
+    public function __construct(ConfigurationRepository $configurationRepository, ReportingUtility $reportingUtility, UidRepository $uidRepository, TemporaryKeyRepository $temporaryKeyRepository)
     {
+        $this->configurationRepository = $configurationRepository;
+        $this->reportingUtility = $reportingUtility;
+        $this->uidRepository = $uidRepository;
+        $this->temporaryKeyRepository = $temporaryKeyRepository;
+
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('external_import');
         $this->setDebug((bool)$this->extensionConfiguration['debug']);
 
@@ -190,32 +189,6 @@ class Importer implements LoggerAwareInterface
     public function __toString()
     {
         return __CLASS__;
-    }
-
-    public function injectObjectManager(ObjectManager $manager): void
-    {
-        $this->objectManager = $manager;
-    }
-
-    public function injectConfigurationRepository(ConfigurationRepository $repository): void
-    {
-        $this->configurationRepository = $repository;
-    }
-
-    public function injectReportingUtility(ReportingUtility $utility): void
-    {
-        $this->reportingUtility = $utility;
-        $this->reportingUtility->setImporter($this);
-    }
-
-    public function injectUidRepository(UidRepository $repository): void
-    {
-        $this->uidRepository = $repository;
-    }
-
-    public function injectTemporaryKeyRepository(TemporaryKeyRepository $repository): void
-    {
-        $this->temporaryKeyRepository = $repository;
     }
 
     /**
@@ -240,6 +213,8 @@ class Importer implements LoggerAwareInterface
         // Initialize existing uids list
         $this->uidRepository->setConfiguration($this->externalConfiguration);
         $this->uidRepository->resetExistingUids();
+        // Assign back-reference to reporting utility
+        $this->reportingUtility->setImporter($this);
     }
 
     /**
@@ -260,7 +235,7 @@ class Importer implements LoggerAwareInterface
                     self::SYNCHRONYZE_DATA_STEPS
             );
 
-            $data = $this->objectManager->get(Data::class);
+            $data = GeneralUtility::makeInstance(Data::class);
             $this->runSteps($data);
         }
         catch (InvalidPreviewStepException $e) {
@@ -317,7 +292,7 @@ class Importer implements LoggerAwareInterface
             );
 
             // Initialize the Data object with the raw data
-            $data = $this->objectManager->get(Data::class);
+            $data = GeneralUtility::makeInstance(Data::class);
             $data->setRawData($rawData);
             $this->runSteps($data);
         }
@@ -375,7 +350,7 @@ class Importer implements LoggerAwareInterface
         foreach ($steps as $stepClass) {
             $this->resetPreviewData();
             /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
-            $step = $this->objectManager->get($stepClass);
+            $step = GeneralUtility::makeInstance($stepClass);
             $step->setImporter($this);
             $step->setData($data);
             if ($this->externalConfiguration->hasParametersForStep($stepClass)) {

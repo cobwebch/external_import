@@ -1,0 +1,27 @@
+# Configuration/Services.yaml
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Cobweb\ExternalImport\:
+    resource: '../Classes/*'
+
+  Cobweb\ExternalImport\Importer:
+    public: true
+
+  Cobweb\ExternalImport\Validator\ColumnConfigurationValidator:
+    public: true
+
+  Cobweb\ExternalImport\Validator\GeneralConfigurationValidator:
+    public: true
+
+  Cobweb\ExternalImport\Utility\ReportingUtility:
+    public: true
+
+  Cobweb\ExternalImport\Step\TransformDataStep:
+    public: true
+
+  Cobweb\ExternalImport\Step\ValidateConfigurationStep:
+    public: true

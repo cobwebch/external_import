@@ -29,8 +29,8 @@ A custom step class **must** inherit from abstract class
 the step will be ignored during import. The parent class makes
 a lot of features available some of which are described below.
 
-All step class instances are created using the :php:`\TYPO3\CMS\Extbase\Object\ObjectManager`,
-so Extbase's injection mechanisms is available inside a custom step class.
+If you want to use Dependency Injection in your custom step class,
+just remember to declare it as being public in your service configuration file.
 
 
 .. _developer-steps-resources:

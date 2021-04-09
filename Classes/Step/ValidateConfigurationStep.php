@@ -35,14 +35,10 @@ class ValidateConfigurationStep extends AbstractStep
      */
     protected $columnValidator;
 
-    public function injectCtrlValidator(\Cobweb\ExternalImport\Validator\GeneralConfigurationValidator $validator): void
+    public function __construct(GeneralConfigurationValidator $generalConfigurationValidator, ColumnConfigurationValidator $columnConfigurationValidator)
     {
-        $this->generalValidator = $validator;
-    }
-
-    public function injectColumnValidator(\Cobweb\ExternalImport\Validator\ColumnConfigurationValidator $validator): void
-    {
-        $this->columnValidator = $validator;
+        $this->generalValidator = $generalConfigurationValidator;
+        $this->columnValidator = $columnConfigurationValidator;
     }
 
     /**

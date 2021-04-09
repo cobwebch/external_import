@@ -102,19 +102,9 @@ class Configuration
      */
     protected $connector;
 
-    /**
-     * @var StepUtility
-     */
-    protected $stepUtility;
-
     public function __toString()
     {
         return self::class;
-    }
-
-    public function injectStepUtility(StepUtility $stepUtility): void
-    {
-        $this->stepUtility = $stepUtility;
     }
 
     /**
@@ -170,6 +160,7 @@ class Configuration
     public function setGeneralConfiguration(array $generalConfiguration, $defaultSteps = null): void
     {
         $this->generalConfiguration = $generalConfiguration;
+        $stepUtility = GeneralUtility::makeInstance(StepUtility::class);
         // Define the process default steps, depending on process type or the predefined value
         // NOTE: normally default steps should always be defined
         if ($defaultSteps === null) {
@@ -185,7 +176,7 @@ class Configuration
         // Perform extra processing for custom steps
         if (array_key_exists('customSteps', $generalConfiguration)) {
             foreach ($generalConfiguration['customSteps'] as $customStepConfiguration) {
-                $steps = $this->stepUtility->insertStep($steps, $customStepConfiguration);
+                $steps = $stepUtility->insertStep($steps, $customStepConfiguration);
                 $this->customSteps[] = $customStepConfiguration['class'];
                 if (array_key_exists('parameters', $customStepConfiguration)) {
                     $this->setParametersForStep(
