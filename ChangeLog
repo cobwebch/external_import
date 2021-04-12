@@ -1,5 +1,9 @@
 2021-04-09 Francois Suter (Idéative)  <typo3@ideative.ch>
 
+	* Update DataTables library, resolves #165
+
+2021-04-09 Francois Suter (Idéative)  <typo3@ideative.ch>
+
 	* Use Symfony dependency injection instead of Extbase's ObjectManager, references #164
 	* Drop support for TYPO3 v9, resolves #116
 
