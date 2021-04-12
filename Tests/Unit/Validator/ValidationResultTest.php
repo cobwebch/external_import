@@ -51,6 +51,19 @@ class ValidationResultTest extends UnitTestCase
     /**
      * @test
      */
+    public function resetSetsResultsToEmptyArray(): void
+    {
+        $this->subject->add('foo', 'This is a validation result', AbstractMessage::NOTICE);
+        $this->subject->reset();
+        self::assertSame(
+                [],
+                $this->subject->getAll()
+        );
+    }
+
+    /**
+     * @test
+     */
     public function getForPropertyInitiallyReturnsNull(): void
     {
         self::assertNull(

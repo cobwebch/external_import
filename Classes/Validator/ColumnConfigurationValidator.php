@@ -60,6 +60,8 @@ class ColumnConfigurationValidator
     public function isValid(Configuration $configuration, string $column): bool
     {
         $columnConfiguration = $configuration->getConfigurationForColumn($column);
+        // This method is generally called in a loop over all columns, make sure to reset the results between each validation
+        $this->results->reset();
         // Validate properties used to choose the import value
         $this->validateDataSettingProperties(
                 $configuration->getGeneralConfiguration(),

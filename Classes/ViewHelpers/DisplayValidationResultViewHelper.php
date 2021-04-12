@@ -61,12 +61,14 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
         ];
         $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert %1$s">%2$s</li></ul></div>';
         $output = '';
-        foreach ($results as $result) {
-            $output .= sprintf(
-                    $message,
-                    $classes[$result['severity']],
-                    $result['message']
-            );
+        if (is_array($results)) {
+            foreach ($results as $result) {
+                $output .= sprintf(
+                        $message,
+                        $classes[$result['severity']],
+                        $result['message']
+                );
+            }
         }
         return $output;
     }

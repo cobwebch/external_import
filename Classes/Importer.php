@@ -213,6 +213,7 @@ class Importer implements LoggerAwareInterface
         // Initialize existing uids list
         $this->uidRepository->setConfiguration($this->externalConfiguration);
         $this->uidRepository->resetExistingUids();
+        $this->uidRepository->resetCurrentPids();
         // Assign back-reference to reporting utility
         $this->reportingUtility->setImporter($this);
     }

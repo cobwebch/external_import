@@ -155,22 +155,6 @@
 					</td>
 				</tr>
 				<tr>
-					<td><f:translate id="additionalFields" /></td>
-					<td>
-						<f:if condition="{generalConfiguration.additionalFields}">
-							<f:then>
-								{generalConfiguration.additionalFields}
-							</f:then>
-							<f:else>
-								-
-							</f:else>
-						</f:if>
-						<f:if condition="{results.additionalFields}">
-							<ex:displayValidationResult result="{results.additionalFields}" />
-						</f:if>
-					</td>
-				</tr>
-				<tr>
 					<td><f:translate id="where_clause" /></td>
 					<td>
 						<f:if condition="{generalConfiguration.whereClause}">

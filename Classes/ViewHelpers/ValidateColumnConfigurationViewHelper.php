@@ -17,7 +17,6 @@ namespace Cobweb\ExternalImport\ViewHelpers;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -58,8 +57,7 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
      */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
     {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $configurationValidator = $objectManager->get(ColumnConfigurationValidator::class);
+        $configurationValidator = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
         $configurationValidator->isValid(
                 $arguments['configuration'],
                 $arguments['column']

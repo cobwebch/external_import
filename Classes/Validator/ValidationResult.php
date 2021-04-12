@@ -29,6 +29,16 @@ class ValidationResult
     protected $results = [];
 
     /**
+     * Resets the list of results.
+     *
+     * @return void
+     */
+    public function reset(): void
+    {
+        $this->results = [];
+    }
+
+    /**
      * Adds a result to the results array.
      *
      * @param string $property
