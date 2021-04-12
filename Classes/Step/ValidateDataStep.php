@@ -34,14 +34,14 @@ class ValidateDataStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         $records = $this->getData()->getRecords();
 
         // Check if number of records is larger than or equal to the minimum required number of records
         // Note that if the minimum is not defined, this test is skipped
-        if (!empty($ctrlConfiguration['minimumRecords'])) {
+        if (!empty($generalConfiguration['minimumRecords'])) {
             $countRecords = count($records);
-            if ($countRecords < $ctrlConfiguration['minimumRecords']) {
+            if ($countRecords < $generalConfiguration['minimumRecords']) {
                 $this->abortFlag = true;
                 $this->importer->addMessage(
                         LocalizationUtility::translate(
@@ -49,7 +49,7 @@ class ValidateDataStep extends AbstractStep
                                 'external_import',
                                 array(
                                         $countRecords,
-                                        $ctrlConfiguration['minimumRecords']
+                                        $generalConfiguration['minimumRecords']
                                 )
                         )
                 );

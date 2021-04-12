@@ -31,8 +31,8 @@ class ValidateConnectorStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
-        if (empty($ctrlConfiguration['connector'])) {
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
+        if (empty($generalConfiguration['connector'])) {
             $this->importer->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_connector',

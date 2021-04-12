@@ -37,7 +37,7 @@ class XmlHandler implements DataHandlerInterface
         $data = [];
         $counter = 0;
         $configuration = $importer->getExternalConfiguration();
-        $ctrlConfiguration = $configuration->getGeneralConfiguration();
+        $generalConfiguration = $configuration->getGeneralConfiguration();
         $columnConfiguration = $configuration->getColumnConfiguration();
 
         // Load the XML into a DOM object
@@ -45,19 +45,19 @@ class XmlHandler implements DataHandlerInterface
         $dom->loadXML($rawData, LIBXML_PARSEHUGE);
         // Instantiate a XPath object and load with any defined namespaces
         $xPathObject = new \DOMXPath($dom);
-        if (isset($ctrlConfiguration['namespaces']) && is_array($ctrlConfiguration['namespaces'])) {
-            foreach ($ctrlConfiguration['namespaces'] as $prefix => $uri) {
+        if (isset($generalConfiguration['namespaces']) && is_array($generalConfiguration['namespaces'])) {
+            foreach ($generalConfiguration['namespaces'] as $prefix => $uri) {
                 $xPathObject->registerNamespace($prefix, $uri);
             }
         }
 
         // Get the nodes that represent the root of each data record, using XPath if defined
         $records = [];
-        if (array_key_exists('nodepath', $ctrlConfiguration)) {
+        if (array_key_exists('nodepath', $generalConfiguration)) {
             try {
                 $records = $this->selectNodeWithXpath(
                         $xPathObject,
-                        $ctrlConfiguration['nodepath']
+                        $generalConfiguration['nodepath']
                 );
             } catch (\Exception $e) {
                 $importer->addMessage(
@@ -66,7 +66,7 @@ class XmlHandler implements DataHandlerInterface
                 );
             }
         } else {
-            $records = $dom->getElementsByTagName($ctrlConfiguration['nodetype']);
+            $records = $dom->getElementsByTagName($generalConfiguration['nodetype']);
         }
         for ($i = 0; $i < $records->length; $i++) {
             $referenceCounter = $counter;
