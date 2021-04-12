@@ -199,7 +199,7 @@ class ReportingUtility implements LoggerAwareInterface
         $result = 0;
         $recipientMail = is_array($this->extensionConfiguration['reportEmail'])
             ? $this->extensionConfiguration['reportEmail']
-            : [$this->extensionConfiguration['reportEmail']];
+            : GeneralUtility::trimExplode(',', $this->extensionConfiguration['reportEmail'], true);
         // Get default mail configuration for sending the report
         $senderMail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'] ?? '';
         $senderName = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'] ?? $senderMail;
