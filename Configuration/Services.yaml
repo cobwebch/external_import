@@ -10,18 +10,44 @@ services:
 
   Cobweb\ExternalImport\Importer:
     public: true
+    shared: false
+
+  Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Domain\Repository\UidRepository:
+    public: true
+    shared: false
 
   Cobweb\ExternalImport\Validator\ColumnConfigurationValidator:
     public: true
+    shared: false
 
   Cobweb\ExternalImport\Validator\GeneralConfigurationValidator:
     public: true
+    shared: false
+
+  Cobweb\ExternalImport\Utility\MappingUtility:
+    public: true
+    shared: false
 
   Cobweb\ExternalImport\Utility\ReportingUtility:
     public: true
+    shared: false
 
   Cobweb\ExternalImport\Step\TransformDataStep:
     public: true
+    shared: false
 
   Cobweb\ExternalImport\Step\ValidateConfigurationStep:
     public: true
+    shared: false
+
+  Cobweb\ExternalImport\Validator\ValidationResult:
+    public: true
+    shared: false
