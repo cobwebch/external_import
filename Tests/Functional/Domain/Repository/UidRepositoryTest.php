@@ -19,7 +19,6 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Test class for the UidRepository
@@ -27,10 +26,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class UidRepositoryTest extends FunctionalTestCase
 {
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
 
     /**
      * @var UidRepository
@@ -40,8 +35,7 @@ class UidRepositoryTest extends FunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $this->objectManager->get(UidRepository::class);
+        $this->subject = GeneralUtility::makeInstance(UidRepository::class);
     }
 
     public function configurationDataProvider(): array
@@ -99,7 +93,7 @@ class UidRepositoryTest extends FunctionalTestCase
     public function getExistingUidsTriggersFetchingOfUidsAndPids($configuration, $listOfUids, $listOfPids): void
     {
         $this->importDataSet(__DIR__ . '/../../Fixtures/UidRepository.xml');
-        $configurationObject = $this->objectManager->get(Configuration::class);
+        $configurationObject = GeneralUtility::makeInstance(Configuration::class);
         $configurationObject->setTable('tt_content');
         $configurationObject->setGeneralConfiguration($configuration);
         if ($configuration['enforcePid']) {

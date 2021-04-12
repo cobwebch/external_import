@@ -1,7 +1,8 @@
-2021-04-09 Francois Suter (Idéative)  <typo3@ideative.ch>
+2021-04-12 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Update DataTables library, resolves #165
 	* Remove all deprecated properties and backwards-compatibility code, resolves #146
+	* Clean up all unit and functional tests, resolves #170
 
 2021-04-09 Francois Suter (Idéative)  <typo3@ideative.ch>
 

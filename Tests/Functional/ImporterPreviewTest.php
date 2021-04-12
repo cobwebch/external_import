@@ -30,7 +30,6 @@ use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use \TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
@@ -62,8 +61,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             // Connector services need a global LanguageService object
             $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $this->subject = $objectManager->get(Importer::class);
+            $this->subject = GeneralUtility::makeInstance(Importer::class);
             $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
             $this->subject->setForcedStoragePid(1);
         } catch (\Exception $e) {

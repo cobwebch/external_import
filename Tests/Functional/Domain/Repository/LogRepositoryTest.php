@@ -19,7 +19,6 @@ use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Test case for the LogRepository class.
@@ -46,8 +45,7 @@ class LogRepositoryTest extends FunctionalTestCase
     {
         parent::setUp();
         try {
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $this->subject = $objectManager->get(LogRepository::class);
+            $this->subject = GeneralUtility::makeInstance(LogRepository::class);
             $this->queryParameters = GeneralUtility::makeInstance(QueryParameters::class);
             $this->importDataSet(__DIR__ . '/../../Fixtures/Logs.xml');
         }

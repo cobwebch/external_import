@@ -41,12 +41,12 @@ class Configuration
     /**
      * @var array General part of the External Import configuration
      */
-    protected $generalConfiguration;
+    protected $generalConfiguration = [];
 
     /**
      * @var array External Import configuration for each column
      */
-    protected $columnConfiguration;
+    protected $columnConfiguration = [];
 
     /**
      * @var int ID of storage page
@@ -128,9 +128,9 @@ class Configuration
     /**
      * Returns the general external configuration
      *
-     * @return array|null
+     * @return array
      */
-    public function getGeneralConfiguration(): ?array
+    public function getGeneralConfiguration(): array
     {
         return $this->generalConfiguration;
     }
@@ -194,9 +194,9 @@ class Configuration
     }
 
     /**
-     * @return array|null
+     * @return array
      */
-    public function getColumnConfiguration(): ?array
+    public function getColumnConfiguration(): array
     {
         return $this->columnConfiguration;
     }
@@ -405,7 +405,7 @@ class Configuration
     /**
      * @return ConnectorBase
      */
-    public function getConnector(): \Cobweb\Svconnector\Service\ConnectorBase
+    public function getConnector(): ?ConnectorBase
     {
         return $this->connector;
     }
