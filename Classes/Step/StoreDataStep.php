@@ -109,14 +109,6 @@ class StoreDataStep extends AbstractStep
         // Extract list of excluded fields
         $this->prepareStructuredInformation($columnConfiguration);
 
-        // Handle many-to-many relations (old-style)
-        // TODO: remove once support for legacy MM handling is dropped
-        $manyToManyUtility = GeneralUtility::makeInstance(ManyToManyUtility::class);
-        $manyToManyUtility->setImporter($this->importer);
-        $manyToManyUtility->handleMmRelations($generalConfiguration, $columnConfiguration, $records);
-        $mappings = $manyToManyUtility->getMappings();
-        $hasMMRelations = count($mappings);
-
         // Initialize some variables
         $inserts = 0;
         $updates = 0;
@@ -142,22 +134,8 @@ class StoreDataStep extends AbstractStep
         foreach ($dateToStore as $id => $theRecord) {
             $isExistingRecord = strpos($id, 'NEW') === false;
 
-            // TODO: this is used for legacy MM handling and current pids, but current pids could be changed to use $id, so this could be dropped at a later point
+            // TODO: this was used for legacy MM handling and current pids, but current pids could be changed to use $id, so this could be dropped at a later point
             $externalUid = $this->idToExternalIdMap[$id];
-
-            // Prepare MM-fields, if any
-            // TODO: remove once support for legacy MM handling is dropped
-            if ($hasMMRelations) {
-                foreach ($mappings as $columnName => $columnMappings) {
-                    if (isset($columnMappings[$externalUid])) {
-                        $theRecord[$columnName] = implode(',', $columnMappings[$externalUid]);
-
-                    // Make sure not to keep the original value if no mapping was found
-                    } else {
-                        unset($theRecord[$columnName]);
-                    }
-                }
-            }
 
             // Gather the record's pid
             // Existing records have their own (unless they have been moved)
@@ -485,12 +463,6 @@ class StoreDataStep extends AbstractStep
                 $this->handleTceException($e);
                 return;
             }
-        }
-
-        // Perform post-processing of MM-relations if necessary and if not in preview mode
-        // TODO: remove once support for legacy MM relations is dropped
-        if (!$this->importer->isPreview() && count($manyToManyUtility->getFullMappings()) > 0) {
-            $manyToManyUtility->postProcessMmRelations();
         }
 
         // Report any errors that might have been raised by the DataHandler

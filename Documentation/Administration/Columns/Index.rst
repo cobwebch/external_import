@@ -399,27 +399,6 @@ Scope
   Handle data
 
 
-.. _administration-columns-properties-mm:
-
-MM
-~~
-
-Type
-  :ref:`MM configuration <administration-mm>`
-
-Description
-   Definition of MM-relations, see :ref:`specific reference <administration-mm>`
-   for more details.
-
-   .. warning::
-
-      This property is deprecated. Use :ref:`multipleRows <administration-columns-properties-multiple-rows>`
-      or :ref:`children <administration-columns-properties-children>` according to your needs.
-
-Scope
-  Transform data
-
-
 .. _administration-columns-properties-multiple-rows:
 
 multipleRows

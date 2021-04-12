@@ -331,23 +331,20 @@ class ImporterTest extends FunctionalTestCase
                 'products_for_stores'
         );
         // Get the number of relations created
-        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('uid_local', 'stock')
-                ->from('tx_externalimporttest_store_product_mm')
+                ->select('stock')
+                ->from('tx_externalimporttest_store_product')
                 // Ensure consistent order for safe comparison
                 ->orderBy('stock', 'ASC')
                 ->execute();
-        $countRelations = 0;
         $stocks = [];
-        while ($row = $databaseResult->fetch()) {
-            $countRelations++;
+        while ($row = $databaseResult->fetchAssociative()) {
             $stocks[] = $row['stock'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(
+        self::assertCount(
                 6,
-                $countRelations,
+                $stocks,
                 serialize($messages)
         );
         self::assertSame(
@@ -503,22 +500,26 @@ class ImporterTest extends FunctionalTestCase
                 'tx_externalimporttest_store'
         );
         // Get the number of relations created
-        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('uid_local', 'stock')
-                ->from('tx_externalimporttest_store_product_mm')
+                ->select('stock')
+                ->from('tx_externalimporttest_store_product')
                 // Ensure consistent order for safe comparison
                 ->orderBy('stock', 'ASC')
                 ->execute();
-        $countRelations = 0;
         $stocks = [];
-        while ($row = $databaseResult->fetch()) {
-            $countRelations++;
+        while ($row = $databaseResult->fetchAssociative()) {
             $stocks[] = $row['stock'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(2, $countStores, serialize($messages));
-        self::assertEquals(3, $countRelations);
+        self::assertEquals(
+                2,
+                $countStores,
+                serialize($messages)
+        );
+        self::assertCount(
+                3,
+                $stocks
+        );
         self::assertSame(
                 [5, 6, 10],
                 $stocks

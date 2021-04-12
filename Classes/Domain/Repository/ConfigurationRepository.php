@@ -105,34 +105,6 @@ class ConfigurationRepository
     }
 
     /**
-     * Checks if the general configuration is found in the "ctrl" part (which is deprecated) or not
-     *
-     * TODO: remove once backward-compatibility with "ctrl" section is dropped
-     *
-     * @param string $table Name of the table
-     * @param string|integer $index Key of the configuration
-     * @return bool
-     * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
-     */
-    public function isObsoleteGeneralConfiguration($table, $index): bool
-    {
-        if (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
-            return true;
-        }
-        if (isset($GLOBALS['TCA'][$table]['external']['general'][$index])) {
-            return false;
-        }
-        throw new \Cobweb\ExternalImport\Exception\NoConfigurationException(
-                sprintf(
-                        'No configuration found for table %s and index %s',
-                        $table,
-                        $index
-                ),
-                1601473068
-        );
-    }
-
-    /**
      * Finds all synchronizable configurations and returns them ordered by priority.
      *
      * @return array
@@ -233,21 +205,12 @@ class ConfigurationRepository
     {
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $externalConfiguration = $this->findByTableAndIndex($table, $index);
-        try {
-            $configuration->setObsoleteGeneralConfiguration(
-                    $this->isObsoleteGeneralConfiguration($table, $index)
-            );
-        } catch (\Exception $e) {
-            // Nothing to do, the configuration does not exist anyway
-        }
 
         // Set the values in the Configuration object
         $configuration->setTable($table);
         $configuration->setIndex($index);
         $configuration->setGeneralConfiguration($externalConfiguration['general'], $defaultSteps);
-        // NOTE: this test is only necessary as long as we handle old-style configuration in the call above
-        // TODO: remove once backward-compatibility with "ctrl" section is dropped
-        if (count($externalConfiguration['additionalFields'])) {
+        if (array_key_exists('additionalFields', $externalConfiguration)) {
             $configuration->setAdditionalFields($externalConfiguration['additionalFields']);
         }
         $configuration->setColumnConfiguration($externalConfiguration['columns']);

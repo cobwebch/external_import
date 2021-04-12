@@ -40,15 +40,6 @@ Available resources
 
 A custom step class has access to the following member variables:
 
-configuration
-  Instance of the current External Import configuration
-  (:php:`\Cobweb\ExternalImport\Domain\Model\Configuration`).
-
-  .. warning::
-
-     This has been deprecated in External Import 5.0.0. Please use
-     :code:`$this->getImporter()->getExternalConfiguration()` instead.
-
 data
   Instance of the object model encapsulating the data being processed
   (:php:`\Cobweb\ExternalImport\Domain\Model\Data`).

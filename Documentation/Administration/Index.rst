@@ -38,5 +38,4 @@ each example (in the Tutorial).
    Transformations/Index
    Mapping/Index
    Children/Index
-   MmRelations/Index
    LogCleanup/Index

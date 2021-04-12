@@ -76,16 +76,6 @@ class ColumnConfigurationValidator
                     $columnConfiguration['substructureFields']
             );
         }
-        // Check for deprecated transformation properties
-        if (isset($columnConfiguration['transformations'])) {
-            $this->validateTransformationProperties(
-                $columnConfiguration['transformations']
-            );
-        }
-        // Check for deprecated MM property
-        if (isset($columnConfiguration['MM'])) {
-            $this->validateMMProperty();
-        }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
         return $this->results->countForSeverity(AbstractMessage::ERROR) + $this->results->countForSeverity(AbstractMessage::WARNING) === 0;
@@ -157,53 +147,6 @@ class ColumnConfigurationValidator
                         AbstractMessage::NOTICE
                 );
             }
-        }
-    }
-
-    /**
-     * Checks if there are deprecated transformation properties.
-     *
-     * @param array $transformationProperties
-     */
-    public function validateTransformationProperties(array $transformationProperties): void
-    {
-        // "userFunc" is now "userFunctions" and its sub-property "params" is now "parameters"
-        $userFuncOccurrences = 0;
-        $paramsOccurrences = 0;
-        foreach ($transformationProperties as $property) {
-            foreach ($property as $key => $configuration) {
-                if ($key === 'userFunc' || $key === 'userFunction') {
-                    if ($key === 'userFunc') {
-                        $userFuncOccurrences++;
-                    }
-                    foreach ($configuration as $subKey => $subProperty) {
-                        if ($subKey === 'params') {
-                            $paramsOccurrences++;
-                        }
-                    }
-                }
-            }
-        }
-        // Prepare message according to the results found
-        $message = '';
-        if ($userFuncOccurrences > 0 && $paramsOccurrences > 0) {
-            $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedUserFuncAndParamsProperty';
-        } elseif ($userFuncOccurrences > 0) {
-            $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedUserFuncProperty';
-        } elseif ($paramsOccurrences > 0) {
-            $message = 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedParamsProperty';
-        }
-        // If needed, issue deprecation notice
-        if ($message !== '') {
-            // NOTE: validation result is arbitrarily added to the "field" property
-            $this->results->add(
-                    'field',
-                    LocalizationUtility::translate(
-                            $message,
-                            'external_import'
-                    ),
-                    AbstractMessage::NOTICE
-            );
         }
     }
 
@@ -451,23 +394,6 @@ class ColumnConfigurationValidator
                 }
             }
         }
-    }
-
-    /**
-     * Issues a notice about the MM property being deprecated (not a real validation).
-     *
-     * @return void
-     */
-    public function validateMMProperty(): void
-    {
-        $this->results->add(
-                'field',
-                LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:mmPropertyDeprecated',
-                        'external_import'
-                ),
-                AbstractMessage::NOTICE
-        );
     }
 
     /**

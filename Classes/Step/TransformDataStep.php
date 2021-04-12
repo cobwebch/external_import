@@ -215,7 +215,6 @@ class TransformDataStep extends AbstractStep
      */
     public function applyRteEnabledFlag($name, $configuration, array $records): array
     {
-        // TODO: check if this is still relevant/correct with TYPO3 v8
         if ((bool)$configuration) {
             foreach ($records as $index => $record) {
                 $records[$index]['_TRANSFORM_' . $name] = 'RTE';

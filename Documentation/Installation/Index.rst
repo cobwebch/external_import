@@ -26,6 +26,11 @@ Upgrading and what's new
 Upgrade to 6.0.0
 """"""""""""""""
 
+All properties that were deprecated in version 5.0.0 were removed and the
+backwards-compatibility layer was dropped. Please refer to the
+:ref:`5.0.0 upgrade instructions <installation-upgrade-500>` and check if you have applied
+all changes.
+
 External Import is now configured for using the standard (Symfony)
 dependency injection mechanism. This means it is not necessary to instantiate the
 :php:`\Cobweb\ExternalImport\Importer` class must using Extbase's

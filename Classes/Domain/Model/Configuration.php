@@ -49,20 +49,6 @@ class Configuration
     protected $columnConfiguration;
 
     /**
-     * @var bool Whether the general configuration is defined in an obsolete way ("ctrl" section) or not
-     *
-     * TODO: remove once backward-compatibility with "ctrl" section is dropped
-     */
-    protected $obsoleteGeneralConfiguration = false;
-
-    /**
-     * @var bool Whether the additional fields configuration is defined in an obsolete way (comma-separated list) or not
-     *
-     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
-     */
-    protected $obsoleteAdditionalFieldsConfiguration = false;
-
-    /**
      * @var int ID of storage page
      */
     protected $storagePid;
@@ -191,24 +177,6 @@ class Configuration
         // Store the storage pid from the configuration
         // It is stored in a separate variable as it might be overridden
         $this->storagePid = $generalConfiguration['pid'];
-
-        // Handle old-style configuration (comma-separated list)
-        // TODO: remove once backward-compatibility is dropped
-        if (array_key_exists('additionalFields', $generalConfiguration)) {
-            $this->setObsoleteAdditionalFieldsConfiguration(true);
-            $fields = GeneralUtility::trimExplode(
-                    ',',
-                    $generalConfiguration['additionalFields'],
-                    true
-            );
-            $additionalFields = [];
-            foreach ($fields as $field) {
-                $additionalFields[$field] = [
-                        'field' => $field
-                ];
-            }
-            $this->setAdditionalFields($additionalFields);
-        }
     }
 
     /**
@@ -223,59 +191,6 @@ class Configuration
             return $this->generalConfiguration[$key];
         }
         return null;
-    }
-
-    /**
-     * TODO: remove once backward-compatibility is dropped
-     *
-     * @return array|null
-     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfiguration() instead
-     */
-    public function getCtrlConfiguration(): ?array
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::getCtrlConfiguration() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfiguration() instead.',
-            E_USER_DEPRECATED
-        );
-        return $this->getGeneralConfiguration();
-    }
-
-    /**
-     * Sets the "ctrl" configuration and performs extra processing
-     * on some properties.
-     *
-     * TODO: remove once backward-compatibility is dropped
-     *
-     * @param array $ctrlConfiguration
-     * @param array $defaultSteps List of default steps (if null will be guessed by the repository)
-     * @return void
-     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::setGeneralConfiguration() instead
-     */
-    public function setCtrlConfiguration(array $ctrlConfiguration, $defaultSteps = null): void
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::setCtrlConfiguration() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::setGeneralConfiguration() instead.',
-            E_USER_DEPRECATED
-        );
-        $this->setGeneralConfiguration($ctrlConfiguration, $defaultSteps);
-    }
-
-    /**
-     * Returns a specific property from the "ctrl" configuration.
-     *
-     * TODO: remove once backward-compatibility is dropped
-     *
-     * @param $key
-     * @return mixed|null
-     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfigurationProperty() instead
-     */
-    public function getCtrlConfigurationProperty($key)
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::getCtrlConfigurationProperty() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfigurationProperty() instead.',
-            E_USER_DEPRECATED
-        );
-        return $this->getGeneralConfigurationProperty($key);
     }
 
     /**
@@ -298,8 +213,6 @@ class Configuration
             $columnConfiguration = array_merge($columnConfiguration, $this->additionalFields);
         }
         $this->columnConfiguration = $columnConfiguration;
-        // TODO: remove once backwards-compatibility is dropped
-        $this->updateDeprecatedTransformationProperties();
         $this->sortTransformationProperties();
     }
 
@@ -355,46 +268,6 @@ class Configuration
                     1601633669
             );
         }
-    }
-
-    /**
-     * TODO: remove once backward-compatibility with "ctrl" section is dropped
-     *
-     * @return bool
-     */
-    public function isObsoleteGeneralConfiguration(): bool
-    {
-        return $this->obsoleteGeneralConfiguration;
-    }
-
-    /**
-     * TODO: remove once backward-compatibility with "ctrl" section is dropped
-     *
-     * @param bool $obsoleteGeneralConfiguration
-     */
-    public function setObsoleteGeneralConfiguration(bool $obsoleteGeneralConfiguration): void
-    {
-        $this->obsoleteGeneralConfiguration = $obsoleteGeneralConfiguration;
-    }
-
-    /**
-     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
-     *
-     * @return bool
-     */
-    public function isObsoleteAdditionalFieldsConfiguration(): bool
-    {
-        return $this->obsoleteAdditionalFieldsConfiguration;
-    }
-
-    /**
-     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
-     *
-     * @param bool $obsoleteAdditionalFieldsConfiguration
-     */
-    public function setObsoleteAdditionalFieldsConfiguration(bool $obsoleteAdditionalFieldsConfiguration): void
-    {
-        $this->obsoleteAdditionalFieldsConfiguration = $obsoleteAdditionalFieldsConfiguration;
     }
 
     /**
@@ -543,37 +416,6 @@ class Configuration
     public function setConnector(ConnectorBase $connector): void
     {
         $this->connector = $connector;
-    }
-
-    /**
-     * Takes care of migrating old "userFunc" and "params" configuration into
-     * "userFunction" and "parameters" configuration.
-     *
-     * NOTE: we don't unset the old properties because we want them to be caught during validation
-     * for outputting deprecation notices.
-     */
-    protected function updateDeprecatedTransformationProperties(): void
-    {
-        $updatedConfiguration = [];
-        foreach ($this->columnConfiguration as $name => $configuration) {
-            $updatedConfiguration[$name] = $configuration;
-            if (isset($configuration['transformations'])) {
-                $transformationConfiguration = [];
-                foreach ($configuration['transformations'] as $index => $property) {
-                    $transformationConfiguration[$index] = $property;
-                    foreach ($property as $key => $propertyConfiguration) {
-                        if ($key === 'userFunc') {
-                            if (isset($propertyConfiguration['params'])) {
-                                $propertyConfiguration['parameters'] = $propertyConfiguration['params'];
-                            }
-                            $transformationConfiguration[$index]['userFunction'] = $propertyConfiguration;
-                        }
-                    }
-                }
-                $updatedConfiguration[$name]['transformations'] = $transformationConfiguration;
-            }
-        }
-        $this->columnConfiguration = $updatedConfiguration;
     }
 
     /**

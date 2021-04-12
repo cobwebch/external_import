@@ -34,12 +34,6 @@ abstract class AbstractStep implements ImporterAwareInterface
     protected $data;
 
     /**
-     * @var Configuration Current External Import configuration
-     * @deprecated don't call directly, use $this->importer->getExternalConfiguration() instead
-     */
-    protected $configuration;
-
-    /**
      * @var bool The import process is aborted if this flag is set to true during the current step
      */
     protected $abortFlag = false;
@@ -72,7 +66,7 @@ abstract class AbstractStep implements ImporterAwareInterface
     /**
      * @return Data
      */
-    public function getData(): Data
+    public function getData(): ?Data
     {
         return $this->data;
     }
@@ -83,32 +77,6 @@ abstract class AbstractStep implements ImporterAwareInterface
     public function setData(Data $data): void
     {
         $this->data = $data;
-    }
-
-    /**
-     * @return Configuration
-     * @deprecated use $this->importer->getExternalConfiguration() instead
-     */
-    public function getConfiguration(): Configuration
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Step\AbstractStep::getConfiguration is deprecated. Use \Cobweb\ExternalImport\Importer::getExternalConfiguration() instead.',
-            E_USER_DEPRECATED
-        );
-        return $this->configuration;
-    }
-
-    /**
-     * @param Configuration $configuration
-     * @deprecated this was used mostly during testing, do not use anymore
-     */
-    public function setConfiguration(Configuration $configuration): void
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Step\AbstractStep::setConfiguration is deprecated without replacement. Do not use anymore.',
-            E_USER_DEPRECATED
-        );
-        $this->configuration = $configuration;
     }
 
     /**
