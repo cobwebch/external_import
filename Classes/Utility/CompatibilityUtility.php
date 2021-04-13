@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Utility;
 
 /*
@@ -32,6 +35,8 @@ class CompatibilityUtility
      */
     public static function isV10(): bool
     {
-        return !(VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch) >= VersionNumberUtility::convertVersionNumberToInteger('11.0.0'));
+        return !(VersionNumberUtility::convertVersionNumberToInteger(
+                TYPO3_branch
+            ) >= VersionNumberUtility::convertVersionNumberToInteger('11.0.0'));
     }
 }

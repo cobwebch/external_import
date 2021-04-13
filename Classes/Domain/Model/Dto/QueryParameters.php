@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Model\Dto;
 
 /*
@@ -81,7 +83,7 @@ class QueryParameters
      *
      * @param array $parameters Query parameters from the AJAX query
      */
-    public function setAllParameters($parameters): void
+    public function setAllParameters(array $parameters): void
     {
         // Set simple parameters
         $this->setDraw((int)$parameters['draw']);

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -44,14 +47,14 @@ class ValidateDataStep extends AbstractStep
             if ($countRecords < $generalConfiguration['minimumRecords']) {
                 $this->abortFlag = true;
                 $this->importer->addMessage(
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:notEnoughRecords',
-                                'external_import',
-                                array(
-                                        $countRecords,
-                                        $generalConfiguration['minimumRecords']
-                                )
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:notEnoughRecords',
+                        'external_import',
+                        array(
+                            $countRecords,
+                            $generalConfiguration['minimumRecords']
                         )
+                    )
                 );
             }
         }
@@ -73,12 +76,12 @@ class ValidateDataStep extends AbstractStep
                     break;
                 } catch (\Exception $e) {
                     $this->importer->debug(
-                            sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'preprocessRawRecordset'
-                            ),
-                            1
+                        sprintf(
+                            'Could not instantiate class %s for hook %s',
+                            $className,
+                            'preprocessRawRecordset'
+                        ),
+                        1
                     );
                 }
             }

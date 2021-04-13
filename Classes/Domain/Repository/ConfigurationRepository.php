@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Repository;
 
 /*
@@ -30,9 +33,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * This is not a true repository in the Extbase sense of the term, as it relies on reading its information
  * from the TCA and not a database. It also does not provide any persistence.
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Domain\Repository
  */
 class ConfigurationRepository
 {
@@ -53,33 +54,35 @@ class ConfigurationRepository
      */
     public function __construct()
     {
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('external_import');
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(
+            'external_import'
+        );
     }
 
     /**
      * Returns the various sections of the external import configuration for the given table and index.
      *
      * @param string $table Name of the table
-     * @param string|integer $index Key of the configuration
+     * @param string|int $index Key of the configuration
      * @return array The relevant TCA configuration
      */
-    public function findByTableAndIndex($table, $index): array
+    public function findByTableAndIndex(string $table, $index): array
     {
         $configuration = [
-                'general' => [],
-                'additionalFields' => [],
-                'columns' => []
+            'general' => [],
+            'additionalFields' => [],
+            'columns' => []
         ];
 
         // General configuration
         if (isset($GLOBALS['TCA'][$table]['external']['general'][$index])) {
             $configuration['general'] = $this->processGeneralConfiguration(
-                    $GLOBALS['TCA'][$table]['external']['general'][$index]
+                $GLOBALS['TCA'][$table]['external']['general'][$index]
             );
-        // Check for legacy general configuration
+            // Check for legacy general configuration
         } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
             $configuration['general'] = $this->processGeneralConfiguration(
-                    $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
+                $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
             );
         }
 
@@ -123,9 +126,9 @@ class ConfigurationRepository
                             $externalTables[$priority] = [];
                         }
                         $externalTables[$priority][] = [
-                                'table' => $tableName,
-                                'index' => $index,
-                                'group' => $externalConfig['group'] ?? '-'
+                            'table' => $tableName,
+                            'index' => $index,
+                            'group' => $externalConfig['group'] ?? '-'
                         ];
                     }
                 }
@@ -143,7 +146,7 @@ class ConfigurationRepository
      * @param string $group Name of the group to look up
      * @return array
      */
-    public function findByGroup($group): array
+    public function findByGroup(string $group): array
     {
         $externalTables = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
@@ -157,8 +160,8 @@ class ConfigurationRepository
                             $externalTables[$priority] = [];
                         }
                         $externalTables[$priority][] = [
-                                'table' => $tableName,
-                                'index' => $index
+                            'table' => $tableName,
+                            'index' => $index
                         ];
                     }
                 }
@@ -197,11 +200,11 @@ class ConfigurationRepository
      * Returns the full External Import configuration as an object for the given table and index.
      *
      * @param string $table Name of the table
-     * @param string|integer $index Key of the configuration
+     * @param string|int $index Key of the configuration
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return Configuration
      */
-    public function findConfigurationObject($table, $index, $defaultSteps = null): Configuration
+    public function findConfigurationObject(string $table, $index, $defaultSteps = null): Configuration
     {
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $externalConfiguration = $this->findByTableAndIndex($table, $index);
@@ -226,7 +229,7 @@ class ConfigurationRepository
      * @param bool $isSynchronizable True for tables with synchronization configuration, false for others
      * @return array List of external import TCA configurations
      */
-    public function findBySync($isSynchronizable): array
+    public function findBySync(bool $isSynchronizable): array
     {
         $isSynchronizable = (bool)$isSynchronizable;
         $configurations = [];
@@ -240,15 +243,16 @@ class ConfigurationRepository
         $backendUser = $this->getBackendUser();
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             // Check if table has external info and user has at least read-access to it
-            if ((isset($sections['external']['general']) || isset($sections['ctrl']['external'])) && $backendUser->check('tables_select', $tableName)) {
+            if ((isset($sections['external']['general']) || isset($sections['ctrl']['external'])) &&
+                $backendUser->check('tables_select', $tableName)) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 $hasWriteAccess = $backendUser->check('tables_modify', $tableName);
                 foreach ($generalConfiguration as $index => $externalConfiguration) {
                     // Synchronizable tables have a connector configuration
                     // Non-synchronizable tables don't
                     if (
-                            ($isSynchronizable && !empty($externalConfiguration['connector'])) ||
-                            (!$isSynchronizable && empty($externalConfiguration['connector']))
+                        ($isSynchronizable && !empty($externalConfiguration['connector'])) ||
+                        (!$isSynchronizable && empty($externalConfiguration['connector']))
                     ) {
                         // If priority is not defined, set to very low
                         // NOTE: the priority doesn't matter for non-synchronizable tables
@@ -275,14 +279,14 @@ class ConfigurationRepository
                         $taskId = $configurationKey->getConfigurationKey();
                         $groupKey = $externalConfiguration['group'] ? 'group:' . $externalConfiguration['group'] : '';
                         $tableConfiguration = [
-                                'id' => $taskId,
-                                'table' => $tableName,
-                                'tableName' => $tableTitle,
-                                'index' => $index,
-                                'priority' => $priority,
-                                'group' => $externalConfiguration['group'],
-                                'description' => htmlspecialchars($description),
-                                'writeAccess' => $hasWriteAccess
+                            'id' => $taskId,
+                            'table' => $tableName,
+                            'tableName' => $tableTitle,
+                            'index' => $index,
+                            'priority' => $priority,
+                            'group' => $externalConfiguration['group'],
+                            'description' => htmlspecialchars($description),
+                            'writeAccess' => $hasWriteAccess
                         ];
                         // Add Scheduler task information, if any
                         // If the configuration is part of a group and that group is automated, return task information too,
@@ -322,7 +326,6 @@ class ConfigurationRepository
         if ($backendUser->isAdmin()) {
             $hasGlobalWriteAccess = 'all';
         } else {
-
             // Loop on all tables and extract external_import-related information from them
             $noAccessCount = 0;
             $numberOfTables = 0;
@@ -339,9 +342,8 @@ class ConfigurationRepository
             // If the user has no restriction, then access is full
             if ($noAccessCount === 0) {
                 $hasGlobalWriteAccess = 'all';
-
-            // Assess if user has rights to no table at all or at least to some
-            } else if ($noAccessCount === $numberOfTables) {
+                // Assess if user has rights to no table at all or at least to some
+            } elseif ($noAccessCount === $numberOfTables) {
                 $hasGlobalWriteAccess = 'none';
             } else {
                 $hasGlobalWriteAccess = 'partial';

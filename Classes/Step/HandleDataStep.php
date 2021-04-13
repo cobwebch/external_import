@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -46,46 +49,43 @@ class HandleDataStep extends AbstractStep
                 $dataHandler = GeneralUtility::makeInstance($generalConfiguration['dataHandler']);
                 if ($dataHandler instanceof DataHandlerInterface) {
                     $records = $dataHandler->handleData(
-                            $originalData,
-                            $this->importer
+                        $originalData,
+                        $this->importer
                     );
                 } else {
                     $this->abortFlag = true;
                     LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler',
-                            'external_import',
-                            array($generalConfiguration['dataHandler'])
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler',
+                        'external_import',
+                        array($generalConfiguration['dataHandler'])
                     );
                     return;
                 }
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $this->abortFlag = true;
                 LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler',
-                        'external_import',
-                        array($generalConfiguration['dataHandler'])
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler',
+                    'external_import',
+                    array($generalConfiguration['dataHandler'])
                 );
                 return;
             }
-
-        // Use default handlers
+            // Use default handlers
         } else {
-
             // Prepare the data, depending on result type
             switch ($generalConfiguration['data']) {
                 case 'xml':
                     $xmlHandler = GeneralUtility::makeInstance(XmlHandler::class);
                     $records = $xmlHandler->handleData(
-                            $originalData,
-                            $this->importer
+                        $originalData,
+                        $this->importer
                     );
                     break;
                 case 'array':
                     $arrayHandler = GeneralUtility::makeInstance(ArrayHandler::class);
                     $records = $arrayHandler->handleData(
-                            $originalData,
-                            $this->importer
+                        $originalData,
+                        $this->importer
                     );
                     break;
 
@@ -119,7 +119,7 @@ class HandleDataStep extends AbstractStep
      * @return array
      * @throws CriticalFailureException
      */
-    protected function preprocessRawData($records): array
+    protected function preprocessRawData(array $records): array
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'] as $className) {
@@ -133,12 +133,12 @@ class HandleDataStep extends AbstractStep
                     throw $e;
                 } catch (\Exception $e) {
                     $this->importer->debug(
-                            sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'preprocessRawRecordset'
-                            ),
-                            1
+                        sprintf(
+                            'Could not instantiate class %s for hook %s',
+                            $className,
+                            'preprocessRawRecordset'
+                        ),
+                        1
                     );
                 }
             }

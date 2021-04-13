@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Validator;
 
 /*
@@ -68,38 +71,39 @@ class GeneralConfigurationValidator
 
         // Validate all properties on which conditions apply
         $this->validateDataProperty($generalConfiguration['data']);
-        $this->validateConnectorProperty($generalConfiguration['connector']);
+        $this->validateConnectorProperty((string)$generalConfiguration['connector']);
         $this->validateDataHandlerProperty($generalConfiguration['dataHandler']);
         $this->validateReferenceUidProperty($generalConfiguration['referenceUid']);
         $this->validatePidProperty($configuration->getStoragePid());
         $this->validateUseColumnIndexProperty(
-                $generalConfiguration['useColumnIndex'],
-                $configuration->getColumnConfiguration()
+            $generalConfiguration['useColumnIndex'],
+            $configuration->getColumnConfiguration()
         );
         $this->validateCustomStepsProperty(
-                $generalConfiguration['customSteps'],
-                $generalConfiguration
+            $generalConfiguration['customSteps'],
+            $generalConfiguration
         );
 
         // Validate properties for pull-only configurations
         if (!empty($generalConfiguration['connector'])) {
             $this->validatePriorityProperty($generalConfiguration['priority']);
             $this->validateConnectorConfigurationProperty(
-                    $generalConfiguration['connector'],
-                    $generalConfiguration['parameters']
+                (string)$generalConfiguration['connector'],
+                $generalConfiguration['parameters']
             );
         }
 
         // Validate properties specific to the "xml"-type data
         if ($generalConfiguration['data'] === 'xml') {
             $this->validateNodeProperty(
-                    $generalConfiguration['nodetype'],
-                    $generalConfiguration['nodepath']
+                $generalConfiguration['nodetype'],
+                $generalConfiguration['nodepath']
             );
         }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
-        return $this->results->countForSeverity(AbstractMessage::ERROR) + $this->results->countForSeverity(AbstractMessage::WARNING) === 0;
+        return $this->results->countForSeverity(AbstractMessage::ERROR) +
+            $this->results->countForSeverity(AbstractMessage::WARNING) === 0;
     }
 
     /**
@@ -112,19 +116,19 @@ class GeneralConfigurationValidator
     {
         if (empty($property)) {
             $this->results->add(
-                    'data',
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingDataProperty'
-                    ),
-                    AbstractMessage::ERROR
+                'data',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingDataProperty'
+                ),
+                AbstractMessage::ERROR
             );
         } elseif ($property !== 'array' && $property !== 'xml') {
             $this->results->add(
-                    'data',
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty'
-                    ),
-                    AbstractMessage::ERROR
+                'data',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty'
+                ),
+                AbstractMessage::ERROR
             );
         }
     }
@@ -142,16 +146,16 @@ class GeneralConfigurationValidator
     {
         if (!empty($property)) {
             $services = ExtensionManagementUtility::findService(
-                    'connector',
-                    $property
+                'connector',
+                $property
             );
             if ($services === false) {
                 $this->results->add(
-                        'connector',
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:unavailableConnector'
-                        ),
-                        AbstractMessage::ERROR
+                    'connector',
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:unavailableConnector'
+                    ),
+                    AbstractMessage::ERROR
                 );
             }
         }
@@ -161,15 +165,15 @@ class GeneralConfigurationValidator
      * Validates the "parameters" property.
      *
      * @param string $connector Type of connector
-     * @param array $property Parameters for the connector
+     * @param array|null $property Parameters for the connector
      * @return void
      * @see \Cobweb\ExternalImport\Validator\GeneralConfigurationValidator::validateConnectorProperty
      */
-    public function validateConnectorConfigurationProperty(string $connector, $property): void
+    public function validateConnectorConfigurationProperty(string $connector, ?array $property): void
     {
         $connectorService = GeneralUtility::makeInstanceService(
-                'connector',
-                $connector
+            'connector',
+            $connector
         );
         // Proceed only if connector was found
         // NOTE: we do not report if connector was not found, because this is the task of validateConnectorProperty()
@@ -178,9 +182,9 @@ class GeneralConfigurationValidator
             foreach ($results as $severity => $messages) {
                 foreach ($messages as $message) {
                     $this->results->add(
-                            'parameters',
-                            $message,
-                            $severity
+                        'parameters',
+                        $message,
+                        $severity
                     );
                 }
             }
@@ -201,30 +205,29 @@ class GeneralConfigurationValidator
                     $dataHandler = GeneralUtility::makeInstance($property);
                     if (!($dataHandler instanceof DataHandlerInterface)) {
                         $this->results->add(
-                                'dataHandler',
-                                LocalizationUtility::translate(
-                                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerInterfaceIssue'
-                                ),
-                                AbstractMessage::NOTICE
-                        );
-                    }
-                }
-                catch (\Exception $e) {
-                    $this->results->add(
                             'dataHandler',
                             LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNoInstance'
+                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerInterfaceIssue'
                             ),
                             AbstractMessage::NOTICE
+                        );
+                    }
+                } catch (\Exception $e) {
+                    $this->results->add(
+                        'dataHandler',
+                        LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNoInstance'
+                        ),
+                        AbstractMessage::NOTICE
                     );
                 }
             } else {
                 $this->results->add(
-                        'dataHandler',
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNotFound'
-                        ),
-                        AbstractMessage::NOTICE
+                    'dataHandler',
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNotFound'
+                    ),
+                    AbstractMessage::NOTICE
                 );
             }
         }
@@ -241,12 +244,12 @@ class GeneralConfigurationValidator
     {
         if (empty($nodetype) && empty($nodepath)) {
             $this->results->add(
-                    'nodetype',
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodeProperty',
-                            'external_import'
-                    ),
-                    AbstractMessage::ERROR
+                'nodetype',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodeProperty',
+                    'external_import'
+                ),
+                AbstractMessage::ERROR
             );
         }
     }
@@ -261,11 +264,11 @@ class GeneralConfigurationValidator
     {
         if (empty($property)) {
             $this->results->add(
-                    'referenceUid',
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingReferenceUidProperty'
-                    ),
-                    AbstractMessage::ERROR
+                'referenceUid',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingReferenceUidProperty'
+                ),
+                AbstractMessage::ERROR
             );
         }
     }
@@ -280,15 +283,15 @@ class GeneralConfigurationValidator
     {
         if (empty($property)) {
             $this->results->add(
-                    'priority',
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:defaultPriorityValue',
-                            null,
-                            [
-                                    Importer::DEFAULT_PRIORITY
-                            ]
-                    ),
-                    AbstractMessage::NOTICE
+                'priority',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:defaultPriorityValue',
+                    null,
+                    [
+                        Importer::DEFAULT_PRIORITY
+                    ]
+                ),
+                AbstractMessage::NOTICE
             );
         }
     }
@@ -310,52 +313,50 @@ class GeneralConfigurationValidator
             // NOTE: "rootLevel" is not supposed to be "true", but errors happen and we allow for these.
             if ($rootLevelFlag === -1 || $rootLevelFlag === 1 || $rootLevelFlag) {
                 $this->results->add(
-                        'pid',
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPage',
-                                'external_import'
-                        ),
-                        AbstractMessage::NOTICE
+                    'pid',
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPage',
+                        'external_import'
+                    ),
+                    AbstractMessage::NOTICE
                 );
             } else {
                 // Records for current table are not allowed on root page
                 $this->results->add(
-                        'pid',
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPageNotAllowed',
-                                null,
-                                [
-                                        $this->table
-                                ]
-                        ),
-                        AbstractMessage::ERROR
+                    'pid',
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPageNotAllowed',
+                        null,
+                        [
+                            $this->table
+                        ]
+                    ),
+                    AbstractMessage::ERROR
                 );
             }
         } elseif ($property < 0) {
             // Negative pid is invalid
             $this->results->add(
-                    'pid',
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:negativePidProperty',
-                            'external_import'
-                    ),
-                    AbstractMessage::ERROR
+                'pid',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:negativePidProperty',
+                    'external_import'
+                ),
+                AbstractMessage::ERROR
             );
-        } else {
             // Pid is a positive integer, but records for current table can only be stored on root page
-            if ($rootLevelFlag === 1) {
-                $this->results->add(
-                        'pid',
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidPidPropertyOnlyRoot',
-                                null,
-                                [
-                                        $this->table
-                                ]
-                        ),
-                        AbstractMessage::ERROR
-                );
-            }
+        } elseif ($rootLevelFlag === 1) {
+            $this->results->add(
+                'pid',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidPidPropertyOnlyRoot',
+                    null,
+                    [
+                        $this->table
+                    ]
+                ),
+                AbstractMessage::ERROR
+            );
         }
     }
 
@@ -372,16 +373,16 @@ class GeneralConfigurationValidator
         // If there's no column configuration using that index, issue an error
         if ($property !== null && count($columns) === 0) {
             $this->results->add(
-                    'useColumnIndex',
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:wrongUseColumnIndexProperty',
-                            null,
-                            [
-                                    $property,
-                                    $this->table
-                            ]
-                    ),
-                    AbstractMessage::ERROR
+                'useColumnIndex',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:wrongUseColumnIndexProperty',
+                    null,
+                    [
+                        $property,
+                        $this->table
+                    ]
+                ),
+                AbstractMessage::ERROR
             );
         }
     }
@@ -404,20 +405,19 @@ class GeneralConfigurationValidator
             }
             foreach ($property as $customStepConfiguration) {
                 try {
-                    $result = $this->stepUtility->validateCustomStepConfiguration($steps, $customStepConfiguration);
-                }
-                catch (InvalidCustomStepConfiguration $e) {
+                    $this->stepUtility->validateCustomStepConfiguration($steps, $customStepConfiguration);
+                } catch (InvalidCustomStepConfiguration $e) {
                     $this->results->add(
-                            'customSteps',
-                            LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidCustomStepsProperty',
-                                    null,
-                                    [
-                                            $e->getMessage(),
-                                            $e->getCode()
-                                    ]
-                            ),
-                            AbstractMessage::NOTICE
+                        'customSteps',
+                        LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidCustomStepsProperty',
+                            null,
+                            [
+                                $e->getMessage(),
+                                $e->getCode()
+                            ]
+                        ),
+                        AbstractMessage::NOTICE
                     );
                     break;
                 }

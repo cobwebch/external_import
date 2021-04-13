@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Utility;
 
 /*
@@ -14,6 +17,11 @@ namespace Cobweb\ExternalImport\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+/**
+ * Class with some utilities for dumping an array as a HTML table.
+ *
+ * @package Cobweb\ExternalImport\Utility
+ */
 class DebugUtility
 {
     /**
@@ -22,17 +30,17 @@ class DebugUtility
      * @param array $array Array to display
      * @return string HTML table assembled from array
      */
-    public static function dumpArray($array): string
+    public static function dumpArray(array $array): string
     {
         $table = '<table>';
         foreach ($array as $key => $value) {
             $table .= '<tr>';
-            $table .= '<td>' . htmlspecialchars($key) . '</td>';
+            $table .= '<td>' . htmlspecialchars((string)$key) . '</td>';
             $table .= '<td>';
             if (is_array($value)) {
                 $table .= self::dumpArray($value);
             } else {
-                $table .= htmlspecialchars($value);
+                $table .= htmlspecialchars((string)$value);
             }
             $table .= '</td>';
             $table .= '</tr>';
@@ -52,23 +60,23 @@ class DebugUtility
      * @param array $copyArray Related array
      * @return string HTML table assembled from array
      */
-    public static function dumpTwinArrays($referenceArray, $copyArray): string
+    public static function dumpTwinArrays(array $referenceArray, array $copyArray): string
     {
         $table = '<table>';
         foreach ($referenceArray as $key => $value) {
             $table .= '<tr>';
-            $table .= '<td>' . htmlspecialchars($key) . '</td>';
+            $table .= '<td>' . htmlspecialchars((string)$key) . '</td>';
             $table .= '<td>';
             if (is_array($value)) {
                 $table .= self::dumpTwinArrays(
-                        $value,
-                        array_key_exists($key, $copyArray) ? $copyArray[$key] : array()
+                    $value,
+                    array_key_exists($key, $copyArray) ? $copyArray[$key] : array()
                 );
             } else {
-                $cellContent = htmlspecialchars($value);
+                $cellContent = htmlspecialchars((string)$value);
                 // Add related value, if it exists and only if it is different (avoid cluttering display)
                 if (array_key_exists($key, $copyArray) && $copyArray[$key] != $value) {
-                    $cellContent .= '<br><em>' . htmlspecialchars($copyArray[$key]) . '</em>';
+                    $cellContent .= '<br><em>' . htmlspecialchars((string)$copyArray[$key]) . '</em>';
                 }
                 $table .= $cellContent;
             }

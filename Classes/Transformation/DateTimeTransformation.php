@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Transformation;
 
 /*
@@ -61,7 +63,7 @@ class DateTimeTransformation implements SingletonInterface, ImporterAwareInterfa
             // Use strftime for formatting
             if ($params['function'] === 'strftime') {
                 $value = strftime($params['format'], $value);
-            // Otherwise use date
+                // Otherwise use date
             } else {
                 $value = date($params['format'], $value);
             }

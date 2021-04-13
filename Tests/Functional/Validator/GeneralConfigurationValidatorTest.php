@@ -112,7 +112,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
                         [
                                 'data' => 'array',
                                 'reference_uid' => 'external_id',
-                                'connector' => time()
+                                'connector' => uniqid('', true)
                         ]
                 ],
                 'Missing reference_uid property' => [
@@ -184,7 +184,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
                         'tt_content',
                         [
                             // Some random connector name
-                            'connector' => time()
+                            'connector' => uniqid('', true)
                         ]
                 )
         );

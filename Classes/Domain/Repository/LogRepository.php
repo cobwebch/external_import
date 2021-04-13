@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Repository;
 
 /*
@@ -22,9 +25,7 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 /**
  * Repository for the log table.
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Domain\Repository
  */
 class LogRepository extends Repository
 {
@@ -55,20 +56,20 @@ class LogRepository extends Repository
         if ($queryParameters->getSearch() !== '' && count($queryParameters->getSearchColumns()) > 0) {
             $query->matching(
                 $query->logicalOr(
-                        $this->assembleSearchConditions(
-                                $query,
-                                $queryParameters->getSearch(),
-                                $queryParameters->getSearchColumns()
-                        )
+                    $this->assembleSearchConditions(
+                        $query,
+                        $queryParameters->getSearch(),
+                        $queryParameters->getSearchColumns()
+                    )
                 )
             );
         }
         // Set ordering
         if ($queryParameters->getOrder() !== '') {
             $query->setOrderings(
-                    [
-                            $queryParameters->getOrder() => $queryParameters->getDirection()
-                    ]
+                [
+                    $queryParameters->getOrder() => $queryParameters->getDirection()
+                ]
             );
         }
         // Set limit (pagination)
@@ -95,11 +96,11 @@ class LogRepository extends Repository
         if ($queryParameters->getSearch() !== '' && count($queryParameters->getSearchColumns()) > 0) {
             $query->matching(
                 $query->logicalOr(
-                        $this->assembleSearchConditions(
-                                $query,
-                                $queryParameters->getSearch(),
-                                $queryParameters->getSearchColumns()
-                        )
+                    $this->assembleSearchConditions(
+                        $query,
+                        $queryParameters->getSearch(),
+                        $queryParameters->getSearchColumns()
+                    )
                 )
             );
         }
@@ -122,8 +123,8 @@ class LogRepository extends Repository
         foreach ($searchColumns as $column) {
             // Filter on user name
             $searchConditions[] = $query->like(
-                    $column,
-                    $search
+                $column,
+                $search
             );
         }
         return $searchConditions;

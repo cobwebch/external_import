@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Controller;
 
 /*
@@ -26,9 +28,7 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 /**
  * Controller for the "Log" backend module
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Controller
  */
 class LogModuleController extends ActionController
 {
@@ -59,7 +59,7 @@ class LogModuleController extends ActionController
      *
      * @return void
      */
-    protected function initializeAction()
+    protected function initializeAction(): void
     {
         $this->defaultViewObjectName = BackendTemplateView::class;
     }
@@ -71,20 +71,22 @@ class LogModuleController extends ActionController
      * @return void
      * @api
      */
-    protected function initializeView(ViewInterface $view)
+    protected function initializeView(ViewInterface $view): void
     {
         if ($view instanceof BackendTemplateView) {
             parent::initializeView($view);
         }
         $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
-        $publicResourcesPath = PathUtility::getAbsoluteWebPath(ExtensionManagementUtility::extPath('external_import')) . 'Resources/Public/';
+        $publicResourcesPath = PathUtility::getAbsoluteWebPath(
+                ExtensionManagementUtility::extPath('external_import')
+            ) . 'Resources/Public/';
         $pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
         $pageRenderer->addRequireJsConfiguration(
-                [
-                        'paths' => [
-                                'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
-                        ]
+            [
+                'paths' => [
+                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
                 ]
+            ]
         );
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/LogModule');
         $pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');

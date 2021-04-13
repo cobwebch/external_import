@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -80,11 +82,6 @@ class StoreDataStep extends AbstractStep
         return self::class;
     }
 
-    public function setImporter(Importer $importer): void
-    {
-        parent::setImporter($importer);
-    }
-
     /**
      * Stores the data to the database using DataHandler.
      *
@@ -95,9 +92,9 @@ class StoreDataStep extends AbstractStep
     {
         $records = $this->getData()->getRecords();
         $this->importer->debug(
-                'Data received for storage',
-                0,
-                $records
+            'Data received for storage',
+            0,
+            $records
         );
 
         // Load the list of existing uids for the table
@@ -115,13 +112,13 @@ class StoreDataStep extends AbstractStep
         $moves = 0;
         $updatedUids = [];
         $tceData = [
-                $mainTable => []
+            $mainTable => []
         ];
         $tceCommands = [
-                $mainTable => []
+            $mainTable => []
         ];
         $storedRecords = [
-                $mainTable => []
+            $mainTable => []
         ];
 
         // Prepare some data before the loop
@@ -132,7 +129,7 @@ class StoreDataStep extends AbstractStep
         $dateToStore = $this->prepareDataToStore();
 
         foreach ($dateToStore as $id => $theRecord) {
-            $isExistingRecord = strpos($id, 'NEW') === false;
+            $isExistingRecord = strpos((string)$id, 'NEW') === false;
 
             // TODO: this was used for legacy MM handling and current pids, but current pids could be changed to use $id, so this could be dropped at a later point
             $externalUid = $this->idToExternalIdMap[$id];
@@ -141,7 +138,7 @@ class StoreDataStep extends AbstractStep
             // Existing records have their own (unless they have been moved)
             if ($isExistingRecord) {
                 $recordPid = $theRecord['pid'] ?? $currentPids[$externalUid];
-            // New records have their own or fall back to the general storage pid
+                // New records have their own or fall back to the general storage pid
             } else {
                 $recordPid = $theRecord['pid'] ?? $storagePid;
             }
@@ -163,8 +160,8 @@ class StoreDataStep extends AbstractStep
                             $childData['pid'] = $recordPid;
                             $tceData[$childTable][$childId] = $childData;
                             $storedRecords[$childTable][] = array_merge(
-                                    ['uid' => $childId],
-                                    $childData
+                                ['uid' => $childId],
+                                $childData
                             );
                         }
                     }
@@ -193,14 +190,14 @@ class StoreDataStep extends AbstractStep
                             return;
                         } catch (\Exception $e) {
                             $this->importer->debug(
-                                    sprintf(
-                                            'Could not use class %s for hook %s (error: %s, code: %d)',
-                                            $className,
-                                            'updatePreProcess',
-                                            $e->getMessage(),
-                                            $e->getCode()
-                                    ),
-                                    1
+                                sprintf(
+                                    'Could not use class %s for hook %s (error: %s, code: %d)',
+                                    $className,
+                                    'updatePreProcess',
+                                    $e->getMessage(),
+                                    $e->getCode()
+                                ),
+                                1
                             );
                         }
                     }
@@ -217,16 +214,14 @@ class StoreDataStep extends AbstractStep
                 // Check if some records have a changed "pid", in which case a "move" action is also needed
                 if (array_key_exists('pid', $theRecord) && (int)$theRecord['pid'] !== $currentPids[$externalUid]) {
                     $tceCommands[$mainTable][$id] = [
-                            'move' => (int)$theRecord['pid']
+                        'move' => (int)$theRecord['pid']
                     ];
                     $moves++;
                 }
                 $updatedUids[] = $id;
                 $updates++;
-
-            // Register record for insert
+                // Register record for insert
             } else {
-
                 // First call a pre-processing hook
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'])) {
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'] as $className) {
@@ -238,14 +233,14 @@ class StoreDataStep extends AbstractStep
                             return;
                         } catch (\Exception $e) {
                             $this->importer->debug(
-                                    sprintf(
-                                            'Could not use class %s for hook %s (error: %s, code: %d)',
-                                            $className,
-                                            'insertPreProcess',
-                                            $e->getMessage(),
-                                            $e->getCode()
-                                    ),
-                                    1
+                                sprintf(
+                                    'Could not use class %s for hook %s (error: %s, code: %d)',
+                                    $className,
+                                    'insertPreProcess',
+                                    $e->getMessage(),
+                                    $e->getCode()
+                                ),
+                                1
                             );
                         }
                     }
@@ -266,8 +261,8 @@ class StoreDataStep extends AbstractStep
                 $tceData[$mainTable][$id] = $theRecord;
             }
             $storedRecords[$mainTable][] = array_merge(
-                    ['uid' => $id],
-                    $theRecord
+                ['uid' => $id],
+                $theRecord
             );
         }
         // If the target table is pages, perform some special sorting to ensure that parent pages
@@ -276,14 +271,14 @@ class StoreDataStep extends AbstractStep
             $tceData['pages'] = $this->sortPagesData($tceData['pages']);
         }
         $this->importer->debug(
-                'TCEmain data',
-                0,
-                $tceData
+            'TCEmain data',
+            0,
+            $tceData
         );
         $this->importer->debug(
-                'TCEmain commands',
-                0,
-                $tceCommands
+            'TCEmain commands',
+            0,
+            $tceCommands
         );
 
         // Create an instance of DataHandler and process the data
@@ -311,9 +306,9 @@ class StoreDataStep extends AbstractStep
                 $tce->process_datamap();
                 $tce->process_cmdmap();
                 $this->importer->debug(
-                        'New IDs',
-                        0,
-                        $tce->substNEWwithIDs
+                    'New IDs',
+                    0,
+                    $tce->substNEWwithIDs
                 );
                 $inserts = count($tce->substNEWwithIDs);
                 // Update the slug fields, if activated
@@ -361,12 +356,12 @@ class StoreDataStep extends AbstractStep
                             return;
                         } catch (\Exception $e) {
                             $this->importer->debug(
-                                    sprintf(
-                                            'Could not instantiate class %s for hook %s',
-                                            $className,
-                                            'datamapPostProcess'
-                                    ),
-                                    1
+                                sprintf(
+                                    'Could not instantiate class %s for hook %s',
+                                    $className,
+                                    'datamapPostProcess'
+                                ),
+                                1
                             );
                         }
                     }
@@ -383,11 +378,11 @@ class StoreDataStep extends AbstractStep
         // Register all child records marked for deletion
         foreach ($this->childRecordsToDelete as $childTable => $childList) {
             $tceDeleteCommands = [
-                    $childTable => []
+                $childTable => []
             ];
             foreach ($childList as $child) {
                 $tceDeleteCommands[$childTable][$child] = [
-                        'delete' => 1
+                    'delete' => 1
                 ];
                 $deletes++;
             }
@@ -407,12 +402,12 @@ class StoreDataStep extends AbstractStep
                         return;
                     } catch (\Exception $e) {
                         $this->importer->debug(
-                                sprintf(
-                                        'Could not instantiate class %s for hook %s',
-                                        $className,
-                                        'deletePreProcess'
-                                ),
-                                1
+                            sprintf(
+                                'Could not instantiate class %s for hook %s',
+                                $className,
+                                'deletePreProcess'
+                            ),
+                            1
                         );
                     }
                 }
@@ -421,16 +416,16 @@ class StoreDataStep extends AbstractStep
                 $tceDeleteCommands[$mainTable] = [];
                 foreach ($absentUids as $id) {
                     $tceDeleteCommands[$mainTable][$id] = [
-                            'delete' => 1
+                        'delete' => 1
                     ];
                     $deletes++;
                 }
             }
         }
         $this->importer->debug(
-                'TCEmain commands',
-                0,
-                $tceDeleteCommands
+            'TCEmain commands',
+            0,
+            $tceDeleteCommands
         );
         // Actually delete the records, if not in preview mode
         if ($deletes > 0 && !$this->importer->isPreview()) {
@@ -448,12 +443,12 @@ class StoreDataStep extends AbstractStep
                             return;
                         } catch (\Exception $e) {
                             $this->importer->debug(
-                                    sprintf(
-                                            'Could not instantiate class %s for hook %s',
-                                            $className,
-                                            'cmdmapPostProcess'
-                                    ),
-                                    1
+                                sprintf(
+                                    'Could not instantiate class %s for hook %s',
+                                    $className,
+                                    'cmdmapPostProcess'
+                                ),
+                                1
                             );
                         }
                     }
@@ -471,57 +466,57 @@ class StoreDataStep extends AbstractStep
         // Set informational messages (not in preview mode)
         if (!$this->importer->isPreview()) {
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_inserted',
-                            'external_import',
-                            [$inserts]
-                    ),
-                    AbstractMessage::OK
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_inserted',
+                    'external_import',
+                    [$inserts]
+                ),
+                AbstractMessage::OK
             );
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_updated',
-                            'external_import',
-                            [$updates]
-                    ),
-                    AbstractMessage::OK
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_updated',
+                    'external_import',
+                    [$updates]
+                ),
+                AbstractMessage::OK
             );
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_deleted',
-                            'external_import',
-                            [$deletes]
-                    ),
-                    AbstractMessage::OK
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_deleted',
+                    'external_import',
+                    [$deletes]
+                ),
+                AbstractMessage::OK
             );
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_moved',
-                            'external_import',
-                            [$moves]
-                    ),
-                    AbstractMessage::OK
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_moved',
+                    'external_import',
+                    [$moves]
+                ),
+                AbstractMessage::OK
             );
             // Store the number of operations in the reporting utility
             $this->importer->getReportingUtility()->setValueForStep(
-                    self::class,
-                    'inserts',
-                    $inserts
+                self::class,
+                'inserts',
+                $inserts
             );
             $this->importer->getReportingUtility()->setValueForStep(
-                    self::class,
-                    'updates',
-                    $updates
+                self::class,
+                'updates',
+                $updates
             );
             $this->importer->getReportingUtility()->setValueForStep(
-                    self::class,
-                    'deletes',
-                    $deletes
+                self::class,
+                'deletes',
+                $deletes
             );
             $this->importer->getReportingUtility()->setValueForStep(
-                    self::class,
-                    'moves',
-                    $moves
+                self::class,
+                'moves',
+                $moves
             );
         }
 
@@ -531,11 +526,11 @@ class StoreDataStep extends AbstractStep
         // NOTE: both sets of commands are presented separately and not merged, because array_merge_recursive()
         // renumbers numerical indices, which is wrong (numerical indices in TCE structures correspond to uids)
         $this->importer->setPreviewData(
-                [
-                        'data' => $tceData,
-                        'commands-delete' => $tceDeleteCommands ?? [],
-                        'commands-move' => $tceCommands
-                ]
+            [
+                'data' => $tceData,
+                'commands-delete' => $tceDeleteCommands ?? [],
+                'commands-move' => $tceCommands
+            ]
         );
 
         // Free some memory
@@ -549,6 +544,7 @@ class StoreDataStep extends AbstractStep
      * Also creates the "child" sub-structure for IRRE relations.
      *
      * @return array
+     * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
     public function prepareDataToStore(): array
     {
@@ -613,7 +609,7 @@ class StoreDataStep extends AbstractStep
                     // The values that are excluded are temporarily stored for later restoration
                     if ($configuration[Configuration::DO_NOT_SAVE_KEY]) {
                         $this->valuesExcludedFromSaving[$id][$name] = $record[$name];
-                    // Make sure a value actually exists
+                        // Make sure a value actually exists
                     } elseif (isset($record[$name])) {
                         $dataToStore[$id][$name] = $record[$name];
                     }
@@ -633,8 +629,8 @@ class StoreDataStep extends AbstractStep
                     // later when actually using the multiple values)
                     if (isset($denormalizedSorting[$name])) {
                         $multipleEntry = [
-                                'value' => $record[$name],
-                                'sorting' => $record[$denormalizedSorting[$name]]
+                            'value' => $record[$name],
+                            'sorting' => $record[$denormalizedSorting[$name]]
                         ];
                     } else {
                         $multipleEntry = $record[$name];
@@ -660,11 +656,13 @@ class StoreDataStep extends AbstractStep
                             $dataToStore[$id]['__children__'][$mainColumnName][$childTable] = [];
                         }
                         $childStructure = $this->prepareChildStructure(
-                                $childConfiguration,
-                                $id,
-                                $record
+                            $childConfiguration,
+                            $id,
+                            $record
                         );
-                        $dataToStore[$id]['__children__'][$mainColumnName][$childTable][key($childStructure)] = current($childStructure);
+                        $dataToStore[$id]['__children__'][$mainColumnName][$childTable][key($childStructure)] = current(
+                            $childStructure
+                        );
                     }
                 }
             }
@@ -677,14 +675,17 @@ class StoreDataStep extends AbstractStep
                     // Using the first entry, check if the multiple values are an array
                     // If yes, perform sorting and extract the values
                     if (is_array($multipleValues[$id][$name][0])) {
-                        usort($multipleValues[$id][$name], function ($a, $b) {
-                            return strnatcasecmp($a['sorting'], $b['sorting']);
-                        });
+                        usort(
+                            $multipleValues[$id][$name],
+                            function ($a, $b) {
+                                return strnatcasecmp($a['sorting'], $b['sorting']);
+                            }
+                        );
                         $values = [];
                         foreach ($multipleValues[$id][$name] as $multipleValue) {
                             $values[] = $multipleValue['value'];
                         }
-                    // Otherwise use the values as is
+                        // Otherwise use the values as is
                     } else {
                         $values = $multipleValues[$id][$name];
                     }
@@ -714,14 +715,14 @@ class StoreDataStep extends AbstractStep
         // NOTE: all child records are assembled here as if they were new. They are filtered later on.
         $temporaryKey = $this->importer->getTemporaryKeyRepository()->generateTemporaryKey();
         $childStructure = [
-                $temporaryKey => []
+            $temporaryKey => []
         ];
         foreach ($childConfiguration as $name => $configuration) {
             // If it is a value, use it as is
             if (isset($configuration['value'])) {
                 $childStructure[$temporaryKey][$name] = $configuration['value'];
-            // If it is a field, get the value from the field, if defined
-            // (if it's the special value "__parent.id__", use the parent record's id)
+                // If it is a field, get the value from the field, if defined
+                // (if it's the special value "__parent.id__", use the parent record's id)
             } elseif (isset($configuration['field'])) {
                 if ($configuration['field'] === '__parent.id__') {
                     $childStructure[$temporaryKey][$name] = $parentId;
@@ -750,7 +751,7 @@ class StoreDataStep extends AbstractStep
             // Act only if the parent record is not new (if it is new, all its child records will be new too)
             // and if it has child records. Otherwise, keep as is.
             $newDataToStore[$id] = $record;
-            if (strpos($id, 'NEW') === false && isset($record['__children__']) && count($record['__children__']) > 0) {
+            if (strpos((string)$id, 'NEW') === false && isset($record['__children__']) && count($record['__children__']) > 0) {
                 // Reset the children list
                 $newDataToStore[$id]['__children__'] = [];
                 foreach ($record['__children__'] as $column => $childrenListForTable) {
@@ -765,14 +766,16 @@ class StoreDataStep extends AbstractStep
                             } else {
                                 // If deletion is not disabled, grab existing records
                                 // (this is done once, but we need the data from one child record)
-                                if ($iterator === 0 && !$this->childColumns[$column]['disabledOperations']['delete'] && count($this->childColumns[$column]['controlColumnsForDelete']) > 0) {
+                                if ($iterator === 0 && !$this->childColumns[$column]['disabledOperations']['delete'] && count(
+                                        $this->childColumns[$column]['controlColumnsForDelete']
+                                    ) > 0) {
                                     $controlValues = [];
                                     foreach ($this->childColumns[$column]['controlColumnsForDelete'] as $name) {
                                         $controlValues[$name] = $childData[$name];
                                     }
                                     $allExistingChildren = $childrenRepository->findAllExistingRecords(
-                                            $table,
-                                            $controlValues
+                                        $table,
+                                        $controlValues
                                     );
                                 }
                                 // Check if the child record already exists
@@ -791,8 +794,8 @@ class StoreDataStep extends AbstractStep
                                 if ($hasAllControlValues) {
                                     try {
                                         $existingId = $childrenRepository->findFirstExistingRecord(
-                                                $table,
-                                                $controlValues
+                                            $table,
+                                            $controlValues
                                         );
                                         $updatedChildren[] = $existingId;
                                         // If update operation is allowed, keep the child record but replace its "NEW***" temporary key
@@ -806,9 +809,9 @@ class StoreDataStep extends AbstractStep
                                             $newDataToStore[$id]['__children__'][$column][$table][$childId] = $childData;
                                         }
                                     }
-                                // If a control value was missing, let the record be considered to be new (if inserts are allowed)
-                                // This will probably create a database error at at later point, but the user
-                                // will get to see it in the logs
+                                    // If a control value was missing, let the record be considered to be new (if inserts are allowed)
+                                    // This will probably create a database error at at later point, but the user
+                                    // will get to see it in the logs
                                 } elseif (!$this->childColumns[$column]['disabledOperations']['insert']) {
                                     $newDataToStore[$id]['__children__'][$column][$table][$childId] = $childData;
                                 }
@@ -837,7 +840,7 @@ class StoreDataStep extends AbstractStep
      *
      * @param array $columnConfiguration External Import configuration for the columns
      */
-    public function prepareStructuredInformation($columnConfiguration): void
+    public function prepareStructuredInformation(array $columnConfiguration): void
     {
         foreach ($columnConfiguration as $columnName => $columnData) {
             if (array_key_exists('disabledOperations', $columnData)) {
@@ -851,12 +854,16 @@ class StoreDataStep extends AbstractStep
             if (array_key_exists('children', $columnData)) {
                 $childrenData = $columnData['children'];
                 // Reformat some information for easier access later
-                $childrenData['controlColumnsForUpdate'] = isset($childrenData['controlColumnsForUpdate']) ? GeneralUtility::trimExplode(',', $childrenData['controlColumnsForUpdate']) : [];
-                $childrenData['controlColumnsForDelete'] = isset($childrenData['controlColumnsForDelete']) ? GeneralUtility::trimExplode(',', $childrenData['controlColumnsForDelete']) : [];
+                $childrenData['controlColumnsForUpdate'] = isset($childrenData['controlColumnsForUpdate']) ?
+                    GeneralUtility::trimExplode(',', $childrenData['controlColumnsForUpdate']) :
+                    [];
+                $childrenData['controlColumnsForDelete'] = isset($childrenData['controlColumnsForDelete']) ?
+                    GeneralUtility::trimExplode(',', $childrenData['controlColumnsForDelete']) :
+                    [];
                 $disabledOperations = [
-                        'insert' => false,
-                        'update' => false,
-                        'delete' => false
+                    'insert' => false,
+                    'update' => false,
+                    'delete' => false
                 ];
                 if (isset($childrenData['disabledOperations'])) {
                     $operations = GeneralUtility::trimExplode(',', $childrenData['disabledOperations']);
@@ -884,42 +891,42 @@ class StoreDataStep extends AbstractStep
      * @param array $errorLog
      * @return void
      */
-    protected function reportTceErrors($errorLog): void
+    protected function reportTceErrors(array $errorLog): void
     {
         if (count($errorLog) > 0) {
             // If there are errors, get these messages from the sys_log table (assuming they are the latest ones)
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_log');
             $res = $queryBuilder->select('*')
-                    ->from('sys_log')
-                    ->where(
-                            $queryBuilder->expr()->eq(
-                                    'tablename',
-                                    $queryBuilder->createNamedParameter(
-                                            $this->importer->getExternalConfiguration()->getTable()
-                                    )
-                            )
+                ->from('sys_log')
+                ->where(
+                    $queryBuilder->expr()->eq(
+                        'tablename',
+                        $queryBuilder->createNamedParameter(
+                            $this->importer->getExternalConfiguration()->getTable()
+                        )
                     )
-                    ->andWhere(
-                            $queryBuilder->expr()->gt(
-                                    'error',
-                                    0
-                            )
+                )
+                ->andWhere(
+                    $queryBuilder->expr()->gt(
+                        'error',
+                        0
                     )
-                    ->orderBy(
-                            'tstamp',
-                            'DESC'
-                    )
-                    ->setMaxResults(
-                            count($errorLog)
-                    )
-                    ->execute();
+                )
+                ->orderBy(
+                    'tstamp',
+                    'DESC'
+                )
+                ->setMaxResults(
+                    count($errorLog)
+                )
+                ->execute();
             if ($res) {
-                while ($row = $res->fetch(\PDO::FETCH_ASSOC)) {
+                while ($row = $res->fetchAssociative()) {
                     // Check if there's a label for the message
                     $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
                     $label = LocalizationUtility::translate(
-                            'LLL:EXT:belog/mod/locallang.xml:' . $labelCode,
-                            'belog'
+                        'LLL:EXT:belog/mod/locallang.xml:' . $labelCode,
+                        'belog'
                     );
                     // If not, use details field
                     if (empty($label)) {
@@ -930,30 +937,30 @@ class StoreDataStep extends AbstractStep
                     if (!empty($row['log_data'])) {
                         $data = unserialize($row['log_data'], ['allowed_classes' => false]);
                         $message = sprintf(
-                                $label,
-                                htmlspecialchars($data[0]),
-                                htmlspecialchars($data[1]),
-                                htmlspecialchars($data[2]),
-                                htmlspecialchars($data[3]),
-                                htmlspecialchars($data[4])
+                            $label,
+                            htmlspecialchars($data[0]),
+                            htmlspecialchars($data[1]),
+                            htmlspecialchars($data[2]),
+                            htmlspecialchars($data[3]),
+                            htmlspecialchars($data[4])
                         );
                     }
                     $this->importer->addMessage(
-                            $message
+                        $message
                     );
                     $this->importer->debug(
-                            $message,
-                            3
+                        $message,
+                        3
                     );
                 }
             }
             // Add a warning that number of operations reported may not be accurate
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:things_happened',
-                            'external_import'
-                    ),
-                    AbstractMessage::WARNING
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:things_happened',
+                    'external_import'
+                ),
+                AbstractMessage::WARNING
             );
         }
     }
@@ -975,8 +982,8 @@ class StoreDataStep extends AbstractStep
         $sortedData = [];
         // Extract pages which don't have a "NEW" pid
         foreach ($data as $id => $fields) {
-            if (strpos($fields['pid'], 'NEW') === false) {
-                $levelPages[] = (strpos($id, 'NEW') === 0) ? $id : (int)$id;
+            if (strpos((string)$fields['pid'], 'NEW') === false) {
+                $levelPages[] = (strpos((string)$id, 'NEW') === 0) ? $id : (int)$id;
                 $sortedData[$id] = $fields;
                 unset($data[$id]);
             }
@@ -1007,17 +1014,17 @@ class StoreDataStep extends AbstractStep
         $nextLevelPages = [];
         $pagesForLevel = [];
         foreach ($data as $id => $fields) {
-            $pid = (strpos($fields['pid'], 'NEW') === 0) ? $fields['pid'] : (int)$fields['pid'];
+            $pid = (strpos((string)$fields['pid'], 'NEW') === 0) ? $fields['pid'] : (int)$fields['pid'];
             if (in_array($pid, $levelPages, true)) {
                 $pagesForLevel[$id] = $fields;
-                $nextLevelPages[] = (strpos($id, 'NEW') === 0) ? $id : (int)$id;
+                $nextLevelPages[] = (strpos((string)$id, 'NEW') === 0) ? $id : (int)$id;
                 unset($data[$id]);
             }
         }
         // Put level pages "above" already sorted pages, to take into account a reversed usage later
         ArrayUtility::mergeRecursiveWithOverrule(
-                $pagesForLevel,
-                $sortedData
+            $pagesForLevel,
+            $sortedData
         );
         $sortedData = $pagesForLevel;
         return $nextLevelPages;
@@ -1029,7 +1036,8 @@ class StoreDataStep extends AbstractStep
      * @param string $table Name of the affected table
      * @param array $uids List of primary keys of records to update
      */
-    public function updateSlugs($table, $uids): void {
+    public function updateSlugs(string $table, array $uids): void
+    {
         $slugUtility = GeneralUtility::makeInstance(SlugUtility::class, $this->importer);
         $slugUtility->updateAll($table, $uids);
     }
@@ -1046,22 +1054,22 @@ class StoreDataStep extends AbstractStep
         $this->abortFlag = true;
         // Add an error message
         $this->importer->addMessage(
-                LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurredDuringSave',
-                        'external_import',
-                        [
-                                $e->getMessage(),
-                                $e->getCode(),
-                                $e->getFile(),
-                                $e->getLine()
-                        ]
-                )
+            LocalizationUtility::translate(
+                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurredDuringSave',
+                'external_import',
+                [
+                    $e->getMessage(),
+                    $e->getCode(),
+                    $e->getFile(),
+                    $e->getLine()
+                ]
+            )
         );
         // Send the call trail to the debut output
         $this->importer->debug(
-                'Stack trace',
-                3,
-                $e->getTraceAsString()
+            'Stack trace',
+            3,
+            $e->getTraceAsString()
         );
     }
 

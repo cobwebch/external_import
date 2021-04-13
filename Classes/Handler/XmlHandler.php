@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Handler;
 
 /*
@@ -56,13 +59,13 @@ class XmlHandler implements DataHandlerInterface
         if (array_key_exists('nodepath', $generalConfiguration)) {
             try {
                 $records = $this->selectNodeWithXpath(
-                        $xPathObject,
-                        $generalConfiguration['nodepath']
+                    $xPathObject,
+                    $generalConfiguration['nodepath']
                 );
             } catch (\Exception $e) {
                 $importer->addMessage(
-                        $e->getMessage(),
-                        AbstractMessage::WARNING
+                    $e->getMessage(),
+                    AbstractMessage::WARNING
                 );
             }
         } else {
@@ -80,24 +83,23 @@ class XmlHandler implements DataHandlerInterface
                 try {
                     if (isset($columnData['substructureFields'])) {
                         $nodeList = $this->getNodeList(
-                                $theRecord,
-                                $columnData,
-                                $xPathObject
+                            $theRecord,
+                            $columnData,
+                            $xPathObject
                         );
                         $rows[$columnName] = $this->getSubstructureValues(
-                                $nodeList,
-                                $columnData['substructureFields'],
-                                $xPathObject
+                            $nodeList,
+                            $columnData['substructureFields'],
+                            $xPathObject
                         );
                     } else {
                         $data[$referenceCounter][$columnName] = $this->getValue(
-                                $theRecord,
-                                $columnData,
-                                $xPathObject
+                            $theRecord,
+                            $columnData,
+                            $xPathObject
                         );
                     }
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     // Nothing to do, we ignore values that were not found
                 }
             }
@@ -136,8 +138,7 @@ class XmlHandler implements DataHandlerInterface
             }
         }
         // Compact array
-        $data = array_values($data);
-        return $data;
+        return array_values($data);
     }
 
     /**
@@ -149,7 +150,7 @@ class XmlHandler implements DataHandlerInterface
      * @return mixed
      * @throws \Exception
      */
-    public function getValue($record, $columnConfiguration, $xPathObject)
+    public function getValue(\DOMNode $record, array $columnConfiguration, \DOMXPath $xPathObject)
     {
         // If a "field" is defined, refine the selection to get the correct node
         if (isset($columnConfiguration['field'])) {
@@ -158,8 +159,8 @@ class XmlHandler implements DataHandlerInterface
                 $nodeList = $record->getElementsByTagName($columnConfiguration['field']);
             } else {
                 $nodeList = $record->getElementsByTagNameNS(
-                        $columnConfiguration['fieldNS'],
-                        $columnConfiguration['field']
+                    $columnConfiguration['fieldNS'],
+                    $columnConfiguration['field']
                 );
             }
 
@@ -169,41 +170,40 @@ class XmlHandler implements DataHandlerInterface
                 // If an XPath expression is defined, apply it (relative to currently selected node)
                 if (!empty($columnConfiguration['xpath'])) {
                     $nodes = $this->selectNodeWithXpath(
-                            $xPathObject,
-                            $columnConfiguration['xpath'],
-                            $selectedNode
+                        $xPathObject,
+                        $columnConfiguration['xpath'],
+                        $selectedNode
                     );
                     $selectedNode = $nodes->item(0);
                 }
                 $value = $this->extractValueFromNode(
-                        $selectedNode,
-                        $columnConfiguration
+                    $selectedNode,
+                    $columnConfiguration
                 );
             } else {
                 throw new \InvalidArgumentException(
-                        'No value found',
-                        1534166267
+                    'No value found',
+                    1534166267
                 );
             }
-
-        // Without "field" property, use the current node itself
+            // Without "field" property, use the current node itself
         } else {
             // If an XPath expression is defined, apply it (relative to current node)
             if (!empty($columnConfiguration['xpath'])) {
                 $nodes = $this->selectNodeWithXpath(
-                        $xPathObject,
-                        $columnConfiguration['xpath'],
-                        $record
+                    $xPathObject,
+                    $columnConfiguration['xpath'],
+                    $record
                 );
                 $selectedNode = $nodes->item(0);
                 $value = $this->extractValueFromNode(
-                        $selectedNode,
-                        $columnConfiguration
+                    $selectedNode,
+                    $columnConfiguration
                 );
             } else {
                 $value = $this->extractValueFromNode(
-                        $record,
-                        $columnConfiguration
+                    $record,
+                    $columnConfiguration
                 );
             }
         }
@@ -219,7 +219,7 @@ class XmlHandler implements DataHandlerInterface
      * @return \DOMNodeList
      * @throws \Exception
      */
-    public function getNodeList($record, $columnConfiguration, $xPathObject): \DOMNodeList
+    public function getNodeList(\DOMNode $record, array $columnConfiguration, \DOMXPath $xPathObject): \DOMNodeList
     {
         // If a "field" is defined, refine the selection to get the correct node
         if (isset($columnConfiguration['field'])) {
@@ -228,33 +228,32 @@ class XmlHandler implements DataHandlerInterface
                 $nodeList = $record->getElementsByTagName($columnConfiguration['field']);
             } else {
                 $nodeList = $record->getElementsByTagNameNS(
-                        $columnConfiguration['fieldNS'],
-                        $columnConfiguration['field']
+                    $columnConfiguration['fieldNS'],
+                    $columnConfiguration['field']
                 );
             }
 
             if ($nodeList->length > 0 && !empty($columnConfiguration['xpath'])) {
                 $selectedNode = $nodeList->item(0);
                 $nodeList = $this->selectNodeWithXpath(
-                        $xPathObject,
-                        $columnConfiguration['xpath'],
-                        $selectedNode
+                    $xPathObject,
+                    $columnConfiguration['xpath'],
+                    $selectedNode
                 );
             } else {
                 throw new \InvalidArgumentException(
-                        'No value found',
-                        1534166267
+                    'No value found',
+                    1534166267
                 );
             }
-
-        // Without "field" property, use the current node itself
+            // Without "field" property, use the current node itself
         } else {
             // If an XPath expression is defined, apply it (relative to current node)
             if (!empty($columnConfiguration['xpath'])) {
                 $nodeList = $this->selectNodeWithXpath(
-                        $xPathObject,
-                        $columnConfiguration['xpath'],
-                        $record
+                    $xPathObject,
+                    $columnConfiguration['xpath'],
+                    $record
                 );
             } else {
                 $nodeList = $record;
@@ -271,7 +270,7 @@ class XmlHandler implements DataHandlerInterface
      * @param array $columnConfiguration Handling information for the XML node
      * @return mixed The extracted value
      */
-    public function extractValueFromNode($node, $columnConfiguration)
+    public function extractValueFromNode(\DOMNode $node, array $columnConfiguration)
     {
         // Get the named attribute, if defined
         if (!empty($columnConfiguration['attribute'])) {
@@ -280,11 +279,10 @@ class XmlHandler implements DataHandlerInterface
                 $value = $node->attributes->getNamedItem($columnConfiguration['attribute'])->nodeValue;
             } else {
                 $value = $node->attributes->getNamedItemNS(
-                        $columnConfiguration['attributeNS'],
-                        $columnConfiguration['attribute']
+                    $columnConfiguration['attributeNS'],
+                    $columnConfiguration['attribute']
                 )->nodeValue;
             }
-
             // Otherwise directly take the node's value
         } else {
             // If "xmlValue" is set, we want the node's inner XML structure as is.
@@ -304,15 +302,14 @@ class XmlHandler implements DataHandlerInterface
      * @param \DOMNode $node Currently handled XML node
      * @return string Code inside the node
      */
-    public function getXmlValue($node): string
+    public function getXmlValue(\DOMNode $node): string
     {
         $innerHTML = '';
         $children = $node->childNodes;
         foreach ($children as $child) {
             try {
                 $innerHTML .= $child->ownerDocument->saveXML($child);
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 // Nothing to do
             }
         }
@@ -328,15 +325,15 @@ class XmlHandler implements DataHandlerInterface
      * @return \DOMNodeList List of found nodes
      * @throws \Exception
      */
-    public function selectNodeWithXpath($xPathObject, $xPath, $context = null): \DOMNodeList
+    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, $context = null): \DOMNodeList
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
         if ($resultNodes->length > 0) {
             return $resultNodes;
         }
         throw new \Exception(
-                'No node found with xPath: ' . $xPath,
-                1399497464
+            'No node found with xPath: ' . $xPath,
+            1399497464
         );
     }
 
@@ -349,7 +346,7 @@ class XmlHandler implements DataHandlerInterface
      * @param \DOMXPath $xPathObject
      * @return mixed
      */
-    public function getSubstructureValues($structure, $columnConfiguration, $xPathObject)
+    public function getSubstructureValues(\DOMNodeList $structure, array $columnConfiguration, \DOMXPath $xPathObject)
     {
         $rows = [];
         for ($i = 0; $i < $structure->length; $i++) {
@@ -359,8 +356,7 @@ class XmlHandler implements DataHandlerInterface
                 try {
                     $value = $this->getValue($item, $configuration, $xPathObject);
                     $row[$key] = $value;
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     // Nothing to do, we ignore values that were not found
                 }
             }

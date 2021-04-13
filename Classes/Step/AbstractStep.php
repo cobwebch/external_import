@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -90,7 +93,7 @@ abstract class AbstractStep implements ImporterAwareInterface
     /**
      * @param bool $abortFlag
      */
-    public function setAbortFlag($abortFlag): void
+    public function setAbortFlag(bool $abortFlag): void
     {
         $this->abortFlag = $abortFlag;
     }

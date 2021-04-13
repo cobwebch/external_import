@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\ViewHelpers;
 
 /*
@@ -39,7 +42,7 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
      *
      * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('configuration', Configuration::class, 'The configuration object ot handle', true);
     }
@@ -53,8 +56,11 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
      *
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
         /** @var Configuration $configuration */
         $configuration = $arguments['configuration'];
         // Call any hook that may be declared to process parameters
@@ -63,8 +69,8 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
                 $preProcessor = GeneralUtility::makeInstance($className);
                 $processedParameters = $preProcessor->processParameters(
-                        $configuration->getGeneralConfigurationProperty('parameters'),
-                        $configuration
+                    $configuration->getGeneralConfigurationProperty('parameters'),
+                    $configuration
                 );
             }
         }

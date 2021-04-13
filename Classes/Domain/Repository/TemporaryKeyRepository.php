@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Repository;
 
 /*
@@ -29,7 +31,7 @@ class TemporaryKeyRepository
     /**
      * @var int Incremental number to be used for temporary keys during test mode (used for unit testing)
      */
-    static protected $forcedTemporaryKeySerial = 0;
+    protected static $forcedTemporaryKeySerial = 0;
 
     /**
      * @var array List of temporary keys created on the fly for new records

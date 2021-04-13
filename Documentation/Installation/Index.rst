@@ -37,6 +37,10 @@ dependency injection mechanism. This means it is not necessary to instantiate th
 :php:`\TYPO3\CMS\Extbase\Object\ObjectManager` anymore whe using the Importer
 as an API.
 
+The PHP code was cleaned up as much as possible and strict typing was declared
+in every class file. This may break your custom code if you were calling public methods
+without properly casting arguments.
+
 
 .. _installation-upgrade-510:
 

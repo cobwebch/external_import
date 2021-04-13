@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Model;
 
 /*
@@ -104,7 +107,7 @@ class Configuration
     /**
      * @param string $table
      */
-    public function setTable($table): void
+    public function setTable(string $table): void
     {
         $this->table = $table;
     }
@@ -166,8 +169,8 @@ class Configuration
                 $this->customSteps[] = $customStepConfiguration['class'];
                 if (array_key_exists('parameters', $customStepConfiguration)) {
                     $this->setParametersForStep(
-                            $customStepConfiguration['parameters'],
-                            $customStepConfiguration['class']
+                        $customStepConfiguration['parameters'],
+                        $customStepConfiguration['class']
                     );
                 }
             }
@@ -255,17 +258,17 @@ class Configuration
      * @param bool $flag
      * @throws \Cobweb\ExternalImport\Exception\NoSuchColumnException
      */
-    public function setExcludedFromSavingFlagForColumn($column, $flag): void
+    public function setExcludedFromSavingFlagForColumn(string $column, bool $flag): void
     {
         if (array_key_exists($column, $this->columnConfiguration)) {
             $this->columnConfiguration[$column][self::DO_NOT_SAVE_KEY] = $flag;
         } else {
             throw new \Cobweb\ExternalImport\Exception\NoSuchColumnException(
-                    sprintf(
-                        'The requested column (%s) does not exist.',
-                        $column
-                    ),
-                    1601633669
+                sprintf(
+                    'The requested column (%s) does not exist.',
+                    $column
+                ),
+                1601633669
             );
         }
     }
@@ -317,7 +320,7 @@ class Configuration
     /**
      * @param int $countAdditionalFields
      */
-    public function setCountAdditionalFields($countAdditionalFields): void
+    public function setCountAdditionalFields(int $countAdditionalFields): void
     {
         $this->countAdditionalFields = $countAdditionalFields;
     }

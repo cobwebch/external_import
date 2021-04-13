@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Validator;
 
 /*
@@ -37,46 +40,46 @@ class FrequencyValidator extends AbstractValidator
     /**
      * Validates the frequency as a number of seconds or a cron syntax.
      *
-     * @param string $frequency The frequency to validate
+     * @param string $value The frequency to validate
      * @return bool
      */
-    public function isValid($frequency)
+    public function isValid($value): bool
     {
-        // Frequency is mandatory (NOTE: this does not work, empty string are not submitted for validation. Core bug or my mistake?)
-        if ($frequency === '') {
+        // Frequency is mandatory (NOTE: this does not work, empty strings are not submitted for validation. Core bug or my mistake?)
+        if ($value === '') {
             $this->addError(
-                    LocalizationUtility::translate(
-                            'error_empty_frequency',
-                            'external_import'
-                    ),
-                    1463494395
+                LocalizationUtility::translate(
+                    'error_empty_frequency',
+                    'external_import'
+                ),
+                1463494395
             );
             return false;
-        } else {
-            // Try interpreting the frequency as a cron command
-            try {
-                NormalizeCommand::normalize($frequency);
+        }
+
+        // Try interpreting the frequency as a cron command
+        try {
+            NormalizeCommand::normalize($value);
+            return true;
+        } // If the cron command was invalid, we may still have a valid frequency in seconds
+        catch (\Exception $e) {
+            // Check if the frequency is a valid number
+            // If yes, assume it is a frequency in seconds, else return error message
+            if (is_numeric($value)) {
                 return true;
-            } // If the cron command was invalid, we may still have a valid frequency in seconds
-            catch (\Exception $e) {
-                // Check if the frequency is a valid number
-                // If yes, assume it is a frequency in seconds, else return error message
-                if (is_numeric($frequency)) {
-                    return true;
-                } else {
-                    $this->addError(
-                            LocalizationUtility::translate(
-                                    'error_wrong_frequency',
-                                    'external_import',
-                                    array(
-                                        $e->getMessage()
-                                    )
-                            ),
-                            1463495019
-                    );
-                    return false;
-                }
             }
+
+            $this->addError(
+                LocalizationUtility::translate(
+                    'error_wrong_frequency',
+                    'external_import',
+                    array(
+                        $e->getMessage()
+                    )
+                ),
+                1463495019
+            );
+            return false;
         }
     }
 }

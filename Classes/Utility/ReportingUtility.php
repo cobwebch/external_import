@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Utility;
 
 /*
@@ -84,6 +86,7 @@ class ReportingUtility implements LoggerAwareInterface
      * Stores the messages to the external_import log.
      *
      * @return void
+     * @throws AspectNotFoundException
      */
     public function writeToLog(): void
     {
@@ -92,7 +95,7 @@ class ReportingUtility implements LoggerAwareInterface
             $messages = $this->importer->getMessages();
             $importContext = $this->importer->getContext();
             $now = new \DateTime();
-            $now->setTimestamp($this->context->getPropertyFromAspect('date', 'timestamp'));
+            $now->setTimestamp((int)$this->context->getPropertyFromAspect('date', 'timestamp'));
 
             try {
                 $currentUser = $this->context->getPropertyFromAspect('backend.user', 'id');
@@ -103,22 +106,22 @@ class ReportingUtility implements LoggerAwareInterface
                 foreach ($messageList as $message) {
                     /** @var Log $logEntry */
                     $logEntry = GeneralUtility::makeInstance(Log::class);
-                    $logEntry->setPid($this->extensionConfiguration['logStorage']);
+                    $logEntry->setPid((int)$this->extensionConfiguration['logStorage']);
                     $logEntry->setStatus($status);
                     $logEntry->setCrdate($now);
                     $logEntry->setCruserId($currentUser);
                     $logEntry->setConfiguration(
-                            $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()
+                        $this->importer->getExternalConfiguration()->getTable() .
+                        ' / ' . $this->importer->getExternalConfiguration()->getIndex()
                     );
                     $logEntry->setContext($importContext);
                     $logEntry->setMessage($message);
                     $logEntry->setDuration(
-                            $this->importer->getEndTime() - $this->importer->getStartTime()
+                        $this->importer->getEndTime() - $this->importer->getStartTime()
                     );
                     try {
                         $this->logRepository->add($logEntry);
-                    }
-                    catch (\Exception $e) {
+                    } catch (\Exception $e) {
                         // Nothing to do
                     }
                 }
@@ -133,22 +136,28 @@ class ReportingUtility implements LoggerAwareInterface
      * Assembles a synchronization report for a given table/index.
      *
      * @param string $table Name of the table
-     * @param integer $index Number of the synchronisation configuration
+     * @param mixed $index Index of the synchronisation configuration
      * @param array $messages List of messages for the given table
      * @return string Formatted text of the report
      */
-    public function reportForTable($table, $index, $messages): string
+    public function reportForTable(string $table, $index, array $messages): string
     {
         $languageObject = $this->getLanguageObject();
         $report = sprintf(
-                        $languageObject->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:synchronizeTableX'),
-                        $table,
-                        $index
-                ) . "\n";
+                $languageObject->sL(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:synchronizeTableX'
+                ),
+                $table,
+                $index
+            ) . "\n";
         foreach ($messages as $type => $messageList) {
-            $report .= $languageObject->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:label.' . $type) . "\n";
+            $report .= $languageObject->sL(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:label.' . $type
+                ) . "\n";
             if (count($messageList) === 0) {
-                $report .= "\t" . $languageObject->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no.' . $type) . "\n";
+                $report .= "\t" . $languageObject->sL(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no.' . $type
+                    ) . "\n";
             } else {
                 foreach ($messageList as $aMessage) {
                     $report .= "\t- " . $aMessage . "\n";
@@ -166,7 +175,7 @@ class ReportingUtility implements LoggerAwareInterface
      * @param string $body Text body of the mail
      * @return void
      */
-    public function sendMail($subject, $body): void
+    public function sendMail(string $subject, string $body): void
     {
         $result = 0;
         // Get default mail configuration for sending the report
@@ -176,22 +185,21 @@ class ReportingUtility implements LoggerAwareInterface
         // The message will be logged as an error
         if (empty($senderMail)) {
             $message = 'No sender mail defined. Please define $GLOBALS[\'TYPO3_CONF_VARS\'][\'MAIL\'][\'defaultMailFromAddress\'] and $GLOBALS[\'TYPO3_CONF_VARS\'][\'MAIL\'][\'defaultMailFromName\'].';
-
-        // Proceed with sending the mail
+            // Proceed with sending the mail
         } else {
             // Instantiate and initialize the mail object
             /** @var $mailObject MailMessage */
             $mailObject = GeneralUtility::makeInstance(MailMessage::class);
             try {
                 $sender = [
-                        $senderMail => $senderName
+                    $senderMail => $senderName
                 ];
                 $mailObject->setFrom($sender);
                 $mailObject->setReplyTo($sender);
                 $mailObject->setTo(
-                        [
-                                $this->extensionConfiguration['reportEmail']
-                        ]
+                    [
+                        $this->extensionConfiguration['reportEmail']
+                    ]
                 );
                 $mailObject->setSubject($subject);
                 $mailObject->text($body);
@@ -214,6 +222,8 @@ class ReportingUtility implements LoggerAwareInterface
     }
 
     /**
+     * Sets a value to be reported for a given step.
+     *
      * @param string $step Name of the step (class)
      * @param string $key Name of the key
      * @param mixed $value Value to store
@@ -228,6 +238,8 @@ class ReportingUtility implements LoggerAwareInterface
     }
 
     /**
+     * Returns the value to be reported for a given step.
+     *
      * @param string $step Name of the step (class)
      * @param string $key Name of the key
      * @return mixed
@@ -239,12 +251,12 @@ class ReportingUtility implements LoggerAwareInterface
             return $this->reportingValues[$step][$key];
         }
         throw new UnknownReportingKeyException(
-                sprintf(
-                        'No value found for step "%1$s" and key "%2$s"',
-                        $step,
-                        $key
-                ),
-                1530635849
+            sprintf(
+                'No value found for step "%1$s" and key "%2$s"',
+                $step,
+                $key
+            ),
+            1530635849
 
         );
     }

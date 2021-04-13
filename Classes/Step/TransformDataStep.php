@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -38,7 +41,7 @@ class TransformDataStep extends AbstractStep
     /**
      * @var array List of transformation properties
      */
-    static public $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
+    public static $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
 
     public function __construct(MappingUtility $mappingUtility)
     {
@@ -81,53 +84,52 @@ class TransformDataStep extends AbstractStep
                             switch ($property) {
                                 case 'trim':
                                     $records = $this->applyTrim(
-                                            $columnName,
-                                            $configuration,
-                                            $records
+                                        $columnName,
+                                        $configuration,
+                                        $records
                                     );
                                     break;
                                 case 'mapping':
                                     $records = $this->applyMapping(
-                                            $columnName,
-                                            $configuration,
-                                            $records
+                                        $columnName,
+                                        $configuration,
+                                        $records
                                     );
                                     break;
                                 case 'value':
                                     $records = $this->applyValue(
-                                            $columnName,
-                                            $configuration,
-                                            $records
+                                        $columnName,
+                                        $configuration,
+                                        $records
                                     );
                                     break;
                                 case 'rteEnabled':
                                     $records = $this->applyRteEnabledFlag(
-                                            $columnName,
-                                            $configuration,
-                                            $records
+                                        $columnName,
+                                        $configuration,
+                                        $records
                                     );
                                     break;
                                 case 'userFunction':
                                     $records = $this->applyUserFunction(
-                                            $columnName,
-                                            $configuration,
-                                            $records
+                                        $columnName,
+                                        $configuration,
+                                        $records
                                     );
                                     break;
                                 default:
                                     // Unknown property, log error
                                     $this->importer->debug(
-                                            sprintf(
-                                                LocalizationUtility::translate(
-                                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:unknownTransformationProperty',
-                                                        'external_import'
-                                                ),
-                                                $property
+                                        sprintf(
+                                            LocalizationUtility::translate(
+                                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:unknownTransformationProperty',
+                                                'external_import'
                                             ),
-                                            2,
-                                            $configuration
+                                            $property
+                                        ),
+                                        2,
+                                        $configuration
                                     );
-
                             }
                         } catch (CriticalFailureException $e) {
                             // If a critical failure occurred during a transformation, set the abort flag and return to controller
@@ -161,7 +163,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyTrim($name, $configuration, array $records): array
+    public function applyTrim(string $name, $configuration, array $records): array
     {
         if ((bool)$configuration) {
             foreach ($records as $index => $record) {
@@ -179,13 +181,13 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyMapping($name, $configuration, array $records): array
+    public function applyMapping(string $name, array $configuration, array $records): array
     {
         return $this->mappingUtility->mapData(
-                $records,
-                $this->importer->getExternalConfiguration()->getTable(),
-                $name,
-                $configuration
+            $records,
+            $this->importer->getExternalConfiguration()->getTable(),
+            $name,
+            $configuration
         );
     }
 
@@ -197,7 +199,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyValue($name, $configuration, array $records): array
+    public function applyValue(string $name, $configuration, array $records): array
     {
         foreach ($records as $index => $record) {
             $records[$index][$name] = $configuration;
@@ -213,7 +215,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyRteEnabledFlag($name, $configuration, array $records): array
+    public function applyRteEnabledFlag(string $name, $configuration, array $records): array
     {
         if ((bool)$configuration) {
             foreach ($records as $index => $record) {
@@ -232,55 +234,55 @@ class TransformDataStep extends AbstractStep
      * @return array
      * @throws CriticalFailureException
      */
-    public function applyUserFunction($name, $configuration, array $records): array
+    public function applyUserFunction(string $name, array $configuration, array $records): array
     {
-            // Try to get the referenced class
-            try {
-                $userObject = GeneralUtility::makeInstance($configuration['class']);
-                $methodName = $configuration['method'];
-                $parameters = $configuration['parameters'] ?? [];
-                foreach ($records as $index => $record) {
-                    try {
-                        if ($userObject instanceof ImporterAwareInterface) {
-                            $userObject->setImporter($this->importer);
-                        }
-                        $records[$index][$name] = $userObject->$methodName($record, $name, $parameters);
-                    } catch (CriticalFailureException $e) {
-                        // This exception must not be caught here, but thrown further up
-                        throw $e;
-                    } catch (\Exception $e) {
-                        // If the value could not be transformed, remove it from the imported dataset
-                        unset($records[$index][$name]);
-                        $this->importer->debug(
-                                LocalizationUtility::translate(
-                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailedWithMessage',
-                                        'external_import',
-                                        [
-                                                $e->getMessage(),
-                                                $e->getCode()
-                                        ]
-                                ),
-                                3,
-                                [
-                                        'user function' => $configuration,
-                                        'record' => $record
-                                ]
-                        );
+        // Try to get the referenced class
+        try {
+            $userObject = GeneralUtility::makeInstance($configuration['class']);
+            $methodName = $configuration['method'];
+            $parameters = $configuration['parameters'] ?? [];
+            foreach ($records as $index => $record) {
+                try {
+                    if ($userObject instanceof ImporterAwareInterface) {
+                        $userObject->setImporter($this->importer);
                     }
-                }
-            } catch (\Exception $e) {
-                $this->importer->debug(
-                        sprintf(
-                                LocalizationUtility::translate(
-                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalid_userfunc',
-                                        'external_import'
-                                ),
-                                $configuration['class']
+                    $records[$index][$name] = $userObject->$methodName($record, $name, $parameters);
+                } catch (CriticalFailureException $e) {
+                    // This exception must not be caught here, but thrown further up
+                    throw $e;
+                } catch (\Exception $e) {
+                    // If the value could not be transformed, remove it from the imported dataset
+                    unset($records[$index][$name]);
+                    $this->importer->debug(
+                        LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailedWithMessage',
+                            'external_import',
+                            [
+                                $e->getMessage(),
+                                $e->getCode()
+                            ]
                         ),
-                        2,
-                        $configuration
-                );
+                        3,
+                        [
+                            'user function' => $configuration,
+                            'record' => $record
+                        ]
+                    );
+                }
             }
+        } catch (\Exception $e) {
+            $this->importer->debug(
+                sprintf(
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalid_userfunc',
+                        'external_import'
+                    ),
+                    $configuration['class']
+                ),
+                2,
+                $configuration
+            );
+        }
         return $records;
     }
 
@@ -293,7 +295,7 @@ class TransformDataStep extends AbstractStep
      * @return array
      * @throws CriticalFailureException
      */
-    protected function preprocessData($records): array
+    protected function preprocessData(array $records): array
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRecordset'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRecordset'] as $className) {
@@ -307,12 +309,12 @@ class TransformDataStep extends AbstractStep
                     throw $e;
                 } catch (\Exception $e) {
                     $this->importer->debug(
-                            sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'preprocessRecordset'
-                            ),
-                            1
+                        sprintf(
+                            'Could not instantiate class %s for hook %s',
+                            $className,
+                            'preprocessRecordset'
+                        ),
+                        1
                     );
                 }
             }

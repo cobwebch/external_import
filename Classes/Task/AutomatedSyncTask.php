@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Task;
 
 /*
@@ -20,16 +22,13 @@ use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 /**
  * This class executes Scheduler events for automatic synchronisations of external data
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Task
  */
 class AutomatedSyncTask extends AbstractTask
 {
@@ -46,18 +45,16 @@ class AutomatedSyncTask extends AbstractTask
     /**
      * Executes the job registered in the Scheduler task
      *
+     * @return bool
      * @throws \Exception
-     * @return boolean
      */
-    public function execute()
+    public function execute(): bool
     {
         $result = true;
         $reportContent = '';
 
         // Instantiate the import object and call appropriate method depending on command
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        /** @var $importer Importer */
-        $importer = $objectManager->get(Importer::class);
+        $importer = GeneralUtility::makeInstance(Importer::class);
         $importer->setContext('scheduler');
         // Get the extension's configuration from the importer object
         $extensionConfiguration = $importer->getExtensionConfiguration();
@@ -75,22 +72,22 @@ class AutomatedSyncTask extends AbstractTask
             // Exit early if no configuration was found
             if (count($configurations) === 0) {
                 throw new NoConfigurationException(
-                        'No configuration was found for synchronization. Please check your task settings or your configuration via the BE module.',
-                        1530390188
+                    'No configuration was found for synchronization. Please check your task settings or your configuration via the BE module.',
+                    1530390188
                 );
             }
             // Loop on all found configurations
             foreach ($configurations as $tableList) {
                 foreach ($tableList as $configuration) {
                     $messages = $importer->synchronize(
-                            $configuration['table'],
-                            $configuration['index']
+                        $configuration['table'],
+                        $configuration['index']
                     );
                     if (!empty($extensionConfiguration['reportEmail'])) {
                         $reportContent .= $importer->getReportingUtility()->reportForTable(
-                                $configuration['table'],
-                                $configuration['index'],
-                                $messages
+                            $configuration['table'],
+                            $configuration['index'],
+                            $messages
                         );
                         $errorCount += count($messages[AbstractMessage::ERROR]);
                         $warningCount += count($messages[AbstractMessage::WARNING]);
@@ -114,9 +111,9 @@ class AutomatedSyncTask extends AbstractTask
             // If necessary, prepare a report with all messages
             if (!empty($extensionConfiguration['reportEmail'])) {
                 $reportContent .= $importer->getReportingUtility()->reportForTable(
-                        $this->table,
-                        $this->index,
-                        $messages
+                    $this->table,
+                    $this->index,
+                    $messages
                 );
                 if (count($messages[AbstractMessage::ERROR]) > 0) {
                     $globalStatus = 'ERROR';
@@ -132,8 +129,8 @@ class AutomatedSyncTask extends AbstractTask
         // If any warning or error happened, throw an exception
         if ($globalStatus !== 'OK') {
             throw new \Exception(
-                    'One or more errors or warnings happened. Please consult the log.',
-                    1258116760
+                'One or more errors or warnings happened. Please consult the log.',
+                1258116760
             );
         }
         return $result;
@@ -144,25 +141,30 @@ class AutomatedSyncTask extends AbstractTask
      *
      * @return string Information to display
      */
-    public function getAdditionalInformation()
+    public function getAdditionalInformation(): string
     {
         if ($this->table === 'all') {
-            $info = LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables');
+            $info = LocalizationUtility::translate(
+                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables'
+            );
         } elseif (strpos($this->table, 'group:') === 0) {
             $group = substr($this->table, 6);
             $info = sprintf(
-                    LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:selectedGroup'),
-                    $group
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:selectedGroup'
+                ),
+                $group
             );
         } else {
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $configurationRepository = $objectManager->get(ConfigurationRepository::class);
+            $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
             $configuration = $configurationRepository->findConfigurationObject($this->table, $this->index);
             $info = sprintf(
-                    LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'),
-                    $this->table,
-                    $this->index,
-                    $configuration->getGeneralConfigurationProperty('priority')
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'
+                ),
+                $this->table,
+                $this->index,
+                $configuration->getGeneralConfigurationProperty('priority')
             );
         }
         return $info;

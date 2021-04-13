@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Repository;
 
 /*
@@ -32,16 +34,14 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
  *
  * This is not a true repository from an Extbase point of view. It implements only a few features of a complete repository.
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Domain\Repository
  */
 class SchedulerRepository implements SingletonInterface
 {
     /**
      * @var string Name of the related task class
      */
-    static public $taskClassName = AutomatedSyncTask::class;
+    public static $taskClassName = AutomatedSyncTask::class;
 
     /**
      * List of all tasks (stored locally in case the repository is called several times)
@@ -93,10 +93,10 @@ class SchedulerRepository implements SingletonInterface
      * Retrieves a scheduler task based on its id.
      *
      * @param int $uid Id of the task to retrieve
-     * @throws \InvalidArgumentException
      * @return array
+     * @throws \InvalidArgumentException
      */
-    public function fetchTaskByUid($uid): array
+    public function fetchTaskByUid(int $uid): array
     {
         $uid = (int)$uid;
         /** @var $taskObject AutomatedSyncTask */
@@ -107,16 +107,16 @@ class SchedulerRepository implements SingletonInterface
         }
         // We didn't find a matching task, throw an exception
         throw new \InvalidArgumentException(
-                'The chosen task could not be found',
-                1463732926
+            'The chosen task could not be found',
+            1463732926
         );
     }
 
     /**
      * Fetches the specific task that synchronizes all tables.
      *
-     * @throws \InvalidArgumentException
      * @return array Information about the task, if defined
+     * @throws \InvalidArgumentException
      */
     public function fetchFullSynchronizationTask(): array
     {
@@ -128,8 +128,8 @@ class SchedulerRepository implements SingletonInterface
             }
         }
         throw new \InvalidArgumentException(
-                'No task registered for full synchronization',
-                1337344319
+            'No task registered for full synchronization',
+            1337344319
         );
     }
 
@@ -141,16 +141,16 @@ class SchedulerRepository implements SingletonInterface
     public function fetchAllGroups(): array
     {
         $groups = [
-                0 => ''
+            0 => ''
         ];
         try {
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
-                    ->getQueryBuilderForTable('tx_scheduler_task_group');
+                ->getQueryBuilderForTable('tx_scheduler_task_group');
             $rows = $queryBuilder->select('uid', 'groupName')
-                    ->from('tx_scheduler_task_group')
-                    ->orderBy('groupName')
-                    ->execute()
-                    ->fetchAll(\PDO::FETCH_ASSOC);
+                ->from('tx_scheduler_task_group')
+                ->orderBy('groupName')
+                ->execute()
+                ->fetchAllAssociative(\PDO::FETCH_ASSOC);
             foreach ($rows as $row) {
                 $groups[$row['uid']] = $row['groupName'];
             }
@@ -174,28 +174,29 @@ class SchedulerRepository implements SingletonInterface
         $editFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['USdateFormat'] ? 'H:i m-d-Y' : 'H:i d-m-Y';
 
         $startTimestamp = $taskObject->getExecution()->getStart();
-        $taskInformation = array(
-                'uid' => $taskObject->getTaskUid(),
-                'table' => $taskObject->table,
-                'index' => $taskObject->index,
-                'disabled' => $taskObject->isDisabled(),
-                // Format date as needed for display
-                'nextexecution' => date($displayFormat, $taskObject->getExecutionTime()),
-                'interval' => $interval,
-                'croncmd' => $cronCommand,
-                'frequency' => ($cronCommand !== '') ? $cronCommand : $interval,
-                'frequencyText' => ($cronCommand !== '') ? $cronCommand : LocalizationUtility::translate(
-                        'number_of_seconds',
-                        'external_import',
-                        array($interval)
-                ),
-                'group' => $taskObject->getTaskGroup(),
-                // Format date and time as needed for form input
-                'startTimestamp' => $startTimestamp,
-                'startDate' => empty($startTimestamp) ? '' : date($editFormat,
-                        $taskObject->getExecution()->getStart())
-        );
-        return $taskInformation;
+        return [
+            'uid' => $taskObject->getTaskUid(),
+            'table' => $taskObject->table,
+            'index' => $taskObject->index,
+            'disabled' => $taskObject->isDisabled(),
+            // Format date as needed for display
+            'nextexecution' => date($displayFormat, $taskObject->getExecutionTime()),
+            'interval' => $interval,
+            'croncmd' => $cronCommand,
+            'frequency' => ($cronCommand !== '') ? $cronCommand : $interval,
+            'frequencyText' => ($cronCommand !== '') ? $cronCommand : LocalizationUtility::translate(
+                'number_of_seconds',
+                'external_import',
+                [$interval]
+            ),
+            'group' => $taskObject->getTaskGroup(),
+            // Format date and time as needed for form input
+            'startTimestamp' => $startTimestamp,
+            'startDate' => empty($startTimestamp) ? '' : date(
+                $editFormat,
+                (int)$taskObject->getExecution()->getStart()
+            )
+        ];
     }
 
     /**
@@ -207,18 +208,18 @@ class SchedulerRepository implements SingletonInterface
      * @return void
      * @throws \Cobweb\ExternalImport\Exception\SchedulerRepositoryException
      */
-    public function saveTask($taskData): void
+    public function saveTask(array $taskData): void
     {
         if ($taskData['uid'] === 0) {
             // Create a new task instance and register the execution
             /** @var $task AutomatedSyncTask */
             $task = GeneralUtility::makeInstance(self::$taskClassName);
             $task->registerRecurringExecution(
-                    $taskData['start'],
-                    $taskData['interval'],
-                    0,
-                    false,
-                    $taskData['croncmd']
+                $taskData['start'],
+                $taskData['interval'],
+                0,
+                false,
+                $taskData['croncmd']
             );
             // Set the data specific to external import
             $task->table = $taskData['table'];
@@ -231,21 +232,22 @@ class SchedulerRepository implements SingletonInterface
             $task->stop();
             /// ...and replace it(them) by a new one
             $task->registerRecurringExecution(
-                    $taskData['start'],
-                    $taskData['interval'],
-                    0,
-                    false,
-                    $taskData['croncmd']);
+                $taskData['start'],
+                $taskData['interval'],
+                0,
+                false,
+                $taskData['croncmd']
+            );
             $task->setTaskGroup($taskData['group']);
             $result = $task->save();
         }
         if ($result === false) {
             throw new SchedulerRepositoryException(
-                    LocalizationUtility::translate(
-                            'taskSaveFailed',
-                            'external_import'
-                    ),
-                    1509896783
+                LocalizationUtility::translate(
+                    'taskSaveFailed',
+                    'external_import'
+                ),
+                1509896783
             );
         }
     }
@@ -253,17 +255,17 @@ class SchedulerRepository implements SingletonInterface
     /**
      * Removes the registration of a given task.
      *
-     * @param integer $uid Primary key of the task to remove
-     * @return boolean True or false depending on success or failure of action
+     * @param int $uid Primary key of the task to remove
+     * @return bool True or false depending on success or failure of action
      */
-    public function deleteTask($uid): bool
+    public function deleteTask(int $uid): bool
     {
         $result = false;
         $uid = (int)$uid;
         if ($uid > 0) {
             $task = $this->scheduler->fetchTask($uid);
             // Stop any existing execution(s) and save
-            $result = $this->scheduler->removeTask($task);
+            $result = (bool)$this->scheduler->removeTask($task);
         }
         return $result;
     }
@@ -273,22 +275,28 @@ class SchedulerRepository implements SingletonInterface
      *
      * @param string $frequency Automation frequency
      * @param int $group Scheduler task group
-     * @param \DateTime $startDate Automation start date
+     * @param \DateTime|null $startDate Automation start date
      * @param string $table Name of the table for which to set an automated task for
      * @param string $index Index for which to set an automated task for
      * @param int $uid Id of an existing task (will be 0 for a new task)
      * @return array
      */
-    public function prepareTaskData($frequency, $group, \DateTime $startDate = null, $table = '', $index = '', $uid = 0): array
-    {
+    public function prepareTaskData(
+        string $frequency,
+        int $group,
+        \DateTime $startDate = null,
+        $table = '',
+        $index = '',
+        $uid = 0
+    ): array {
         // Assemble base data
         $taskData = array(
-                'uid' => (int)$uid,
-                'table' => $table,
-                'index' => $index,
-                'group' => (int)$group,
-                'interval' => 0,
-                'croncmd' => ''
+            'uid' => (int)$uid,
+            'table' => $table,
+            'index' => $index,
+            'group' => (int)$group,
+            'interval' => 0,
+            'croncmd' => ''
         );
         if (isset($startDate)) {
             $taskData['start'] = $startDate->format('U');

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Validator;
 
 /*
@@ -161,11 +164,11 @@ class ValidationResult
     {
         foreach ($this->results as $property => $results) {
             usort(
-                    $results,
-                    [
-                            self::class,
-                            'compareSeverity'
-                    ]
+                $results,
+                [
+                    self::class,
+                    'compareSeverity'
+                ]
             );
             $this->results[$property] = $results;
         }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport;
 
 /*
@@ -17,9 +20,8 @@ namespace Cobweb\ExternalImport;
 /**
  * Interface which defines the method to implement when creating a custom data handler for External Import
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * Interface DataHandlerInterface
+ * @package Cobweb\ExternalImport
  */
 interface DataHandlerInterface
 {

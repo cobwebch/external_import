@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport;
 
 /*
@@ -161,14 +164,20 @@ class Importer implements LoggerAwareInterface
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
-    public function __construct(ConfigurationRepository $configurationRepository, ReportingUtility $reportingUtility, UidRepository $uidRepository, TemporaryKeyRepository $temporaryKeyRepository)
-    {
+    public function __construct(
+            ConfigurationRepository $configurationRepository,
+            ReportingUtility $reportingUtility,
+            UidRepository $uidRepository,
+            TemporaryKeyRepository $temporaryKeyRepository
+    ) {
         $this->configurationRepository = $configurationRepository;
         $this->reportingUtility = $reportingUtility;
         $this->uidRepository = $uidRepository;
         $this->temporaryKeyRepository = $temporaryKeyRepository;
 
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('external_import');
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(
+                'external_import'
+        );
         $this->setDebug((bool)$this->extensionConfiguration['debug']);
 
         // Force PHP limit execution time if set
@@ -199,15 +208,14 @@ class Importer implements LoggerAwareInterface
      * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return void
      */
-    protected function initialize($table, $index, $defaultSteps = null): void
+    protected function initialize(string $table, $index, $defaultSteps = null): void
     {
         $this->externalConfiguration = $this->configurationRepository->findConfigurationObject(
                 $table,
                 $index,
                 $defaultSteps
         );
-        if ($this->forcedStoragePid !== null)
-        {
+        if ($this->forcedStoragePid !== null) {
             $this->externalConfiguration->setStoragePid($this->forcedStoragePid);
         }
         // Initialize existing uids list
@@ -225,7 +233,7 @@ class Importer implements LoggerAwareInterface
      * @param mixed $index Index of the synchronisation configuration to use
      * @return array List of error or success messages
      */
-    public function synchronize($table, $index): array
+    public function synchronize(string $table, $index): array
     {
         // Initialize message array
         $this->resetMessages();
@@ -238,8 +246,7 @@ class Importer implements LoggerAwareInterface
 
             $data = GeneralUtility::makeInstance(Data::class);
             $this->runSteps($data);
-        }
-        catch (InvalidPreviewStepException $e) {
+        } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
@@ -250,8 +257,7 @@ class Importer implements LoggerAwareInterface
                     ),
                     AbstractMessage::WARNING
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
@@ -275,11 +281,11 @@ class Importer implements LoggerAwareInterface
      * Receives raw data from some external source, transforms it and stores it into the TYPO3 database.
      *
      * @param string $table Name of the table to import into
-     * @param integer $index Index of the synchronisation configuration to use
+     * @param mixed $index Index of the synchronisation configuration to use
      * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
      * @return array List of error or success messages
      */
-    public function import($table, $index, $rawData): array
+    public function import(string $table, $index, $rawData): array
     {
         // Initialize message array
         $this->resetMessages();
@@ -296,8 +302,7 @@ class Importer implements LoggerAwareInterface
             $data = GeneralUtility::makeInstance(Data::class);
             $data->setRawData($rawData);
             $this->runSteps($data);
-        }
-        catch (InvalidPreviewStepException $e) {
+        } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
@@ -307,8 +312,7 @@ class Importer implements LoggerAwareInterface
                             ]
                     )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
@@ -437,7 +441,7 @@ class Importer implements LoggerAwareInterface
      * @param null $data Data associated with the debugging information
      * @return void
      */
-    public function debug($message, $severity = 0, $data = null): void
+    public function debug(string $message, $severity = 0, $data = null): void
     {
         if ($this->isDebug()) {
             $data = is_array($data) ? $data : [$data];
@@ -492,7 +496,7 @@ class Importer implements LoggerAwareInterface
      * @param integer $status Status of the message. Expected is "success", "warning" or "error"
      * @return void
      */
-    public function addMessage($text, $status = AbstractMessage::ERROR): void
+    public function addMessage(string $text, $status = AbstractMessage::ERROR): void
     {
         if (!empty($text)) {
             $this->messages[$status][] = $text;
@@ -558,7 +562,7 @@ class Importer implements LoggerAwareInterface
      *
      * This is meant essentially for testing, but can also be useful when using Importer::import().
      *
-     * @param $pid
+     * @param mixed $pid
      */
     public function setForcedStoragePid($pid): void
     {
@@ -578,9 +582,9 @@ class Importer implements LoggerAwareInterface
     /**
      * Sets the execution context.
      *
-     * @param $context
+     * @param string $context
      */
-    public function setContext($context): void
+    public function setContext(string $context): void
     {
         $this->context = $context;
     }

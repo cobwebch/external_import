@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Handler;
 
 /*
@@ -58,8 +61,8 @@ class ArrayHandler implements DataHandlerInterface
                         $theValue = $this->getValue($theRecord, $columnData);
                         if (isset($columnData['substructureFields'])) {
                             $rows[$columnName] = $this->getSubstructureValues(
-                                    $theValue,
-                                    $columnData['substructureFields']
+                                $theValue,
+                                $columnData['substructureFields']
                             );
                             // Prepare for the case where no substructure was found
                             // If one was found, it is added later
@@ -67,8 +70,7 @@ class ArrayHandler implements DataHandlerInterface
                         } else {
                             $data[$referenceCounter][$columnName] = $theValue;
                         }
-                    }
-                    catch (\Exception $e) {
+                    } catch (\Exception $e) {
                         // Nothing to do, we ignore values that were not found
                     }
                 }
@@ -101,7 +103,7 @@ class ArrayHandler implements DataHandlerInterface
                             $counter++;
                         }
                     }
-                // No substructure data, increase the counter to move on to the next record
+                    // No substructure data, increase the counter to move on to the next record
                 } else {
                     $counter++;
                 }
@@ -125,20 +127,20 @@ class ArrayHandler implements DataHandlerInterface
      * @param array $columnConfiguration External Import configuration for a single column
      * @return mixed
      */
-    public function getValue($record, $columnConfiguration)
+    public function getValue(array $record, array $columnConfiguration)
     {
         if (isset($columnConfiguration['arrayPath'])) {
             $value = ArrayUtility::getValueByPath(
-                    $record,
-                    $columnConfiguration['arrayPath'],
-                    $columnConfiguration['arrayPathSeparator'] ?? '/'
+                $record,
+                $columnConfiguration['arrayPath'],
+                $columnConfiguration['arrayPathSeparator'] ?? '/'
             );
         } elseif (isset($columnConfiguration['field'], $record[$columnConfiguration['field']])) {
             $value = $record[$columnConfiguration['field']];
         } else {
             throw new \InvalidArgumentException(
-                    'No value found',
-                    1534149806
+                'No value found',
+                1534149806
             );
         }
         return $value;
@@ -152,7 +154,7 @@ class ArrayHandler implements DataHandlerInterface
      * @param array $columnConfiguration External Import configuration for a single column
      * @return array
      */
-    public function getSubstructureValues($structure, $columnConfiguration): array
+    public function getSubstructureValues(array $structure, array $columnConfiguration): array
     {
         $rows = [];
         foreach ($structure as $item) {
@@ -161,8 +163,7 @@ class ArrayHandler implements DataHandlerInterface
                 try {
                     $value = $this->getValue($item, $configuration);
                     $row[$key] = $value;
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     // Nothing to do, we ignore values that were not found
                 }
             }

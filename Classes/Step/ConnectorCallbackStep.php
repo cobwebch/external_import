@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -41,8 +44,8 @@ class ConnectorCallbackStep extends AbstractStep
                 $errorStatus = true;
             }
             $this->importer->getExternalConfiguration()->getConnector()->postProcessOperations(
-                    $this->importer->getExternalConfiguration()->getGeneralConfigurationProperty('parameters'),
-                    $errorStatus
+                $this->importer->getExternalConfiguration()->getGeneralConfigurationProperty('parameters'),
+                $errorStatus
             );
         }
     }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\ViewHelpers;
 
 /*
@@ -39,9 +42,14 @@ class ValidateGeneralConfigurationViewHelper extends AbstractViewHelper
      *
      * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
-        $this->registerArgument('configuration', Configuration::class, 'General external import configuration object', true);
+        $this->registerArgument(
+            'configuration',
+            Configuration::class,
+            'General external import configuration object',
+            true
+        );
         $this->registerArgument('as', 'string', 'Name of the variable in which to store the validation results', true);
     }
 
@@ -54,14 +62,17 @@ class ValidateGeneralConfigurationViewHelper extends AbstractViewHelper
      *
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
         $configurationValidator = GeneralUtility::makeInstance(GeneralConfigurationValidator::class);
         $configurationValidator->isValid($arguments['configuration']);
         $templateVariableContainer = $renderingContext->getVariableProvider();
         $templateVariableContainer->add(
-                $arguments['as'],
-                $configurationValidator->getResults()->getAll()
+            $arguments['as'],
+            $configurationValidator->getResults()->getAll()
         );
         $output = $renderChildrenClosure();
         $templateVariableContainer->remove($arguments['as']);

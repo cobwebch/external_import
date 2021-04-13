@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Command;
 
 /*
@@ -58,49 +60,51 @@ class ImportCommand extends Command
     public function configure()
     {
         $this->setDescription('Runs an External Import synchronization, for one configuration or all of them.')
-                ->setHelp('Choose a specific configuration using the --table and --index options. Use --all to synchronize all configurations.')
-                ->addOption(
-                        'table',
-                        't',
-                        InputOption::VALUE_REQUIRED,
-                        'Choose a table name among those available for synchronization.'
-                )
-                ->addOption(
-                        'index',
-                        'i',
-                        InputOption::VALUE_REQUIRED,
-                        'Choose an index that matches the given table name.'
-                )
-                ->addOption(
-                        'all',
-                        'a',
-                        InputOption::VALUE_NONE,
-                        'Use this option to synchronize all existing configurations, in order of priority (other options are ignored).'
-                )
-                ->addOption(
-                        'group',
-                        'g',
-                        InputOption::VALUE_REQUIRED,
-                        'Use this option to synchronize all configurations from a given group, in order of priority ("all" comes first, other options are ignored).'
-                )
-                ->addOption(
-                        'list',
-                        'l',
-                        InputOption::VALUE_NONE,
-                        'Print a list of all existing External Import configurations available for synchronization.'
-                )
-                ->addOption(
-                        'debug',
-                        'd',
-                        InputOption::VALUE_NONE,
-                        'Turns on debugging. Debug output goes to the devlog unless verbose mode is also turned on.'
-                )
-                ->addOption(
-                        'preview',
-                        'p',
-                        InputOption::VALUE_REQUIRED,
-                        'Turns on preview mode. Process will stop at the given step (class name) and will output relevant data. No data is saved to the database.'
-                );
+            ->setHelp(
+                'Choose a specific configuration using the --table and --index options. Use --all to synchronize all configurations.'
+            )
+            ->addOption(
+                'table',
+                't',
+                InputOption::VALUE_REQUIRED,
+                'Choose a table name among those available for synchronization.'
+            )
+            ->addOption(
+                'index',
+                'i',
+                InputOption::VALUE_REQUIRED,
+                'Choose an index that matches the given table name.'
+            )
+            ->addOption(
+                'all',
+                'a',
+                InputOption::VALUE_NONE,
+                'Use this option to synchronize all existing configurations, in order of priority (other options are ignored).'
+            )
+            ->addOption(
+                'group',
+                'g',
+                InputOption::VALUE_REQUIRED,
+                'Use this option to synchronize all configurations from a given group, in order of priority ("all" comes first, other options are ignored).'
+            )
+            ->addOption(
+                'list',
+                'l',
+                InputOption::VALUE_NONE,
+                'Print a list of all existing External Import configurations available for synchronization.'
+            )
+            ->addOption(
+                'debug',
+                'd',
+                InputOption::VALUE_NONE,
+                'Turns on debugging. Debug output goes to the devlog unless verbose mode is also turned on.'
+            )
+            ->addOption(
+                'preview',
+                'p',
+                InputOption::VALUE_REQUIRED,
+                'Turns on preview mode. Process will stop at the given step (class name) and will output relevant data. No data is saved to the database.'
+            );
     }
 
     /**
@@ -120,7 +124,6 @@ class ImportCommand extends Command
         $this->io->title($this->getDescription());
 
         try {
-
             $this->configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
 
             $list = $input->getOption('list');
@@ -132,8 +135,8 @@ class ImportCommand extends Command
                 $this->importer->setContext('cli');
                 /** @var AbstractCallContext $callContext */
                 $callContext = GeneralUtility::makeInstance(
-                        CommandLineCallContext::class,
-                        $this->importer
+                    CommandLineCallContext::class,
+                    $this->importer
                 );
                 $callContext->setInputOutput($this->io);
                 $this->importer->setCallContext($callContext);
@@ -167,27 +170,29 @@ class ImportCommand extends Command
                 } elseif ($table !== null && $index !== null) {
                     // Assemble fake configuration array, for calling the same method as above
                     $configurations = [
-                            Importer::DEFAULT_PRIORITY => [
-                                    [
-                                            'table' => $table,
-                                            'index' => $index
-                                    ]
+                        Importer::DEFAULT_PRIORITY => [
+                            [
+                                'table' => $table,
+                                'index' => $index
                             ]
+                        ]
                     ];
                     $this->runSynchronization($configurations);
                 } else {
                     // Report erroneous arguments
-                    $this->io->warning('The command was called with invalid arguments. Please use "typo3 help externalimport:sync" for help.');
+                    $this->io->warning(
+                        'The command was called with invalid arguments. Please use "typo3 help externalimport:sync" for help.'
+                    );
                 }
             }
             return 1;
         } catch (\Exception $e) {
             $this->io->error(
-                    sprintf(
-                            'An exception occurred: %s (%d)',
-                            $e->getMessage(),
-                            $e->getCode()
-                    )
+                sprintf(
+                    'An exception occurred: %s (%d)',
+                    $e->getMessage(),
+                    $e->getCode()
+                )
             );
             return 0;
         }
@@ -205,16 +210,16 @@ class ImportCommand extends Command
         foreach ($configurations as $priority => $tableList) {
             foreach ($tableList as $configuration) {
                 $outputTable[] = [
-                        $priority,
-                        $configuration['table'],
-                        $configuration['index'],
-                        $configuration['group']
+                    $priority,
+                    $configuration['table'],
+                    $configuration['index'],
+                    $configuration['group']
                 ];
             }
         }
         $this->io->table(
-                ['Priority', 'Table', 'Index', 'Group'],
-                $outputTable
+            ['Priority', 'Table', 'Index', 'Group'],
+            $outputTable
         );
     }
 
@@ -233,16 +238,16 @@ class ImportCommand extends Command
                 foreach ($tableList as $configuration) {
                     $this->io->section('Importing: ' . $configuration['table'] . ' / ' . $configuration['index']);
                     $messages = $this->importer->synchronize(
-                            $configuration['table'],
-                            $configuration['index']
+                        $configuration['table'],
+                        $configuration['index']
                     );
                     if ($this->importer->isPreview()) {
                         $this->io->section('Preview data');
                         $this->io->writeln(
-                                var_export(
-                                        $this->importer->getPreviewData(),
-                                        true
-                                )
+                            var_export(
+                                $this->importer->getPreviewData(),
+                                true
+                            )
                         );
                     }
                     $this->reportResults($messages);
@@ -256,7 +261,7 @@ class ImportCommand extends Command
      *
      * @param array $messages
      */
-    protected function reportResults($messages): void
+    protected function reportResults(array $messages): void
     {
         foreach ($messages as $severity => $messageList) {
             foreach ($messageList as $message) {

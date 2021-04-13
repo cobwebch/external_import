@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Context;
 
 /*
@@ -45,5 +48,5 @@ abstract class AbstractCallContext
      * @param mixed $data Additional data to display
      * @return void
      */
-    abstract public function outputDebug($message, $severity, $data): void;
+    abstract public function outputDebug(string $message, int $severity, $data): void;
 }

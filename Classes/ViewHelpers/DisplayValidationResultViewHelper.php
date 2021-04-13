@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\ViewHelpers;
 
 /*
@@ -37,7 +40,7 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
      *
      * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('result', 'array', 'Validation result (contains message and severity)', true);
     }
@@ -50,23 +53,26 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
      * @param RenderingContextInterface $renderingContext
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
         $results = $arguments['result'];
         $classes = [
-                AbstractMessage::INFO => 'alert-info',
-                AbstractMessage::NOTICE => 'alert-notice',
-                AbstractMessage::WARNING => 'alert-warning',
-                AbstractMessage::ERROR => 'alert-danger'
+            AbstractMessage::INFO => 'alert-info',
+            AbstractMessage::NOTICE => 'alert-notice',
+            AbstractMessage::WARNING => 'alert-warning',
+            AbstractMessage::ERROR => 'alert-danger'
         ];
         $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert %1$s">%2$s</li></ul></div>';
         $output = '';
         if (is_array($results)) {
             foreach ($results as $result) {
                 $output .= sprintf(
-                        $message,
-                        $classes[$result['severity']],
-                        $result['message']
+                    $message,
+                    $classes[$result['severity']],
+                    $result['message']
                 );
             }
         }
