@@ -2,9 +2,11 @@ name: CI
 
 on:
   push:
-    bettong
+    branches:
+      - bettong
   pull_request:
-    master
+    branches:
+      - master
 
 jobs:
   build:
