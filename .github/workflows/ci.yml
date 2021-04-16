@@ -1,0 +1,51 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up PHP Version
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          tools: composer:v2
+
+      - name: Start MySQL
+        run: sudo /etc/init.d/mysql start
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Cache dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.composer/cache
+          key: dependencies-composer-${{ hashFiles('composer.json') }}
+
+      - name: Install composer dependencies
+        run: |
+          composer install --no-progress
+
+      - name: Unit tests
+        run: .Build/bin/phpunit --colors -c Tests/Build/UnitTests.xml
+
+      - name: Functional tests
+        run: |
+          export typo3DatabaseName="typo3";
+          export typo3DatabaseHost="127.0.0.1";
+          export typo3DatabaseUsername="root";
+          export typo3DatabasePassword="root";
+          .Build/bin/phpunit --colors -c Tests/Build/FunctionalTests.xml
+
+      - name: Upload PHP log
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: php-log
+          path: php.log.txt
