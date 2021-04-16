@@ -1,6 +1,10 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    bettong
+  pull_request:
+    master
 
 jobs:
   build:
