@@ -5,8 +5,6 @@
   "license": [
     "GPL-2.0-or-later"
   ],
-  "minimum-stability": "dev",
-  "prefer-stable": true,
   "authors": [
     {
       "name": "Francois Suter",
