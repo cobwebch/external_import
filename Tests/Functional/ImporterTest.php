@@ -69,6 +69,265 @@ class ImporterTest extends FunctionalTestCase
     }
 
     /**
+     * @test
+     */
+    public function getExternalConfigurationInitiallyReturnsNull(): void
+    {
+        self::assertNull(
+                $this->subject->getExternalConfiguration()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getMessagesInitiallyReturnsEmptyStructure(): void
+    {
+        self::assertSame(
+                [
+                        AbstractMessage::ERROR => [],
+                        AbstractMessage::WARNING => [],
+                        AbstractMessage::OK => []
+                ],
+                $this->subject->getMessages()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function addMessagesAddsMessage(): void
+    {
+        $this->subject->addMessage('foo', AbstractMessage::WARNING);
+        self::assertCount(
+                1,
+                $this->subject->getMessages()[AbstractMessage::WARNING]
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function resetMessagesInitiallyPreparesEmptyStructure(): void
+    {
+        $this->subject->addMessage('foo', AbstractMessage::WARNING);
+        $this->subject->resetMessages();
+        self::assertSame(
+                [
+                        AbstractMessage::ERROR => [],
+                        AbstractMessage::WARNING => [],
+                        AbstractMessage::OK => []
+                ],
+                $this->subject->getMessages()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getContextInitiallyReturnsManualContext(): void
+    {
+        self::assertSame(
+                'manual',
+                $this->subject->getContext()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setContextSetsContext(): void
+    {
+        $this->subject->setContext('cli');
+        self::assertSame(
+                'cli',
+                $this->subject->getContext()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function isDebugInitiallyReturnsFalse(): void
+    {
+        self::assertFalse($this->subject->isDebug());
+    }
+
+    /**
+     * @test
+     */
+    public function setDebugSetsDebugFlag(): void
+    {
+        $this->subject->setDebug(true);
+        self::assertTrue($this->subject->isDebug());
+    }
+
+    /**
+     * @test
+     */
+    public function isVerboseInitiallyReturnsFalse(): void
+    {
+        self::assertFalse($this->subject->isVerbose());
+    }
+
+    /**
+     * @test
+     */
+    public function setVerboseSetsVerboseFlag(): void
+    {
+        $this->subject->setVerbose(true);
+        self::assertTrue($this->subject->isVerbose());
+    }
+
+    /**
+     * @test
+     */
+    public function isTestModeInitiallyReturnsFalse(): void
+    {
+        self::assertFalse(
+                $this->subject->isTestMode()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setTestModeSetsTestMode(): void
+    {
+        $this->subject->setTestMode(true);
+        self::assertTrue(
+                $this->subject->isTestMode()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function isPreviewInitiallyReturnsFalse(): void
+    {
+        self::assertFalse($this->subject->isPreview());
+    }
+
+    /**
+     * @test
+     */
+    public function getPreviewStepInitiallyReturnsEmptyString(): void
+    {
+        self::assertSame(
+                '',
+                $this->subject->getPreviewStep()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setPreviewStepSetsPreviewStep(): void
+    {
+        $this->subject->setPreviewStep('foo');
+        self::assertSame(
+                'foo',
+                $this->subject->getPreviewStep()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getPreviewDataInitiallyReturnsNull(): void
+    {
+        self::assertNull($this->subject->getPreviewData());
+    }
+
+    public function previewDataProvider(): array
+    {
+        return [
+                'string' => [
+                        '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><node>foo</node>'
+                ],
+                'array' => [
+                        [
+                                'name' => 'Foo',
+                                'title' => 'Bar'
+                        ]
+                ]
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider previewDataProvider
+     * @param mixed $data
+     */
+    public function setPreviewDataSetsPreviewData($data): void
+    {
+        $this->subject->setPreviewData($data);
+        self::assertSame(
+                $data,
+                $this->subject->getPreviewData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function resetPreviewDataSetsPreviewDataToNull(): void
+    {
+        $this->subject->resetPreviewData();
+        self::assertNull(
+                $this->subject->getPreviewData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getStartTimeInitiallyReturnsZero(): void
+    {
+        self::assertEquals(
+                0,
+                $this->subject->getStartTime()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setStartTimeSetsStartTime(): void
+    {
+        $now = time();
+        $this->subject->setStartTime($now);
+        self::assertEquals(
+                $now,
+                $this->subject->getStartTime()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getEndTimeInitiallyReturnsZero(): void
+    {
+        self::assertEquals(
+                0,
+                $this->subject->getEndTime()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setEndTimeSetsEndTime(): void
+    {
+        $now = time();
+        $this->subject->setEndTime($now);
+        self::assertEquals(
+                $now,
+                $this->subject->getEndTime()
+        );
+    }
+
+    /**
      * Imports the "tag" elements and checks whether we have the right count or not
      * (5 expected on a total of 6, because one is filtered away by
      * \Cobweb\ExternalimportTest\Service\TagsPreprocessor::preprocessRawRecordset())
