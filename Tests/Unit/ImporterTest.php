@@ -44,7 +44,15 @@ class ImporterTest extends UnitTestCase
         // For unit testing, don't inject all dependencies
         $this->subject = GeneralUtility::makeInstance(
                 Importer::class,
-                $this->getAccessibleMock(ConfigurationRepository::class),
+                $this->getAccessibleMock(
+                    ConfigurationRepository::class,
+                    [],
+                    [],
+                    '',
+                    // Don't call the constructor to avoid loading the extension configuration,
+                    // which doesn't exist in unit tests setup
+                    false
+                ),
                 $this->getAccessibleMock(
                         ReportingUtility::class,
                         [],
@@ -55,25 +63,6 @@ class ImporterTest extends UnitTestCase
                 ),
                 $this->getAccessibleMock(UidRepository::class),
                 $this->getAccessibleMock(TemporaryKeyRepository::class)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getExtensionConfigurationInitiallyReturnsDefaultConfiguration(): void
-    {
-        self::assertSame(
-                [
-                        'storagePID' => '0',
-                        'logStorage' => '0',
-                        'timelimit' => '-1',
-                        'reportEmail' => '',
-                        'reportSubject' => '',
-                        'debug' => '0',
-                        'disableLog' => '0',
-                ],
-                $this->subject->getExtensionConfiguration()
         );
     }
 
