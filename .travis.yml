@@ -1,0 +1,22 @@
+language: php
+php:
+  - 7.2
+  - 7.3
+  - 7.4
+  - 8.0
+branches:
+  only:
+  - master
+  - bettong
+before_script:
+  - composer require nimut/testing-framework
+  - composer require cobweb/svconnector_feed
+  - composer require cobweb/svconnector_csv
+script:
+  - phpunit --colors -c vendor/nimut/testing-framework/res/Configuration/UnitTests.xml Tests/Unit/
+#  - >
+#    export typo3DatabaseName="typo3";
+#    export typo3DatabaseHost="localhost";
+#    export typo3DatabaseUsername="root";
+#    export typo3DatabasePassword="";
+#    phpunit --colors -c vendor/nimut/testing-framework/res/Configuration/FunctionalTests.xml Tests/Functional/;
