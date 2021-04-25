@@ -67,7 +67,7 @@ extraData
   of storage space where any type of data can be stored and passed from step to
   step.
 
-  On top of the usual getter and setter, use :php:`addExtraData($key, $data)`
+  On top of the usual getter and setter, use :code:`addExtraData($key, $data)`
   to add some data to this array using the defined array key.
 
 records
@@ -93,10 +93,6 @@ index
 
 generalConfiguration
   The general part of the External Import TCA configuration.
-
-  .. note::
-
-     This is still availabe as `ctrlConfiguration` but support will be dropped in the future.
 
 columnConfiguration
   The columns configuration part of the External Import TCA configuration.

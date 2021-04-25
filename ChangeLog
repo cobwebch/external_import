@@ -1,3 +1,7 @@
+2021-04-25 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve priority property documentation, resolves #177
+
 2021-04-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Clean up code, apply PSR-12, use strict typing everywhere, resolves #168

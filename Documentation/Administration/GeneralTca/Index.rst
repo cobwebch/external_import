@@ -172,7 +172,7 @@ Description
   configurations having the same value for the "group" property will
   form a group of configurations. It is then possible to execute the
   synchronization of all configurations in the group in one go, in
-  order of priority. Group synchronization is available on the command
+  order of priority (lowest goes first). Group synchronization is available on the command
   line and in the Scheduler task.
 
 Scope
@@ -246,10 +246,16 @@ Type
   integer
 
 Description
-  A level of priority for execution of the synchronization. Some tables
+  A level of priority for the execution of the synchronization. Some tables
   may need to be synchronized before others if foreign relations are to
   be established. This gives a clue to the user and a strict order for
-  scheduled synchronizations.
+  scheduled synchronizations (either when synchronizing all configurations
+  or when synchronizing a :ref:`group <administration-general-tca-properties-group>`).
+
+  The lowest priority value goes first.
+
+  If priority is not defined, a default value of 1000 is applied
+  (defined by class constant :code:`\Cobweb\ExternalImport\Importer::DEFAULT_PRIORITY`).
 
   Not used when pushing data.
 
