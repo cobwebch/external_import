@@ -121,7 +121,10 @@ class HandleDataStep extends AbstractStep
      */
     protected function preprocessRawData(array $records): array
     {
+        // Using a hook is deprecated
+        // TODO: remove in the next major version
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'])) {
+            trigger_error('Hook "preprocessRawRecordset" is deprecated. Use a custom step instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'] as $className) {
                 try {
                     $preProcessor = GeneralUtility::makeInstance($className);

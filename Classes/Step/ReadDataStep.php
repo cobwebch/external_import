@@ -17,8 +17,10 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\Svconnector\Service\ConnectorBase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -30,6 +32,16 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class ReadDataStep extends AbstractStep
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     /**
      * Reads the data from the external source.
      *
@@ -165,7 +177,18 @@ class ReadDataStep extends AbstractStep
      */
     protected function processParameters(array $parameters): array
     {
+        /** @var ProcessConnectorParametersEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ProcessConnectorParametersEvent(
+                $parameters,
+                $this->importer->getExternalConfiguration()
+            )
+        );
+        $parameters = $event->getParameters();
+        // Using a hook is deprecated
+        // TODO: remove in the next major version
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'])) {
+            trigger_error('Hook "processParameters" is deprecated. Use \Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
                 try {
                     $preProcessor = GeneralUtility::makeInstance($className);

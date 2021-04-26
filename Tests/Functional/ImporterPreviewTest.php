@@ -261,6 +261,10 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'name' => 'Armor & Shields'
                                 ],
                                 [
+                                        'code' => 'rude',
+                                        'name' => 'F**k'
+                                ],
+                                [
                                         'code' => 'metal',
                                         'name' => 'Metallic objects'
                                 ],

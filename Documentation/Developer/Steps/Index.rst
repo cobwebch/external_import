@@ -160,34 +160,52 @@ Finally here is a short example of a custom step class. Note how the API is used
 to retrieve the list of records (processed data), which is looped over and then
 saved again to the :code:`Data` object.
 
-In this example, the "name" field of every record is postfixed with a
-simple string.
+In this example, the "name" field of every record is used to filter acceptable entries.
+
+.. warning::
+
+   Note the call to :code:`array_values()` to compact the array again once records
+   have been removed. This is very important to avoid having empty entries in your
+   import.
+
+   This used to be done automatically when using hooks "preprocessRawRecordset" and
+   "preprocessRecordset". When replacing these hooks by custom steps, make sure to
+   call :code:`array_values()` if needed.
 
 .. code-block:: php
 
-      <?php
-      namespace Cobweb\ExternalimportTest\Step;
+   <?php
 
-      use Cobweb\ExternalImport\Step\AbstractStep;
+   declare(strict_types=1);
 
-      /**
-       * Class demonstrating how to use custom steps for external import.
-       *
-       * @package Cobweb\ExternalimportTest\Step
-       */
-      class EnhanceDataStep extends AbstractStep
-      {
-          /**
-           * Performs some dummy operation to demonstrate custom steps.
-           *
-           * @return void
-           */
-          public function run()
-          {
-              $records = $this->getData()->getRecords();
-              foreach ($records as $index => $record) {
-                  $records[$index]['name'] = $record['name'] . ' (base)';
-              }
-              $this->getData()->setRecords($records);
-          }
-      }
+   namespace Cobweb\ExternalimportTest\Step;
+
+   use Cobweb\ExternalImport\Step\AbstractStep;
+
+   /**
+    * Class demonstrating how to use custom steps for external import.
+    *
+    * @package Cobweb\ExternalimportTest\Step
+    */
+   class TagsPreprocessorStep extends AbstractStep
+   {
+
+       /**
+        * Filters out some records from the raw data for the tags table.
+        *
+        * Any name containing an asterisk is considered censored and thus removed.
+        */
+       public function run(): void
+       {
+           $records = $this->getData()->getRecords();
+           foreach ($records as $index => $record) {
+               if (strpos($record['name'], '*') !== false) {
+                   unset($records[$index]);
+               }
+           }
+           $records = array_values($records);
+           $this->getData()->setRecords($records);
+           // Set the filtered records as preview data
+           $this->importer->setPreviewData($records);
+       }
+   }

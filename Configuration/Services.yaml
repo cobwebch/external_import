@@ -40,6 +40,14 @@ services:
     public: true
     shared: false
 
+  Cobweb\ExternalImport\Step\ReadDataStep:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Step\StoreDataStep:
+    public: true
+    shared: false
+
   Cobweb\ExternalImport\Step\TransformDataStep:
     public: true
     shared: false

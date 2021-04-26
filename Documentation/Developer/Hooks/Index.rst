@@ -6,19 +6,19 @@
 Hooks
 ^^^^^
 
+.. warning::
+
+   Since External Import version 6.0.0, all hooks have been deprecated.
+   They will be removed in version 7.0.0. Some hooks should be replaced by
+   :ref:`custom process steps <developer-steps>`. For others PSR-14 compliant
+   :ref:`events <developer-events>` have been introduced. See below for each hook.
+
+   If you have never used hooks, just ignore this page entirely...
+
 The external import process contains many hooks for improved
 flexibility. They are described below. When running in
 :ref:`preview mode <user-backend-module-synchronizable-preview>`
 some hooks are not called.
-
-.. note::
-
-   Since External Import version 4.0.0, :ref:`custom process steps <developer-steps>`
-   are available. In general, they are far more powerful than hooks,
-   although hooks cover specific scenarios which custom steps can't.
-   No hook has been deprecated, but a notice has beed added to their
-   description for those that could be replaced by custom steps.
-
 
 Some hooks may throw the special exception :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
 This will cause their "parent" step to abort. More details in the chapter about
@@ -27,6 +27,11 @@ may do this is mentioned below.
 
 
 processParameters
+
+  .. warning::
+
+     Use the :ref:`Process connector parameters event<developer-events-process-connector-parameters>` instead.
+
   This allows for dynamic manipulation of the
   :ref:`parameters <administration-general-tca-properties-parameters>`
   array before it is passed to the connector.
@@ -115,6 +120,11 @@ preprocessRecordset
      as a position.
 
 updatePreProcess
+
+  .. warning::
+
+     Use the :ref:`Update Record Preprocess event<developer-events-update-record-preprocess>` instead.
+
   This hook can be used to modify a record just
   before it is updated in the database. The hook is called for each
   record that has to be updated. The hook receives the complete record
@@ -129,6 +139,11 @@ updatePreProcess
      This hook receives records only from the main table, not from any child table.
 
 insertPreProcess
+
+  .. warning::
+
+     Use the :ref:`Insert Record Preprocess event<developer-events-insert-record-preprocess>` instead.
+
   Similar to the "updatePreProcess" hook, but for
   the insert operation.
 
@@ -139,10 +154,18 @@ insertPreProcess
      This hook receives records only from the main table, not from any child table.
 
 deletePreProcess
+
+  .. warning::
+
+     Use the :ref:`Delete Record Preprocess event<developer-events-delete-record-preprocess>` instead.
+
+     The event does not have a direct access to the main table name. It can be retrieved using:
+     :code:`$event->getImporter()->getExternalConfiguration()->getTable`.
+
   This hook can be used to modify the list of
-  records that will be deleted. As a first parameter it receives a list
-  of primary key, corresponding to the records set for deletion. The
-  second parameter is a reference to the calling object (again, an
+  records that will be deleted. As a first parameter it receives the name of the main table,
+  as a second parameter a list of primary keys, corresponding to the records set for deletion. The
+  third parameter is a reference to the calling object (again, an
   instance of class :php:`\Cobweb\ExternalImport\Importer`). The method invoked is
   expected to return a list of primary keys too.
 
@@ -155,6 +178,14 @@ deletePreProcess
      not from any child table.
 
 datamapPostProcess
+
+  .. warning::
+
+     Use the :ref:`Datamap Postprocess event<developer-events-datamap-postprocess>` instead.
+
+     The event does not have a direct access to the main table name. It can be retrieved using:
+     :code:`$event->getImporter()->getExternalConfiguration()->getTable`.
+
   This hook is called after all records have
   been updated or inserted using the TYPO3 Core Engine. It can be used for any follow-
   up operation. It receives as parameters the name of the affected
@@ -173,6 +204,14 @@ datamapPostProcess
      This hook is not called in preview mode.
 
 cmdmapPostProcess
+
+  .. warning::
+
+     Use the :ref:`Cmdmap Postprocess event<developer-events-cmdmap-postprocess>` instead.
+
+     The event does not have a direct access to the main table name. It can be retrieved using:
+     :code:`$event->getImporter()->getExternalConfiguration()->getTable`.
+
   This hook is called after all records have
   been deleted using the TYPO3 Core Engine. It receives as parameters the name of the
   affected table, the list of uid's of the deleted records and a back-

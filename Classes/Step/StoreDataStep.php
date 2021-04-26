@@ -19,10 +19,16 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Repository\ChildrenRepository;
+use Cobweb\ExternalImport\Event\CmdmapPostprocessEvent;
+use Cobweb\ExternalImport\Event\DatamapPostprocessEvent;
+use Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent;
+use Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent;
+use Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ManyToManyUtility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
@@ -76,6 +82,16 @@ class StoreDataStep extends AbstractStep
      * @var array List of child records that need to be deleted
      */
     protected $childRecordsToDelete = [];
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
 
     public function __toString()
     {
@@ -179,8 +195,35 @@ class StoreDataStep extends AbstractStep
 
             // Register record for update
             if ($isExistingRecord) {
+                // First call a pre-processing event
+                try {
+                    /** @var UpdateRecordPreprocessEvent $event */
+                    $event = $this->eventDispatcher->dispatch(
+                        new UpdateRecordPreprocessEvent(
+                            $theRecord,
+                            $this->importer
+                        )
+                    );
+                    $theRecord = $event->getRecord();
+                } catch (CriticalFailureException $e) {
+                    $this->abortFlag = true;
+                    return;
+                } catch (\Exception $e) {
+                    $this->importer->debug(
+                        sprintf(
+                            'An error happened during event %s (error: %s, code: %d)',
+                            UpdateRecordPreprocessEvent::class,
+                            $e->getMessage(),
+                            $e->getCode()
+                        ),
+                        1
+                    );
+                }
                 // First call a pre-processing hook
+                // Using a hook is deprecated
+                // TODO: remove in the next major version
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'])) {
+                    trigger_error('Hook "updatePreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent instead.', E_USER_DEPRECATED);
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'] as $className) {
                         try {
                             $preProcessor = GeneralUtility::makeInstance($className);
@@ -222,8 +265,35 @@ class StoreDataStep extends AbstractStep
                 $updates++;
                 // Register record for insert
             } else {
+                // First call a pre-processing event
+                try {
+                    /** @var InsertRecordPreprocessEvent $event */
+                    $event = $this->eventDispatcher->dispatch(
+                        new InsertRecordPreprocessEvent(
+                            $theRecord,
+                            $this->importer
+                        )
+                    );
+                    $theRecord = $event->getRecord();
+                } catch (CriticalFailureException $e) {
+                    $this->abortFlag = true;
+                    return;
+                } catch (\Exception $e) {
+                    $this->importer->debug(
+                        sprintf(
+                            'An error happened during event %s (error: %s, code: %d)',
+                            InsertRecordPreprocessEvent::class,
+                            $e->getMessage(),
+                            $e->getCode()
+                        ),
+                        1
+                    );
+                }
                 // First call a pre-processing hook
+                // Using a hook is deprecated
+                // TODO: remove in the next major version
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'])) {
+                    trigger_error('Hook "insertPreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent instead.', E_USER_DEPRECATED);
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'] as $className) {
                         try {
                             $preProcessor = GeneralUtility::makeInstance($className);
@@ -325,28 +395,55 @@ class StoreDataStep extends AbstractStep
                     }
                 }
 
-                // Post-processing hook after data was saved
-                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
-                    foreach ($tceData as $tableRecords) {
-                        foreach ($tableRecords as $id => $record) {
-                            // Add status to record
-                            // If operation was insert, match placeholder to actual id
-                            $uid = $id;
-                            if (isset($tce->substNEWwithIDs[$id])) {
-                                $uid = $tce->substNEWwithIDs[$id];
-                                $record['tx_externalimport:status'] = 'insert';
-                            } else {
-                                $record['tx_externalimport:status'] = 'update';
-                            }
-                            // Restore excluded fields, if any
-                            if (isset($this->valuesExcludedFromSaving[$id])) {
-                                foreach ($this->valuesExcludedFromSaving[$id] as $fieldName => $fieldValue) {
-                                    $record[$fieldName] = $fieldValue;
-                                }
-                            }
-                            $savedData[$uid] = $record;
+                // Prepare data for post-processing
+                foreach ($tceData as $tableRecords) {
+                    foreach ($tableRecords as $id => $record) {
+                        // Add status to record
+                        // If operation was insert, match placeholder to actual id
+                        $uid = $id;
+                        if (isset($tce->substNEWwithIDs[$id])) {
+                            $uid = $tce->substNEWwithIDs[$id];
+                            $record['tx_externalimport:status'] = 'insert';
+                        } else {
+                            $record['tx_externalimport:status'] = 'update';
                         }
+                        // Restore excluded fields, if any
+                        if (isset($this->valuesExcludedFromSaving[$id])) {
+                            foreach ($this->valuesExcludedFromSaving[$id] as $fieldName => $fieldValue) {
+                                $record[$fieldName] = $fieldValue;
+                            }
+                        }
+                        $savedData[$uid] = $record;
                     }
+                }
+                // Post-processing event after data was saved
+                try {
+                    /** @var DatamapPostprocessEvent $event */
+                    $this->eventDispatcher->dispatch(
+                        new DatamapPostprocessEvent(
+                            $savedData,
+                            $this->importer
+                        )
+                    );
+                } catch (CriticalFailureException $e) {
+                    $this->abortFlag = true;
+                    return;
+                } catch (\Exception $e) {
+                    $this->importer->debug(
+                        sprintf(
+                            'An error happened during event %s (error: %s, code: %d)',
+                            DatamapPostprocessEvent::class,
+                            $e->getMessage(),
+                            $e->getCode()
+                        ),
+                        1
+                    );
+                }
+                // Post-processing hook after data was saved
+                // Using a hook is deprecated
+                // TODO: remove in the next major version
+                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
+                    trigger_error('Hook "datamapPostProcess" is deprecated. Use \Cobweb\ExternalImport\Event\DatamapPostprocessEvent instead.', E_USER_DEPRECATED);
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] as $className) {
                         try {
                             $postProcessor = GeneralUtility::makeInstance($className);
@@ -389,10 +486,38 @@ class StoreDataStep extends AbstractStep
         }
         // Now for the main table, mark as deleted those records with existing uids that were not in the import data anymore
         // (if automatic delete is activated)
+        $absentUids = [];
         if (!GeneralUtility::inList($generalConfiguration['disabledOperations'], 'delete')) {
             $absentUids = $this->mainRecordsToDelete;
+            // Call a pre-processing event
+            try {
+                /** @var DeleteRecordsPreprocessEvent $event */
+                $event = $this->eventDispatcher->dispatch(
+                    new DeleteRecordsPreprocessEvent(
+                        $absentUids,
+                        $this->importer
+                    )
+                );
+                $absentUids = $event->getRecords();
+            } catch (CriticalFailureException $e) {
+                $this->abortFlag = true;
+                return;
+            } catch (\Exception $e) {
+                $this->importer->debug(
+                    sprintf(
+                        'An error happened during event %s (error: %s, code: %d)',
+                        DeleteRecordsPreprocessEvent::class,
+                        $e->getMessage(),
+                        $e->getCode()
+                    ),
+                    1
+                );
+            }
             // Call a pre-processing hook
+            // Using a hook is deprecated
+            // TODO: remove in the next major version
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'])) {
+                trigger_error('Hook "deletePreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent instead.', E_USER_DEPRECATED);
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'] as $className) {
                     try {
                         $preProcessor = GeneralUtility::makeInstance($className);
@@ -432,8 +557,34 @@ class StoreDataStep extends AbstractStep
             $tce->start([], $tceDeleteCommands);
             try {
                 $tce->process_cmdmap();
+                // Call a post-processing event
+                try {
+                    /** @var CmdmapPostprocessEvent $event */
+                    $this->eventDispatcher->dispatch(
+                        new CmdmapPostprocessEvent(
+                            $absentUids,
+                            $this->importer
+                        )
+                    );
+                } catch (CriticalFailureException $e) {
+                    $this->abortFlag = true;
+                    return;
+                } catch (\Exception $e) {
+                    $this->importer->debug(
+                        sprintf(
+                            'An error happened during event %s (error: %s, code: %d)',
+                            CmdmapPostprocessEvent::class,
+                            $e->getMessage(),
+                            $e->getCode()
+                        ),
+                        1
+                    );
+                }
                 // Call a post-processing hook
+                // Using a hook is deprecated
+                // TODO: remove in the next major version
                 if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
+                    trigger_error('Hook "cmdmapPostProcess" is deprecated. Use \Cobweb\ExternalImport\Event\CmdmapPostprocessEvent instead.', E_USER_DEPRECATED);
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
                         try {
                             $postProcessor = GeneralUtility::makeInstance($className);

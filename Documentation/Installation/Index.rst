@@ -31,6 +31,12 @@ backwards-compatibility layer was dropped. Please refer to the
 :ref:`5.0.0 upgrade instructions <installation-upgrade-500>` and check if you have applied
 all changes.
 
+All hooks were marked as deprecated. They will be removed in version 7.0.0.
+You should migrate your code to use either :ref:`custom process steps <developer-steps>`
+or the newly introduced :ref:`PSR-14 events <developer-events>`.
+See the :ref:`hooks chapter <developer-hooks>` for information about how to migrate
+each hook.
+
 External Import is now configured for using the standard (Symfony)
 dependency injection mechanism. This means it is not necessary to instantiate the
 :php:`\Cobweb\ExternalImport\Importer` class must using Extbase's

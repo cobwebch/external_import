@@ -1,3 +1,7 @@
+2021-04-26 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Deprecate all hooks, introduce PSR-14 events, resolves #167
+
 2021-04-25 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve priority property documentation, resolves #177
