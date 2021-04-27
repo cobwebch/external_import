@@ -1,3 +1,7 @@
+2021-04-27 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Display preview step name when previewing in BE module, resolves #171
+
 2021-04-26 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Deprecate all hooks, introduce PSR-14 events, resolves #167
