@@ -30,11 +30,13 @@ The extension also provides an API for sending it data from some other source.
 This data is stored into the TYPO3 CMS database using the same mapping process
 as when data is fetched directly by the extension.
 
-This extension contains a number of hooks as well as the possibility to call
-user-defined functions during the import process or to create custom steps,
-which makes it a quite flexible tool. However it was not designed for extensive
-data manipulation. It is assumed that the data received from the external source
-is in "palatable" format. If the external data requires a lot of processing,
+This extension is quite flexible, thanks to the possibility of calling user
+functions to transform incoming data, listening to events to react to some part
+of the process or adding custom steps at any point in the process.
+It is also possible to create custom connectors for reading from a specific
+external source. Still this extension was not designed for extensive data manipulation.
+It is assumed that the data received from the external source
+is in a "palatable" format. If the external data requires a lot of processing,
 it is probably better to put it through an ETL or ESB tool first,
 and then import it into TYPO3 CMS.
 

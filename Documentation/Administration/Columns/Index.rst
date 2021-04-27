@@ -35,9 +35,10 @@ The properties for the columns configuration are described below.
 .. warning::
 
    Columns "crdate", "tstamp" and "cruser_id" cannot be mapped as they are overwritten by the
-   :php:`DataHandler`. If you need to manipulate these columns you should use the "datamapPostProcess"
-   or "cmdmapPostProcess" :ref:`hooks <developer-hooks>`, which are called after :php:`DataHandler`
-   operations.
+   :php:`DataHandler`. If you need to manipulate these columns you should use the
+   :ref:`Datamap Postprocess event <developer-events-datamap-postprocess>` or the
+   :ref:`Cmdmap Postprocess event <developer-events-cmdmap-postprocess>`
+   which are triggered after :php:`DataHandler` operations.
 
 
 .. _administration-columns-properties:
@@ -58,7 +59,6 @@ Properties
    disabledOperations_       string                                                                 Store data
    field_                    string                                                                 Handle data
    fieldNS_                  string                                                                 Handle data (XML)
-   MM_                       :ref:`MM configuration <administration-mm>`                            Store data
    multipleRows_             boolean                                                                Store data
    multipleSorting_          string                                                                 Store data
    substructureFields_       array                                                                  Handle data
@@ -410,7 +410,7 @@ Type
 Description
    Set to :code:`true` if you have denormalized data. This will tell the import
    process that there may be more than one row per record to import and that all
-   values for the given column must be gathered and collapsed into a comme-separated
+   values for the given column must be gathered and collapsed into a comma-separated
    list of values. See the :ref:`Mapping data <user-mapping-data>` chapter for
    explanations about the impact of this flag.
 

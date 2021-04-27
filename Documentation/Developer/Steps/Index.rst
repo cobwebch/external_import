@@ -6,17 +6,11 @@
 Custom process steps
 ^^^^^^^^^^^^^^^^^^^^
 
-Besides all the :ref:`hooks <developer-hooks>`, it is also possible to
+Besides all the :ref:`events <developer-events>`, it is also possible to
 register custom process steps. How to register a custom step is
 covered in the :ref:`Administration chapter <administration-general-tca-properties-customsteps>`.
 This section describes what a custom step can or should do and
 what resources are available from within a custom step class.
-
-Custom steps are much more powerful than hooks and should be preferred
-whenever that makes sense. Custom steps have access to much more information
-than hooks, although most hooks are more specific.
-Also custom steps are registered **per** configuration, which removes the need
-to test inside them which import configuration is being handled.
 
 
 .. _developer-steps-parent-class:
@@ -102,12 +96,6 @@ If you manipulate the data, you need to store it explicitely:
 	$this->getData()->setRawData();
 	// Store the processed data
 	$this->getData()->setRecords();
-
-.. note::
-
-   Custom steps get to manipulate the whole data set, contrary to many
-   of the hooks, which are called while looping on each entry in the
-   data set.
 
 Another typical usage would be to interrupt the process entirely
 by setting the :code:`abortFlag` variable to :code:`true`, as mentioned

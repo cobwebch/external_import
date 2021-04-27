@@ -69,7 +69,7 @@ getImporter
 
 .. note::
 
-   This hook receives records only from the main table, not from any child table.
+   This event listener receives records only from the main table, not from any child table.
 
 
 .. _developer-events-insert-record-preprocess:
@@ -84,7 +84,7 @@ the insert operation.
 
 .. note::
 
-   This hook receives records only from the main table, not from any child table.
+   This event listener receives records only from the main table, not from any child table.
 
 
 .. _developer-events-delete-record-preprocess:
