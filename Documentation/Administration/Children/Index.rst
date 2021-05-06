@@ -21,7 +21,18 @@ scenarios which may help understand this feature.
 
 		$GLOBALS['TCA']['tx_externalimporttest_product']['columns']['pictures']['external'] = [
          'base' => [
-             ...
+              'field' => 'Pictures', // remote db field
+              'transformations' => [
+                  10 => [
+                      'userFunction' => [
+                          'class' => \Cobweb\ExternalImport\Transformation\ImageTransformation::class,
+                          'method' => 'saveImageFromUri',
+                          'parameters' => [
+                              'storage' => '1:importedpictures', // local folder for files
+                          ]
+                      ]
+                  ]
+              ],
              'children' => [
                      'table' => 'sys_file_reference',
                      'columns' => [
