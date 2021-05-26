@@ -51,6 +51,11 @@ class ArrayHandler implements DataHandlerInterface
         // Loop on all entries
         if (is_array($rawData) && count($rawData) > 0) {
             foreach ($rawData as $theRecord) {
+                // Skip to the next entry if the record is not an array as expected
+                if (!is_array($theRecord)) {
+                    continue;
+                }
+
                 $referenceCounter = $counter;
                 $data[$referenceCounter] = [];
 
