@@ -493,10 +493,10 @@ class Importer implements LoggerAwareInterface
      * when the synchronization is complete.
      *
      * @param string $text The message itself
-     * @param integer $status Status of the message. Expected is "success", "warning" or "error"
+     * @param int $status Status of the message. Expected is "success", "warning" or "error"
      * @return void
      */
-    public function addMessage(string $text, $status = AbstractMessage::ERROR): void
+    public function addMessage(string $text, int $status = AbstractMessage::ERROR): void
     {
         if (!empty($text)) {
             $this->messages[$status][] = $text;

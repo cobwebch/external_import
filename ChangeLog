@@ -1,3 +1,7 @@
+2021-05-28 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Add arrayPath property at general level, also refactor ArrayHandler tests, resolves #175
+
 2021-04-27 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Display preview step name when previewing in BE module, resolves #171

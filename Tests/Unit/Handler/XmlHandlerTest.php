@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Handler;
 
 /*
@@ -19,9 +21,9 @@ use Cobweb\ExternalImport\Handler\XmlHandler;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 
 /**
- * Test suite for the ArrayHandler class.
+ * Test suite for the XmlHandler class.
  *
- * @package Cobweb\ExternalImport\Tests\Functional\Step
+ * @package Cobweb\ExternalImport\Tests\Unit\Handler
  */
 class XmlHandlerTest extends UnitTestCase
 {
@@ -39,35 +41,35 @@ class XmlHandlerTest extends UnitTestCase
     public function getValueSuccessProvider(): array
     {
         return [
-                'direct simple value' => [
-                        'structure' => '<item>foo</item>',
-                        'configuration' => [
-                                'field' => 'item'
-                        ],
-                        'result' => 'foo'
+            'direct simple value' => [
+                'structure' => '<item>foo</item>',
+                'configuration' => [
+                    'field' => 'item'
                 ],
-                'xpath value' => [
-                        'structure' => '<item><bar>foo</bar></item>',
-                        'configuration' => [
-                                'xpath' => 'item/bar'
-                        ],
-                        'result' => 'foo'
+                'result' => 'foo'
+            ],
+            'xpath value' => [
+                'structure' => '<item><bar>foo</bar></item>',
+                'configuration' => [
+                    'xpath' => 'item/bar'
                 ],
-                'substructure as string' => [
-                        'structure' => '<item><foo>me</foo><bar>you</bar></item>',
-                        'configuration' => [
-                                'field' => 'item'
-                        ],
-                        'result' => 'meyou'
+                'result' => 'foo'
+            ],
+            'substructure as string' => [
+                'structure' => '<item><foo>me</foo><bar>you</bar></item>',
+                'configuration' => [
+                    'field' => 'item'
                 ],
-                'substructure as xml' => [
-                        'structure' => '<item><foo>me</foo><bar>you</bar></item>',
-                        'configuration' => [
-                                'field' => 'item',
-                                'xmlValue' => true
-                        ],
-                        'result' => '<foo>me</foo><bar>you</bar>'
-                ]
+                'result' => 'meyou'
+            ],
+            'substructure as xml' => [
+                'structure' => '<item><foo>me</foo><bar>you</bar></item>',
+                'configuration' => [
+                    'field' => 'item',
+                    'xmlValue' => true
+                ],
+                'result' => '<foo>me</foo><bar>you</bar>'
+            ]
         ];
     }
 
@@ -79,7 +81,7 @@ class XmlHandlerTest extends UnitTestCase
      * @param mixed $result
      * @throws \Exception
      */
-    public function getValueReturnsValueIfFound($structure, $configuration, $result): void
+    public function getValueReturnsValueIfFound(string $structure, array $configuration, $result): void
     {
         // Load the XML into a DOM object
         $dom = new \DOMDocument();
@@ -88,39 +90,39 @@ class XmlHandlerTest extends UnitTestCase
         $xPathObject = new \DOMXPath($dom);
         $value = $this->subject->getValue($dom, $configuration, $xPathObject);
         self::assertSame(
-                $result,
-                $value
+            $result,
+            $value
         );
     }
 
     public function getSubstructureProvider(): array
     {
         return [
-                [
-                        // Test elements are always wrapped in an <item> tag
-                        'structure' => '<items><item><foo>me</foo><bar><who>you</who></bar><baz>them</baz></item><item><foo>me2</foo><bar><who>you2</who></bar><baz>them2</baz></item></items>',
-                        'configuration' => [
-                                'first' => [
-                                        'field' => 'foo'
-                                ],
-                                'second' => [
-                                        'xpath' => 'bar/who'
-                                ],
-                                'third' => [
-                                        'field' => 'unknown'
-                                ]
-                        ],
-                        'result' => [
-                                [
-                                        'first' => 'me',
-                                        'second' => 'you'
-                                ],
-                                [
-                                        'first' => 'me2',
-                                        'second' => 'you2'
-                                ]
-                        ]
+            [
+                // Test elements are always wrapped in an <item> tag
+                'structure' => '<items><item><foo>me</foo><bar><who>you</who></bar><baz>them</baz></item><item><foo>me2</foo><bar><who>you2</who></bar><baz>them2</baz></item></items>',
+                'configuration' => [
+                    'first' => [
+                        'field' => 'foo'
+                    ],
+                    'second' => [
+                        'xpath' => 'bar/who'
+                    ],
+                    'third' => [
+                        'field' => 'unknown'
+                    ]
+                ],
+                'result' => [
+                    [
+                        'first' => 'me',
+                        'second' => 'you'
+                    ],
+                    [
+                        'first' => 'me2',
+                        'second' => 'you2'
+                    ]
                 ]
+            ]
         ];
     }
 
@@ -132,7 +134,7 @@ class XmlHandlerTest extends UnitTestCase
      * @param array $result
      * @throws \Exception
      */
-    public function getSubstructureValuesReturnsExpectedRows($structure, $configuration, $result): void
+    public function getSubstructureValuesReturnsExpectedRows(string $structure, array $configuration, array $result): void
     {
         // Load the XML into a DOM object
         $dom = new \DOMDocument();
@@ -141,8 +143,8 @@ class XmlHandlerTest extends UnitTestCase
         $xPathObject = new \DOMXPath($dom);
         $nodeList = $dom->getElementsByTagName('item');
         self::assertSame(
-                $result,
-                $this->subject->getSubstructureValues($nodeList, $configuration, $xPathObject)
+            $result,
+            $this->subject->getSubstructureValues($nodeList, $configuration, $xPathObject)
         );
     }
 }

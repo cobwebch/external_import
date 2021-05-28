@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Handler;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Importer;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 
 /**
@@ -44,12 +45,40 @@ class ArrayHandler implements DataHandlerInterface
     public function handleData($rawData, Importer $importer): array
     {
         $data = [];
-        $counter = 0;
-        $configuration = $importer->getExternalConfiguration();
-        $columnConfiguration = $configuration->getColumnConfiguration();
 
-        // Loop on all entries
         if (is_array($rawData) && count($rawData) > 0) {
+            $counter = 0;
+            $generalConfiguration = $importer->getExternalConfiguration()->getGeneralConfiguration();
+            $columnConfiguration = $importer->getExternalConfiguration()->getColumnConfiguration();
+
+            // Extract targeted sub-array if arrayPath is defined
+            if (array_key_exists('arrayPath', $generalConfiguration)) {
+                try {
+                    $rawData = ArrayUtility::getValueByPath(
+                        $rawData,
+                        $generalConfiguration['arrayPath'],
+                        $generalConfiguration['arrayPathSeparator'] ?? '/'
+                    );
+                } catch (\Exception $e) {
+                    // If a problem occurred, report it and return an empty array
+                    $importer->addMessage(
+                        sprintf(
+                            'Error handling arrayPath property (value %s): %s [%d]',
+                            $generalConfiguration['arrayPath'],
+                            $e->getMessage(),
+                            $e->getCode()
+                        ),
+                        AbstractMessage::WARNING
+                    );
+                    return [];
+                }
+                // If the resulting structure is not an array, return an empty array as a result
+                if (!is_array($rawData) || count($rawData) === 0) {
+                    return [];
+                }
+            }
+
+            // Loop on all entries
             foreach ($rawData as $theRecord) {
                 // Skip to the next entry if the record is not an array as expected
                 if (!is_array($theRecord)) {
@@ -120,9 +149,8 @@ class ArrayHandler implements DataHandlerInterface
                 unset($data[$index]);
             }
         }
-        // Compact array
-        $data = array_values($data);
-        return $data;
+        // Compact array before returning it
+        return array_values($data);
     }
 
     /**
@@ -175,5 +203,10 @@ class ArrayHandler implements DataHandlerInterface
             $rows[] = $row;
         }
         return $rows;
+    }
+
+    public function getArrayPathStructure(array $generalConfiguration, array $data): array
+    {
+        return $subArray;
     }
 }

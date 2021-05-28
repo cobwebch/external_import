@@ -278,7 +278,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 ]
                         ]
                 ],
-                'array-type data with sub-structure' => [
+                'array-type data with sub-structure and array path' => [
                         'table' => 'tx_externalimporttest_order',
                         'index' => 0,
                         'result' => [

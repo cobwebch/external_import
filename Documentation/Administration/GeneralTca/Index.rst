@@ -58,6 +58,7 @@ Properties
 	Property                              Data type         Scope/Step
 	===================================== ================= ========================
 	additionalFields_                     string            Read data
+   arrayPath_                            string            Handle data (array)
 	clearCache_                           string            Clear cache
 	connector_                            string            Read data
 	customSteps_                          array             Any step
@@ -213,6 +214,88 @@ Description
 
 Scope
   Handle data (XML)
+
+
+.. _administration-general-tca-properties-arraypath:
+
+arrayPath
+~~~~~~~~~
+
+Type
+  string
+
+Description
+  Pointer to a sub-array inside the incoming external data, as a list of keys
+  separated by some marker (see the :ref:`arrayPathSeparator <administration-general-tca-properties-arraypathseparator>`)
+  property (which defaults to :code:`/`). The sub-array pointed to will be used
+  as the source of data in the subsenquent steps, rather than the whole structure
+  that was read during the :code:`ReadDataStep`.
+
+  **Example**
+
+  Given the following JSON data (which is read into an array):
+
+  .. code-block:: json
+
+      {
+        "count": 2,
+        "data": {
+          "orders" : [
+            {
+              "order": "000001",
+              "date": "2020-08-07 14:32",
+              "customer": "Conan the Barbarian",
+              "products": [
+                {
+                  "product": "000001",
+                  "qty": 3
+                },
+                ...
+              ]
+            },
+            {
+              "order": "000003",
+              "date": "2021-03-07 17:56",
+              "customer": "Empty basket",
+              "products": []
+            },
+            {
+              "order": "000002",
+              "date": "2020-08-08 06:48",
+              "customer": "Sonja the Red",
+              "products": [
+                {
+                  "product": "000001",
+                  "qty": 1
+                },
+                ...
+              ]
+            }
+          ]
+        }
+      }
+
+  We want to import the orders, i.e. the elements that are keyed to :code:`orders`
+  inside :code:`data`. So we would set the property to :code:`data/orders`.
+
+Scope
+  Handle data (array)
+
+
+.. _administration-general-tca-properties-arraypathseparator:
+
+arrayPathSeparator
+~~~~~~~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+  Separator to use in the :ref:`arrayPath <administration-general-tca-properties-arraypath>` property.
+  Defaults to :code:`/` if this property is not defined.
+
+Scope
+  Handle data (array)
 
 
 .. _administration-general-tca-properties-reference-uid:
