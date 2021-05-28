@@ -36,8 +36,14 @@ final class UpdateRecordPreprocessEvent
      */
     protected $record = [];
 
-    public function __construct(array $record, Importer $importer)
+    /**
+     * @var int The primary key of the record
+     */
+    protected $uid;
+
+    public function __construct(int $uid, array $record, Importer $importer)
     {
+        $this->uid = $uid;
         $this->record = $record;
         $this->importer = $importer;
     }
@@ -48,6 +54,14 @@ final class UpdateRecordPreprocessEvent
     public function getImporter(): Importer
     {
         return $this->importer;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUid(): int
+    {
+        return $this->uid;
     }
 
     /**

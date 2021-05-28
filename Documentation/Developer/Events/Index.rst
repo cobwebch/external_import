@@ -58,6 +58,10 @@ This event is triggered just before a record is registered for update
 in the database. It is triggered for each record individually.
 The event has the following API:
 
+getUid
+  Returns the primary of the record (since we are talking about an update operation,
+  the record exists in the database and thus has a valid primary key).
+
 getRecord
   Returns the record being handled.
 

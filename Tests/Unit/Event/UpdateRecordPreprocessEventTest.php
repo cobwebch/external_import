@@ -49,8 +49,20 @@ class UpdateRecordPreprocessEventTest extends UnitTestCase
             false
         );
         $this->subject = new UpdateRecordPreprocessEvent(
+            42,
             [],
             $this->importer
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getUidInitiallyReturnsInteger() :void
+    {
+        self::assertSame(
+            42,
+            $this->subject->getUid()
         );
     }
 

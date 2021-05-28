@@ -200,6 +200,7 @@ class StoreDataStep extends AbstractStep
                     /** @var UpdateRecordPreprocessEvent $event */
                     $event = $this->eventDispatcher->dispatch(
                         new UpdateRecordPreprocessEvent(
+                            (int)$id,
                             $theRecord,
                             $this->importer
                         )

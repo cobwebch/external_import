@@ -1,6 +1,7 @@
 2021-05-28 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add arrayPath property at general level, also refactor ArrayHandler tests, resolves #175
+	* Pass primary key to update record preprocess event, resolves #189
 
 2021-04-27 Francois Suter (Idéative)  <typo3@ideative.ch>
 
