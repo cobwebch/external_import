@@ -32,14 +32,14 @@ External Import
 
 	:License:
 		This document is published under the Open Content License
-		available from http://www.opencontent.org/opl.shtml
+		available from http://www.opencontent.org/openpub/
 
 	:Rendered:
 		|today|
 
 
 The content of this document is related to TYPO3,
-a GNU/GPL CMS/Framework available from `www.typo3.org <http://www.typo3.org/>`_.
+a GNU/GPL CMS/Framework available from `www.typo3.org <https://www.typo3.org/>`_.
 
 
 .. toctree::
