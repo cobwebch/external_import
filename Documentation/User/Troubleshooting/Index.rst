@@ -6,6 +6,8 @@
 Troubleshooting
 ^^^^^^^^^^^^^^^
 
+This chapter tries to address a number of common issues.
+
 
 .. _user-backend-troubleshooting-not-executed:
 
@@ -53,6 +55,17 @@ If this is not desirable, you can use the "minimumRecords" option (see
 For example, if you always expect at least 100 items to be imported,
 set this option to 100. If fewer items than this are present in the
 external data, the import process will be aborted and nothing will get deleted.
+
+
+.. _user-backend-troubleshooting-single-entry:
+
+Only a single entry was imported
+""""""""""""""""""""""""""""""""
+
+This generally happens when the :ref:`referenceUid <administration-general-tca-properties-reference-uid>`
+property is wrongly defined. External Import is unable to differentiate the
+records from the external source and each record overwrites the preceding one.
+In the end, only the last one is actually imported.
 
 
 .. _user-backend-troubleshooting-empty-fields:

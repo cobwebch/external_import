@@ -17,9 +17,19 @@ receive data from any kind of script using the provided API. Fetching
 data from an external source goes through a standardized process.
 
 Connecting to an external source is achieved using connector services
-(:ref:`see extension svconnector <svconnector:start>`), that will return the fetched data to
-the external import. Once such a connector exists, it can be related
-to one or more TYPO3 CMS tables (with additional parameters if needed)
+(:ref:`see extension svconnector <svconnector:start>`), that return the fetched data to
+the external import in either XML format or as a PHP array. Currently, the
+following connectors exist:
+
+- **svconnector_csv** for CSV and silimar flat files
+- **svconnector_feed** for XML source files
+- **svconnector_json** for JSON source files
+- **svconnector_sql** for connecting to another database
+
+It is quite easy to develop a :ref:`custom connector <svconnector:developers-api>`,
+should that be needed.
+
+The external data is mapped to one or more TYPO3 CMS tables
 using the extended TCA syntax. From then on the table can be
 synchronized with the external source. Every time a synchronization is
 started (either manually or according to a schedule), the connector
@@ -38,5 +48,8 @@ This type of action is called "*pushing data*".
 Note that it is perfectly possible to also push data towards
 synchronizable tables. The reverse is not true (non-synchronizable
 tables cannot pull data).
+
+It is perfectly possible to define several import configurations for the same
+table, thus pulling or pushing data from various sources into a single destination.
 
 Synchronizations can be run in preview mode.

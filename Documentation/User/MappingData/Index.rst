@@ -16,7 +16,7 @@ conditions for this operation to succeed:
 - this primary key **must** be stored into some column of the TYPO3 CMS
   database, but **not** the uid column which is internal to TYPO3 CMS.
 
-The primary key in the external data is the key that will used to
+The primary key in the external data is the key that is used to
 decide whether a given entry in the external data corresponds to a
 record already stored in the TYPO3 CMS database or if a new record should
 be created for that entry. Records in the TYPO3 CMS database that do not
@@ -176,7 +176,8 @@ Substructure fields with child records
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Starting from the same scenario as above, it is also possible to define child
-records instead of using :ref:`multipleRows <administration-columns-properties-multiple-rows>`.
+records with the :ref:`children <administration-columns-properties-children>` property
+instead of using :ref:`multipleRows <administration-columns-properties-multiple-rows>`.
 In this case, the denormalized rows are not collapsed but each row is used to create
 a separate child record:
 

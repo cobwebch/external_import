@@ -48,14 +48,32 @@ for testing purposes. The setup is not documented, but can be interesting
 to look at. This extension is distributed only via Github:
 https://github.com/cobwebch/externalimport_test
 
+.. note::
+
+   Setting up External Import can be quite tricky, mostly because this extension offers
+   many options, that are meant to cover as many import scenarios as possible. These
+   options can often be combined for even more possibilities. This can be quite
+   confusing in the beginning.
+
+   Please take time to read the whole :ref:`User manuel chapter <user>` and the
+   already mentioned tutorial. In particular, you should read the following sections:
+
+   - :ref:`General considerations <user-general>`
+   - :ref:`Process overview <user-overview>`
+   - :ref:`Mapping data <user-mapping-data>`
+
 
 .. _suport:
 
 Questions and support
 ^^^^^^^^^^^^^^^^^^^^^
 
-If you have any questions about this extension, use the TYPO3 Slack workspace
-or the issue tracker on GitHub (https://github.com/cobwebch/external_import/issues).
+If you have any questions about this extension, use the dedicated channel in the
+TYPO3 Slack workspace (#ext-external_import) or the issue tracker on GitHub
+(https://github.com/cobwebch/external_import/issues).
+
+Please also check the :ref:`Troubleshooting section <user-troubleshooting>`
+in case your issue is already described there.
 
 
 .. _happy-developer:

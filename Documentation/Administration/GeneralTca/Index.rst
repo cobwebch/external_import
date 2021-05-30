@@ -6,9 +6,10 @@
 General TCA configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Here is an example of a typical general section syntax. The general section can contain several configurations,
-each identified with a key (in the example below, :code:`0` and  :code:`'api'`. The same keys are found again
-in the :ref:`column configuration <administration-columns>`.
+Here is an example of a typical general section syntax, containing two import configurations.
+
+Each configuration must be identified with a key (in the example below, :code:`0` and  :code:`'api'`).
+The same keys need to be used again in the :ref:`column configuration <administration-columns>`.
 
 .. code-block:: php
 
@@ -40,11 +41,6 @@ in the :ref:`column configuration <administration-columns>`.
 
 
 All available properties are described below.
-
-.. note::
-
-   The general configuration used to be stored in :code:`$GLOBALS['TCA'][table-name]['ctrl']['external']`. This is still
-   supported, but code should be migrated as soon as possible, as support will be dropped in the future.
 
 
 .. _administration-general-tca-properties:
