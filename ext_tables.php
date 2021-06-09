@@ -58,7 +58,7 @@ $iconRegistry->registerIcon(
     'tx_external_import-log',
     \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
     [
-        'source' => 'EXT:external_import/Resources/Public/Icons/Log.png'
+        'source' => 'EXT:external_import/Resources/Public/Icons/Log.svg'
     ]
 );
 $iconRegistry->registerIcon(

@@ -124,3 +124,12 @@ extension. You will get mentioned here.
   - Tomas Norre
 
   Without these companies and people, it would never have been such a great update!
+
+
+.. _credits:
+
+Credits
+^^^^^^^
+
+The icon for the log table records is derived from an icon made by `iconixar <https://www.flaticon.com/authors/iconixar>`_
+from `www.flaticon.com <https://www.flaticon.com/>`_.
