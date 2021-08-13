@@ -50,8 +50,8 @@ class ChildrenRepository
     /**
      * Returns the first existing records in the given table for the given condition.
      *
-     * NOTE: it is assume that the given conditions lead to a single record being found.
-     * We don't consider if that is not the case.
+     * NOTE: it is assumed that the given conditions lead to a single record being found.
+     * We don't consider other records if that is not the case.
      *
      * @param string $table Table to query
      * @param array $conditions Conditions to apply (field-value pairs)
