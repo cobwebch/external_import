@@ -178,6 +178,10 @@ Description
      dataset. The rationale is that such a value is considered invalid and should not
      be further processed nor saved to the database.
 
+     The user function can also specifically throw the
+     :php:`\Cobweb\ExternalImport\Exception\InvalidRecordException`. The effect is to
+     remove the entire record from the imported dataset.
+
   For more details about creating a user function, please refer to the
   :ref:`Developer's Guide <developer-user-functions>`.
 

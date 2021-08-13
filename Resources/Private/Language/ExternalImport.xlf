@@ -119,6 +119,9 @@
 			<trans-unit id="transformationFailedWithMessage" xml:space="preserve">
 				<source>Record transformation failed (Message: %s, code: %d). See attached data for details.</source>
 			</trans-unit>
+			<trans-unit id="invalidRecordRemoved" xml:space="preserve">
+				<source>Invalid record detected and removed (Message: %s, code: %d). See attached data for details.</source>
+			</trans-unit>
 			<trans-unit id="unknownTransformationProperty" xml:space="preserve">
 				<source>Unknown transformation property %s</source>
 			</trans-unit>

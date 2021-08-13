@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Exception\InvalidRecordException;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\MappingUtility;
 use Cobweb\ExternalImport\ImporterAwareInterface;
@@ -75,7 +76,7 @@ class TransformDataStep extends AbstractStep
         $records = $this->getData()->getRecords();
 
         $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
-        // Loop on all tables to find any defined transformations. This might be mappings and/or user functions
+        // Loop on all columns to find any defined transformations. This might be mappings and/or user functions
         foreach ($columnConfiguration as $columnName => $columnData) {
             if (isset($columnData['transformations'])) {
                 foreach ($columnData['transformations'] as $transformationConfiguration) {
@@ -250,6 +251,24 @@ class TransformDataStep extends AbstractStep
                 } catch (CriticalFailureException $e) {
                     // This exception must not be caught here, but thrown further up
                     throw $e;
+                } catch (InvalidRecordException $e) {
+                    // This exception means that the record must be removed from the dataset entirely
+                    unset($records[$index]);
+                    $this->importer->debug(
+                        LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidRecordRemoved',
+                            'external_import',
+                            [
+                                $e->getMessage(),
+                                $e->getCode()
+                            ]
+                        ),
+                        3,
+                        [
+                            'user function' => $configuration,
+                            'record' => $record
+                        ]
+                    );
                 } catch (\Exception $e) {
                     // If the value could not be transformed, remove it from the imported dataset
                     unset($records[$index][$name]);
@@ -283,7 +302,8 @@ class TransformDataStep extends AbstractStep
                 $configuration
             );
         }
-        return $records;
+        // Compact the array in case some records were unset
+        return array_values($records);
     }
 
     /**
