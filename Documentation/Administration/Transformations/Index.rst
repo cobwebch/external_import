@@ -25,7 +25,6 @@ Properties
 	mapping_                  :ref:`Mapping configuration <administration-mapping>` Transform data
 	rteEnabled_               boolean                                               Transform data
 	trim_                     boolean                                               Transform data
-	userFunc_                 array                                                 Transform data
 	userFunction_             array                                                 Transform data
 	value_                    simple type (string, integer, boolean)                Transform data
 	========================= ===================================================== =================
@@ -105,22 +104,6 @@ Scope
 
 .. _administration-columns-properties-userfunc:
 .. _administration-transformations-properties-userfunc:
-
-userFunc
-~~~~~~~~
-
-Type
-  array
-
-Description
-  This property has been renamed :ref:`userFunction <administration-transformations-properties-userfunction>`.
-  Backwards-compatibility is ensured for now, but please update your
-  configuration as soon as possible.
-
-Scope
-  Transform data
-
-
 .. _administration-transformations-properties-userfunction:
 
 userFunction
