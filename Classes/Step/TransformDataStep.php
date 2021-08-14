@@ -22,6 +22,7 @@ use Cobweb\ExternalImport\Exception\InvalidRecordException;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\MappingUtility;
 use Cobweb\ExternalImport\ImporterAwareInterface;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -113,6 +114,13 @@ class TransformDataStep extends AbstractStep
                                     break;
                                 case 'userFunction':
                                     $records = $this->applyUserFunction(
+                                        $columnName,
+                                        $configuration,
+                                        $records
+                                    );
+                                    break;
+                                case 'isEmpty':
+                                    $records = $this->applyIsEmpty(
                                         $columnName,
                                         $configuration,
                                         $records
@@ -302,6 +310,68 @@ class TransformDataStep extends AbstractStep
                 $configuration
             );
         }
+        // Compact the array in case some records were unset
+        return array_values($records);
+    }
+
+    /**
+     * Checks if the value for the given column is empty and acts accordingly.
+     *
+     * @param string $name Name of the column being transformed
+     * @param array $configuration Transformation configuration
+     * @param array $records Data to transform
+     * @return array
+     */
+    public function applyIsEmpty(string $name, array $configuration, array $records): array
+    {
+        // Check if expression is defined or not
+        $hasExpression = false;
+        if (array_key_exists('expression', $configuration) && !empty($configuration['expression'])) {
+            $hasExpression = true;
+            $expressionLanguage = new ExpressionLanguage();
+        }
+
+        // Loop on all records
+        foreach ($records as $index => $record) {
+            // Use expression if defined, empty() otherwise to assess emptiness of value
+            if ($hasExpression) {
+                try {
+                    $isEmpty = (bool)$expressionLanguage->evaluate(
+                        $configuration['expression'],
+                        $record
+                    );
+                // If an exception is thrown, consider that this is equivalent to the expression being evaluated to true,
+                // because the main source of exceptions is when a value used in the expression is not present (hence "empty").
+                // An exception could also happen because the expression's syntax is invalid. Unfortunately the Expression Language
+                // does not distinguish between the two scenarios. The event is logged for further inspection.
+                } catch (\Exception $e) {
+                    $isEmpty = true;
+                    $this->importer->debug(
+                        sprintf(
+                            LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:expressionError',
+                                'external_import'
+                            ),
+                            $configuration['expression'],
+                            $e->getMessage(),
+                            $e->getCode()
+                        ),
+                        1
+                    );
+                }
+            } else {
+                $isEmpty = empty($record[$name]);
+            }
+            // If the value could be considered empty, act according to configuration
+            if ($isEmpty) {
+                if (array_key_exists('invalidate', $configuration) && (bool)$configuration['invalidate']) {
+                    unset($records[$index]);
+                } elseif (array_key_exists('default', $configuration)) {
+                    $records[$index][$name] = $configuration['default'];
+                }
+            }
+        }
+
         // Compact the array in case some records were unset
         return array_values($records);
     }
