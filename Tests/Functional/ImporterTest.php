@@ -123,12 +123,17 @@ class ImporterTest extends FunctionalTestCase
     }
 
     /**
-     * Imports the "designers" and checks whether we have the right count or not (3 expected)
+     * Imports the "designers" and checks whether we have the right count or not (3 expected),
+     * including relations to products.
      *
      * @test
      */
-    public function importDesignersWithImporterStoresThreeRecords()
+    public function importDesignersWithImporterStoresThreeRecordsAndCreatesRelations(): void
     {
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'base'
+        );
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_designer',
                 0
@@ -138,13 +143,19 @@ class ImporterTest extends FunctionalTestCase
                 'uid',
                 'tx_externalimporttest_designer'
         );
+        // Count products relations
+        $countRelations = $this->getDatabaseConnection()->selectCount(
+                '*',
+                'tx_externalimporttest_product_designer_mm'
+        );
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(3, $countDesigners, serialize($messages));
+        self::assertEquals(3, $countRelations);
     }
 
     /**
      * Imports the "products" with the "base" configuration and checks whether we have the right count or not
-     * (2 expected). Furthermore relations with categories and tags are tested.
+     * (2 expected). Furthermore, relations with categories and tags are tested.
      *
      * @test
      */
