@@ -103,7 +103,12 @@ Description
   to a field in a "deeper" position inside a multidimensional array. The value is a string
   comprised of the keys for pointing into the array, separated by some character (:code:`/`
   by default; can be changed using the :ref:`arrayPathSeparator <administration-columns-properties-array-path-separator>`
-  property). Consider the following structure to import:
+  property).
+
+  Conditions and the special segment :code:`*` are also available. See the
+  :ref:`general configuration property arrayPath for reference <administration-general-tca-properties-arraypath>`.
+
+  Consider the following structure to import:
 
   .. code:: php
 

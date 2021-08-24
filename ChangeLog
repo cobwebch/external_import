@@ -1,3 +1,7 @@
+2021-08-24 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Enhance arrayPath properties with conditions, resolves #205
+
 2021-08-14 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add transformation option for detecting and acting on empty values, resolves #185

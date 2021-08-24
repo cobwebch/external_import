@@ -52,7 +52,7 @@ class ArrayHandlerTest extends UnitTestCase
                 ],
                 'result' => 'bar'
             ],
-            'array path value' => [
+            'simple array path with keys' => [
                 'record' => [
                     'test' => [
                         'foo' => 'me',
@@ -63,6 +63,101 @@ class ArrayHandlerTest extends UnitTestCase
                     'arrayPath' => 'test/foo'
                 ],
                 'result' => 'me'
+            ],
+            'simple array path with indices' => [
+                'record' => [
+                    'test' => [
+                        0 => 'me',
+                        1 => 'you'
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/0'
+                ],
+                'result' => 'me'
+            ],
+            'array path with simple condition' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            'list' => [
+                                0 => 'me',
+                                1 => 'you'
+                            ]
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/list'
+                ],
+                'result' => [
+                    0 => 'me',
+                    1 => 'you'
+                ]
+            ],
+            'array path with self condition' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            'status' => 'valid',
+                            'list' => [
+                                0 => 'me',
+                                1 => 'you'
+                            ]
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data{status === \'valid\'}/list'
+                ],
+                'result' => [
+                    0 => 'me',
+                    1 => 'you'
+                ]
+            ],
+            'array path with condition on simple type' => [
+                'record' => [
+                    'test' => [
+                        'data' => 'me'
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data{value === \'me\'}'
+                ],
+                'result' => 'me',
+            ],
+            'array path with children condition' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            [
+                                'status' => 'valid',
+                                'list' => [
+                                    0 => 'me',
+                                    1 => 'you'
+                                ]
+                            ],
+                            [
+                                'status' => 'invalid',
+                                'list' => []
+                            ],
+                            [
+                                'status' => 'valid',
+                                'list' => [
+                                    3 => 'them'
+                                ]
+                            ],
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*{status === \'valid\'}/list'
+                ],
+                'result' => [
+                    0 => 'me',
+                    1 => 'you',
+                    2 => 'them'
+                ]
             ],
             'substructure' => [
                 'record' => [
@@ -109,7 +204,7 @@ class ArrayHandlerTest extends UnitTestCase
                     'field' => 'baz'
                 ]
             ],
-            'array path value' => [
+            'wrong array path value' => [
                 'record' => [
                     'test' => [
                         'test' => [
@@ -121,7 +216,43 @@ class ArrayHandlerTest extends UnitTestCase
                 'configuration' => [
                     'arrayPath' => false
                 ]
-            ]
+            ],
+            'non-matching array path value (array type)' => [
+                'record' => [
+                    'test' => [
+                        'test' => [
+                            'foo' => 'me',
+                            'bar' => 'you'
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'foo/baz'
+                ]
+            ],
+            'non-matching array path value (simple type)' => [
+                'record' => [
+                    'test' => [
+                        'data' => 'me'
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data{value === \'you\'}'
+                ]
+            ],
+            'array path value with invalid condition' => [
+                'record' => [
+                    'test' => [
+                        'test' => [
+                            'foo' => 'me',
+                            'bar' => 'you'
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'foo/baz{foo === \'bar\'}'
+                ]
+            ],
         ];
     }
 

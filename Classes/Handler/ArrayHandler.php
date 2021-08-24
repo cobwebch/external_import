@@ -19,8 +19,10 @@ namespace Cobweb\ExternalImport\Handler;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Importer;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\Exception\MissingArrayPathException;
 
 /**
  * Remaps data from a "raw" PHP array to an array mapped to TCA columns.
@@ -29,6 +31,15 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
  */
 class ArrayHandler implements DataHandlerInterface
 {
+    /**
+     * @var ExpressionLanguage
+     */
+    protected $expressionLanguage;
+
+    public function __construct()
+    {
+        $this->expressionLanguage = new ExpressionLanguage();
+    }
 
     public function __toString()
     {
@@ -52,21 +63,23 @@ class ArrayHandler implements DataHandlerInterface
             $columnConfiguration = $importer->getExternalConfiguration()->getColumnConfiguration();
 
             // Extract targeted sub-array if arrayPath is defined
-            if (array_key_exists('arrayPath', $generalConfiguration)) {
-                try {
-                    $rawData = ArrayUtility::getValueByPath(
-                        $rawData,
-                        $generalConfiguration['arrayPath'],
-                        $generalConfiguration['arrayPathSeparator'] ?? '/'
-                    );
-                } catch (\Exception $e) {
-                    // If a problem occurred, report it and return an empty array
+            if (array_key_exists('arrayPath', $generalConfiguration) && !empty($generalConfiguration['arrayPath'])) {
+                // Extract parts of the path
+                $segments = str_getcsv(
+                    (string)$generalConfiguration['arrayPath'],
+                    $generalConfiguration['arrayPathSeparator'] ? (string)$generalConfiguration['arrayPathSeparator'] : '/'
+                );
+
+                $rawData = $this->getArrayPathStructure(
+                    $rawData,
+                    $segments
+                );
+                // If a problem occurred, report it and return an empty array
+                if ($rawData === null) {
                     $importer->addMessage(
                         sprintf(
-                            'Error handling arrayPath property (value %s): %s [%d]',
-                            $generalConfiguration['arrayPath'],
-                            $e->getMessage(),
-                            $e->getCode()
+                            'Using arrayPath property (value %s) returned an empty set',
+                            $generalConfiguration['arrayPath']
                         ),
                         AbstractMessage::WARNING
                     );
@@ -162,12 +175,23 @@ class ArrayHandler implements DataHandlerInterface
      */
     public function getValue(array $record, array $columnConfiguration)
     {
-        if (isset($columnConfiguration['arrayPath'])) {
-            $value = ArrayUtility::getValueByPath(
-                $record,
-                $columnConfiguration['arrayPath'],
-                $columnConfiguration['arrayPathSeparator'] ?? '/'
+        if (isset($columnConfiguration['arrayPath']) && !empty($columnConfiguration['arrayPath'])) {
+            // Extract parts of the path
+            $segments = str_getcsv(
+                (string)$columnConfiguration['arrayPath'],
+                $columnConfiguration['arrayPathSeparator'] ? (string)$columnConfiguration['arrayPathSeparator'] : '/'
             );
+
+            $value = $this->getArrayPathStructure(
+                $record,
+                $segments
+            );
+            if ($value === null) {
+                throw new \InvalidArgumentException(
+                    'No value found',
+                    1534149806
+                );
+            }
         } elseif (isset($columnConfiguration['field'], $record[$columnConfiguration['field']])) {
             $value = $record[$columnConfiguration['field']];
         } else {
@@ -205,8 +229,106 @@ class ArrayHandler implements DataHandlerInterface
         return $rows;
     }
 
-    public function getArrayPathStructure(array $generalConfiguration, array $data): array
+    /**
+     * Extracts part of a PHP array, using an array path (e.g. "foo/bar") and conditions.
+     *
+     * @param array $array
+     * @param array $segments
+     * @return mixed
+     */
+    public function getArrayPathStructure(array $array, array $segments)
     {
-        return $subArray;
+        // Loop through each part and extract its value
+        $value = $array;
+        if (count($segments) > 0) {
+            do {
+                $segment = array_shift($segments);
+                $key = $segment;
+                $condition = '';
+                // If the segment contains a condition, extract it
+                if (strpos($segment, '{') !== false) {
+                    $result = preg_match('/(.*){(.*)}/', $segment, $matches);
+                    if ($result) {
+                        $key = $matches[1];
+                        $condition = $matches[2];
+                    }
+                }
+                // Consider all children of the current value
+                // NOTE: this makes sense only if the current value is an array, if it is not, it is left unchanged
+                if (is_array($value)) {
+                    if ($key === '*') {
+                        $newValue = [];
+                        foreach ($value as $itemValue) {
+                            // Apply condition on each item, if defined
+                            $result = $this->applyCondition($condition, $itemValue);
+                            if ($result) {
+                                // Apply leftover segments on each item
+                                $resultingItems = $this->getArrayPathStructure(
+                                    $itemValue,
+                                    $segments
+                                );
+                                if (is_array($resultingItems)) {
+                                    foreach ($resultingItems as $resultingItem) {
+                                        $newValue[] = $resultingItem;
+                                    }
+                                } else {
+                                    $newValue[] = $resultingItems;
+                                }
+                            }
+                        }
+                        $value = $newValue;
+
+                        // Leftover segments have been used on child item, they must not be used on the resulting value anymore
+                        $segments = [];
+                    // Consider the next value along the path
+
+                    } elseif (array_key_exists($key, $value)) {
+                        // If an item was found and a condition is defined, try to match it
+                        if ($condition !== '') {
+                            $result = $this->applyCondition(
+                                $condition,
+                                $value[$key]
+                            );
+                            if ($result) {
+                                // Replace current value with child
+                                $value = $value[$key];
+                            } else {
+                                $value = null;
+                            }
+                        } else {
+                            // Simply replace current value with child
+                            $value = $value[$key];
+                        }
+                    } else {
+                        $value = null;
+                    }
+                } else {
+                    $value = null;
+                }
+            } while (count($segments) > 0);
+        }
+        return $value;
+    }
+
+    /**
+     * Applies a condition (expressed as Symfony Expression Language) and returns the result as a boolean value.
+     *
+     * @param string $condition
+     * @param mixed $value
+     * @return bool
+     */
+    protected function applyCondition(string $condition, $value): bool
+    {
+        if (is_array($value)) {
+            $testValue = $value;
+        } else {
+            $testValue = [
+                'value' => $value
+            ];
+        }
+        return (bool)$this->expressionLanguage->evaluate(
+            $condition,
+            $testValue
+        );
     }
 }

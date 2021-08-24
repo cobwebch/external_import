@@ -227,6 +227,17 @@ Description
   as the source of data in the subsenquent steps, rather than the whole structure
   that was read during the :code:`ReadDataStep`.
 
+  Conditions can be applied to each segment of the path using the Symfony Expression Language syntax,
+  wrapped in curly braces. If the value being tested is an array, its items can be accessed directly
+  in the expression (see the example below with the :code:`status` item). If the value is a simple type,
+  it can be accessed in the expression with the key :code:`value`.
+
+  The special segments :code:`*` indicates that the path and conditions after that point
+  should be applied to all items of the current value, if that value is an array. The example
+  below clarifies this usage.
+
+  See the `Symfony documentation for reference on the Symfony Expression Language syntax <https://symfony.com/doc/current/components/expression_language/syntax.html>`_.
+
   **Example**
 
   Given the following JSON data (which is read into an array):
@@ -236,35 +247,56 @@ Description
       {
         "count": 2,
         "data": {
-          "orders" : [
+          "orders": [
             {
-              "order": "000001",
-              "date": "2020-08-07 14:32",
-              "customer": "Conan the Barbarian",
-              "products": [
+              "status": "valid",
+              "list": [
                 {
-                  "product": "000001",
-                  "qty": 3
+                  "order": "000001",
+                  "date": "2020-08-07 14:32",
+                  "customer": "Conan the Barbarian",
+                  "products": [
+                    {
+                      "product": "000001",
+                      "qty": 3
+                    },
+                    ...
+                  ]
                 },
-                ...
+                {
+                  "order": "000003",
+                  "date": "2021-03-07 17:56",
+                  "customer": "Empty basket",
+                  "products": []
+                },
+                {
+                  "order": "000002",
+                  "date": "2020-08-08 06:48",
+                  "customer": "Sonja the Red",
+                  "products": [
+                    {
+                      "product": "000001",
+                      "qty": 1
+                    },
+                    ...
+                  ]
+                }
               ]
             },
             {
-              "order": "000003",
-              "date": "2021-03-07 17:56",
-              "customer": "Empty basket",
-              "products": []
-            },
-            {
-              "order": "000002",
-              "date": "2020-08-08 06:48",
-              "customer": "Sonja the Red",
-              "products": [
+              "status": "invalid",
+              "list": [
                 {
-                  "product": "000001",
-                  "qty": 1
-                },
-                ...
+                  "order": "000021",
+                  "date": "2021-08-24 12:00",
+                  "customer": "Refused",
+                  "products": [
+                    {
+                      "product": "000202",
+                      "qty": 1
+                    }
+                  ]
+                }
               ]
             }
           ]
@@ -272,7 +304,12 @@ Description
       }
 
   We want to import the orders, i.e. the elements that are keyed to :code:`orders`
-  inside :code:`data`. So we would set the property to :code:`data/orders`.
+  inside :code:`data`. Among the list of orders, we also want only those with the
+  value "valid" for :code:`status`. Hence the property needs to be
+  :code:`data/orders/*{status === \'valid\'}/list`.
+
+  This will first find all the orders (there are two), then check each of them for their
+  status and finally, within the order that matched, it will extract the list and return just that.
 
 Scope
   Handle data (array)
