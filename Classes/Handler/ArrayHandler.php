@@ -276,7 +276,14 @@ class ArrayHandler implements DataHandlerInterface
                                 }
                             }
                         }
-                        $value = $newValue;
+                        // Set result depending on number of matches
+                        if (count($newValue) === 0) {
+                            $value = null;
+                        } elseif (count($newValue) === 1) {
+                            $value = array_shift($newValue);
+                        } else {
+                            $value = $newValue;
+                        }
 
                         // Leftover segments have been used on child item, they must not be used on the resulting value anymore
                         $segments = [];

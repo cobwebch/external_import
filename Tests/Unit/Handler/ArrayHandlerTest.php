@@ -126,7 +126,7 @@ class ArrayHandlerTest extends UnitTestCase
                 ],
                 'result' => 'me',
             ],
-            'array path with children condition' => [
+            'array path with children condition, multiple results' => [
                 'record' => [
                     'test' => [
                         'data' => [
@@ -158,6 +158,80 @@ class ArrayHandlerTest extends UnitTestCase
                     1 => 'you',
                     2 => 'them'
                 ]
+            ],
+            'array path with children condition, multiple results, sub-arrays' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            [
+                                'status' => 'valid',
+                                'list' => [
+                                    0 => [
+                                        'name' => 'me'
+                                    ],
+                                    1 => [
+                                        'name' => 'you'
+                                    ]
+                                ]
+                            ],
+                            [
+                                'status' => 'invalid',
+                                'list' => []
+                            ],
+                            [
+                                'status' => 'valid',
+                                'list' => [
+                                    3 => [
+                                        'name' => 'them'
+                                    ]
+                                ]
+                            ],
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*{status === \'valid\'}/list'
+                ],
+                'result' => [
+                    0 => [
+                        'name' => 'me'
+                    ],
+                    1 => [
+                        'name' => 'you'
+                    ],
+                    2 => [
+                        'name' => 'them'
+                    ]
+                ]
+            ],
+            'array path with children condition, single result' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            [
+                                'status' => 'invalid',
+                                'list' => [
+                                    0 => 'me',
+                                    1 => 'you'
+                                ]
+                            ],
+                            [
+                                'status' => 'invalid',
+                                'list' => []
+                            ],
+                            [
+                                'status' => 'valid',
+                                'list' => [
+                                    3 => 'them'
+                                ]
+                            ],
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*{status === \'valid\'}/list'
+                ],
+                'result' => 'them'
             ],
             'substructure' => [
                 'record' => [
@@ -228,6 +302,25 @@ class ArrayHandlerTest extends UnitTestCase
                 ],
                 'configuration' => [
                     'arrayPath' => 'foo/baz'
+                ]
+            ],
+            'non-matching array path value (array type, children condition)' => [
+                'record' => [
+                    'data' => [
+                        'tests' => [
+                            [
+                                'status' => 'ko',
+                                'foo' => 'me',
+                            ],
+                            [
+                                'status' => 'ko',
+                                'foo' => 'you'
+                            ]
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'data/tests/*{status === \'ok\'}'
                 ]
             ],
             'non-matching array path value (simple type)' => [

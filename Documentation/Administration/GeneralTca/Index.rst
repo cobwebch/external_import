@@ -236,6 +236,11 @@ Description
   should be applied to all items of the current value, if that value is an array. The example
   below clarifies this usage.
 
+  .. note::
+
+     If several "children" are matched when using :code:`*` as a segment, the result will be an array.
+     If a single value was matched, it is returned as is.
+
   See the `Symfony documentation for reference on the Symfony Expression Language syntax <https://symfony.com/doc/current/components/expression_language/syntax.html>`_.
 
   **Example**
