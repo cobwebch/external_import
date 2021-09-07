@@ -8,6 +8,13 @@ services:
   Cobweb\ExternalImport\:
     resource: '../Classes/*'
 
+  Cobweb\ExternalImport\Command\ImportCommand:
+    tags:
+      - name: 'console.command'
+        command: 'externalimport:sync'
+        description: 'Run External Import synchronisations from the command line.'
+        schedulable: true
+
   Cobweb\ExternalImport\Importer:
     public: true
     shared: false

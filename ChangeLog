@@ -1,6 +1,7 @@
 2021-09-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Ensure compatibility with PHP 8, resolves #207
+	* Move command-line declaration to services configuration, references #164
 
 2021-08-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 
