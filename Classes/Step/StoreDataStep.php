@@ -139,7 +139,7 @@ class StoreDataStep extends AbstractStep
 
         // Prepare some data before the loop
         $storagePid = $this->importer->getExternalConfiguration()->getStoragePid();
-        $updateSlugs = (bool)$generalConfiguration['updateSlugs'];
+        $updateSlugs = array_key_exists('updateSlugs', $generalConfiguration) ? (bool)$generalConfiguration['updateSlugs']: false;
 
         // Prepare the data to store
         $dateToStore = $this->prepareDataToStore();
@@ -223,7 +223,8 @@ class StoreDataStep extends AbstractStep
                 // First call a pre-processing hook
                 // Using a hook is deprecated
                 // TODO: remove in the next major version
-                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'])) {
+                $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'] ?? null;
+                if (is_array($hooks)) {
                     trigger_error('Hook "updatePreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent instead.', E_USER_DEPRECATED);
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'] as $className) {
                         try {
@@ -293,7 +294,8 @@ class StoreDataStep extends AbstractStep
                 // First call a pre-processing hook
                 // Using a hook is deprecated
                 // TODO: remove in the next major version
-                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'])) {
+                $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'] ?? null;
+                if (is_array($hooks)) {
                     trigger_error('Hook "insertPreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent instead.', E_USER_DEPRECATED);
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'] as $className) {
                         try {
@@ -443,7 +445,8 @@ class StoreDataStep extends AbstractStep
                 // Post-processing hook after data was saved
                 // Using a hook is deprecated
                 // TODO: remove in the next major version
-                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'])) {
+                $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] ?? null;
+                if (is_array($hooks)) {
                     trigger_error('Hook "datamapPostProcess" is deprecated. Use \Cobweb\ExternalImport\Event\DatamapPostprocessEvent instead.', E_USER_DEPRECATED);
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] as $className) {
                         try {
@@ -488,7 +491,8 @@ class StoreDataStep extends AbstractStep
         // Now for the main table, mark as deleted those records with existing uids that were not in the import data anymore
         // (if automatic delete is activated)
         $absentUids = [];
-        if (!GeneralUtility::inList($generalConfiguration['disabledOperations'], 'delete')) {
+        $operations = $generalConfiguration['disabledOperations'] ?? '';
+        if (!GeneralUtility::inList($operations, 'delete')) {
             $absentUids = $this->mainRecordsToDelete;
             // Call a pre-processing event
             try {
@@ -517,7 +521,8 @@ class StoreDataStep extends AbstractStep
             // Call a pre-processing hook
             // Using a hook is deprecated
             // TODO: remove in the next major version
-            if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'])) {
+            $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'] ?? null;
+            if (is_array($hooks)) {
                 trigger_error('Hook "deletePreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent instead.', E_USER_DEPRECATED);
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'] as $className) {
                     try {
@@ -584,7 +589,8 @@ class StoreDataStep extends AbstractStep
                 // Call a post-processing hook
                 // Using a hook is deprecated
                 // TODO: remove in the next major version
-                if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'])) {
+                $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] ?? null;
+                if (is_array($hooks)) {
                     trigger_error('Hook "cmdmapPostProcess" is deprecated. Use \Cobweb\ExternalImport\Event\CmdmapPostprocessEvent instead.', E_USER_DEPRECATED);
                     foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
                         try {
@@ -706,17 +712,24 @@ class StoreDataStep extends AbstractStep
         $referenceUid = $generalConfiguration['referenceUid'];
         $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
         $table = $this->importer->getExternalConfiguration()->getTable();
-        $isUpdateAllowed = !GeneralUtility::inList($generalConfiguration['disabledOperations'], 'update');
-        $isInsertAllowed = !GeneralUtility::inList($generalConfiguration['disabledOperations'], 'insert');
+        $operations = $generalConfiguration['disabledOperations'] ?? '';
+        $isUpdateAllowed = !GeneralUtility::inList(
+            $operations,
+            'update'
+        );
+        $isInsertAllowed = !GeneralUtility::inList(
+            $operations,
+            'insert'
+        );
 
         // Check if at least one column expects denormalized data
         $denormalizedColumns = [];
         $denormalizedSorting = [];
         foreach ($columnConfiguration as $name => $configuration) {
-            if ($configuration['multipleRows']) {
+            if (array_key_exists('multipleRows', $configuration)) {
                 $denormalizedColumns[] = $name;
             }
-            if ($configuration['multipleSorting']) {
+            if (array_key_exists('multipleSorting', $configuration)) {
                 $denormalizedSorting[$name] = $configuration['multipleSorting'];
             }
         }
@@ -759,7 +772,7 @@ class StoreDataStep extends AbstractStep
                 $this->valuesExcludedFromSaving[$id] = [];
                 foreach ($columnConfiguration as $name => $configuration) {
                     // The values that are excluded are temporarily stored for later restoration
-                    if ($configuration[Configuration::DO_NOT_SAVE_KEY]) {
+                    if (array_key_exists(Configuration::DO_NOT_SAVE_KEY, $configuration)) {
                         $this->valuesExcludedFromSaving[$id][$name] = $record[$name];
                         // Make sure a value actually exists
                     } elseif (isset($record[$name])) {

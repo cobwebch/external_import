@@ -67,7 +67,7 @@ class ArrayHandler implements DataHandlerInterface
                 // Extract parts of the path
                 $segments = str_getcsv(
                     (string)$generalConfiguration['arrayPath'],
-                    $generalConfiguration['arrayPathSeparator'] ? (string)$generalConfiguration['arrayPathSeparator'] : '/'
+                    array_key_exists('arrayPathSeparator', $columnConfiguration) ? (string)$columnConfiguration['arrayPathSeparator'] : '/'
                 );
 
                 $rawData = $this->getArrayPathStructure(
@@ -179,7 +179,7 @@ class ArrayHandler implements DataHandlerInterface
             // Extract parts of the path
             $segments = str_getcsv(
                 (string)$columnConfiguration['arrayPath'],
-                $columnConfiguration['arrayPathSeparator'] ? (string)$columnConfiguration['arrayPathSeparator'] : '/'
+                array_key_exists('arrayPathSeparator', $columnConfiguration) ? (string)$columnConfiguration['arrayPathSeparator'] : '/'
             );
 
             $value = $this->getArrayPathStructure(
@@ -287,8 +287,8 @@ class ArrayHandler implements DataHandlerInterface
 
                         // Leftover segments have been used on child item, they must not be used on the resulting value anymore
                         $segments = [];
-                    // Consider the next value along the path
 
+                    // Consider the next value along the path
                     } elseif (array_key_exists($key, $value)) {
                         // If an item was found and a condition is defined, try to match it
                         if ($condition !== '') {

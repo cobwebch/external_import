@@ -63,7 +63,8 @@ class ValidateDataStep extends AbstractStep
         // but only if previous check was passed
         // Using a hook is deprecated
         // TODO: remove in the next major version
-        if (!$this->isAbortFlag() && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['validateRawRecordset'])) {
+        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['validateRawRecordset'] ?? null;
+        if (!$this->isAbortFlag() && is_array($hooks)) {
             trigger_error('Hook "validateRawRecordset" is deprecated. Use a custom step instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['validateRawRecordset'] as $className) {
                 try {

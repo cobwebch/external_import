@@ -69,7 +69,7 @@ class MappingUtility implements ImporterAwareInterface
             }
 
             for ($i = 0; $i < $numRecords; $i++) {
-                $externalValue = $records[$i][$columnName];
+                $externalValue = $records[$i][$columnName] ?? null;
                 // If the external value is empty, don't even try to map it, but use default value, if any. Otherwise, proceed.
                 if (empty($externalValue)) {
                     if (array_key_exists('default', $mappingInformation)) {

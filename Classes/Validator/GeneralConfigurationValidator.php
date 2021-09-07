@@ -70,34 +70,43 @@ class GeneralConfigurationValidator
         $generalConfiguration = $configuration->getGeneralConfiguration();
 
         // Validate all properties on which conditions apply
-        $this->validateDataProperty($generalConfiguration['data']);
-        $this->validateConnectorProperty((string)$generalConfiguration['connector']);
-        $this->validateDataHandlerProperty($generalConfiguration['dataHandler']);
-        $this->validateReferenceUidProperty($generalConfiguration['referenceUid']);
+        $this->validateDataProperty(
+            array_key_exists('data', $generalConfiguration) ? (string)$generalConfiguration['data'] : ''
+        );
+        $connector = array_key_exists('connector', $generalConfiguration) ? (string)$generalConfiguration['connector'] : '';
+        $this->validateConnectorProperty($connector);
+        $this->validateDataHandlerProperty(
+            array_key_exists('dataHandler', $generalConfiguration) ? (string)$generalConfiguration['dataHandler'] : ''
+        );
+        $this->validateReferenceUidProperty(
+            array_key_exists('referenceUid', $generalConfiguration) ? (string)$generalConfiguration['referenceUid'] : ''
+        );
         $this->validatePidProperty($configuration->getStoragePid());
         $this->validateUseColumnIndexProperty(
-            $generalConfiguration['useColumnIndex'],
+            $generalConfiguration['useColumnIndex'] ?? null,
             $configuration->getColumnConfiguration()
         );
         $this->validateCustomStepsProperty(
-            $generalConfiguration['customSteps'],
+            $generalConfiguration['customSteps'] ?? null,
             $generalConfiguration
         );
 
         // Validate properties for pull-only configurations
-        if (!empty($generalConfiguration['connector'])) {
-            $this->validatePriorityProperty($generalConfiguration['priority']);
+        if (!empty($connector)) {
+            $this->validatePriorityProperty(
+                array_key_exists('priority', $generalConfiguration) ? (int)$generalConfiguration['priority'] : 0
+            );
             $this->validateConnectorConfigurationProperty(
-                (string)$generalConfiguration['connector'],
-                $generalConfiguration['parameters']
+                $connector,
+                $generalConfiguration['parameters'] ?? []
             );
         }
 
         // Validate properties specific to the "xml"-type data
         if ($generalConfiguration['data'] === 'xml') {
             $this->validateNodeProperty(
-                $generalConfiguration['nodetype'],
-                $generalConfiguration['nodepath']
+                $generalConfiguration['nodetype'] ?? '',
+                $generalConfiguration['nodepath'] ?? ''
             );
         }
         // Return the global validation result
@@ -109,10 +118,10 @@ class GeneralConfigurationValidator
     /**
      * Validates the "data" property.
      *
-     * @param string|null $property Property value
+     * @param string $property Property value
      * @return void
      */
-    public function validateDataProperty(?string $property): void
+    public function validateDataProperty(string $property): void
     {
         if (empty($property)) {
             $this->results->add(
@@ -139,10 +148,10 @@ class GeneralConfigurationValidator
      * NOTE: an empty connector is okay, it just means data is being pushed instead of pulled
      * (of course, this may be wrong, but we have no way to guess the user's intent ;-) ).
      *
-     * @param string|null $property Property value
+     * @param string $property Property value
      * @return void
      */
-    public function validateConnectorProperty(?string $property): void
+    public function validateConnectorProperty(string $property): void
     {
         if (!empty($property)) {
             $services = ExtensionManagementUtility::findService(
@@ -165,11 +174,11 @@ class GeneralConfigurationValidator
      * Validates the "parameters" property.
      *
      * @param string $connector Type of connector
-     * @param array|null $property Parameters for the connector
+     * @param array $property Parameters for the connector
      * @return void
      * @see \Cobweb\ExternalImport\Validator\GeneralConfigurationValidator::validateConnectorProperty
      */
-    public function validateConnectorConfigurationProperty(string $connector, ?array $property): void
+    public function validateConnectorConfigurationProperty(string $connector, array $property): void
     {
         $connectorService = GeneralUtility::makeInstanceService(
             'connector',
@@ -257,10 +266,10 @@ class GeneralConfigurationValidator
     /**
      * Validates the "referenceUid" property.
      *
-     * @param string|null $property Property value
+     * @param string $property Property value
      * @return void
      */
-    public function validateReferenceUidProperty(?string $property): void
+    public function validateReferenceUidProperty(string $property): void
     {
         if (empty($property)) {
             $this->results->add(
@@ -276,12 +285,12 @@ class GeneralConfigurationValidator
     /**
      * Validates the "priority" property.
      *
-     * @param mixed $property Property value
+     * @param int $property Property value
      * @return void
      */
-    public function validatePriorityProperty($property): void
+    public function validatePriorityProperty(int $property): void
     {
-        if (empty($property)) {
+        if ($property === 0) {
             $this->results->add(
                 'priority',
                 LocalizationUtility::translate(

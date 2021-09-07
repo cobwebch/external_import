@@ -123,7 +123,8 @@ class HandleDataStep extends AbstractStep
     {
         // Using a hook is deprecated
         // TODO: remove in the next major version
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'])) {
+        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'] ?? null;
+        if (is_array($hooks)) {
             trigger_error('Hook "preprocessRawRecordset" is deprecated. Use a custom step instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'] as $className) {
                 try {

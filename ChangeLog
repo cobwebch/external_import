@@ -1,3 +1,7 @@
+2021-09-07 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Ensure compatibility with PHP 8, resolves #207
+
 2021-08-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Enhance arrayPath properties with conditions, resolves #205

@@ -78,11 +78,11 @@ class ColumnConfigurationValidator
             $columnConfiguration
         );
         // Validate children configuration
-        if (isset($columnConfiguration['children'])) {
+        if (array_key_exists('children', $columnConfiguration)) {
             $this->validateChildrenProperty($columnConfiguration['children']);
         }
         // Validate substructureFields configuration
-        if (isset($columnConfiguration['substructureFields'])) {
+        if (array_key_exists('substructureFields', $columnConfiguration)) {
             $this->validateSubstructureFieldsProperty(
                 $configuration->getGeneralConfiguration(),
                 $columnConfiguration['substructureFields']

@@ -153,7 +153,7 @@ class ConfigurationRepository
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 foreach ($generalConfiguration as $index => $externalConfig) {
-                    if (!empty($externalConfig['connector']) && $externalConfig['group'] === $group) {
+                    if (!empty($externalConfig['connector']) && array_key_exists('group', $externalConfig) && $externalConfig['group'] === $group) {
                         // Default priority if not defined, set to very low
                         $priority = $externalConfig['priority'] ?? Importer::DEFAULT_PRIORITY;
                         if (!isset($externalTables[$priority])) {
@@ -277,14 +277,14 @@ class ConfigurationRepository
                         $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                         $configurationKey->setTableAndIndex($tableName, (string)$index);
                         $taskId = $configurationKey->getConfigurationKey();
-                        $groupKey = $externalConfiguration['group'] ? 'group:' . $externalConfiguration['group'] : '';
+                        $groupKey = ($externalConfiguration['group'] ?? false) ? 'group:' . $externalConfiguration['group'] : '';
                         $tableConfiguration = [
                             'id' => $taskId,
                             'table' => $tableName,
                             'tableName' => $tableTitle,
                             'index' => $index,
                             'priority' => $priority,
-                            'group' => $externalConfiguration['group'],
+                            'group' => $externalConfiguration['group'] ?? '',
                             'description' => htmlspecialchars($description),
                             'writeAccess' => $hasWriteAccess
                         ];

@@ -89,10 +89,10 @@ class UidRepository
         $queryBuilder->select($referenceUidField, 'uid', 'pid')
             ->from($table);
         $constraints = [];
-        if ($generalConfiguration['enforcePid']) {
+        if (array_key_exists('enforcePid', $generalConfiguration)) {
             $constraints[] = $queryBuilder->expr()->eq('pid', (int)$this->configuration->getStoragePid());
         }
-        if (!empty($generalConfiguration['whereClause'])) {
+        if (array_key_exists('whereClause', $generalConfiguration) && !empty($generalConfiguration['whereClause'])) {
             $constraints[] = $generalConfiguration['whereClause'];
         }
         if (count($constraints) > 0) {

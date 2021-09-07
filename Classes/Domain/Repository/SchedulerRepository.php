@@ -215,7 +215,7 @@ class SchedulerRepository implements SingletonInterface
             /** @var $task AutomatedSyncTask */
             $task = GeneralUtility::makeInstance(self::$taskClassName);
             $task->registerRecurringExecution(
-                $taskData['start'],
+                $taskData['start'] ?? 0,
                 $taskData['interval'],
                 0,
                 false,
@@ -232,7 +232,7 @@ class SchedulerRepository implements SingletonInterface
             $task->stop();
             /// ...and replace it(them) by a new one
             $task->registerRecurringExecution(
-                $taskData['start'],
+                $taskData['start'] ?? 0,
                 $taskData['interval'],
                 0,
                 false,

@@ -389,7 +389,8 @@ class TransformDataStep extends AbstractStep
     {
         // Using a hook is deprecated
         // TODO: remove in the next major version
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRecordset'])) {
+        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRecordset'] ?? null;
+        if (is_array($hooks)) {
             trigger_error('Hook "preprocessRecordset" is deprecated. Use a custom step instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRecordset'] as $className) {
                 try {
