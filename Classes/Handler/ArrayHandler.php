@@ -67,12 +67,13 @@ class ArrayHandler implements DataHandlerInterface
                 // Extract parts of the path
                 $segments = str_getcsv(
                     (string)$generalConfiguration['arrayPath'],
-                    array_key_exists('arrayPathSeparator', $columnConfiguration) ? (string)$columnConfiguration['arrayPathSeparator'] : '/'
+                    array_key_exists('arrayPathSeparator', $generalConfiguration) ? (string)$generalConfiguration['arrayPathSeparator'] : '/'
                 );
 
                 $rawData = $this->getArrayPathStructure(
                     $rawData,
-                    $segments
+                    $segments,
+                    ($generalConfiguration['arrayPathFlatten'] ?? false) && (bool)$generalConfiguration['arrayPathFlatten']
                 );
                 // If a problem occurred, report it and return an empty array
                 if ($rawData === null) {
@@ -184,7 +185,8 @@ class ArrayHandler implements DataHandlerInterface
 
             $value = $this->getArrayPathStructure(
                 $record,
-                $segments
+                $segments,
+                ($columnConfiguration['arrayPathFlatten'] ?? false) && (bool)$columnConfiguration['arrayPathFlatten']
             );
             if ($value === null) {
                 throw new \InvalidArgumentException(
@@ -232,11 +234,12 @@ class ArrayHandler implements DataHandlerInterface
     /**
      * Extracts part of a PHP array, using an array path (e.g. "foo/bar") and conditions.
      *
-     * @param array $array
-     * @param array $segments
+     * @param array $array The array to parse
+     * @param array $segments The parts of the path
+     * @param bool $flattenResults Whether results that are of a simple type should be preserved as such
      * @return mixed
      */
-    public function getArrayPathStructure(array $array, array $segments)
+    public function getArrayPathStructure(array $array, array $segments, bool $flattenResults = false)
     {
         // Loop through each part and extract its value
         $value = $array;
@@ -265,7 +268,8 @@ class ArrayHandler implements DataHandlerInterface
                                 // Apply leftover segments on each item
                                 $resultingItems = $this->getArrayPathStructure(
                                     $itemValue,
-                                    $segments
+                                    $segments,
+                                    $flattenResults
                                 );
                                 if (is_array($resultingItems)) {
                                     foreach ($resultingItems as $resultingItem) {
@@ -279,7 +283,8 @@ class ArrayHandler implements DataHandlerInterface
                         // Set result depending on number of matches
                         if (count($newValue) === 0) {
                             $value = null;
-                        } elseif (count($newValue) === 1) {
+                        // There's a single result and it should not be made into an array
+                        } elseif ($flattenResults && count($newValue) === 1) {
                             $value = array_shift($newValue);
                         } else {
                             $value = $newValue;

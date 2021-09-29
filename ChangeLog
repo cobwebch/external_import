@@ -1,3 +1,7 @@
+2021-09-29 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Allow for arrayPath to return simple values if needed, references #205
+
 2021-09-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Ensure compatibility with PHP 8, resolves #207

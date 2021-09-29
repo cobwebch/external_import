@@ -55,6 +55,8 @@ Properties
 	===================================== ================= ========================
 	additionalFields_                     string            Read data
    arrayPath_                            string            Handle data (array)
+   arrayPathFlatten_                     bool              Handle data (array)
+   arrayPathSeparator_                   string            Handle data (array)
 	clearCache_                           string            Clear cache
 	connector_                            string            Read data
 	customSteps_                          array             Any step
@@ -315,6 +317,24 @@ Description
 
   This will first find all the orders (there are two), then check each of them for their
   status and finally, within the order that matched, it will extract the list and return just that.
+
+Scope
+  Handle data (array)
+
+
+.. _administration-general-tca-properties-arraypathflatten:
+
+arrayPathFlatten
+~~~~~~~~~~~~~~~~
+
+Type
+  bool
+
+Description
+  When the special :code:`*` segment is used in an :ref:`arrayPath <administration-general-tca-properties-array-path>`,
+  the resulting structure is always an array. If the :code:`arrayPath` target is
+  actually a single value, this may not be desirable. When :code:`arrayPathFlatten`
+  is set to :code:`true`, the result is preserved as a simple type.
 
 Scope
   Handle data (array)

@@ -53,6 +53,7 @@ Properties
    ========================= ====================================================================== ===================
    arrayPath_                string                                                                 Handle data (array)
    arrayPathSeparator_       string                                                                 Handle data (array)
+   arrayPathFlatten_         bool                                                                   Handle data (array)
    attribute_                string                                                                 Handle data (XML)
    attributeNS_              string                                                                 Handle data (XML)
    children_                 :ref:`Children records configuration <administration-children>`        Store data
@@ -135,6 +136,24 @@ Description
      but the "field" property should be preferred in such a case.
 
      If both "field" and "arrayPath" are defined, the latter takes precedence.
+
+Scope
+  Handle data (array)
+
+
+.. _administration-columns-properties-arraypathflatten:
+
+arrayPathFlatten
+~~~~~~~~~~~~~~~~
+
+Type
+  bool
+
+Description
+  When the special :code:`*` segment is used in an :ref:`arrayPath <administration-columns-properties-array-path>`,
+  the resulting structure is always an array. If the :code:`arrayPath` target is
+  actually a single value, this may not be desirable. When :code:`arrayPathFlatten`
+  is set to :code:`true`, the result is preserved as a simple type.
 
 Scope
   Handle data (array)

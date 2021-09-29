@@ -64,7 +64,7 @@ class ArrayHandlerTest extends UnitTestCase
                 ],
                 'result' => 'me'
             ],
-            'simple array path with indices' => [
+            'simple array path with indices on simple type' => [
                 'record' => [
                     'test' => [
                         0 => 'me',
@@ -76,7 +76,7 @@ class ArrayHandlerTest extends UnitTestCase
                 ],
                 'result' => 'me'
             ],
-            'array path with simple condition' => [
+            'array path with indices on array structure' => [
                 'record' => [
                     'test' => [
                         'data' => [
@@ -159,6 +159,67 @@ class ArrayHandlerTest extends UnitTestCase
                     2 => 'them'
                 ]
             ],
+            'array path with children condition, single result' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            [
+                                'status' => 'invalid',
+                                'list' => [
+                                    0 => 'me',
+                                    1 => 'you'
+                                ]
+                            ],
+                            [
+                                'status' => 'invalid',
+                                'list' => []
+                            ],
+                            [
+                                'status' => 'valid',
+                                'list' => [
+                                    3 => 'them'
+                                ]
+                            ],
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*{status === \'valid\'}/list'
+                ],
+                'result' => [
+                    0 => 'them'
+                ]
+            ],
+            'array path with children condition, single result, flattened' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            [
+                                'status' => 'invalid',
+                                'list' => [
+                                    0 => 'me',
+                                    1 => 'you'
+                                ]
+                            ],
+                            [
+                                'status' => 'invalid',
+                                'list' => []
+                            ],
+                            [
+                                'status' => 'valid',
+                                'list' => [
+                                    3 => 'them'
+                                ]
+                            ],
+                        ]
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*{status === \'valid\'}/list',
+                    'arrayPathFlatten' => true
+                ],
+                'result' => 'them'
+            ],
             'array path with children condition, multiple results, sub-arrays' => [
                 'record' => [
                     'test' => [
@@ -203,35 +264,6 @@ class ArrayHandlerTest extends UnitTestCase
                         'name' => 'them'
                     ]
                 ]
-            ],
-            'array path with children condition, single result' => [
-                'record' => [
-                    'test' => [
-                        'data' => [
-                            [
-                                'status' => 'invalid',
-                                'list' => [
-                                    0 => 'me',
-                                    1 => 'you'
-                                ]
-                            ],
-                            [
-                                'status' => 'invalid',
-                                'list' => []
-                            ],
-                            [
-                                'status' => 'valid',
-                                'list' => [
-                                    3 => 'them'
-                                ]
-                            ],
-                        ]
-                    ]
-                ],
-                'configuration' => [
-                    'arrayPath' => 'test/data/*{status === \'valid\'}/list'
-                ],
-                'result' => 'them'
             ],
             'substructure' => [
                 'record' => [
