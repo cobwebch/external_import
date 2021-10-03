@@ -185,7 +185,7 @@ class ImportCommand extends Command
                     );
                 }
             }
-            return 1;
+            return 0;
         } catch (\Exception $e) {
             $this->io->error(
                 sprintf(
@@ -194,7 +194,7 @@ class ImportCommand extends Command
                     $e->getCode()
                 )
             );
-            return 0;
+            return 1;
         }
     }
 
