@@ -125,6 +125,8 @@ extension. You will get mentioned here.
 
   Without these companies and people, it would never have been such a great update!
 
+- The development of version 6.0 was largely funded by the `Lausanne University Hospital (CHUV) <https://www.lausanneuniversityhospital.com/home>`_
+
 
 .. _credits:
 
