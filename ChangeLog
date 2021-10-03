@@ -1,6 +1,7 @@
 2021-10-03 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix command line exit codes, resolves #208
+	* Fix slug generation upon upates, resolves #195
 
 2021-09-29 Francois Suter (Idéative)  <typo3@ideative.ch>
 

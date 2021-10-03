@@ -74,20 +74,12 @@ class SlugUtility
             $fieldConfiguration = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
             foreach ($records as $record) {
                 $slug = $this->generateSlug($table, $field, $fieldConfiguration, $record);
-                // Check that the slug is really different
+                // Check that the slug is really different, if yes save it to database
                 if ($slug !== $record[$field]) {
-                    $newSlugs[$field][$record['uid']] = $slug;
-                }
-            }
-        }
-        // Update the slugs in the database
-        foreach ($newSlugs as $field => $slugList) {
-            if (count($slugList) > 0) {
-                foreach ($slugList as $uid => $slug) {
                     $queryBuilder->update($table)
                         ->set($field, $slug)
                         ->where(
-                            $queryBuilder->expr()->eq('uid', $uid)
+                            $queryBuilder->expr()->eq('uid', $record['uid'])
                         )->execute();
                 }
             }
