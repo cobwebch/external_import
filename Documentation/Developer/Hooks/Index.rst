@@ -27,6 +27,7 @@ may do this is mentioned below.
 
 
 processParameters
+  (deprecated)
 
   .. warning::
 
@@ -65,6 +66,8 @@ processParameters
      look like.
 
 preprocessRawRecordset
+  (deprecated)
+
   This hook makes it possible to manipulate
   the data just after it was fetched from the remote source, but already
   transformed into a PHP array, no matter what the original format. The
@@ -81,6 +84,8 @@ preprocessRawRecordset
      as a position.
 
 validateRawRecordset
+  (deprecated)
+
   This hook is called during the data
   validation step. It is used to perform checks on the nearly raw data
   (it has only been through "preprocessRawRecordset") and decide whether
@@ -104,6 +109,8 @@ validateRawRecordset
      the default validation process).
 
 preprocessRecordset
+  (deprecated)
+
   Similar to "preprocessRawRecordset", but
   after the transformation step, so just before it is stored to the
   database. The hook receives the full recordset and a back-reference to
@@ -120,6 +127,7 @@ preprocessRecordset
      as a position.
 
 updatePreProcess
+  (deprecated)
 
   .. warning::
 
@@ -139,6 +147,7 @@ updatePreProcess
      This hook receives records only from the main table, not from any child table.
 
 insertPreProcess
+  (deprecated)
 
   .. warning::
 
@@ -154,6 +163,7 @@ insertPreProcess
      This hook receives records only from the main table, not from any child table.
 
 deletePreProcess
+  (deprecated)
 
   .. warning::
 
@@ -178,6 +188,7 @@ deletePreProcess
      not from any child table.
 
 datamapPostProcess
+  (deprecated)
 
   .. warning::
 
@@ -204,6 +215,7 @@ datamapPostProcess
      This hook is not called in preview mode.
 
 cmdmapPostProcess
+  (deprecated)
 
   .. warning::
 
