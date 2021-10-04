@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\ViewHelpers;
 
 /*
@@ -17,7 +20,6 @@ namespace Cobweb\ExternalImport\ViewHelpers;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -40,9 +42,14 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
      *
      * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
-        $this->registerArgument('configuration', Configuration::class, 'General external import configuration object', true);
+        $this->registerArgument(
+            'configuration',
+            Configuration::class,
+            'General external import configuration object',
+            true
+        );
         $this->registerArgument('column', 'string', 'Name of the column to check', true);
         $this->registerArgument('as', 'string', 'Name of the variable in which to store the validation results', true);
     }
@@ -56,18 +63,20 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
      *
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $configurationValidator = $objectManager->get(ColumnConfigurationValidator::class);
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
+        $configurationValidator = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
         $configurationValidator->isValid(
-                $arguments['configuration'],
-                $arguments['column']
+            $arguments['configuration'],
+            $arguments['column']
         );
         $templateVariableContainer = $renderingContext->getVariableProvider();
         $templateVariableContainer->add(
-                $arguments['as'],
-                $configurationValidator->getResults()->getAll()
+            $arguments['as'],
+            $configurationValidator->getResults()->getAll()
         );
         $output = $renderChildrenClosure();
         $templateVariableContainer->remove($arguments['as']);

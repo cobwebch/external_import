@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\ViewHelpers;
 
 /*
@@ -29,7 +32,7 @@ class HasErrorViewHelper extends AbstractConditionViewHelper
      *
      * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('errors', 'array', 'Validation error results', true);
@@ -40,9 +43,9 @@ class HasErrorViewHelper extends AbstractConditionViewHelper
      * Returns true if there's at least one error for the given field.
      *
      * @param array|NULL $arguments
-     * @return boolean
+     * @return bool
      */
-    protected static function evaluateCondition($arguments = null)
+    protected static function evaluateCondition($arguments = null): bool
     {
         if (isset($arguments['errors'][$arguments['for']])) {
             return count($arguments['errors'][$arguments['for']]) > 0;

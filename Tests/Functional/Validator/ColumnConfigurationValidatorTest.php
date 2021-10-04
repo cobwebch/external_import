@@ -20,7 +20,6 @@ use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ColumnConfigurationValidatorTest extends FunctionalTestCase
 {
@@ -33,11 +32,6 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
      */
     protected $subject;
 
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
     public function setUp()
     {
         parent::setUp();
@@ -45,8 +39,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
         $GLOBALS['LANG']->init('en');
 
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $this->objectManager->get(ColumnConfigurationValidator::class);
+        $this->subject = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
     }
 
     public function validConfigurationProvider(): array
@@ -229,7 +222,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
      */
     public function isValidReturnsTrueForValidConfiguration(array $generalConfiguration, array $columnConfiguration): void
     {
-        $configuration = $this->objectManager->get(Configuration::class);
+        $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         self::assertTrue(
@@ -467,7 +460,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
      */
     public function isValidRaisesMessageForInvalidConfiguration(array $generalConfiguration, array $columnConfiguration, int $severity): void
     {
-        $configuration = $this->objectManager->get(Configuration::class);
+        $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         $this->subject->isValid(

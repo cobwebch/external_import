@@ -31,10 +31,19 @@ class StoreDataStepTest extends UnitTestCase
      */
     protected $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(StoreDataStep::class);
+        $this->subject = GeneralUtility::makeInstance(
+            StoreDataStep::class,
+            $this->getAccessibleMock(
+                \TYPO3\CMS\Core\EventDispatcher\EventDispatcher::class,
+                null,
+                [],
+                '',
+                false
+            )
+        );
     }
 
     /**

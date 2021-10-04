@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<dataset>
-	<!-- Cache entries that should *not* be cleared -->
-	<cache_pages_tags>
-		<id>2</id>
-		<identifier>22d0fdf207b692ac14340ee40b5677b7</identifier>
-		<tag>pageId_1</tag>
-	</cache_pages_tags>
-</dataset>

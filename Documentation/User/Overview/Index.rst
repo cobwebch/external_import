@@ -98,6 +98,6 @@ Connector callback
 
 
 It is possible to add :ref:`custom Step classes <administration-general-tca-properties-customsteps>`
-at any point in the process. On top of this many steps contain
-:ref:`hooks <developer-hooks>` which allow for further interactions with the default process.
+at any point in the process. On top of this several steps trigger
+:ref:`events <developer-events>` which allow for further interactions with the default process.
 

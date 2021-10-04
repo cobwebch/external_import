@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Functional\Step;
 
 /*
@@ -15,11 +18,12 @@ namespace Cobweb\ExternalImport\Tests\Functional\Step;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\TransformDataStep;
 use Cobweb\ExternalImport\Transformation\DateTimeTransformation;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Test suite for the TransformDataStep class.
@@ -29,8 +33,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class TransformDataStepTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
-            'typo3conf/ext/external_import',
-            'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/external_import',
+        'typo3conf/ext/externalimport_test'
     ];
 
     /**
@@ -41,84 +45,85 @@ class TransformDataStepTest extends FunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $objectManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\Object\ObjectManager::class);
-        $this->subject = $objectManager->get(\Cobweb\ExternalImport\Step\TransformDataStep::class);
-        $importer = $this->createMock(\Cobweb\ExternalImport\Importer::class);
-        $configuration = $objectManager->get(\Cobweb\ExternalImport\Domain\Model\Configuration::class);
+        $this->subject = GeneralUtility::makeInstance(TransformDataStep::class);
+        $importer = $this->createMock(Importer::class);
+        $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setTable('foo');
         $importer->method('getExternalConfiguration')->willReturn($configuration);
         $this->subject->setImporter(
-                $importer
+            $importer
         );
+        // Global language object is needed for some localized log messages
+        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('en');
     }
 
     public function trimDataProvider(): array
     {
         return [
-                'Trim data (true)' => [
-                        'foo',
-                        true,
-                        [
-                                0 => [
-                                        'foo' => ' White space all around ',
-                                        'bar' => ' Not trimmed '
-                                ],
-                                1 => [
-                                        'foo' => ' White space left',
-                                        'bar' => ' Not trimmed '
-                                ],
-                                2 => [
-                                        'foo' => 'White space right ',
-                                        'bar' => ' Not trimmed '
-                                ],
-                                3 => [
-                                        'foo' => 'No white space',
-                                        'bar' => ' Not trimmed '
-                                ]
-                        ],
-                        [
-                                0 => [
-                                        'foo' => 'White space all around',
-                                        'bar' => ' Not trimmed '
-                                ],
-                                1 => [
-                                        'foo' => 'White space left',
-                                        'bar' => ' Not trimmed '
-                                ],
-                                2 => [
-                                        'foo' => 'White space right',
-                                        'bar' => ' Not trimmed '
-                                ],
-                                3 => [
-                                        'foo' => 'No white space',
-                                        'bar' => ' Not trimmed '
-                                ]
-                        ]
+            'Trim data (true)' => [
+                'foo',
+                true,
+                [
+                    0 => [
+                        'foo' => ' White space all around ',
+                        'bar' => ' Not trimmed '
+                    ],
+                    1 => [
+                        'foo' => ' White space left',
+                        'bar' => ' Not trimmed '
+                    ],
+                    2 => [
+                        'foo' => 'White space right ',
+                        'bar' => ' Not trimmed '
+                    ],
+                    3 => [
+                        'foo' => 'No white space',
+                        'bar' => ' Not trimmed '
+                    ]
                 ],
-                'Do not trim data (false)' => [
-                        'foo',
-                        false,
-                        [
-                                0 => [
-                                        'foo' => ' White space all around ',
-                                        'bar' => ' Not trimmed '
-                                ],
-                                1 => [
-                                        'foo' => 'No white space',
-                                        'bar' => ' Not trimmed '
-                                ]
-                        ],
-                        [
-                                0 => [
-                                        'foo' => ' White space all around ',
-                                        'bar' => ' Not trimmed '
-                                ],
-                                1 => [
-                                        'foo' => 'No white space',
-                                        'bar' => ' Not trimmed '
-                                ]
-                        ]
+                [
+                    0 => [
+                        'foo' => 'White space all around',
+                        'bar' => ' Not trimmed '
+                    ],
+                    1 => [
+                        'foo' => 'White space left',
+                        'bar' => ' Not trimmed '
+                    ],
+                    2 => [
+                        'foo' => 'White space right',
+                        'bar' => ' Not trimmed '
+                    ],
+                    3 => [
+                        'foo' => 'No white space',
+                        'bar' => ' Not trimmed '
+                    ]
                 ]
+            ],
+            'Do not trim data (false)' => [
+                'foo',
+                false,
+                [
+                    0 => [
+                        'foo' => ' White space all around ',
+                        'bar' => ' Not trimmed '
+                    ],
+                    1 => [
+                        'foo' => 'No white space',
+                        'bar' => ' Not trimmed '
+                    ]
+                ],
+                [
+                    0 => [
+                        'foo' => ' White space all around ',
+                        'bar' => ' Not trimmed '
+                    ],
+                    1 => [
+                        'foo' => 'No white space',
+                        'bar' => ' Not trimmed '
+                    ]
+                ]
+            ]
         ];
     }
 
@@ -132,12 +137,12 @@ class TransformDataStepTest extends FunctionalTestCase
      * @test
      * @dataProvider trimDataProvider
      */
-    public function applyTrimTrimsDataIfTrue($name, $configuration, array $records, array $expected): void
+    public function applyTrimTrimsDataIfTrue(string $name, bool $configuration, array $records, array $expected): void
     {
         $result = $this->subject->applyTrim(
-                $name,
-                $configuration,
-                $records
+            $name,
+            $configuration,
+            $records
         );
         self::assertSame($expected, $result);
     }
@@ -146,74 +151,74 @@ class TransformDataStepTest extends FunctionalTestCase
     {
         return [
             'Map to sys_category with default value' => [
-                    'foo',
-                    [
-                            'table' => 'sys_category',
-                            'referenceField' => 'external_key',
-                            'default' => 19
+                'foo',
+                [
+                    'table' => 'sys_category',
+                    'referenceField' => 'external_key',
+                    'default' => 19
+                ],
+                [
+                    0 => [
+                        'foo' => 'USEFUL',
+                        'bar' => 42
                     ],
-                    [
-                            0 => [
-                                    'foo' => 'USEFUL',
-                                    'bar' => 42
-                            ],
-                            1 => [
-                                    'foo' => 'USELESS',
-                                    'bar' => 17
-                            ],
-                            2 => [
-                                    'foo' => 'UNKNOWN',
-                                    'bar' => 24
-                            ],
+                    1 => [
+                        'foo' => 'USELESS',
+                        'bar' => 17
                     ],
-                    [
-                            0 => [
-                                    'foo' => '1',
-                                    'bar' => 42
-                            ],
-                            1 => [
-                                    'foo' => '2',
-                                    'bar' => 17
-                            ],
-                            2 => [
-                                    'foo' => 19,
-                                    'bar' => 24
-                            ]
+                    2 => [
+                        'foo' => 'UNKNOWN',
+                        'bar' => 24
+                    ],
+                ],
+                [
+                    0 => [
+                        'foo' => '1',
+                        'bar' => 42
+                    ],
+                    1 => [
+                        'foo' => '2',
+                        'bar' => 17
+                    ],
+                    2 => [
+                        'foo' => 19,
+                        'bar' => 24
                     ]
+                ]
             ],
             'Map to sys_category without default value' => [
-                    'foo',
-                    [
-                            'table' => 'sys_category',
-                            'referenceField' => 'external_key'
+                'foo',
+                [
+                    'table' => 'sys_category',
+                    'referenceField' => 'external_key'
+                ],
+                [
+                    0 => [
+                        'foo' => 'USEFUL',
+                        'bar' => 42
                     ],
-                    [
-                            0 => [
-                                    'foo' => 'USEFUL',
-                                    'bar' => 42
-                            ],
-                            1 => [
-                                    'foo' => 'USELESS',
-                                    'bar' => 17
-                            ],
-                            2 => [
-                                    'foo' => 'UNKNOWN',
-                                    'bar' => 24
-                            ],
+                    1 => [
+                        'foo' => 'USELESS',
+                        'bar' => 17
                     ],
-                    [
-                            0 => [
-                                    'foo' => '1',
-                                    'bar' => 42
-                            ],
-                            1 => [
-                                    'foo' => '2',
-                                    'bar' => 17
-                            ],
-                            2 => [
-                                    'bar' => 24
-                            ]
+                    2 => [
+                        'foo' => 'UNKNOWN',
+                        'bar' => 24
+                    ],
+                ],
+                [
+                    0 => [
+                        'foo' => '1',
+                        'bar' => 42
+                    ],
+                    1 => [
+                        'foo' => '2',
+                        'bar' => 17
+                    ],
+                    2 => [
+                        'bar' => 24
                     ]
+                ]
             ]
         ];
     }
@@ -229,13 +234,13 @@ class TransformDataStepTest extends FunctionalTestCase
      * @dataProvider mappingDataProvider
      * @throws \Nimut\TestingFramework\Exception\Exception
      */
-    public function applyMappingMapsData($name, $configuration, array $records, array $expected): void
+    public function applyMappingMapsData(string $name, array $configuration, array $records, array $expected): void
     {
         $this->importDataSet(__DIR__ . '/../Fixtures/Categories.xml');
         $result = $this->subject->applyMapping(
-                $name,
-                $configuration,
-                $records
+            $name,
+            $configuration,
+            $records
         );
         self::assertSame($expected, $result);
     }
@@ -248,31 +253,31 @@ class TransformDataStepTest extends FunctionalTestCase
     public function applyValueAppliesValue(): void
     {
         $result = $this->subject->applyValue(
-                'foo',
-                42,
-                [
-                        0 => [
-                                'foo' => 17,
-                                'bar' => 4
-                        ],
-                        1 => [
-                                'foo' => 23,
-                                'bar' => 8
-                        ]
+            'foo',
+            42,
+            [
+                0 => [
+                    'foo' => 17,
+                    'bar' => 4
+                ],
+                1 => [
+                    'foo' => 23,
+                    'bar' => 8
                 ]
+            ]
         );
         self::assertSame(
-                [
-                        0 => [
-                                'foo' => 42,
-                                'bar' => 4
-                        ],
-                        1 => [
-                                'foo' => 42,
-                                'bar' => 8
-                        ]
+            [
+                0 => [
+                    'foo' => 42,
+                    'bar' => 4
                 ],
-                $result
+                1 => [
+                    'foo' => 42,
+                    'bar' => 8
+                ]
+            ],
+            $result
         );
     }
 
@@ -284,62 +289,62 @@ class TransformDataStepTest extends FunctionalTestCase
     public function applyRteEnabledFlagAppliesFlag(): void
     {
         $result = $this->subject->applyRteEnabledFlag(
-                'foo',
-                true,
-                [
-                        0 => [
-                                'foo' => 17,
-                                'bar' => 4
-                        ],
-                        1 => [
-                                'foo' => 23,
-                                'bar' => 8
-                        ]
+            'foo',
+            true,
+            [
+                0 => [
+                    'foo' => 17,
+                    'bar' => 4
+                ],
+                1 => [
+                    'foo' => 23,
+                    'bar' => 8
                 ]
+            ]
         );
         self::assertSame(
-                [
-                        0 => [
-                                'foo' => 17,
-                                'bar' => 4,
-                                '_TRANSFORM_foo' => 'RTE'
-                        ],
-                        1 => [
-                                'foo' => 23,
-                                'bar' => 8,
-                                '_TRANSFORM_foo' => 'RTE'
-                        ]
+            [
+                0 => [
+                    'foo' => 17,
+                    'bar' => 4,
+                    '_TRANSFORM_foo' => 'RTE'
                 ],
-                $result
+                1 => [
+                    'foo' => 23,
+                    'bar' => 8,
+                    '_TRANSFORM_foo' => 'RTE'
+                ]
+            ],
+            $result
         );
     }
 
-    public function userFuncDataProvider(): array
+    public function userFunctionDataProvider(): array
     {
         return [
-                'Valid configuration - data transformed' => [
-                        'foo',
-                        [
-                                'class' => DateTimeTransformation::class,
-                                'method' => 'parseDate',
-                                'parameters' => [
-                                        'function' => 'date',
-                                        'format' => 'U'
-                                ]
-                        ],
-                        [
-                                0 => [
-                                        'foo' => '2017-10-11T18:29:01+02:00',
-                                        'bar' => 4
-                                ]
-                        ],
-                        [
-                                0 => [
-                                        'foo' => '1507739341',
-                                        'bar' => 4
-                                ]
-                        ]
+            'Valid configuration - data transformed' => [
+                'foo',
+                [
+                    'class' => DateTimeTransformation::class,
+                    'method' => 'parseDate',
+                    'parameters' => [
+                        'function' => 'date',
+                        'format' => 'U'
+                    ]
+                ],
+                [
+                    0 => [
+                        'foo' => '2017-10-11T18:29:01+02:00',
+                        'bar' => 4
+                    ]
+                ],
+                [
+                    0 => [
+                        'foo' => '1507739341',
+                        'bar' => 4
+                    ]
                 ]
+            ]
         ];
     }
 
@@ -347,18 +352,226 @@ class TransformDataStepTest extends FunctionalTestCase
      * Tests the applyUserFunction() method.
      *
      * @param string $name Name of the column to transform
-     * @param array $configuration True if data needs to be trimmed
+     * @param array $configuration userFunction configuration
      * @param array $records Records to handle
      * @param array $expected Expected results
      * @test
-     * @dataProvider userFuncDataProvider
+     * @dataProvider userFunctionDataProvider
      */
-    public function applyUserFunctionTransformsDataIfValid($name, $configuration, array $records, array $expected): void
+    public function applyUserFunctionTransformsDataIfValid(string $name, array $configuration, array $records, array $expected): void
     {
         $result = $this->subject->applyUserFunction(
-                $name,
-                $configuration,
-                $records
+            $name,
+            $configuration,
+            $records
+        );
+        self::assertSame($expected, $result);
+    }
+
+    public function isEmptyDataProvider(): array
+    {
+        $emptyArray = [
+            0 => [
+                'foo' => 'Hello world',
+                'bar' => 'Foo is not empty'
+            ],
+            1 => [
+                'bar' => 'Foo is empty'
+            ],
+            2 => [
+                'foo' => '',
+                'bar' => 'Foo is empty'
+            ],
+            3 => [
+                'foo' => 0,
+                'bar' => 'Foo is empty'
+            ],
+            4 => [
+                'foo' => false,
+                'bar' => 'Foo is empty'
+            ],
+            5 => [
+                'foo' => null,
+                'bar' => 'Foo is empty'
+            ]
+        ];
+        return [
+            'No empty records - no expression - nothing happens' => [
+                'name' => 'foo',
+                'configuration' => [
+                    'invalidate' => true
+                ],
+                'records' => [
+                    0 => [
+                        'foo' => 'Hello world',
+                        'bar' => 'Foo is not empty'
+                    ],
+                    1 => [
+                        'foo' => 'This is me!',
+                        'bar' => 'Foo is not empty'
+                    ]
+                ],
+                'expected' => [
+                    0 => [
+                        'foo' => 'Hello world',
+                        'bar' => 'Foo is not empty'
+                    ],
+                    1 => [
+                        'foo' => 'This is me!',
+                        'bar' => 'Foo is not empty'
+                    ]
+                ]
+            ],
+            'Empty records - no expression - invalidate' => [
+                'name' => 'foo',
+                'configuration' => [
+                    'invalidate' => true
+                ],
+                'records' => $emptyArray,
+                'expected' => [
+                    0 => [
+                        'foo' => 'Hello world',
+                        'bar' => 'Foo is not empty'
+                    ]
+                ]
+            ],
+            'Empty records - no expression - default value' => [
+                'name' => 'foo',
+                'configuration' => [
+                    'default' => 'Foo is foo'
+                ],
+                'records' => $emptyArray,
+                'expected' => [
+                    0 => [
+                        'foo' => 'Hello world',
+                        'bar' => 'Foo is not empty'
+                    ],
+                    1 => [
+                        'bar' => 'Foo is empty',
+                        'foo' => 'Foo is foo'
+                    ],
+                    2 => [
+                        'foo' => 'Foo is foo',
+                        'bar' => 'Foo is empty'
+                    ],
+                    3 => [
+                        'foo' => 'Foo is foo',
+                        'bar' => 'Foo is empty'
+                    ],
+                    4 => [
+                        'foo' => 'Foo is foo',
+                        'bar' => 'Foo is empty'
+                    ],
+                    5 => [
+                        'foo' => 'Foo is foo',
+                        'bar' => 'Foo is empty'
+                    ]
+                ]
+            ],
+            'Empty records - expression (null) - invalidate' => [
+                'name' => 'foo',
+                'configuration' => [
+                    'expression' => 'foo === null',
+                    'invalidate' => true
+                ],
+                'records' => [
+                    0 => [
+                        'foo' => 'Hello world',
+                        'bar' => 'Foo is not empty'
+                    ],
+                    1 => [
+                        'bar' => 'Foo is empty'
+                    ],
+                    2 => [
+                        'foo' => 'Me again :-)',
+                        'bar' => 'Foo is not empty'
+                    ]
+                ],
+                'expected' => [
+                    0 => [
+                        'foo' => 'Hello world',
+                        'bar' => 'Foo is not empty'
+                    ],
+                    1 => [
+                        'foo' => 'Me again :-)',
+                        'bar' => 'Foo is not empty'
+                    ]
+                ]
+            ],
+            'Empty records - expression (empty string) - invalidate' => [
+                'name' => 'foo',
+                'configuration' => [
+                    'expression' => 'foo === ""',
+                    'invalidate' => true
+                ],
+                'records' => [
+                    0 => [
+                        'foo' => 'Hello world',
+                        'bar' => 'Foo is not empty'
+                    ],
+                    1 => [
+                        'foo' => '',
+                        'bar' => 'Foo is empty'
+                    ],
+                    2 => [
+                        'foo' => 'Me again :-)',
+                        'bar' => 'Foo is not empty'
+                    ]
+                ],
+                'expected' => [
+                    0 => [
+                        'foo' => 'Hello world',
+                        'bar' => 'Foo is not empty'
+                    ],
+                    1 => [
+                        'foo' => 'Me again :-)',
+                        'bar' => 'Foo is not empty'
+                    ]
+                ]
+            ],
+            'Expression not testing emptiness' => [
+                'name' => 'foo',
+                'configuration' => [
+                    'expression' => 'foo + bar',
+                    'invalidate' => true
+                ],
+                'records' => [
+                    // This first record will be removed, because 2 + 5 = 7, which is equivalent to true when casting to boolean
+                    0 => [
+                        'foo' => 2,
+                        'bar' => 5
+                    ],
+                    1 => [
+                        'foo' => 1,
+                        'bar' => -1
+                    ]
+                ],
+                'expected' => [
+                    0 => [
+                        'foo' => 1,
+                        'bar' => -1
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Tests the applyIsEmpty() method.
+     *
+     * @param string $name Name of the column to transform
+     * @param array $configuration isEmpty configuration
+     * @param array $records Records to handle
+     * @param array $expected Expected results
+     * @test
+     * @dataProvider isEmptyDataProvider
+     */
+    public function applyIsEmptyFiltersRecordsOrSetsDefaultValue(string $name, array $configuration, array $records, array $expected): void
+    {
+        $result = $this->subject->applyIsEmpty(
+            $name,
+            $configuration,
+            $records
         );
         self::assertSame($expected, $result);
     }

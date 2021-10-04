@@ -19,11 +19,11 @@ define(['jquery',
 		'TYPO3/CMS/Backend/Icons',
 		'moment',
 		'datatables',
-		'TYPO3/CMS/Backend/jquery.clearable'
+		'TYPO3/CMS/Backend/Input/Clearable'
 	   ], function($, Icons, moment) {
 	'use strict';
 
-	var ExternalImportLogModule = {
+	let ExternalImportLogModule = {
 		table: null,
 		icons: {}
 	};
@@ -90,7 +90,7 @@ define(['jquery',
 						if (type === 'sort') {
 							return data;
 						} else {
-							var lastModifiedDate = moment.unix(data);
+							let lastModifiedDate = moment.unix(data);
 							return lastModifiedDate.format('DD.MM.YY HH:mm:ss');
 						}
 					}
@@ -110,7 +110,7 @@ define(['jquery',
 					data: 'context',
 					name: 'context',
 					render:  function(data, type, row, meta) {
-						var label = '';
+						let label = '';
 						if (data) {
 							switch (data) {
 								case 'manual':
@@ -144,11 +144,11 @@ define(['jquery',
 					render:  function(data, type, row, meta) {
 						// For display, format the duration as a number of hours, minutes and seconds
 						if (type === 'display') {
-							var formattedTime = '';
-							var hours = Math.floor(data / 3600);
-							var residue = data % 3600;
-							var minutes = Math.floor(residue / 60);
-							var seconds = residue % 60;
+							let formattedTime = '';
+							let hours = Math.floor(data / 3600);
+							let residue = data % 3600;
+							let minutes = Math.floor(residue / 60);
+							let seconds = residue % 60;
 							if (hours > 0) {
 								formattedTime += hours + 'h ';
 							}
@@ -177,27 +177,28 @@ define(['jquery',
 	 * Initializes the search field (make it clearable and reactive to input).
 	 */
 	ExternalImportLogModule.initializeSearchField = function() {
-		$('#tx_externalimport_search')
+    let searchField = $('#tx_externalimport_search');
+    searchField
 			.on('input', function() {
 				ExternalImportLogModule.table.search($(this).val()).draw();
-			})
-			.clearable({
-				onClear: function() {
-					if (ExternalImportLogModule.table !== null) {
-						ExternalImportLogModule.table.search('').draw();
-					}
-				}
 			})
 			.parents('form').on('submit', function() {
 				return false;
 			});
+    searchField[0].clearable({
+			onClear: function() {
+				if (ExternalImportLogModule.table !== null) {
+					ExternalImportLogModule.table.search('').draw();
+				}
+			}
+		})
 	};
 
 	/**
 	 * Initialize this module
 	 */
 	$(function() {
-		var tableView = $('#tx_externalimport_loglist');
+		let tableView = $('#tx_externalimport_loglist');
 		ExternalImportLogModule.loadStatusIcons();
 		ExternalImportLogModule.buildDynamicTable(tableView);
 	});

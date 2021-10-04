@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\ViewHelpers;
 
 /*
@@ -15,6 +18,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -39,9 +43,9 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
      *
      * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
-        $this->registerArgument('configuration', Configuration::class, 'The configuration object ot handle', true);
+        $this->registerArgument('configuration', Configuration::class, 'The configuration object to handle', true);
     }
 
     /**
@@ -53,18 +57,34 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
      *
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
         /** @var Configuration $configuration */
         $configuration = $arguments['configuration'];
+
+        $eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
+        $event = $eventDispatcher->dispatch(
+            new \Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent(
+                $configuration->getGeneralConfigurationProperty('parameters'),
+                $configuration
+            )
+        );
+        $processedParameters = $event->getParameters();
+
         // Call any hook that may be declared to process parameters
-        $processedParameters = array();
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'])) {
+        // Using a hook is deprecated
+        // TODO: remove in the next major version
+        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] ?? null;
+        if (is_array($hooks)) {
+            trigger_error('Hook "processParameters" is deprecated. Use \Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
                 $preProcessor = GeneralUtility::makeInstance($className);
                 $processedParameters = $preProcessor->processParameters(
-                        $configuration->getGeneralConfigurationProperty('parameters'),
-                        $configuration
+                    $configuration->getGeneralConfigurationProperty('parameters'),
+                    $configuration
                 );
             }
         }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -14,8 +17,10 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\Svconnector\Service\ConnectorBase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -28,6 +33,16 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class ReadDataStep extends AbstractStep
 {
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
      * Reads the data from the external source.
      *
      * @return void
@@ -37,24 +52,24 @@ class ReadDataStep extends AbstractStep
         $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         // Check if there are any services of the given type
         $services = ExtensionManagementUtility::findService(
-                'connector',
-                $generalConfiguration['connector']
+            'connector',
+            $generalConfiguration['connector']
         );
 
         // The service is not available
         if ($services === false) {
             $this->setAbortFlag(true);
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_service',
-                            'external_import'
-                    )
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_service',
+                    'external_import'
+                )
             );
         } else {
             /** @var $connector ConnectorBase */
             $connector = GeneralUtility::makeInstanceService(
-                    'connector',
-                    $generalConfiguration['connector']
+                'connector',
+                $generalConfiguration['connector']
             );
 
             // The service was instantiated, but an error occurred while initiating the connection
@@ -64,27 +79,25 @@ class ReadDataStep extends AbstractStep
                 // If the returned value is an array, we have proper error reporting.
                 if (is_array($connector)) {
                     $this->importer->addMessage(
-                            LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_with_error',
-                                    'external_import',
-                                    [
-                                            $connector['msg'],
-                                            $connector['nr']
-                                    ]
-                            )
+                        LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_with_error',
+                            'external_import',
+                            [
+                                $connector['msg'],
+                                $connector['nr']
+                            ]
+                        )
                     );
-
-                // Otherwise display generic error message
+                    // Otherwise display generic error message
                 } else {
                     $this->importer->addMessage(
-                            LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched',
-                                    'external_import'
-                            )
+                        LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched',
+                            'external_import'
+                        )
                     );
                 }
-
-            // The connection is established, get the data
+                // The connection is established, get the data
             } else {
                 // Store a reference to the connector object for the callback step
                 $this->importer->getExternalConfiguration()->setConnector($connector);
@@ -108,13 +121,13 @@ class ReadDataStep extends AbstractStep
                         } catch (\Exception $e) {
                             $this->abortFlag = true;
                             $this->importer->addMessage(
-                                    LocalizationUtility::translate(
-                                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
-                                            'external_import',
-                                            [
-                                                    $e->getMessage()
-                                            ]
-                                    )
+                                LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
+                                    'external_import',
+                                    [
+                                        $e->getMessage()
+                                    ]
+                                )
                             );
                         }
                         break;
@@ -125,13 +138,13 @@ class ReadDataStep extends AbstractStep
                         } catch (\Exception $e) {
                             $this->abortFlag = true;
                             $this->importer->addMessage(
-                                    LocalizationUtility::translate(
-                                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
-                                            'external_import',
-                                            [
-                                                    $e->getMessage()
-                                            ]
-                                    )
+                                LocalizationUtility::translate(
+                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
+                                    'external_import',
+                                    [
+                                        $e->getMessage()
+                                    ]
+                                )
                             );
                         }
                         break;
@@ -140,10 +153,10 @@ class ReadDataStep extends AbstractStep
                     default:
                         $this->abortFlag = true;
                         $this->importer->addMessage(
-                                LocalizationUtility::translate(
-                                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_type_not_defined',
-                                        'external_import'
-                                )
+                            LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_type_not_defined',
+                                'external_import'
+                            )
                         );
                         break;
                 }
@@ -162,24 +175,39 @@ class ReadDataStep extends AbstractStep
      * @return array The processed parameters
      * @throws CriticalFailureException
      */
-    protected function processParameters($parameters): array
+    protected function processParameters(array $parameters): array
     {
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'])) {
+        /** @var ProcessConnectorParametersEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ProcessConnectorParametersEvent(
+                $parameters,
+                $this->importer->getExternalConfiguration()
+            )
+        );
+        $parameters = $event->getParameters();
+        // Using a hook is deprecated
+        // TODO: remove in the next major version
+        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] ?? null;
+        if (is_array($hooks)) {
+            trigger_error('Hook "processParameters" is deprecated. Use \Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
                 try {
                     $preProcessor = GeneralUtility::makeInstance($className);
-                    $parameters = $preProcessor->processParameters($parameters, $this->importer->getExternalConfiguration());
+                    $parameters = $preProcessor->processParameters(
+                        $parameters,
+                        $this->importer->getExternalConfiguration()
+                    );
                 } catch (CriticalFailureException $e) {
                     // This exception must not be caught here, but thrown further up
                     throw $e;
                 } catch (\Exception $e) {
                     $this->importer->debug(
-                            sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'processParameters'
-                            ),
-                            1
+                        sprintf(
+                            'Could not instantiate class %s for hook %s',
+                            $className,
+                            'processParameters'
+                        ),
+                        1
                     );
                 }
             }

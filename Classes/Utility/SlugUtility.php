@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Utility;
 
 /*
@@ -53,18 +55,18 @@ class SlugUtility
      * @param string $table Name of the affected table
      * @param array $uids List of primary keys of records to update
      */
-    public function updateAll($table, $uids): void
+    public function updateAll(string $table, array $uids): void
     {
         // Get the list of slug fields for the given table
         $fieldsToUpdate = $this->resolveSlugFieldNames($table);
         // Get full data for each record to update
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         $records = $queryBuilder->select('*')
-                ->from($table)
-                ->where(
-                        $queryBuilder->expr()->in('uid', $uids)
-                )->execute()
-                ->fetchAll();
+            ->from($table)
+            ->where(
+                $queryBuilder->expr()->in('uid', $uids)
+            )->execute()
+            ->fetchAllAssociative();
         // Generate the new slug for each record
         $newSlugs = [];
         foreach ($fieldsToUpdate as $field) {
@@ -72,20 +74,12 @@ class SlugUtility
             $fieldConfiguration = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
             foreach ($records as $record) {
                 $slug = $this->generateSlug($table, $field, $fieldConfiguration, $record);
-                // Check that the slug is really different
+                // Check that the slug is really different, if yes save it to database
                 if ($slug !== $record[$field]) {
-                    $newSlugs[$field][$record['uid']] = $slug;
-                }
-            }
-        }
-        // Update the slugs in the database
-        foreach ($newSlugs as $field => $slugList) {
-            if (count($slugList) > 0) {
-                foreach ($slugList as $uid => $slug) {
                     $queryBuilder->update($table)
                         ->set($field, $slug)
                         ->where(
-                                $queryBuilder->expr()->eq('uid', $uid)
+                            $queryBuilder->expr()->eq('uid', $record['uid'])
                         )->execute();
                 }
             }
@@ -106,40 +100,40 @@ class SlugUtility
         $slug = '';
         $pid = $record['pid'];
         $slugHelper = GeneralUtility::makeInstance(
-                SlugHelper::class,
-                $table,
-                $field,
-                $fieldConfiguration
+            SlugHelper::class,
+            $table,
+            $field,
+            $fieldConfiguration
         );
         $slugCandidate = $slugHelper->generate($record, $pid);
         if (GeneralUtility::inList('uniqueInSite', $fieldConfiguration['eval'])) {
             $state = RecordStateFactory::forName($table)
-                    ->fromArray(
-                            $record,
-                            $pid
-                    );
+                ->fromArray(
+                    $record,
+                    $pid
+                );
             try {
                 $slug = $slugHelper->buildSlugForUniqueInSite($slugCandidate, $state);
             } catch (\Exception $e) {
                 // Let the slug be empty and log the problem
                 $this->importer->addMessage(
-                        sprintf(
-                                'Could not generate slug for record %1$d in table %2$s (reason: %3$s [%4$d])',
-                                $record['uid'],
-                                $table,
-                                $e->getMessage(),
-                                $e->getCode()
-                        ),
-                        AbstractMessage::NOTICE
+                    sprintf(
+                        'Could not generate slug for record %1$d in table %2$s (reason: %3$s [%4$d])',
+                        $record['uid'],
+                        $table,
+                        $e->getMessage(),
+                        $e->getCode()
+                    ),
+                    AbstractMessage::NOTICE
                 );
             }
         } elseif (GeneralUtility::inList('uniqueInPid', $fieldConfiguration['eval'])) {
             $state = RecordStateFactory::forName($table)
-                    ->fromArray(
-                            $record,
-                            $pid,
-                            $record['uid']
-                    );
+                ->fromArray(
+                    $record,
+                    $pid,
+                    $record['uid']
+                );
             $slug = $slugHelper->buildSlugForUniqueInPid($slugCandidate, $state);
         } else {
             $slug = $slugCandidate;

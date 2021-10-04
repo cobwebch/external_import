@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Task;
 
 /*
@@ -16,27 +19,24 @@ namespace Cobweb\ExternalImport\Task;
 
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
+use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
 
 /**
  * Additional fields provider class for the Scheduler.
  *
- * @author Francois Suter <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Task
  */
 class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInterface
 {
     /**
      * Name of the additional field
      */
-    static protected $fieldName = 'syncItem';
+    protected static $fieldName = 'syncItem';
 
     /**
      * This method is used to define new fields for adding or editing a task
@@ -44,7 +44,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
      * @param AbstractTask $task When editing, reference to the current task object. Null when adding.
-     * @param SchedulerModuleController $moduleController Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return array Array containing all the information pertaining to the additional fields
      *               The array is multidimensional, keyed to the task class name and each field's id
      *               For each field it provides an associative sub-array with the following:
@@ -52,15 +52,15 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *                   ['label']        => The label of the field (possibly localized)
      *                   ['cshKey']        => The CSH key for the field
      *                   ['cshLabel']    => The code of the CSH label
+     * @throws \TYPO3\CMS\Extbase\Object\Exception
      */
-    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $moduleController)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule)
     {
-
         // Initialize extra field value
         if (empty($taskInfo[self::$fieldName])) {
-            if (CompatibilityUtility::isSchedulerCommand($moduleController, 'add')) {
+            if ($schedulerModule->getCurrentAction()->equals(Action::ADD)) {
                 $taskInfo[self::$fieldName] = 'all';
-            } elseif (CompatibilityUtility::isSchedulerCommand($moduleController, 'edit')) {
+            } elseif ($schedulerModule->getCurrentAction()->equals(Action::EDIT)) {
                 // In case of edit, set to internal value if no data was submitted already
                 $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                 $configurationKey->setTableAndIndex($task->table, (string)$task->index);
@@ -76,7 +76,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $selected = ' selected="selected"';
         }
         // Add "all" selector
-        $fieldCode .= '<option value="all"' . $selected . '>' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') . '</option>';
+        $fieldCode .= '<option value="all"' . $selected . '>' .
+            $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') .
+            '</option>';
         // Get configuration repository for fetching values
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $configurationRepository = $objectManager->get(ConfigurationRepository::class);
@@ -84,7 +86,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         // Add groups selection
         $groups = $configurationRepository->findAllGroups();
         if (count($groups) > 0) {
-            $fieldCode .= '<optgroup label="' . LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.groups') . '">';
+            $fieldCode .= '<optgroup label="' .
+                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.groups') .
+                '">';
             foreach ($groups as $group) {
                 $id = 'group:' . $group;
                 $selected = '';
@@ -99,28 +103,33 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         // Add individual configurations
         $configurations = $configurationRepository->findBySync(true);
         if (count($configurations) > 0) {
-            $fieldCode .= '<optgroup label="' . LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.configurations') . '">';
+            $fieldCode .= '<optgroup label="' .
+                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.configurations') .
+                '">';
             foreach ($configurations as $configuration) {
                 $id = $configuration['id'];
                 $selected = '';
                 if ($taskInfo[self::$fieldName] === $id) {
                     $selected = ' selected="selected"';
                 }
-                $label = LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') . ': ' . $configuration['table'];
-                $label .= ', ' . LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') . ': ' . $configuration['index'];
-                $label .= ', ' . LocalizationUtility::translate('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') . ': ' . $configuration['priority'];
+                $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') .
+                    ': ' . $configuration['table'];
+                $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') .
+                    ': ' . $configuration['index'];
+                $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') .
+                    ': ' . $configuration['priority'];
                 $fieldCode .= '<option value="' . $id . '"' . $selected . '>' . $label . '</option>';
             }
             $fieldCode .= '</optgroup>';
         }
         $fieldCode .= '</select>';
-        $additionalFields = array();
-        $additionalFields[$fieldID] = array(
-                'code' => $fieldCode,
-                'label' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:field.syncItem',
-                'cshKey' => '_MOD_user_txexternalimportM1',
-                'cshLabel' => $fieldID
-        );
+        $additionalFields = [];
+        $additionalFields[$fieldID] = [
+            'code' => $fieldCode,
+            'label' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:field.syncItem',
+            'cshKey' => '_MOD_user_txexternalimportM1',
+            'cshLabel' => $fieldID
+        ];
 
         return $additionalFields;
     }
@@ -130,12 +139,12 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      * If the task class is not relevant, the method is expected to return true
      *
      * @param array $submittedData Reference to the array containing the data submitted by the user
-     * @param SchedulerModuleController $moduleController Reference to the calling object (Scheduler's BE module)
+     * @param SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return bool True if validation was ok (or selected class is not relevant), false otherwise
      */
-    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $moduleController)
+    public function validateAdditionalFields(array &$submittedData, SchedulerModuleController $schedulerModule): bool
     {
-        // Since only a valid value could be chosen from the selected, always return true
+        // Since only a valid value could be chosen from the selector, always return true
         return true;
     }
 
@@ -147,12 +156,12 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      * @param AbstractTask $task Reference to the current task object
      * @return void
      */
-    public function saveAdditionalFields(array $submittedData, AbstractTask $task)
+    public function saveAdditionalFields(array $submittedData, AbstractTask $task): void
     {
         $fieldValue = $submittedData[self::$fieldName];
         if ($fieldValue === 'all' || strpos($fieldValue, 'group:') === 0) {
-                $task->table = $fieldValue;
-                $task->index = 0;
+            $task->table = $fieldValue;
+            $task->index = 0;
         } else {
             $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
             $configurationKey->setConfigurationKey($fieldValue);

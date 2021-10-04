@@ -35,9 +35,10 @@ The properties for the columns configuration are described below.
 .. warning::
 
    Columns "crdate", "tstamp" and "cruser_id" cannot be mapped as they are overwritten by the
-   :php:`DataHandler`. If you need to manipulate these columns you should use the "datamapPostProcess"
-   or "cmdmapPostProcess" :ref:`hooks <developer-hooks>`, which are called after :php:`DataHandler`
-   operations.
+   :php:`DataHandler`. If you need to manipulate these columns you should use the
+   :ref:`Datamap Postprocess event <developer-events-datamap-postprocess>` or the
+   :ref:`Cmdmap Postprocess event <developer-events-cmdmap-postprocess>`
+   which are triggered after :php:`DataHandler` operations.
 
 
 .. _administration-columns-properties:
@@ -52,13 +53,13 @@ Properties
    ========================= ====================================================================== ===================
    arrayPath_                string                                                                 Handle data (array)
    arrayPathSeparator_       string                                                                 Handle data (array)
+   arrayPathFlatten_         bool                                                                   Handle data (array)
    attribute_                string                                                                 Handle data (XML)
    attributeNS_              string                                                                 Handle data (XML)
    children_                 :ref:`Children records configuration <administration-children>`        Store data
    disabledOperations_       string                                                                 Store data
    field_                    string                                                                 Handle data
    fieldNS_                  string                                                                 Handle data (XML)
-   MM_                       :ref:`MM configuration <administration-mm>`                            Store data
    multipleRows_             boolean                                                                Store data
    multipleSorting_          string                                                                 Store data
    substructureFields_       array                                                                  Handle data
@@ -103,7 +104,12 @@ Description
   to a field in a "deeper" position inside a multidimensional array. The value is a string
   comprised of the keys for pointing into the array, separated by some character (:code:`/`
   by default; can be changed using the :ref:`arrayPathSeparator <administration-columns-properties-array-path-separator>`
-  property). Consider the following structure to import:
+  property).
+
+  Conditions and the special segment :code:`*` are also available. See the
+  :ref:`general configuration property arrayPath for reference <administration-general-tca-properties-arraypath>`.
+
+  Consider the following structure to import:
 
   .. code:: php
 
@@ -130,6 +136,24 @@ Description
      but the "field" property should be preferred in such a case.
 
      If both "field" and "arrayPath" are defined, the latter takes precedence.
+
+Scope
+  Handle data (array)
+
+
+.. _administration-columns-properties-arraypathflatten:
+
+arrayPathFlatten
+~~~~~~~~~~~~~~~~
+
+Type
+  bool
+
+Description
+  When the special :code:`*` segment is used in an :ref:`arrayPath <administration-columns-properties-array-path>`,
+  the resulting structure is always an array. If the :code:`arrayPath` target is
+  actually a single value, this may not be desirable. When :code:`arrayPathFlatten`
+  is set to :code:`true`, the result is preserved as a simple type.
 
 Scope
   Handle data (array)
@@ -399,27 +423,6 @@ Scope
   Handle data
 
 
-.. _administration-columns-properties-mm:
-
-MM
-~~
-
-Type
-  :ref:`MM configuration <administration-mm>`
-
-Description
-   Definition of MM-relations, see :ref:`specific reference <administration-mm>`
-   for more details.
-
-   .. warning::
-
-      This property is deprecated. Use :ref:`multipleRows <administration-columns-properties-multiple-rows>`
-      or :ref:`children <administration-columns-properties-children>` according to your needs.
-
-Scope
-  Transform data
-
-
 .. _administration-columns-properties-multiple-rows:
 
 multipleRows
@@ -431,7 +434,7 @@ Type
 Description
    Set to :code:`true` if you have denormalized data. This will tell the import
    process that there may be more than one row per record to import and that all
-   values for the given column must be gathered and collapsed into a comme-separated
+   values for the given column must be gathered and collapsed into a comma-separated
    list of values. See the :ref:`Mapping data <user-mapping-data>` chapter for
    explanations about the impact of this flag.
 

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Validator;
 
 /*
@@ -27,6 +30,16 @@ class ValidationResult
      * @var array List of validation results
      */
     protected $results = [];
+
+    /**
+     * Resets the list of results.
+     *
+     * @return void
+     */
+    public function reset(): void
+    {
+        $this->results = [];
+    }
 
     /**
      * Adds a result to the results array.
@@ -151,11 +164,11 @@ class ValidationResult
     {
         foreach ($this->results as $property => $results) {
             usort(
-                    $results,
-                    [
-                            self::class,
-                            'compareSeverity'
-                    ]
+                $results,
+                [
+                    self::class,
+                    'compareSeverity'
+                ]
             );
             $this->results[$property] = $results;
         }

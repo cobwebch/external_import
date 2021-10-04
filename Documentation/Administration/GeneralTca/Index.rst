@@ -6,9 +6,10 @@
 General TCA configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Here is an example of a typical general section syntax. The general section can contain several configurations,
-each identified with a key (in the example below, :code:`0` and  :code:`'api'`. The same keys are found again
-in the :ref:`column configuration <administration-columns>`.
+Here is an example of a typical general section syntax, containing two import configurations.
+
+Each configuration must be identified with a key (in the example below, :code:`0` and  :code:`'api'`).
+The same keys need to be used again in the :ref:`column configuration <administration-columns>`.
 
 .. code-block:: php
 
@@ -41,11 +42,6 @@ in the :ref:`column configuration <administration-columns>`.
 
 All available properties are described below.
 
-.. note::
-
-   The general configuration used to be stored in :code:`$GLOBALS['TCA'][table-name]['ctrl']['external']`. This is still
-   supported, but code should be migrated as soon as possible, as support will be dropped in the future.
-
 
 .. _administration-general-tca-properties:
 
@@ -58,6 +54,9 @@ Properties
 	Property                              Data type         Scope/Step
 	===================================== ================= ========================
 	additionalFields_                     string            Read data
+   arrayPath_                            string            Handle data (array)
+   arrayPathFlatten_                     bool              Handle data (array)
+   arrayPathSeparator_                   string            Handle data (array)
 	clearCache_                           string            Clear cache
 	connector_                            string            Read data
 	customSteps_                          array             Any step
@@ -172,7 +171,7 @@ Description
   configurations having the same value for the "group" property will
   form a group of configurations. It is then possible to execute the
   synchronization of all configurations in the group in one go, in
-  order of priority. Group synchronization is available on the command
+  order of priority (lowest goes first). Group synchronization is available on the command
   line and in the Scheduler task.
 
 Scope
@@ -215,6 +214,148 @@ Scope
   Handle data (XML)
 
 
+.. _administration-general-tca-properties-arraypath:
+
+arrayPath
+~~~~~~~~~
+
+Type
+  string
+
+Description
+  Pointer to a sub-array inside the incoming external data, as a list of keys
+  separated by some marker (see the :ref:`arrayPathSeparator <administration-general-tca-properties-arraypathseparator>`)
+  property (which defaults to :code:`/`). The sub-array pointed to will be used
+  as the source of data in the subsenquent steps, rather than the whole structure
+  that was read during the :code:`ReadDataStep`.
+
+  Conditions can be applied to each segment of the path using the Symfony Expression Language syntax,
+  wrapped in curly braces. If the value being tested is an array, its items can be accessed directly
+  in the expression (see the example below with the :code:`status` item). If the value is a simple type,
+  it can be accessed in the expression with the key :code:`value`.
+
+  The special segments :code:`*` indicates that the path and conditions after that point
+  should be applied to all items of the current value, if that value is an array. The example
+  below clarifies this usage.
+
+  .. note::
+
+     If several "children" are matched when using :code:`*` as a segment, the result will be an array.
+     If a single value was matched, it is returned as is.
+
+  See the `Symfony documentation for reference on the Symfony Expression Language syntax <https://symfony.com/doc/current/components/expression_language/syntax.html>`_.
+
+  **Example**
+
+  Given the following JSON data (which is read into an array):
+
+  .. code-block:: json
+
+      {
+        "count": 2,
+        "data": {
+          "orders": [
+            {
+              "status": "valid",
+              "list": [
+                {
+                  "order": "000001",
+                  "date": "2020-08-07 14:32",
+                  "customer": "Conan the Barbarian",
+                  "products": [
+                    {
+                      "product": "000001",
+                      "qty": 3
+                    },
+                    ...
+                  ]
+                },
+                {
+                  "order": "000003",
+                  "date": "2021-03-07 17:56",
+                  "customer": "Empty basket",
+                  "products": []
+                },
+                {
+                  "order": "000002",
+                  "date": "2020-08-08 06:48",
+                  "customer": "Sonja the Red",
+                  "products": [
+                    {
+                      "product": "000001",
+                      "qty": 1
+                    },
+                    ...
+                  ]
+                }
+              ]
+            },
+            {
+              "status": "invalid",
+              "list": [
+                {
+                  "order": "000021",
+                  "date": "2021-08-24 12:00",
+                  "customer": "Refused",
+                  "products": [
+                    {
+                      "product": "000202",
+                      "qty": 1
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+
+  We want to import the orders, i.e. the elements that are keyed to :code:`orders`
+  inside :code:`data`. Among the list of orders, we also want only those with the
+  value "valid" for :code:`status`. Hence the property needs to be
+  :code:`data/orders/*{status === \'valid\'}/list`.
+
+  This will first find all the orders (there are two), then check each of them for their
+  status and finally, within the order that matched, it will extract the list and return just that.
+
+Scope
+  Handle data (array)
+
+
+.. _administration-general-tca-properties-arraypathflatten:
+
+arrayPathFlatten
+~~~~~~~~~~~~~~~~
+
+Type
+  bool
+
+Description
+  When the special :code:`*` segment is used in an :ref:`arrayPath <administration-general-tca-properties-array-path>`,
+  the resulting structure is always an array. If the :code:`arrayPath` target is
+  actually a single value, this may not be desirable. When :code:`arrayPathFlatten`
+  is set to :code:`true`, the result is preserved as a simple type.
+
+Scope
+  Handle data (array)
+
+
+.. _administration-general-tca-properties-arraypathseparator:
+
+arrayPathSeparator
+~~~~~~~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+  Separator to use in the :ref:`arrayPath <administration-general-tca-properties-arraypath>` property.
+  Defaults to :code:`/` if this property is not defined.
+
+Scope
+  Handle data (array)
+
+
 .. _administration-general-tca-properties-reference-uid:
 
 referenceUid
@@ -246,10 +387,16 @@ Type
   integer
 
 Description
-  A level of priority for execution of the synchronization. Some tables
+  A level of priority for the execution of the synchronization. Some tables
   may need to be synchronized before others if foreign relations are to
   be established. This gives a clue to the user and a strict order for
-  scheduled synchronizations.
+  scheduled synchronizations (either when synchronizing all configurations
+  or when synchronizing a :ref:`group <administration-general-tca-properties-group>`).
+
+  The lowest priority value goes first.
+
+  If priority is not defined, a default value of 1000 is applied
+  (defined by class constant :code:`\Cobweb\ExternalImport\Importer::DEFAULT_PRIORITY`).
 
   Not used when pushing data.
 

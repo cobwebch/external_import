@@ -1,0 +1,68 @@
+# Configuration/Services.yaml
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Cobweb\ExternalImport\:
+    resource: '../Classes/*'
+
+  Cobweb\ExternalImport\Command\ImportCommand:
+    tags:
+      - name: 'console.command'
+        command: 'externalimport:sync'
+        description: 'Run External Import synchronisations from the command line.'
+        schedulable: true
+
+  Cobweb\ExternalImport\Importer:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Domain\Repository\UidRepository:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Validator\ColumnConfigurationValidator:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Validator\GeneralConfigurationValidator:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Utility\MappingUtility:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Utility\ReportingUtility:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Step\ReadDataStep:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Step\StoreDataStep:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Step\TransformDataStep:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Step\ValidateConfigurationStep:
+    public: true
+    shared: false
+
+  Cobweb\ExternalImport\Validator\ValidationResult:
+    public: true
+    shared: false

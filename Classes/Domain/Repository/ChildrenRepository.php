@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Repository;
 
 /*
@@ -48,8 +50,8 @@ class ChildrenRepository
     /**
      * Returns the first existing records in the given table for the given condition.
      *
-     * NOTE: it is assume that the given conditions lead to a single record being found.
-     * We don't consider if that is not the case.
+     * NOTE: it is assumed that the given conditions lead to a single record being found.
+     * We don't consider other records if that is not the case.
      *
      * @param string $table Table to query
      * @param array $conditions Conditions to apply (field-value pairs)
@@ -59,13 +61,13 @@ class ChildrenRepository
     public function findFirstExistingRecord(string $table, array $conditions): int
     {
         $queryBuilder = $this->prepareQueryBuilder($table, $conditions);
-        $record = $queryBuilder->execute()->fetch();
-        if ($record)  {
+        $record = $queryBuilder->execute()->fetchAssociative();
+        if ($record) {
             return (int)$record['uid'];
         }
         throw new \Cobweb\ExternalImport\Exception\NoSuchRecordException(
-                'Record not found with the given conditions',
-                1602322832
+            'Record not found with the given conditions',
+            1602322832
         );
     }
 
@@ -82,12 +84,12 @@ class ChildrenRepository
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         foreach ($conditions as $field => $value) {
             $constraints[] = $queryBuilder->expr()->eq(
-                    $field,
-                    is_string($value) ? $queryBuilder->createNamedParameter($value) : $value
+                $field,
+                is_string($value) ? $queryBuilder->createNamedParameter($value) : $value
             );
         }
         $queryBuilder->select('uid')
-                ->from($table);
+            ->from($table);
         if (count($constraints) > 0) {
             $queryBuilder->where(...$constraints);
         }

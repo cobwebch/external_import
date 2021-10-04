@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -31,13 +34,13 @@ class ValidateConnectorStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
-        if (empty($ctrlConfiguration['connector'])) {
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
+        if (empty($generalConfiguration['connector'])) {
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_connector',
-                            'external_import'
-                    )
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_connector',
+                    'external_import'
+                )
             );
             $this->abortFlag = true;
         }

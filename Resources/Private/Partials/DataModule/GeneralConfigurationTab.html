@@ -102,6 +102,25 @@
 						</td>
 					</tr>
 				</f:if>
+				<f:if condition="{generalConfiguration.arrayPath}">
+					<tr>
+						<td><f:translate id="arrayPath" /></td>
+						<td>
+							{generalConfiguration.arrayPath}
+						</td>
+					</tr>
+					<tr>
+						<td><f:translate id="arrayPathSeparator" /></td>
+						<td>
+							<f:if condition="{generalConfiguration.arrayPathSeparator}">
+								<f:then>
+									{generalConfiguration.arrayPathSeparator}
+								</f:then>
+								<f:else>/</f:else>
+							</f:if>
+						</td>
+					</tr>
+				</f:if>
 				<f:if condition="{generalConfiguration.namespaces}">
 					<tr>
 						<td><f:translate id="namespaces" /></td>
@@ -151,22 +170,6 @@
 							<f:else>
 								<f:translate id="LLL:EXT:core/Resources/Private/Language/locallang_common.xml:no" />
 							</f:else>
-						</f:if>
-					</td>
-				</tr>
-				<tr>
-					<td><f:translate id="additionalFields" /></td>
-					<td>
-						<f:if condition="{generalConfiguration.additionalFields}">
-							<f:then>
-								{generalConfiguration.additionalFields}
-							</f:then>
-							<f:else>
-								-
-							</f:else>
-						</f:if>
-						<f:if condition="{results.additionalFields}">
-							<ex:displayValidationResult result="{results.additionalFields}" />
 						</f:if>
 					</td>
 				</tr>

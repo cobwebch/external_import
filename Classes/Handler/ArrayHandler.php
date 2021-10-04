@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Handler;
 
 /*
@@ -16,7 +19,10 @@ namespace Cobweb\ExternalImport\Handler;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Importer;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\Exception\MissingArrayPathException;
 
 /**
  * Remaps data from a "raw" PHP array to an array mapped to TCA columns.
@@ -25,6 +31,15 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
  */
 class ArrayHandler implements DataHandlerInterface
 {
+    /**
+     * @var ExpressionLanguage
+     */
+    protected $expressionLanguage;
+
+    public function __construct()
+    {
+        $this->expressionLanguage = new ExpressionLanguage();
+    }
 
     public function __toString()
     {
@@ -41,13 +56,49 @@ class ArrayHandler implements DataHandlerInterface
     public function handleData($rawData, Importer $importer): array
     {
         $data = [];
-        $counter = 0;
-        $configuration = $importer->getExternalConfiguration();
-        $columnConfiguration = $configuration->getColumnConfiguration();
 
-        // Loop on all entries
         if (is_array($rawData) && count($rawData) > 0) {
+            $counter = 0;
+            $generalConfiguration = $importer->getExternalConfiguration()->getGeneralConfiguration();
+            $columnConfiguration = $importer->getExternalConfiguration()->getColumnConfiguration();
+
+            // Extract targeted sub-array if arrayPath is defined
+            if (array_key_exists('arrayPath', $generalConfiguration) && !empty($generalConfiguration['arrayPath'])) {
+                // Extract parts of the path
+                $segments = str_getcsv(
+                    (string)$generalConfiguration['arrayPath'],
+                    array_key_exists('arrayPathSeparator', $generalConfiguration) ? (string)$generalConfiguration['arrayPathSeparator'] : '/'
+                );
+
+                $rawData = $this->getArrayPathStructure(
+                    $rawData,
+                    $segments,
+                    ($generalConfiguration['arrayPathFlatten'] ?? false) && (bool)$generalConfiguration['arrayPathFlatten']
+                );
+                // If a problem occurred, report it and return an empty array
+                if ($rawData === null) {
+                    $importer->addMessage(
+                        sprintf(
+                            'Using arrayPath property (value %s) returned an empty set',
+                            $generalConfiguration['arrayPath']
+                        ),
+                        AbstractMessage::WARNING
+                    );
+                    return [];
+                }
+                // If the resulting structure is not an array, return an empty array as a result
+                if (!is_array($rawData) || count($rawData) === 0) {
+                    return [];
+                }
+            }
+
+            // Loop on all entries
             foreach ($rawData as $theRecord) {
+                // Skip to the next entry if the record is not an array as expected
+                if (!is_array($theRecord)) {
+                    continue;
+                }
+
                 $referenceCounter = $counter;
                 $data[$referenceCounter] = [];
 
@@ -58,8 +109,8 @@ class ArrayHandler implements DataHandlerInterface
                         $theValue = $this->getValue($theRecord, $columnData);
                         if (isset($columnData['substructureFields'])) {
                             $rows[$columnName] = $this->getSubstructureValues(
-                                    $theValue,
-                                    $columnData['substructureFields']
+                                $theValue,
+                                $columnData['substructureFields']
                             );
                             // Prepare for the case where no substructure was found
                             // If one was found, it is added later
@@ -67,8 +118,7 @@ class ArrayHandler implements DataHandlerInterface
                         } else {
                             $data[$referenceCounter][$columnName] = $theValue;
                         }
-                    }
-                    catch (\Exception $e) {
+                    } catch (\Exception $e) {
                         // Nothing to do, we ignore values that were not found
                     }
                 }
@@ -101,7 +151,7 @@ class ArrayHandler implements DataHandlerInterface
                             $counter++;
                         }
                     }
-                // No substructure data, increase the counter to move on to the next record
+                    // No substructure data, increase the counter to move on to the next record
                 } else {
                     $counter++;
                 }
@@ -113,9 +163,8 @@ class ArrayHandler implements DataHandlerInterface
                 unset($data[$index]);
             }
         }
-        // Compact array
-        $data = array_values($data);
-        return $data;
+        // Compact array before returning it
+        return array_values($data);
     }
 
     /**
@@ -125,20 +174,32 @@ class ArrayHandler implements DataHandlerInterface
      * @param array $columnConfiguration External Import configuration for a single column
      * @return mixed
      */
-    public function getValue($record, $columnConfiguration)
+    public function getValue(array $record, array $columnConfiguration)
     {
-        if (isset($columnConfiguration['arrayPath'])) {
-            $value = ArrayUtility::getValueByPath(
-                    $record,
-                    $columnConfiguration['arrayPath'],
-                    $columnConfiguration['arrayPathSeparator'] ?? '/'
+        if (isset($columnConfiguration['arrayPath']) && !empty($columnConfiguration['arrayPath'])) {
+            // Extract parts of the path
+            $segments = str_getcsv(
+                (string)$columnConfiguration['arrayPath'],
+                array_key_exists('arrayPathSeparator', $columnConfiguration) ? (string)$columnConfiguration['arrayPathSeparator'] : '/'
             );
+
+            $value = $this->getArrayPathStructure(
+                $record,
+                $segments,
+                ($columnConfiguration['arrayPathFlatten'] ?? false) && (bool)$columnConfiguration['arrayPathFlatten']
+            );
+            if ($value === null) {
+                throw new \InvalidArgumentException(
+                    'No value found',
+                    1534149806
+                );
+            }
         } elseif (isset($columnConfiguration['field'], $record[$columnConfiguration['field']])) {
             $value = $record[$columnConfiguration['field']];
         } else {
             throw new \InvalidArgumentException(
-                    'No value found',
-                    1534149806
+                'No value found',
+                1534149806
             );
         }
         return $value;
@@ -152,7 +213,7 @@ class ArrayHandler implements DataHandlerInterface
      * @param array $columnConfiguration External Import configuration for a single column
      * @return array
      */
-    public function getSubstructureValues($structure, $columnConfiguration): array
+    public function getSubstructureValues(array $structure, array $columnConfiguration): array
     {
         $rows = [];
         foreach ($structure as $item) {
@@ -161,13 +222,125 @@ class ArrayHandler implements DataHandlerInterface
                 try {
                     $value = $this->getValue($item, $configuration);
                     $row[$key] = $value;
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     // Nothing to do, we ignore values that were not found
                 }
             }
             $rows[] = $row;
         }
         return $rows;
+    }
+
+    /**
+     * Extracts part of a PHP array, using an array path (e.g. "foo/bar") and conditions.
+     *
+     * @param array $array The array to parse
+     * @param array $segments The parts of the path
+     * @param bool $flattenResults Whether results that are of a simple type should be preserved as such
+     * @return mixed
+     */
+    public function getArrayPathStructure(array $array, array $segments, bool $flattenResults = false)
+    {
+        // Loop through each part and extract its value
+        $value = $array;
+        if (count($segments) > 0) {
+            do {
+                $segment = array_shift($segments);
+                $key = $segment;
+                $condition = '';
+                // If the segment contains a condition, extract it
+                if (strpos($segment, '{') !== false) {
+                    $result = preg_match('/(.*){(.*)}/', $segment, $matches);
+                    if ($result) {
+                        $key = $matches[1];
+                        $condition = $matches[2];
+                    }
+                }
+                // Consider all children of the current value
+                // NOTE: this makes sense only if the current value is an array, if it is not, it is left unchanged
+                if (is_array($value)) {
+                    if ($key === '*') {
+                        $newValue = [];
+                        foreach ($value as $itemValue) {
+                            // Apply condition on each item, if defined
+                            $result = $this->applyCondition($condition, $itemValue);
+                            if ($result) {
+                                // Apply leftover segments on each item
+                                $resultingItems = $this->getArrayPathStructure(
+                                    $itemValue,
+                                    $segments,
+                                    $flattenResults
+                                );
+                                if (is_array($resultingItems)) {
+                                    foreach ($resultingItems as $resultingItem) {
+                                        $newValue[] = $resultingItem;
+                                    }
+                                } else {
+                                    $newValue[] = $resultingItems;
+                                }
+                            }
+                        }
+                        // Set result depending on number of matches
+                        if (count($newValue) === 0) {
+                            $value = null;
+                        // There's a single result and it should not be made into an array
+                        } elseif ($flattenResults && count($newValue) === 1) {
+                            $value = array_shift($newValue);
+                        } else {
+                            $value = $newValue;
+                        }
+
+                        // Leftover segments have been used on child item, they must not be used on the resulting value anymore
+                        $segments = [];
+
+                    // Consider the next value along the path
+                    } elseif (array_key_exists($key, $value)) {
+                        // If an item was found and a condition is defined, try to match it
+                        if ($condition !== '') {
+                            $result = $this->applyCondition(
+                                $condition,
+                                $value[$key]
+                            );
+                            if ($result) {
+                                // Replace current value with child
+                                $value = $value[$key];
+                            } else {
+                                $value = null;
+                            }
+                        } else {
+                            // Simply replace current value with child
+                            $value = $value[$key];
+                        }
+                    } else {
+                        $value = null;
+                    }
+                } else {
+                    $value = null;
+                }
+            } while (count($segments) > 0);
+        }
+        return $value;
+    }
+
+    /**
+     * Applies a condition (expressed as Symfony Expression Language) and returns the result as a boolean value.
+     *
+     * @param string $condition
+     * @param mixed $value
+     * @return bool
+     */
+    protected function applyCondition(string $condition, $value): bool
+    {
+        if (is_array($value)) {
+            $testValue = $value;
+        } else {
+            $testValue = [
+                'value' => $value
+            ];
+        }
+        return (bool)$this->expressionLanguage->evaluate(
+            $condition,
+            $testValue
+        );
     }
 }

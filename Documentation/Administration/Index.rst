@@ -10,9 +10,11 @@ To start inserting data from an external source into your TYPO3 CMS
 tables, you must first extend their TCA with a specific syntax. This
 syntax is comprised of 3 parts:
 
-- general information
-- specific information for each column where data will be stored
+- general information ("General TCA configuration")
+- specific information for each column where data will be stored ("Columns configuration")
 - so-called "additional fields" which are read from the external source, but not saved
+
+The first two parts are **required**, the third is *optional*.
 
 This chapter describes all possible configuration options. For each
 property, a step or a more general scope is mentioned to help
@@ -38,5 +40,4 @@ each example (in the Tutorial).
    Transformations/Index
    Mapping/Index
    Children/Index
-   MmRelations/Index
    LogCleanup/Index

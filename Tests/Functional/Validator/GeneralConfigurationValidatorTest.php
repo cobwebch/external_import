@@ -22,7 +22,6 @@ use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class GeneralConfigurationValidatorTest extends FunctionalTestCase
 {
@@ -39,11 +38,6 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      */
     protected $subject;
 
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
     public function setUp()
     {
         parent::setUp();
@@ -51,8 +45,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
         $GLOBALS['LANG']->init('en');
 
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $this->objectManager->get(GeneralConfigurationValidator::class);
+        $this->subject = GeneralUtility::makeInstance(GeneralConfigurationValidator::class);
     }
 
     public function validConfigurationProvider(): array
@@ -119,7 +112,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
                         [
                                 'data' => 'array',
                                 'reference_uid' => 'external_id',
-                                'connector' => time()
+                                'connector' => uniqid('', true)
                         ]
                 ],
                 'Missing reference_uid property' => [
@@ -191,7 +184,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
                         'tt_content',
                         [
                             // Some random connector name
-                            'connector' => time()
+                            'connector' => uniqid('', true)
                         ]
                 )
         );
@@ -394,7 +387,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      */
     protected function prepareConfigurationObject($table, $configuration): Configuration
     {
-        $configurationObject = $this->objectManager->get(Configuration::class);
+        $configurationObject = GeneralUtility::makeInstance(Configuration::class);
         $configurationObject->setTable($table);
         $configurationObject->setGeneralConfiguration($configuration);
         $configurationObject->setColumnConfiguration([]);

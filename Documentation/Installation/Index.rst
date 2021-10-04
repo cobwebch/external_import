@@ -11,7 +11,7 @@ need to extend the TCA definition of some tables with the appropriate
 syntax and create specific connectors for the application you want to
 connect to.
 
-TYPO3 CMS 9 or 10 is required, as well as the "scheduler" system extension.
+TYPO3 CMS 10 or 11 is required, as well as the "scheduler" system extension.
 
 
 .. _installation-compatibility:
@@ -19,6 +19,51 @@ TYPO3 CMS 9 or 10 is required, as well as the "scheduler" system extension.
 
 Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. _installation-upgrade-600:
+
+Upgrade to 6.0.0
+""""""""""""""""
+
+All properties that were deprecated in version 5.0.0 were removed and the
+backwards-compatibility layer was dropped. Please refer to the
+:ref:`5.0.0 upgrade instructions <installation-upgrade-500>` and check if you have applied
+all changes.
+
+All hooks were marked as deprecated. They will be removed in version 7.0.0.
+You should migrate your code to use either :ref:`custom process steps <developer-steps>`
+or the newly introduced :ref:`PSR-14 events <developer-events>`.
+See the :ref:`hooks chapter <developer-hooks>` for information about how to migrate
+each hook.
+
+External Import is now configured for using the standard (Symfony)
+dependency injection mechanism. This means it is not necessary to instantiate the
+:php:`\Cobweb\ExternalImport\Importer` class using Extbase's
+:php:`\TYPO3\CMS\Extbase\Object\ObjectManager` anymore whe using the Importer
+as an API.
+
+The PHP code was cleaned up as much as possible and strict typing was declared
+in every class file. This may break your custom code if you were calling public methods
+without properly casting arguments.
+
+
+.. _installation-upgrade-600-new:
+
+New stuff
+~~~~~~~~~
+
+The :code:`arrayPath` is now available as both a :ref:`general configuration option <administration-general-tca-properties-arraypath>`
+and a :ref:`column configuration option <administration-columns-properties-array-path>`.
+It was also enriched with more capabilities.
+
+A new exception :php:`\Cobweb\ExternalImport\Exception\InvalidRecordException` was
+introduced which can be used inside :ref:`user function <developer-user-functions>`
+to remove an entire record from the data to import if needed.
+
+A new transformation property :ref:`isEmpty <administration-transformations-properties-isempty>`
+is available for checking if a given data can be considered empty or not.
+For maximum flexibility, it relies on the Symfony Expression language.
 
 
 .. _installation-upgrade-510:

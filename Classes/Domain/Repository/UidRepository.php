@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Repository;
 
 /*
@@ -67,8 +70,8 @@ class UidRepository
         // If no configuration was defined, exit early with exception
         if ($this->configuration === null) {
             throw new MissingConfigurationException(
-                    'No configuration object defined',
-                    1521972733
+                'No configuration object defined',
+                1521972733
             );
         }
 
@@ -77,19 +80,19 @@ class UidRepository
         $referenceUidField = $generalConfiguration['referenceUid'];
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
         $queryBuilder->getRestrictions()
-                ->removeAll()
-                ->add(
-                        GeneralUtility::makeInstance(
-                                DeletedRestriction::class
-                        )
-                );
+            ->removeAll()
+            ->add(
+                GeneralUtility::makeInstance(
+                    DeletedRestriction::class
+                )
+            );
         $queryBuilder->select($referenceUidField, 'uid', 'pid')
-                ->from($table);
+            ->from($table);
         $constraints = [];
-        if ($generalConfiguration['enforcePid']) {
+        if (array_key_exists('enforcePid', $generalConfiguration)) {
             $constraints[] = $queryBuilder->expr()->eq('pid', (int)$this->configuration->getStoragePid());
         }
-        if (!empty($generalConfiguration['whereClause'])) {
+        if (array_key_exists('whereClause', $generalConfiguration) && !empty($generalConfiguration['whereClause'])) {
             $constraints[] = $generalConfiguration['whereClause'];
         }
         if (count($constraints) > 0) {
@@ -97,7 +100,7 @@ class UidRepository
         }
         $res = $queryBuilder->execute();
         if ($res) {
-            while ($row = $res->fetch(\PDO::FETCH_ASSOC)) {
+            while ($row = $res->fetchAssociative(\PDO::FETCH_ASSOC)) {
                 // Don't consider records with empty references, as they can't be matched
                 // to external data anyway (but a real zero is acceptable)
                 if (!empty($row[$referenceUidField]) || $row[$referenceUidField] === '0' || $row[$referenceUidField] === 0) {

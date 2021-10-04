@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Model;
 
 /*
@@ -41,26 +44,12 @@ class Configuration
     /**
      * @var array General part of the External Import configuration
      */
-    protected $generalConfiguration;
+    protected $generalConfiguration = [];
 
     /**
      * @var array External Import configuration for each column
      */
-    protected $columnConfiguration;
-
-    /**
-     * @var bool Whether the general configuration is defined in an obsolete way ("ctrl" section) or not
-     *
-     * TODO: remove once backward-compatibility with "ctrl" section is dropped
-     */
-    protected $obsoleteGeneralConfiguration = false;
-
-    /**
-     * @var bool Whether the additional fields configuration is defined in an obsolete way (comma-separated list) or not
-     *
-     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
-     */
-    protected $obsoleteAdditionalFieldsConfiguration = false;
+    protected $columnConfiguration = [];
 
     /**
      * @var int ID of storage page
@@ -102,19 +91,9 @@ class Configuration
      */
     protected $connector;
 
-    /**
-     * @var StepUtility
-     */
-    protected $stepUtility;
-
     public function __toString()
     {
         return self::class;
-    }
-
-    public function injectStepUtility(StepUtility $stepUtility): void
-    {
-        $this->stepUtility = $stepUtility;
     }
 
     /**
@@ -128,7 +107,7 @@ class Configuration
     /**
      * @param string $table
      */
-    public function setTable($table): void
+    public function setTable(string $table): void
     {
         $this->table = $table;
     }
@@ -152,9 +131,9 @@ class Configuration
     /**
      * Returns the general external configuration
      *
-     * @return array|null
+     * @return array
      */
-    public function getGeneralConfiguration(): ?array
+    public function getGeneralConfiguration(): array
     {
         return $this->generalConfiguration;
     }
@@ -170,6 +149,7 @@ class Configuration
     public function setGeneralConfiguration(array $generalConfiguration, $defaultSteps = null): void
     {
         $this->generalConfiguration = $generalConfiguration;
+        $stepUtility = GeneralUtility::makeInstance(StepUtility::class);
         // Define the process default steps, depending on process type or the predefined value
         // NOTE: normally default steps should always be defined
         if ($defaultSteps === null) {
@@ -185,12 +165,12 @@ class Configuration
         // Perform extra processing for custom steps
         if (array_key_exists('customSteps', $generalConfiguration)) {
             foreach ($generalConfiguration['customSteps'] as $customStepConfiguration) {
-                $steps = $this->stepUtility->insertStep($steps, $customStepConfiguration);
+                $steps = $stepUtility->insertStep($steps, $customStepConfiguration);
                 $this->customSteps[] = $customStepConfiguration['class'];
                 if (array_key_exists('parameters', $customStepConfiguration)) {
                     $this->setParametersForStep(
-                            $customStepConfiguration['parameters'],
-                            $customStepConfiguration['class']
+                        $customStepConfiguration['parameters'],
+                        $customStepConfiguration['class']
                     );
                 }
             }
@@ -200,24 +180,6 @@ class Configuration
         // Store the storage pid from the configuration
         // It is stored in a separate variable as it might be overridden
         $this->storagePid = $generalConfiguration['pid'];
-
-        // Handle old-style configuration (comma-separated list)
-        // TODO: remove once backward-compatibility is dropped
-        if (array_key_exists('additionalFields', $generalConfiguration)) {
-            $this->setObsoleteAdditionalFieldsConfiguration(true);
-            $fields = GeneralUtility::trimExplode(
-                    ',',
-                    $generalConfiguration['additionalFields'],
-                    true
-            );
-            $additionalFields = [];
-            foreach ($fields as $field) {
-                $additionalFields[$field] = [
-                        'field' => $field
-                ];
-            }
-            $this->setAdditionalFields($additionalFields);
-        }
     }
 
     /**
@@ -235,62 +197,9 @@ class Configuration
     }
 
     /**
-     * TODO: remove once backward-compatibility is dropped
-     *
-     * @return array|null
-     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfiguration() instead
+     * @return array
      */
-    public function getCtrlConfiguration(): ?array
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::getCtrlConfiguration() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfiguration() instead.',
-            E_USER_DEPRECATED
-        );
-        return $this->getGeneralConfiguration();
-    }
-
-    /**
-     * Sets the "ctrl" configuration and performs extra processing
-     * on some properties.
-     *
-     * TODO: remove once backward-compatibility is dropped
-     *
-     * @param array $ctrlConfiguration
-     * @param array $defaultSteps List of default steps (if null will be guessed by the repository)
-     * @return void
-     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::setGeneralConfiguration() instead
-     */
-    public function setCtrlConfiguration(array $ctrlConfiguration, $defaultSteps = null): void
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::setCtrlConfiguration() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::setGeneralConfiguration() instead.',
-            E_USER_DEPRECATED
-        );
-        $this->setGeneralConfiguration($ctrlConfiguration, $defaultSteps);
-    }
-
-    /**
-     * Returns a specific property from the "ctrl" configuration.
-     *
-     * TODO: remove once backward-compatibility is dropped
-     *
-     * @param $key
-     * @return mixed|null
-     * @deprecated use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfigurationProperty() instead
-     */
-    public function getCtrlConfigurationProperty($key)
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Domain\Model\Configuration::getCtrlConfigurationProperty() is deprecated. Use \Cobweb\ExternalImport\Domain\Model\Configuration::getGeneralConfigurationProperty() instead.',
-            E_USER_DEPRECATED
-        );
-        return $this->getGeneralConfigurationProperty($key);
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getColumnConfiguration(): ?array
+    public function getColumnConfiguration(): array
     {
         return $this->columnConfiguration;
     }
@@ -307,8 +216,6 @@ class Configuration
             $columnConfiguration = array_merge($columnConfiguration, $this->additionalFields);
         }
         $this->columnConfiguration = $columnConfiguration;
-        // TODO: remove once backwards-compatibility is dropped
-        $this->updateDeprecatedTransformationProperties();
         $this->sortTransformationProperties();
     }
 
@@ -351,59 +258,19 @@ class Configuration
      * @param bool $flag
      * @throws \Cobweb\ExternalImport\Exception\NoSuchColumnException
      */
-    public function setExcludedFromSavingFlagForColumn($column, $flag): void
+    public function setExcludedFromSavingFlagForColumn(string $column, bool $flag): void
     {
         if (array_key_exists($column, $this->columnConfiguration)) {
             $this->columnConfiguration[$column][self::DO_NOT_SAVE_KEY] = $flag;
         } else {
             throw new \Cobweb\ExternalImport\Exception\NoSuchColumnException(
-                    sprintf(
-                        'The requested column (%s) does not exist.',
-                        $column
-                    ),
-                    1601633669
+                sprintf(
+                    'The requested column (%s) does not exist.',
+                    $column
+                ),
+                1601633669
             );
         }
-    }
-
-    /**
-     * TODO: remove once backward-compatibility with "ctrl" section is dropped
-     *
-     * @return bool
-     */
-    public function isObsoleteGeneralConfiguration(): bool
-    {
-        return $this->obsoleteGeneralConfiguration;
-    }
-
-    /**
-     * TODO: remove once backward-compatibility with "ctrl" section is dropped
-     *
-     * @param bool $obsoleteGeneralConfiguration
-     */
-    public function setObsoleteGeneralConfiguration(bool $obsoleteGeneralConfiguration): void
-    {
-        $this->obsoleteGeneralConfiguration = $obsoleteGeneralConfiguration;
-    }
-
-    /**
-     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
-     *
-     * @return bool
-     */
-    public function isObsoleteAdditionalFieldsConfiguration(): bool
-    {
-        return $this->obsoleteAdditionalFieldsConfiguration;
-    }
-
-    /**
-     * TODO: remove once backward-compatibility with comma-separated syntax is dropped
-     *
-     * @param bool $obsoleteAdditionalFieldsConfiguration
-     */
-    public function setObsoleteAdditionalFieldsConfiguration(bool $obsoleteAdditionalFieldsConfiguration): void
-    {
-        $this->obsoleteAdditionalFieldsConfiguration = $obsoleteAdditionalFieldsConfiguration;
     }
 
     /**
@@ -453,7 +320,7 @@ class Configuration
     /**
      * @param int $countAdditionalFields
      */
-    public function setCountAdditionalFields($countAdditionalFields): void
+    public function setCountAdditionalFields(int $countAdditionalFields): void
     {
         $this->countAdditionalFields = $countAdditionalFields;
     }
@@ -541,7 +408,7 @@ class Configuration
     /**
      * @return ConnectorBase
      */
-    public function getConnector(): \Cobweb\Svconnector\Service\ConnectorBase
+    public function getConnector(): ?ConnectorBase
     {
         return $this->connector;
     }
@@ -552,37 +419,6 @@ class Configuration
     public function setConnector(ConnectorBase $connector): void
     {
         $this->connector = $connector;
-    }
-
-    /**
-     * Takes care of migrating old "userFunc" and "params" configuration into
-     * "userFunction" and "parameters" configuration.
-     *
-     * NOTE: we don't unset the old properties because we want them to be caught during validation
-     * for outputting deprecation notices.
-     */
-    protected function updateDeprecatedTransformationProperties(): void
-    {
-        $updatedConfiguration = [];
-        foreach ($this->columnConfiguration as $name => $configuration) {
-            $updatedConfiguration[$name] = $configuration;
-            if (isset($configuration['transformations'])) {
-                $transformationConfiguration = [];
-                foreach ($configuration['transformations'] as $index => $property) {
-                    $transformationConfiguration[$index] = $property;
-                    foreach ($property as $key => $propertyConfiguration) {
-                        if ($key === 'userFunc') {
-                            if (isset($propertyConfiguration['params'])) {
-                                $propertyConfiguration['parameters'] = $propertyConfiguration['params'];
-                            }
-                            $transformationConfiguration[$index]['userFunction'] = $propertyConfiguration;
-                        }
-                    }
-                }
-                $updatedConfiguration[$name]['transformations'] = $transformationConfiguration;
-            }
-        }
-        $this->columnConfiguration = $updatedConfiguration;
     }
 
     /**

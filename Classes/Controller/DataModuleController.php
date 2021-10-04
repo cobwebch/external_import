@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Controller;
 
 /*
@@ -27,6 +29,7 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
@@ -36,9 +39,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 /**
  * Controller for the "Data Import" backend module
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Controller
  */
 class DataModuleController extends ActionController
 {
@@ -87,7 +88,7 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentNameException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
      */
-    protected function initializeAction()
+    protected function initializeAction(): void
     {
         $this->defaultViewObjectName = BackendTemplateView::class;
     }
@@ -99,7 +100,7 @@ class DataModuleController extends ActionController
      * @return void
      * @api
      */
-    protected function initializeView(ViewInterface $view)
+    protected function initializeView(ViewInterface $view): void
     {
         // Do not initialize the view for certain actions (which just do processing and do not display anything)
         $currentAction = $this->request->getControllerActionName();
@@ -107,19 +108,18 @@ class DataModuleController extends ActionController
             if ($view instanceof BackendTemplateView) {
                 parent::initializeView($view);
             }
+            $publicResourcesPath = PathUtility::getAbsoluteWebPath(
+                    ExtensionManagementUtility::extPath('external_import')
+                ) . 'Resources/Public/';
             $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
-            $pageRenderer->addCssFile('EXT:external_import/Resources/Public/StyleSheet/ExternalImport.css');
-            // For TYPO3 v10, load datatables from local contrib folder
-            // TODO: remove check once compat with v9 is droppped
-            if (VersionNumberUtility::convertVersionNumberToInteger(VersionNumberUtility::getNumericTypo3Version()) > 10000000) {
-                $pageRenderer->addRequireJsConfiguration(
-                        [
-                                'paths' => [
-                                        'datatables' => '../typo3conf/ext/external_import/Resources/Public/JavaScript/Contrib/jquery.dataTables'
-                                ]
-                        ]
-                );
-            }
+            $pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
+            $pageRenderer->addRequireJsConfiguration(
+                [
+                    'paths' => [
+                        'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
+                    ]
+                ]
+            );
             $pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
             $pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
 
@@ -143,12 +143,12 @@ class DataModuleController extends ActionController
         if (count($configurations) === 0) {
             try {
                 $this->addFlashMessage(
-                        LocalizationUtility::translate(
-                                'no_configurations_warning',
-                                'external_import'
-                        ),
-                        '',
-                        FlashMessage::INFO
+                    LocalizationUtility::translate(
+                        'no_configurations_warning',
+                        'external_import'
+                    ),
+                    '',
+                    FlashMessage::INFO
                 );
             } catch (\Exception $e) {
                 // The above code should really work, nothing to do if it doesn't
@@ -161,20 +161,20 @@ class DataModuleController extends ActionController
             $fullSynchronizationTask = null;
         }
         $this->view->assignMultiple(
-                [
-                        'configurations' => $configurations,
-                        'fullSynchronizationTask' => $fullSynchronizationTask,
-                        'rights' => [
-                                'sync' => $this->getBackendUser()->check(
-                                        'custom_options',
-                                        'tx_externalimport_bemodule_actions:sync'
-                                ),
-                                'scheduler' => $this->getBackendUser()->check(
-                                        'custom_options',
-                                        'tx_externalimport_bemodule_actions:scheduler'
-                                )
-                        ]
+            [
+                'configurations' => $configurations,
+                'fullSynchronizationTask' => $fullSynchronizationTask,
+                'rights' => [
+                    'sync' => $this->getBackendUser()->check(
+                        'custom_options',
+                        'tx_externalimport_bemodule_actions:sync'
+                    ),
+                    'scheduler' => $this->getBackendUser()->check(
+                        'custom_options',
+                        'tx_externalimport_bemodule_actions:scheduler'
+                    )
                 ]
+            ]
         );
     }
 
@@ -192,21 +192,21 @@ class DataModuleController extends ActionController
         if (count($configurations) === 0) {
             try {
                 $this->addFlashMessage(
-                        LocalizationUtility::translate(
-                                'no_configurations_warning',
-                                'external_import'
-                        ),
-                        '',
-                        FlashMessage::INFO
+                    LocalizationUtility::translate(
+                        'no_configurations_warning',
+                        'external_import'
+                    ),
+                    '',
+                    FlashMessage::INFO
                 );
             } catch (\Exception $e) {
                 // The above code should really work, nothing to do if it doesn't
             }
         }
         $this->view->assignMultiple(
-                [
-                        'configurations' => $configurations
-                ]
+            [
+                'configurations' => $configurations
+            ]
         );
     }
 
@@ -219,7 +219,7 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
-    public function synchronizeAction($table, $index): void
+    public function synchronizeAction(string $table, string $index): void
     {
         // Synchronize the chosen data
         /** @var Importer $importer */
@@ -239,15 +239,15 @@ class DataModuleController extends ActionController
      * @param string $index Key of the external configuration
      * @param string $stepClass Name of the Step class to preview
      */
-    public function previewAction($table, $index, $stepClass = ''): void
+    public function previewAction(string $table, string $index, $stepClass = ''): void
     {
         // Add a close button to the toolbar
         $this->prepareCloseButton('listSynchronizable');
 
         // Load the configuration
         $configuration = $this->configurationRepository->findConfigurationObject(
-                $table,
-                $index
+            $table,
+            $index
         );
 
         $previewData = null;
@@ -268,13 +268,13 @@ class DataModuleController extends ActionController
             $stepList[$step] = $step;
         }
         $this->view->assignMultiple(
-                [
-                        'table' => $table,
-                        'index' => $index,
-                        'steps' => $stepList,
-                        'stepClass' => $stepClass,
-                        'previewData' => $previewData
-                ]
+            [
+                'table' => $table,
+                'index' => $index,
+                'steps' => $stepList,
+                'stepClass' => $stepClass,
+                'previewData' => $previewData
+            ]
         );
     }
 
@@ -285,11 +285,11 @@ class DataModuleController extends ActionController
      * @param string $index Key of the external configuration
      * @return void
      */
-    public function viewConfigurationAction($table, $index): void
+    public function viewConfigurationAction(string $table, string $index): void
     {
         $configuration = $this->configurationRepository->findConfigurationObject(
-                $table,
-                $index
+            $table,
+            $index
         );
         $connector = $configuration->getGeneralConfigurationProperty('connector');
         // Define which action to go back to for the close button (depends on whether the configuration is synchronizable or not)
@@ -302,11 +302,11 @@ class DataModuleController extends ActionController
         $this->prepareCloseButton($returnAction);
 
         $this->view->assignMultiple(
-                [
-                        'table' => $table,
-                        'index' => $index,
-                        'configuration' => $configuration
-                ]
+            [
+                'table' => $table,
+                'index' => $index,
+                'configuration' => $configuration
+            ]
         );
     }
 
@@ -317,19 +317,20 @@ class DataModuleController extends ActionController
      * @param string $index Index of the configuration to set a task for
      * @return void
      */
-    public function newTaskAction($table, $index = ''): void
+    public function newTaskAction(string $table, $index = ''): void
     {
         // Add a close button to the toolbar
         $this->prepareCloseButton('listSynchronizable');
         $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
 
         $this->view->assignMultiple(
-                [
-                        'table' => $table,
-                        'index' => $index,
-                        'groups' => $this->schedulerRepository->fetchAllGroups(),
-                        'errors' => $this->controllerContext->getRequest()->getOriginalRequestMappingResults()->getFlattenedErrors()
-                ]
+            [
+                'table' => $table,
+                'index' => $index,
+                'groups' => $this->schedulerRepository->fetchAllGroups(),
+                'errors' => $this->controllerContext->getRequest()->getOriginalRequestMappingResults(
+                )->getFlattenedErrors()
+            ]
         );
     }
 
@@ -346,35 +347,40 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      * @\TYPO3\CMS\Extbase\Annotation\Validate(param="frequency", validator="\Cobweb\ExternalImport\Validator\FrequencyValidator")
      */
-    public function createTaskAction($table, $frequency, $group, \DateTime $start_date_hr = null, $index = ''): void
-    {
+    public function createTaskAction(
+        string $table,
+        string $frequency,
+        int $group,
+        \DateTime $start_date_hr = null,
+        $index = ''
+    ): void {
         try {
             $this->schedulerRepository->saveTask(
-                    $this->schedulerRepository->prepareTaskData(
-                            $frequency,
-                            $group,
-                            $start_date_hr,
-                            $table,
-                            $index
-                    )
+                $this->schedulerRepository->prepareTaskData(
+                    $frequency,
+                    $group,
+                    $start_date_hr,
+                    $table,
+                    $index
+                )
             );
             $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                            'autosync_saved',
-                            'external_import'
-                    )
+                LocalizationUtility::translate(
+                    'autosync_saved',
+                    'external_import'
+                )
             );
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                            'autosync_save_failed',
-                            'external_import',
-                            [
-                                    $e->getMessage()
-                            ]
-                    ),
-                    '',
-                    FlashMessage::ERROR
+                LocalizationUtility::translate(
+                    'autosync_save_failed',
+                    'external_import',
+                    [
+                        $e->getMessage()
+                    ]
+                ),
+                '',
+                FlashMessage::ERROR
             );
         }
         $this->redirect('listSynchronizable');
@@ -388,7 +394,7 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
-    public function editTaskAction($uid): void
+    public function editTaskAction(int $uid): void
     {
         // Add a close button to the toolbar
         $this->prepareCloseButton('listSynchronizable');
@@ -397,20 +403,21 @@ class DataModuleController extends ActionController
         try {
             $task = $this->schedulerRepository->fetchTaskByUid($uid);
             $this->view->assignMultiple(
-                    [
-                            'task' => $task,
-                            'groups' => $this->schedulerRepository->fetchAllGroups(),
-                            'errors' => $this->controllerContext->getRequest()->getOriginalRequestMappingResults()->getFlattenedErrors()
-                    ]
+                [
+                    'task' => $task,
+                    'groups' => $this->schedulerRepository->fetchAllGroups(),
+                    'errors' => $this->controllerContext->getRequest()->getOriginalRequestMappingResults()
+                        ->getFlattenedErrors()
+                ]
             );
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                            'error_invalid_task',
-                            'external_import'
-                    ),
-                    '',
-                    FlashMessage::ERROR
+                LocalizationUtility::translate(
+                    'error_invalid_task',
+                    'external_import'
+                ),
+                '',
+                FlashMessage::ERROR
             );
             $this->redirect('listSynchronizable');
         }
@@ -428,36 +435,36 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      * @\TYPO3\CMS\Extbase\Annotation\Validate(param="frequency", validator="\Cobweb\ExternalImport\Validator\FrequencyValidator")
      */
-    public function updateTaskAction($uid, $frequency, $group, \DateTime $start_date_hr = null): void
+    public function updateTaskAction(int $uid, string $frequency, int $group, \DateTime $start_date_hr = null): void
     {
         try {
             $this->schedulerRepository->saveTask(
-                    $this->schedulerRepository->prepareTaskData(
-                            $frequency,
-                            $group,
-                            $start_date_hr,
-                            '',
-                            '',
-                            $uid
-                    )
+                $this->schedulerRepository->prepareTaskData(
+                    $frequency,
+                    $group,
+                    $start_date_hr,
+                    '',
+                    '',
+                    $uid
+                )
             );
             $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                            'autosync_saved',
-                            'external_import'
-                    )
+                LocalizationUtility::translate(
+                    'autosync_saved',
+                    'external_import'
+                )
             );
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                            'autosync_save_failed',
-                            'external_import',
-                            [
-                                    $e->getMessage()
-                            ]
-                    ),
-                    '',
-                    FlashMessage::ERROR
+                LocalizationUtility::translate(
+                    'autosync_save_failed',
+                    'external_import',
+                    [
+                        $e->getMessage()
+                    ]
+                ),
+                '',
+                FlashMessage::ERROR
             );
         }
         $this->redirect('listSynchronizable');
@@ -471,27 +478,27 @@ class DataModuleController extends ActionController
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
-    public function deleteTaskAction($uid): void
+    public function deleteTaskAction(int $uid): void
     {
         try {
             $this->schedulerRepository->deleteTask($uid);
             $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                            'delete_done',
-                            'external_import'
-                    )
+                LocalizationUtility::translate(
+                    'delete_done',
+                    'external_import'
+                )
             );
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                            'delete_failed',
-                            'external_import',
-                            [
-                                    $e->getMessage()
-                            ]
-                    ),
-                    '',
-                    FlashMessage::ERROR
+                LocalizationUtility::translate(
+                    'delete_failed',
+                    'external_import',
+                    [
+                        $e->getMessage()
+                    ]
+                ),
+                '',
+                FlashMessage::ERROR
             );
         }
         $this->redirect('listSynchronizable');
@@ -517,15 +524,15 @@ class DataModuleController extends ActionController
         $action = 'listSynchronizable';
         $isActive = $this->request->getControllerActionName() === $action;
         $synchronizationMenuItem->setTitle(
-                LocalizationUtility::translate(
-                        'function_sync',
-                        'external_import'
-                )
+            LocalizationUtility::translate(
+                'function_sync',
+                'external_import'
+            )
         );
         $uri = $uriBuilder->reset()->uriFor(
-                $action,
-                [],
-                'DataModule'
+            $action,
+            [],
+            'DataModule'
         );
         $synchronizationMenuItem->setHref($uri)->setActive($isActive);
 
@@ -535,15 +542,15 @@ class DataModuleController extends ActionController
         $action = 'listNonSynchronizable';
         $isActive = $this->request->getControllerActionName() === $action;
         $noSynchronizationMenuItem->setTitle(
-                LocalizationUtility::translate(
-                        'function_nosync',
-                        'external_import'
-                )
+            LocalizationUtility::translate(
+                'function_nosync',
+                'external_import'
+            )
         );
         $uri = $uriBuilder->reset()->uriFor(
-                $action,
-                [],
-                'DataModule'
+            $action,
+            [],
+            'DataModule'
         );
         $noSynchronizationMenuItem->setHref($uri)->setActive($isActive);
 
@@ -558,18 +565,18 @@ class DataModuleController extends ActionController
      * @param string $returnAction Name of the action to return to
      * @return void
      */
-    protected function prepareCloseButton($returnAction): void
+    protected function prepareCloseButton(string $returnAction): void
     {
         $closeIcon = $this->view->getModuleTemplate()->getIconFactory()->getIcon('actions-close', Icon::SIZE_SMALL);
         $closeButton = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar()->makeLinkButton()
-                ->setIcon($closeIcon)
-                ->setTitle(LocalizationUtility::translate('back_to_list', 'external_import'))
-                ->setHref(
-                        $this->uriBuilder->uriFor($returnAction)
-                );
+            ->setIcon($closeIcon)
+            ->setTitle(LocalizationUtility::translate('back_to_list', 'external_import'))
+            ->setHref(
+                $this->uriBuilder->uriFor($returnAction)
+            );
         $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar()->addButton(
-                $closeButton,
-                ButtonBar::BUTTON_POSITION_LEFT
+            $closeButton,
+            ButtonBar::BUTTON_POSITION_LEFT
         );
     }
 
@@ -581,7 +588,7 @@ class DataModuleController extends ActionController
      * @param array $messages List of messages from an External Import run
      * @param bool $storeInSession Whether to store the flash messages in session or not
      */
-    protected function prepareMessages($messages, $storeInSession = true): void
+    protected function prepareMessages(array $messages, $storeInSession = true): void
     {
         // If there are too many messages, Remove extra messages and add warning about it
         // to avoid cluttering the interface
@@ -590,8 +597,8 @@ class DataModuleController extends ActionController
             if ($numMessages > 5) {
                 array_splice($messageList, 5);
                 $messageList[] = sprintf(
-                        LocalizationUtility::translate('moreMessages', 'external_import'),
-                        $numMessages
+                    LocalizationUtility::translate('moreMessages', 'external_import'),
+                    $numMessages
                 );
                 $messages[$severity] = $messageList;
             }
@@ -599,10 +606,10 @@ class DataModuleController extends ActionController
             foreach ($messageList as $aMessage) {
                 try {
                     $this->addFlashMessage(
-                            $aMessage,
-                            '',
-                            $severity,
-                            $storeInSession
+                        $aMessage,
+                        '',
+                        $severity,
+                        $storeInSession
                     );
                 } catch (\Exception $e) {
                     // Do nothing, just avoid crashing for failing to display a flash message
@@ -610,12 +617,13 @@ class DataModuleController extends ActionController
             }
         }
     }
+
     /**
      * Overrides parent method to avoid displaying default error message.
      *
      * @return bool
      */
-    protected function getErrorFlashMessage()
+    protected function getErrorFlashMessage(): bool
     {
         return false;
     }

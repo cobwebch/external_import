@@ -1,5 +1,5 @@
 <?php
-namespace Cobweb\ExternalImport\Tests\Domain\Model;
+namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -17,11 +17,10 @@ namespace Cobweb\ExternalImport\Tests\Domain\Model;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\SvconnectorFeed\Service\ConnectorFeed;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
-class ConfigurationTest extends FunctionalTestCase
+class ConfigurationTest extends UnitTestCase
 {
     /**
      * @var Configuration
@@ -31,8 +30,7 @@ class ConfigurationTest extends FunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $objectManager->get(Configuration::class);
+        $this->subject = GeneralUtility::makeInstance(Configuration::class);
     }
 
     /**
@@ -49,9 +47,10 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getColumnConfigurationInitiallyReturnsNull(): void
+    public function getColumnConfigurationInitiallyReturnsEmptyArray(): void
     {
-        self::assertNull(
+        self::assertSame(
+                [],
                 $this->subject->getColumnConfiguration()
         );
     }
@@ -73,7 +72,7 @@ class ConfigurationTest extends FunctionalTestCase
     public function getConnectorInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getColumnConfiguration()
+                $this->subject->getConnector()
         );
     }
 
@@ -91,9 +90,10 @@ class ConfigurationTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function getGenerallConfigurationInitiallyReturnsNull(): void
+    public function getGenerallConfigurationInitiallyReturnsEmptyArray(): void
     {
-        self::assertNull(
+        self::assertSame(
+                [],
                 $this->subject->getGeneralConfiguration()
         );
     }

@@ -50,6 +50,9 @@ The function may throw the special exception :php:`\Cobweb\ExternalImport\Except
 This will cause the "Transform Data" step to abort. More details in the chapter about
 :ref:`critical exceptions <developer-critical-exceptions>`.
 
+The function may also throw the special exception :php:`\Cobweb\ExternalImport\Exception\InvalidRecordException`.
+The related record will be removed from the imported dataset.
+
 The function may throw any other kind of exception if the transformation it is supposed to apply
 to the value it receives fails. This will trigger the removal of this value from the imported
 dataset, thus avoiding that it be further processed and eventually saved to the database.

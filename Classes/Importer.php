@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport;
 
 /*
@@ -27,7 +30,6 @@ use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -42,11 +44,6 @@ class Importer implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     public const DEFAULT_PRIORITY = 1000;
-
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
 
     /**
      * @var array Extension configuration
@@ -167,9 +164,20 @@ class Importer implements LoggerAwareInterface
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
-    public function __construct()
-    {
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('external_import');
+    public function __construct(
+            ConfigurationRepository $configurationRepository,
+            ReportingUtility $reportingUtility,
+            UidRepository $uidRepository,
+            TemporaryKeyRepository $temporaryKeyRepository
+    ) {
+        $this->configurationRepository = $configurationRepository;
+        $this->reportingUtility = $reportingUtility;
+        $this->uidRepository = $uidRepository;
+        $this->temporaryKeyRepository = $temporaryKeyRepository;
+
+        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(
+                'external_import'
+        );
         $this->setDebug((bool)$this->extensionConfiguration['debug']);
 
         // Force PHP limit execution time if set
@@ -192,32 +200,6 @@ class Importer implements LoggerAwareInterface
         return __CLASS__;
     }
 
-    public function injectObjectManager(ObjectManager $manager): void
-    {
-        $this->objectManager = $manager;
-    }
-
-    public function injectConfigurationRepository(ConfigurationRepository $repository): void
-    {
-        $this->configurationRepository = $repository;
-    }
-
-    public function injectReportingUtility(ReportingUtility $utility): void
-    {
-        $this->reportingUtility = $utility;
-        $this->reportingUtility->setImporter($this);
-    }
-
-    public function injectUidRepository(UidRepository $repository): void
-    {
-        $this->uidRepository = $repository;
-    }
-
-    public function injectTemporaryKeyRepository(TemporaryKeyRepository $repository): void
-    {
-        $this->temporaryKeyRepository = $repository;
-    }
-
     /**
      * Stores information about the synchronized table into member variables.
      *
@@ -226,20 +208,22 @@ class Importer implements LoggerAwareInterface
      * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return void
      */
-    protected function initialize($table, $index, $defaultSteps = null): void
+    protected function initialize(string $table, $index, $defaultSteps = null): void
     {
         $this->externalConfiguration = $this->configurationRepository->findConfigurationObject(
                 $table,
                 $index,
                 $defaultSteps
         );
-        if ($this->forcedStoragePid !== null)
-        {
+        if ($this->forcedStoragePid !== null) {
             $this->externalConfiguration->setStoragePid($this->forcedStoragePid);
         }
         // Initialize existing uids list
         $this->uidRepository->setConfiguration($this->externalConfiguration);
         $this->uidRepository->resetExistingUids();
+        $this->uidRepository->resetCurrentPids();
+        // Assign back-reference to reporting utility
+        $this->reportingUtility->setImporter($this);
     }
 
     /**
@@ -249,7 +233,7 @@ class Importer implements LoggerAwareInterface
      * @param mixed $index Index of the synchronisation configuration to use
      * @return array List of error or success messages
      */
-    public function synchronize($table, $index): array
+    public function synchronize(string $table, $index): array
     {
         // Initialize message array
         $this->resetMessages();
@@ -260,10 +244,9 @@ class Importer implements LoggerAwareInterface
                     self::SYNCHRONYZE_DATA_STEPS
             );
 
-            $data = $this->objectManager->get(Data::class);
+            $data = GeneralUtility::makeInstance(Data::class);
             $this->runSteps($data);
-        }
-        catch (InvalidPreviewStepException $e) {
+        } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
@@ -274,8 +257,7 @@ class Importer implements LoggerAwareInterface
                     ),
                     AbstractMessage::WARNING
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
@@ -299,11 +281,11 @@ class Importer implements LoggerAwareInterface
      * Receives raw data from some external source, transforms it and stores it into the TYPO3 database.
      *
      * @param string $table Name of the table to import into
-     * @param integer $index Index of the synchronisation configuration to use
+     * @param mixed $index Index of the synchronisation configuration to use
      * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
      * @return array List of error or success messages
      */
-    public function import($table, $index, $rawData): array
+    public function import(string $table, $index, $rawData): array
     {
         // Initialize message array
         $this->resetMessages();
@@ -317,11 +299,10 @@ class Importer implements LoggerAwareInterface
             );
 
             // Initialize the Data object with the raw data
-            $data = $this->objectManager->get(Data::class);
+            $data = GeneralUtility::makeInstance(Data::class);
             $data->setRawData($rawData);
             $this->runSteps($data);
-        }
-        catch (InvalidPreviewStepException $e) {
+        } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
@@ -331,8 +312,7 @@ class Importer implements LoggerAwareInterface
                             ]
                     )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->addMessage(
                     LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
@@ -375,7 +355,7 @@ class Importer implements LoggerAwareInterface
         foreach ($steps as $stepClass) {
             $this->resetPreviewData();
             /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
-            $step = $this->objectManager->get($stepClass);
+            $step = GeneralUtility::makeInstance($stepClass);
             $step->setImporter($this);
             $step->setData($data);
             if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
@@ -452,100 +432,6 @@ class Importer implements LoggerAwareInterface
     }
 
     /**
-     * Returns the list of all temporary keys.
-     *
-     * @return array
-     * @deprecated use $this->getTemporaryKeyRepository()->getTemporaryKeys() instead
-     */
-    public function getTemporaryKeys(): array
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Importer::getTemporaryKeys is deprecated. Use Importer::getTemporaryKeyRepository()->getTemporaryKeys() instead.',
-            E_USER_DEPRECATED
-        );
-        return $this->temporaryKeyRepository->getTemporaryKeys();
-    }
-
-    /**
-     * Checks whether a temporary key exists for the given value.
-     *
-     * @param int $value Value for which we want to find a key
-     * @param string $table Name of the table for which the key is used (fall back to main table for backwards-compatibility)
-     * @return bool
-     * @deprecated use $this->getTemporaryKeyRepository()->hasTemporaryKey() instead
-     */
-    public function hasTemporaryKey($value, $table = ''): bool
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Importer::hasTemporaryKey is deprecated. Use Importer::getTemporaryKeyRepository()->hasTemporaryKey() instead.',
-            E_USER_DEPRECATED
-        );
-        if (empty($table)) {
-            $table = $this->externalConfiguration->getTable();
-        }
-        return $this->temporaryKeyRepository->hasTemporaryKey($value, $table);
-    }
-
-    /**
-     * Gets the temporary key for the given value.
-     *
-     * @param int $value Value for which we want to find a key
-     * @param string $table Name of the table in which the key is used (fall back to main table for backwards-compatibility)
-     * @return string
-     * @deprecated use $this->getTemporaryKeyRepository()->getTemporaryKeyForValue() instead
-     */
-    public function getTemporaryKeyForValue($value, $table = ''): ?string
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Importer::getTemporaryKeyForValue is deprecated. Use Importer::getTemporaryKeyRepository()->getTemporaryKeyForValue() instead.',
-            E_USER_DEPRECATED
-        );
-        if (empty($table)) {
-            $table = $this->externalConfiguration->getTable();
-        }
-        return $this->temporaryKeyRepository->getTemporaryKeyForValue($value, $table);
-    }
-
-    /**
-     * Adds a temporary key for the given value.
-     *
-     * @param int $value Value for which the key should be added
-     * @param string $key Key to add
-     * @param string $table Name of the table for which the key is used (fall back to main table for backwards-compatibility)
-     * @deprecated use $this->getTemporaryKeyRepository()->addTemporaryKey() instead
-     */
-    public function addTemporaryKey($value, $key, string $table): void
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Importer::addTemporaryKey is deprecated. Use Importer::getTemporaryKeyRepository()->addTemporaryKey() instead.',
-            E_USER_DEPRECATED
-        );
-        if (empty($table)) {
-            $table = $this->externalConfiguration->getTable();
-        }
-        $this->temporaryKeyRepository->addTemporaryKey($value, $key, $table);
-    }
-
-    /**
-     * Generates a random key and returns it.
-     *
-     * The keys are used for new records in the TCE structures used for storing new records.
-     * A random key is recommended. Controlled keys are generated in test mode in order
-     * to have predictable results for functional testing.
-     *
-     * @return string
-     * @deprecated use $this->getTemporaryKeyRepository()->generateTemporaryKey() instead
-     */
-    public function generateTemporaryKey(): string
-    {
-        trigger_error(
-            'Using \Cobweb\ExternalImport\Importer::generateTemporaryKey is deprecated. Use Importer::getTemporaryKeyRepository()->generateTemporaryKey() instead.',
-            E_USER_DEPRECATED
-        );
-        return $this->temporaryKeyRepository->generateTemporaryKey();
-    }
-
-    /**
      * Writes debug messages, depending on debug flag.
      *
      * The output varies depending on TYPO3 version and call context.
@@ -555,7 +441,7 @@ class Importer implements LoggerAwareInterface
      * @param null $data Data associated with the debugging information
      * @return void
      */
-    public function debug($message, $severity = 0, $data = null): void
+    public function debug(string $message, $severity = 0, $data = null): void
     {
         if ($this->isDebug()) {
             $data = is_array($data) ? $data : [$data];
@@ -607,10 +493,10 @@ class Importer implements LoggerAwareInterface
      * when the synchronization is complete.
      *
      * @param string $text The message itself
-     * @param integer $status Status of the message. Expected is "success", "warning" or "error"
+     * @param int $status Status of the message. Expected is "success", "warning" or "error"
      * @return void
      */
-    public function addMessage($text, $status = AbstractMessage::ERROR): void
+    public function addMessage(string $text, int $status = AbstractMessage::ERROR): void
     {
         if (!empty($text)) {
             $this->messages[$status][] = $text;
@@ -676,7 +562,7 @@ class Importer implements LoggerAwareInterface
      *
      * This is meant essentially for testing, but can also be useful when using Importer::import().
      *
-     * @param $pid
+     * @param mixed $pid
      */
     public function setForcedStoragePid($pid): void
     {
@@ -696,9 +582,9 @@ class Importer implements LoggerAwareInterface
     /**
      * Sets the execution context.
      *
-     * @param $context
+     * @param string $context
      */
-    public function setContext($context): void
+    public function setContext(string $context): void
     {
         $this->context = $context;
     }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Utility;
 
 /*
@@ -26,40 +29,14 @@ use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
 class CompatibilityUtility
 {
     /**
-     * Checks whether we are running TYPO3 v9 or not (i.e. more, TYPO3 v10).
+     * Checks whether we are running TYPO3 v10 or not (i.e. more, TYPO3 v11).
      *
      * @return bool
      */
-    public static function isV9(): bool
+    public static function isV10(): bool
     {
-        return !(VersionNumberUtility::convertVersionNumberToInteger(TYPO3_branch) >= VersionNumberUtility::convertVersionNumberToInteger('10.0.0'));
-    }
-
-    /**
-     * Checks whether the Scheduler's module controller has issued the specified command.
-     *
-     * Compatibility for mechanism change between TYPO3 v9 and v10.
-     *
-     * @param SchedulerModuleController $controller
-     * @param string $command Expected to be "add" or "edit". Other strings are unchecked and will return false.
-     * @return bool
-     */
-    public static function isSchedulerCommand(SchedulerModuleController $controller, string $command): bool
-    {
-        $status = false;
-        if (self::isV9()) {
-            if ($command === 'add' && $controller->CMD === 'add') {
-                $status = true;
-            } elseif ($command === 'edit' && $controller->CMD === 'edit') {
-                $status = true;
-            }
-        } else {
-            if ($command === 'add' && $controller->getCurrentAction()->equals(Action::ADD)) {
-                $status = true;
-            } elseif ($command === 'edit' && $controller->getCurrentAction()->equals(Action::EDIT)) {
-                $status = true;
-            }
-        }
-        return $status;
+        return !(VersionNumberUtility::convertVersionNumberToInteger(
+                TYPO3_branch
+            ) >= VersionNumberUtility::convertVersionNumberToInteger('11.0.0'));
     }
 }

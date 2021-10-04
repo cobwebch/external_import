@@ -6,17 +6,11 @@
 Custom process steps
 ^^^^^^^^^^^^^^^^^^^^
 
-Besides all the :ref:`hooks <developer-hooks>`, it is also possible to
+Besides all the :ref:`events <developer-events>`, it is also possible to
 register custom process steps. How to register a custom step is
 covered in the :ref:`Administration chapter <administration-general-tca-properties-customsteps>`.
 This section describes what a custom step can or should do and
 what resources are available from within a custom step class.
-
-Custom steps are much more powerful than hooks and should be preferred
-whenever that makes sense. Custom steps have access to much more information
-than hooks, although most hooks are more specific.
-Also custom steps are registered **per** configuration, which removes the need
-to test inside them which import configuration is being handled.
 
 
 .. _developer-steps-parent-class:
@@ -29,8 +23,8 @@ A custom step class **must** inherit from abstract class
 the step will be ignored during import. The parent class makes
 a lot of features available some of which are described below.
 
-All step class instances are created using the :php:`\TYPO3\CMS\Extbase\Object\ObjectManager`,
-so Extbase's injection mechanisms is available inside a custom step class.
+If you want to use Dependency Injection in your custom step class,
+just remember to declare it as being public in your service configuration file.
 
 
 .. _developer-steps-resources:
@@ -39,15 +33,6 @@ Available resources
 """""""""""""""""""
 
 A custom step class has access to the following member variables:
-
-configuration
-  Instance of the current External Import configuration
-  (:php:`\Cobweb\ExternalImport\Domain\Model\Configuration`).
-
-  .. warning::
-
-     This has been deprecated in External Import 5.0.0. Please use
-     :code:`$this->getImporter()->getExternalConfiguration()` instead.
 
 data
   Instance of the object model encapsulating the data being processed
@@ -112,12 +97,6 @@ If you manipulate the data, you need to store it explicitely:
 	// Store the processed data
 	$this->getData()->setRecords();
 
-.. note::
-
-   Custom steps get to manipulate the whole data set, contrary to many
-   of the hooks, which are called while looping on each entry in the
-   data set.
-
 Another typical usage would be to interrupt the process entirely
 by setting the :code:`abortFlag` variable to :code:`true`, as mentioned
 above.
@@ -169,34 +148,52 @@ Finally here is a short example of a custom step class. Note how the API is used
 to retrieve the list of records (processed data), which is looped over and then
 saved again to the :code:`Data` object.
 
-In this example, the "name" field of every record is postfixed with a
-simple string.
+In this example, the "name" field of every record is used to filter acceptable entries.
+
+.. warning::
+
+   Note the call to :code:`array_values()` to compact the array again once records
+   have been removed. This is very important to avoid having empty entries in your
+   import.
+
+   This used to be done automatically when using hooks "preprocessRawRecordset" and
+   "preprocessRecordset". When replacing these hooks by custom steps, make sure to
+   call :code:`array_values()` if needed.
 
 .. code-block:: php
 
-      <?php
-      namespace Cobweb\ExternalimportTest\Step;
+   <?php
 
-      use Cobweb\ExternalImport\Step\AbstractStep;
+   declare(strict_types=1);
 
-      /**
-       * Class demonstrating how to use custom steps for external import.
-       *
-       * @package Cobweb\ExternalimportTest\Step
-       */
-      class EnhanceDataStep extends AbstractStep
-      {
-          /**
-           * Performs some dummy operation to demonstrate custom steps.
-           *
-           * @return void
-           */
-          public function run()
-          {
-              $records = $this->getData()->getRecords();
-              foreach ($records as $index => $record) {
-                  $records[$index]['name'] = $record['name'] . ' (base)';
-              }
-              $this->getData()->setRecords($records);
-          }
-      }
+   namespace Cobweb\ExternalimportTest\Step;
+
+   use Cobweb\ExternalImport\Step\AbstractStep;
+
+   /**
+    * Class demonstrating how to use custom steps for external import.
+    *
+    * @package Cobweb\ExternalimportTest\Step
+    */
+   class TagsPreprocessorStep extends AbstractStep
+   {
+
+       /**
+        * Filters out some records from the raw data for the tags table.
+        *
+        * Any name containing an asterisk is considered censored and thus removed.
+        */
+       public function run(): void
+       {
+           $records = $this->getData()->getRecords();
+           foreach ($records as $index => $record) {
+               if (strpos($record['name'], '*') !== false) {
+                   unset($records[$index]);
+               }
+           }
+           $records = array_values($records);
+           $this->getData()->setRecords($records);
+           // Set the filtered records as preview data
+           $this->importer->setPreviewData($records);
+       }
+   }

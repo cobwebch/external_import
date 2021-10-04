@@ -23,9 +23,9 @@
 		}
 	},
 	"require": {
-		"typo3/cms-core": ">=9.5.0,<11.0",
-		"typo3/cms-scheduler": ">=9.5.0,<11.0",
-		"cobweb/svconnector": ">=3.4.0"
+		"typo3/cms-core": ">=10.4.0,<12.0",
+		"typo3/cms-scheduler": ">=10.4.0,<12.0",
+		"cobweb/svconnector": "dev-develop"
 	},
 	"extra": {
 		"typo3/cms": {

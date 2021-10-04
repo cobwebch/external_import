@@ -1,3 +1,74 @@
+2021-10-03 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix command line exit codes, resolves #208
+	* Fix slug generation upon upates, resolves #195
+
+2021-09-29 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Allow for arrayPath to return simple values if needed, references #205
+
+2021-09-07 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Ensure compatibility with PHP 8, resolves #207
+	* Move command-line declaration to services configuration, references #164
+
+2021-08-24 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Enhance arrayPath properties with conditions, resolves #205
+
+2021-08-14 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Add transformation option for detecting and acting on empty values, resolves #185
+
+2021-08-13 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Introduce special exception for invalidating records, resolves #198
+
+2021-06-09 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Pimp the log record icon
+
+2021-05-30 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	*  Improve documentation for newcomers, resolves #191
+
+2021-05-29 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Update all base URLs for documentation cross-links, resolves #183
+	* Improve tutorial page, resolves #184
+
+2021-05-28 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Add arrayPath property at general level, also refactor ArrayHandler tests, resolves #175
+	* Pass primary key to update record preprocess event, resolves #189
+
+2021-04-27 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Display preview step name when previewing in BE module, resolves #171
+
+2021-04-26 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Deprecate all hooks, introduce PSR-14 events, resolves #167
+
+2021-04-25 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve priority property documentation, resolves #177
+
+2021-04-13 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Clean up code, apply PSR-12, use strict typing everywhere, resolves #168
+
+2021-04-12 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Update DataTables library, resolves #165
+	* Remove all deprecated properties and backwards-compatibility code, resolves #146
+	* Clean up all unit and functional tests, resolves #170
+
+2021-04-09 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Use Symfony dependency injection instead of Extbase's ObjectManager, references #164
+	* Drop support for TYPO3 v9, resolves #116
+
 2021-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add validation of substructureFields property

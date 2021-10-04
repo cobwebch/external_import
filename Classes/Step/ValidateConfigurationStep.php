@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -35,14 +38,12 @@ class ValidateConfigurationStep extends AbstractStep
      */
     protected $columnValidator;
 
-    public function injectCtrlValidator(\Cobweb\ExternalImport\Validator\GeneralConfigurationValidator $validator): void
-    {
-        $this->generalValidator = $validator;
-    }
-
-    public function injectColumnValidator(\Cobweb\ExternalImport\Validator\ColumnConfigurationValidator $validator): void
-    {
-        $this->columnValidator = $validator;
+    public function __construct(
+        GeneralConfigurationValidator $generalConfigurationValidator,
+        ColumnConfigurationValidator $columnConfigurationValidator
+    ) {
+        $this->generalValidator = $generalConfigurationValidator;
+        $this->columnValidator = $columnConfigurationValidator;
     }
 
     /**
@@ -56,64 +57,61 @@ class ValidateConfigurationStep extends AbstractStep
         // If there's no general configuration, issue error
         if (count($generalConfiguration) === 0) {
             $this->importer->addMessage(
-                    sprintf(
-                            LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingCtrlConfigurationError',
-                                    'external_import'
-                            ),
-                            $this->importer->getExternalConfiguration()->getTable(),
-                            $this->importer->getExternalConfiguration()->getIndex()
-                    )
+                sprintf(
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingCtrlConfigurationError',
+                        'external_import'
+                    ),
+                    $this->importer->getExternalConfiguration()->getTable(),
+                    $this->importer->getExternalConfiguration()->getIndex()
+                )
             );
             $this->abortFlag = true;
-        } else {
             // Check the general configuration. If ok, proceed with columns configuration
-            if ($this->generalValidator->isValid($this->importer->getExternalConfiguration())) {
-                $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
-                // If there's no column configuration at all, issue error
-                if (count($columnConfiguration) === 0) {
-                    $this->importer->addMessage(
-                            sprintf(
-                                    LocalizationUtility::translate(
-                                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingColumnConfigurationError',
-                                            'external_import'
-                                    ),
-                                    $this->importer->getExternalConfiguration()->getTable(),
-                                    $this->importer->getExternalConfiguration()->getIndex()
-                            )
-                    );
-                    $this->abortFlag = true;
-                } else {
-                    // Loop on the table columns to check if their external configuration is valid
-                    foreach ($columnConfiguration as $columnName => $columnData) {
-                        $isValid = $this->columnValidator->isValid(
-                                $this->importer->getExternalConfiguration(),
-                                $columnName
-                        );
-                        // If the column configuration is not valid, issue error message and return false
-                        if (!$isValid) {
-                            $this->importer->addMessage(
-                                    LocalizationUtility::translate(
-                                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
-                                            'external_import'
-                                    )
-                            );
-                            $this->abortFlag = true;
-                            break;
-                        }
-                    }
-                }
-
-            // If general configuration is not valid, issue error message and return false
-            } else {
+        } elseif ($this->generalValidator->isValid($this->importer->getExternalConfiguration())) {
+            $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
+            // If there's no column configuration at all, issue error
+            if (count($columnConfiguration) === 0) {
                 $this->importer->addMessage(
+                    sprintf(
                         LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
-                                'external_import'
-                        )
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingColumnConfigurationError',
+                            'external_import'
+                        ),
+                        $this->importer->getExternalConfiguration()->getTable(),
+                        $this->importer->getExternalConfiguration()->getIndex()
+                    )
                 );
                 $this->abortFlag = true;
+            } else {
+                // Loop on the table columns to check if their external configuration is valid
+                foreach ($columnConfiguration as $columnName => $columnData) {
+                    $isValid = $this->columnValidator->isValid(
+                        $this->importer->getExternalConfiguration(),
+                        $columnName
+                    );
+                    // If the column configuration is not valid, issue error message and return false
+                    if (!$isValid) {
+                        $this->importer->addMessage(
+                            LocalizationUtility::translate(
+                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
+                                'external_import'
+                            )
+                        );
+                        $this->abortFlag = true;
+                        break;
+                    }
+                }
             }
+            // If general configuration is not valid, issue error message and return false
+        } else {
+            $this->importer->addMessage(
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
+                    'external_import'
+                )
+            );
+            $this->abortFlag = true;
         }
     }
 }

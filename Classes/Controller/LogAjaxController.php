@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Controller;
 
 /*
@@ -21,14 +23,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Controller for the AJAX calls of the "Log" module
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Controller
  */
 class LogAjaxController
 {
@@ -37,19 +36,19 @@ class LogAjaxController
      * Returns the list of all log entries, in JSON format.
      *
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
+     * @param ResponseInterface|null $response
      * @return ResponseInterface
+     * @throws \TYPO3\CMS\Extbase\Object\Exception
      */
     public function getAction(ServerRequestInterface $request, ResponseInterface $response = null): ResponseInterface
     {
         // Process query parameters
         $queryParameters = GeneralUtility::makeInstance(
-                QueryParameters::class,
-                $request->getQueryParams()
+            QueryParameters::class,
+            $request->getQueryParams()
         );
         // Get an instance of the log repository
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $logRepository = $objectManager->get(LogRepository::class);
+        $logRepository = GeneralUtility::makeInstance(LogRepository::class);
 
         // Get the count of all the log entries
         $totalEntries = $logRepository->findAll()->count();
@@ -65,29 +64,29 @@ class LogAjaxController
             /** @var \Cobweb\ExternalImport\Domain\Model\Log $logEntry */
             foreach ($logEntries as $logEntry) {
                 $logs[] = [
-                        'status' => $logEntry->getStatus(),
-                        'crdate' => $logEntry->getCrdate()->format('U'),
-                        'username' => $logEntry->getCruserId() ? $logEntry->getCruserId()->getUserName() : '-',
-                        'configuration' => $logEntry->getConfiguration(),
-                        'context' => $logEntry->getContext(),
-                        'message' => $logEntry->getMessage(),
-                        'duration' => $logEntry->getDuration()
+                    'status' => $logEntry->getStatus(),
+                    'crdate' => $logEntry->getCrdate()->format('U'),
+                    'username' => $logEntry->getCruserId() ? $logEntry->getCruserId()->getUserName() : '-',
+                    'configuration' => $logEntry->getConfiguration(),
+                    'context' => $logEntry->getContext(),
+                    'message' => $logEntry->getMessage(),
+                    'duration' => $logEntry->getDuration()
                 ];
             }
         } catch (\Exception $e) {
             $error = sprintf(
-                    'An error happened retrieving the data (Exception: %s [%d]).',
-                    $e->getMessage(),
-                    $e->getCode()
+                'An error happened retrieving the data (Exception: %s [%d]).',
+                $e->getMessage(),
+                $e->getCode()
             );
         }
         // Send the response
         $fullResponse = [
-                'draw' => $queryParameters->getDraw(),
-                'data' => $logs,
-                'recordsTotal' => $totalEntries,
-                'recordsFiltered' => $logCount,
-                'error' => $error
+            'draw' => $queryParameters->getDraw(),
+            'data' => $logs,
+            'recordsTotal' => $totalEntries,
+            'recordsFiltered' => $logCount,
+            'error' => $error
         ];
         if ($response === null) {
             $response = GeneralUtility::makeInstance(JsonResponse::class);

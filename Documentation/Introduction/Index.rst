@@ -30,11 +30,13 @@ The extension also provides an API for sending it data from some other source.
 This data is stored into the TYPO3 CMS database using the same mapping process
 as when data is fetched directly by the extension.
 
-This extension contains a number of hooks as well as the possibility to call
-user-defined functions during the import process or to create custom steps,
-which makes it a quite flexible tool. However it was not designed for extensive
-data manipulation. It is assumed that the data received from the external source
-is in "palatable" format. If the external data requires a lot of processing,
+This extension is quite flexible, thanks to the possibility of calling user
+functions to transform incoming data, listening to events to react to some part
+of the process or adding custom steps at any point in the process.
+It is also possible to create custom connectors for reading from a specific
+external source. Still this extension was not designed for extensive data manipulation.
+It is assumed that the data received from the external source
+is in a "palatable" format. If the external data requires a lot of processing,
 it is probably better to put it through an ETL or ESB tool first,
 and then import it into TYPO3 CMS.
 
@@ -44,7 +46,21 @@ which provides a tutorial to this extension.
 More examples can be found in extension "externalimport_test", which is used
 for testing purposes. The setup is not documented, but can be interesting
 to look at. This extension is distributed only via Github:
-https://github.com/fsuter/externalimport_test
+https://github.com/cobwebch/externalimport_test
+
+.. note::
+
+   Setting up External Import can be quite tricky, mostly because this extension offers
+   many options, that are meant to cover as many import scenarios as possible. These
+   options can often be combined for even more possibilities. This can be quite
+   confusing in the beginning.
+
+   Please take time to read the whole :ref:`User manuel chapter <user>` and the
+   already mentioned tutorial. In particular, you should read the following sections:
+
+   - :ref:`General considerations <user-general>`
+   - :ref:`Process overview <user-overview>`
+   - :ref:`Mapping data <user-mapping-data>`
 
 
 .. _suport:
@@ -52,8 +68,12 @@ https://github.com/fsuter/externalimport_test
 Questions and support
 ^^^^^^^^^^^^^^^^^^^^^
 
-If you have any questions about this extension, use the TYPO3 Slack workspace
-or the issue tracker on GitHub (https://github.com/cobwebch/external_import/issues).
+If you have any questions about this extension, use the dedicated channel in the
+TYPO3 Slack workspace (#ext-external_import) or the issue tracker on GitHub
+(https://github.com/cobwebch/external_import/issues).
+
+Please also check the :ref:`Troubleshooting section <user-troubleshooting>`
+in case your issue is already described there.
 
 
 .. _happy-developer:
@@ -104,3 +124,14 @@ extension. You will get mentioned here.
   - Tomas Norre
 
   Without these companies and people, it would never have been such a great update!
+
+- The development of version 6.0 was largely funded by the `Lausanne University Hospital (CHUV) <https://www.lausanneuniversityhospital.com/home>`_
+
+
+.. _credits:
+
+Credits
+^^^^^^^
+
+The icon for the log table records is derived from an icon made by `iconixar <https://www.flaticon.com/authors/iconixar>`_
+from `www.flaticon.com <https://www.flaticon.com/>`_.

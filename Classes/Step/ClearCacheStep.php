@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -35,21 +38,21 @@ class ClearCacheStep extends AbstractStep
         $configuration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         if (empty($configuration['clearCache'])) {
             $this->importer->setPreviewData(
-                    [
-                            'caches' => []
-                    ]
+                [
+                    'caches' => []
+                ]
             );
         } else {
             // Extract the list of caches to clear
             $caches = GeneralUtility::trimExplode(
-                    ',',
-                    $configuration['clearCache'],
-                    true
+                ',',
+                $configuration['clearCache'],
+                true
             );
             $this->importer->setPreviewData(
-                    [
-                            'caches' => $caches
-                    ]
+                [
+                    'caches' => $caches
+                ]
             );
             // Use DataHandler to clear the designated caches, if not in preview mode
             if (count($caches) > 0 && !$this->importer->isPreview()) {

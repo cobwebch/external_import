@@ -30,7 +30,6 @@ use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use \TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
@@ -62,8 +61,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             // Connector services need a global LanguageService object
             $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $this->subject = $objectManager->get(Importer::class);
+            $this->subject = GeneralUtility::makeInstance(Importer::class);
             $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
             $this->subject->setForcedStoragePid(1);
         } catch (\Exception $e) {
@@ -263,6 +261,10 @@ class ImporterPreviewTest extends FunctionalTestCase
                                         'name' => 'Armor & Shields'
                                 ],
                                 [
+                                        'code' => 'rude',
+                                        'name' => 'F**k'
+                                ],
+                                [
                                         'code' => 'metal',
                                         'name' => 'Metallic objects'
                                 ],
@@ -276,7 +278,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 ]
                         ]
                 ],
-                'array-type data with sub-structure' => [
+                'array-type data with sub-structure and array path' => [
                         'table' => 'tx_externalimporttest_order',
                         'index' => 0,
                         'result' => [
@@ -976,13 +978,7 @@ class ImporterPreviewTest extends FunctionalTestCase
     public function runPreviewOnClearCacheStepReturnsCacheListAndClearsNothing($table, $index, $result): void
     {
         try {
-            if (VersionNumberUtility::convertVersionNumberToInteger(VersionNumberUtility::getNumericTypo3Version()) > 10000000) {
-                $cacheTable = 'cache_pages_tags';
-                $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest_v10.xml');
-            } else {
-                $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.xml');
-                $cacheTable = 'cf_cache_pages_tags';
-            }
+            $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.xml');
         } catch (\Exception $e) {
             self::markTestSkipped(
                     sprintf(
@@ -1004,7 +1000,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         // The cache item created with the fixture should not be have been cleared
         $countCacheItems = $this->getDatabaseConnection()->selectCount(
                 'id',
-                $cacheTable
+                'cache_pages_tags'
         );
         self::assertEquals(1, $countCacheItems);
     }

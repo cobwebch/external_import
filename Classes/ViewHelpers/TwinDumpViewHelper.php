@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\ViewHelpers;
 
 /*
@@ -37,7 +40,7 @@ class TwinDumpViewHelper extends AbstractViewHelper
      *
      * @return void
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         $this->registerArgument('originalArray', 'array', 'The original array to dump', true);
         $this->registerArgument('modifiedArray', 'array', 'The modified array to dump', true);
@@ -51,11 +54,14 @@ class TwinDumpViewHelper extends AbstractViewHelper
      * @param RenderingContextInterface $renderingContext
      * @return string
      */
-    public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext)
-    {
+    public static function renderStatic(
+        array $arguments,
+        \Closure $renderChildrenClosure,
+        RenderingContextInterface $renderingContext
+    ): string {
         return DebugUtility::dumpTwinArrays(
-                $arguments['originalArray'],
-                $arguments['modifiedArray']
+            $arguments['originalArray'],
+            $arguments['modifiedArray']
         );
     }
 }

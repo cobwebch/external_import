@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Transformation;
 
 /*
@@ -37,7 +39,7 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
     /**
      * @var string Used to return a dummy identifier in preview mode
      */
-    static public $previewMessage = 'Preview mode. Image not handled, nor saved.';
+    public static $previewMessage = 'Preview mode. Image not handled, nor saved.';
 
     /**
      * @var ResourceFactory
@@ -85,15 +87,15 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         // Throw an exception if storage is not defined
         if (empty($parameters['storage'])) {
             throw new \InvalidArgumentException(
-                    'No storage given for importing files',
-                    1602170223
+                'No storage given for importing files',
+                1602170223
             );
         }
 
         // Ensure the storage folder is loaded (we keep a local cache of folder objects for efficiency)
         if ($this->storageFolders[$parameters['storage']] === null) {
             $this->storageFolders[$parameters['storage']] = $this->resourceFactory->getFolderObjectFromCombinedIdentifier(
-                    $parameters['storage']
+                $parameters['storage']
             );
         }
         // Assemble a file name
@@ -107,11 +109,11 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
                 $fileName .= '.' . $parameters['defaultExtension'];
             } else {
                 throw new \InvalidArgumentException(
-                        sprintf(
-                                'No extension could be found for imported file %s',
-                                $record[$index]
-                        ),
-                        1602170422
+                    sprintf(
+                        'No extension could be found for imported file %s',
+                        $record[$index]
+                    ),
+                    1602170422
                 );
             }
         } else {
@@ -121,53 +123,45 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
                     $fileName .= '.' . $parameters['defaultExtension'];
                 } else {
                     throw new \InvalidArgumentException(
-                            sprintf(
-                                    'No extension could be found for imported file %s',
-                                    $record[$index]
-                            ),
-                            1602170422
+                        sprintf(
+                            'No extension could be found for imported file %s',
+                            $record[$index]
+                        ),
+                        1602170422
                     );
                 }
             }
         }
         $fileName = $this->storageFolders[$parameters['storage']]->getStorage()->sanitizeFileName(
-                $fileName,
-                $this->storageFolders[$parameters['storage']]
+            $fileName,
+            $this->storageFolders[$parameters['storage']]
         );
         // Check if the file already exists
         if ($this->storageFolders[$parameters['storage']]->hasFile($fileName)) {
             $fileObject = $this->resourceFactory->getFileObjectFromCombinedIdentifier(
-                    $parameters['storage'] . '/' . $fileName
+                $parameters['storage'] . '/' . $fileName
             );
-        // If the file does not yet exist locally, grab it from the remote server and add it to predefined storage
+            // If the file does not yet exist locally, grab it from the remote server and add it to predefined storage
         } else {
             $temporaryFile = GeneralUtility::tempnam('external_import_upload');
-            $file = GeneralUtility::getUrl($record[$index], 0, null, $report);
+            $file = GeneralUtility::getUrl($record[$index]);
             // If the file could not be fetched, report and throw an exception
             if ($file === false) {
-                $error = sprintf(
+                throw new \TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException(
+                    $error = sprintf(
                         'File %s could not be fetched.',
                         $record[$index]
-                );
-                if (isset($report['message'])) {
-                    $error .= ' ' . sprintf(
-                            'Reason: %s (code: %s)',
-                            $report['message'],
-                            $report['error'] ?? 0
-                    );
-                }
-                throw new \TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException(
-                        $error,
-                        1613555057
+                    ),
+                    1613555057
                 );
             }
             GeneralUtility::writeFileToTypo3tempDir(
-                    $temporaryFile,
-                    $file
+                $temporaryFile,
+                $file
             );
             $fileObject = $this->storageFolders[$parameters['storage']]->addFile(
-                    $temporaryFile,
-                    $fileName
+                $temporaryFile,
+                $fileName
             );
         }
         // Return the file's ID
@@ -213,17 +207,17 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
             $fileName .= '.' . $parameters['defaultExtension'];
         } else {
             throw new \InvalidArgumentException(
-                    sprintf(
-                            'Default extension parameter not set for file %s',
-                            $fileName
-                    ),
-                    1603033956
+                sprintf(
+                    'Default extension parameter not set for file %s',
+                    $fileName
+                ),
+                1603033956
             );
         }
         try {
             $fileName = $folder->getStorage()->sanitizeFileName(
-                    $fileName,
-                    $this->storageFolders[$parameters['storage']]
+                $fileName,
+                $this->storageFolders[$parameters['storage']]
             );
         } catch (\TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException $e) {
             // A file with this name already exists, this is handled below
@@ -232,9 +226,9 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         // Check if the file already exists
         if ($folder->hasFile($fileName)) {
             $fileObject = $this->resourceFactory->getFileObjectFromCombinedIdentifier(
-                    $parameters['storage'] . '/' . $fileName
+                $parameters['storage'] . '/' . $fileName
             );
-        // If the file does not yet exist locally, grab it from the remote server and add it to predefined storage
+            // If the file does not yet exist locally, grab it from the remote server and add it to predefined storage
         } else {
             $fileObject = $folder->createFile($fileName);
             $fileObject->setContents(base64_decode($record[$index]));
@@ -249,20 +243,20 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
      * @param string $storagePath
      * @return Folder
      */
-    public function initializeStorageFolder($storagePath): Folder
+    public function initializeStorageFolder(string $storagePath): Folder
     {
         // Throw an exception if storage is not defined
         if (empty($storagePath)) {
             throw new \InvalidArgumentException(
-                    'No storage given for importing files',
-                    1602170223
+                'No storage given for importing files',
+                1602170223
             );
         }
 
         // Ensure the storage folder is loaded (we keep a local cache of folder objects for efficiency)
         if ($this->storageFolders[$storagePath] === null) {
             $this->storageFolders[$storagePath] = $this->resourceFactory->getFolderObjectFromCombinedIdentifier(
-                    $storagePath
+                $storagePath
             );
         }
         return $this->storageFolders[$storagePath];

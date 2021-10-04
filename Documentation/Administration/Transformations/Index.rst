@@ -21,10 +21,10 @@ Properties
 	========================= ===================================================== =================
 	Property                  Data type                                             Step/Scope
 	========================= ===================================================== =================
+   isEmpty_                  array                                                 Transform data
 	mapping_                  :ref:`Mapping configuration <administration-mapping>` Transform data
 	rteEnabled_               boolean                                               Transform data
 	trim_                     boolean                                               Transform data
-	userFunc_                 array                                                 Transform data
 	userFunction_             array                                                 Transform data
 	value_                    simple type (string, integer, boolean)                Transform data
 	========================= ===================================================== =================
@@ -104,22 +104,6 @@ Scope
 
 .. _administration-columns-properties-userfunc:
 .. _administration-transformations-properties-userfunc:
-
-userFunc
-~~~~~~~~
-
-Type
-  array
-
-Description
-  This property has been renamed :ref:`userFunction <administration-transformations-properties-userfunction>`.
-  Backwards-compatibility is ensured for now, but please update your
-  configuration as soon as possible.
-
-Scope
-  Transform data
-
-
 .. _administration-transformations-properties-userfunction:
 
 userFunction
@@ -140,17 +124,17 @@ Description
   .. code-block:: php
 
 		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
-				0 => [
-						'field' => 'start_date',
-						'transformations' => [
-								10 => [
-										'userFunction' => [
-												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
-												'method' => 'parseDate'
-										]
-								]
-						]
-				]
+         0 => [
+            'field' => 'start_date',
+            'transformations' => [
+               10 => [
+                  'userFunction' => [
+                     'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+                     'method' => 'parseDate'
+                  ]
+               ]
+            ]
+         ]
 		];
 
   The definition of a user function takes three parameters:
@@ -178,8 +162,99 @@ Description
      dataset. The rationale is that such a value is considered invalid and should not
      be further processed nor saved to the database.
 
+     The user function can also specifically throw the
+     :php:`\Cobweb\ExternalImport\Exception\InvalidRecordException`. The effect is to
+     remove the entire record from the imported dataset.
+
   For more details about creating a user function, please refer to the
   :ref:`Developer's Guide <developer-user-functions>`.
 
 Scope
   Transform data
+
+
+.. _administration-transformations-properties-isempty:
+
+isEmpty
+~~~~~~~
+
+Type
+  array
+
+Description
+  This property is used to assess if a value in the given column can be considered
+  empty or not and, if yes, act on it. The action can be either to set a default
+  value or to remove the entire record from the imported dataset.
+
+  Deciding whether a given value is "empty" is a bit tricky, since :code:`null`,
+  :code:`false`, :code:`0` or an empty string - to name a few - could all be considered
+  empty depending on the circumstances. By default, this property will rely on the PHP
+  function :code:`empty()`. However it is also possible to evaluate an expression based
+  on the values in the record using the Symfony Expression Language.
+
+  expression
+    *(string)* A condition using the Symfony Expression Language syntax. If it evaluates
+    to :code:`true`, the action (see below) will be triggered. The values in the record
+    can be used, by simply referencing them with the column name.
+
+    If no expression is defined, the PHP function :code:`empty()` is used.
+
+    See the `Symfony documentation for reference <https://symfony.com/doc/current/components/expression_language/syntax.html>`_.
+
+  invalidate
+    *(bool)* Set this property to :code:`true` to discard the entire record from the
+    imported dataset if the **expression** (or :code:`empty()`) evaluated to :code:`true`.
+    **invalidate** takes precedence over **default**.
+
+  default
+    *(mixed)* If the **expression** (or :code:`empty()`) evaluate to :code:`true`, this
+    value will be set in the record instead of the empty value.
+
+  **Example**
+
+  .. code-block:: php
+
+        'store_code' => [
+            'exclude' => 0,
+            'label' => 'Code',
+            'config' => [
+                'type' => 'input',
+                'size' => 10
+            ],
+            'external' => [
+                0 => [
+                    'field' => 'code',
+                    'transformations' => [
+                        10 => [
+                            'trim' => true
+                        ],
+                        20 => [
+                            'isEmpty' => [
+                                'expression' => 'store_code === ""',
+                                'invalidate' => true
+                            ]
+                        ],
+                    ]
+                ]
+            ]
+        ],
+
+  In this example, the :code:`store_code` field is compared with an empty string. Any record with
+  an empty string in that column will be removed from the dataset.
+
+  .. note::
+
+     Since you can write any expression as long as it evaluates to a boolean value, this property
+     actually makes it possible to test another condition than just emptiness, although it may be
+     confusing to use it in this way.
+
+  .. warning::
+
+     There's a weird behavior in the Symfony Expression Language: if the value being evaluated
+     is missing from the record, the parser throws an error as if the syntax were invalid. The
+     workaround implemented in External Import is that an evaluation throwing an exception is
+     equivalent to the evaluation returning :code:`true`. This makes it possible to handle
+     missing values, but has the drawback that a real syntax error will not be detected and
+     all values will be considered empty.
+
+     Such events are logged (at notice-level).

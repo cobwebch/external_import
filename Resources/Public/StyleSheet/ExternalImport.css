@@ -14,8 +14,8 @@
 .sorting_desc {
 	cursor: pointer;
 }
-.sorting_asc,
-.sorting_desc {
+.table > thead > tr th.sorting_asc,
+.table > thead > tr th.sorting_desc {
 	background-color: #c9c9c9;
 }
 

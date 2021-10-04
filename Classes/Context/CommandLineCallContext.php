@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Context;
 
 /*
@@ -46,7 +49,7 @@ class CommandLineCallContext extends AbstractCallContext
      * @param mixed $data Additional data to display
      * @return void
      */
-    public function outputDebug($message, $severity, $data): void
+    public function outputDebug(string $message, int $severity, $data): void
     {
         if ($this->importer->isVerbose()) {
             switch ($severity) {

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -34,31 +37,35 @@ class ValidateDataStep extends AbstractStep
      */
     public function run(): void
     {
-        $ctrlConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
+        $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         $records = $this->getData()->getRecords();
 
         // Check if number of records is larger than or equal to the minimum required number of records
         // Note that if the minimum is not defined, this test is skipped
-        if (!empty($ctrlConfiguration['minimumRecords'])) {
+        if (!empty($generalConfiguration['minimumRecords'])) {
             $countRecords = count($records);
-            if ($countRecords < $ctrlConfiguration['minimumRecords']) {
+            if ($countRecords < $generalConfiguration['minimumRecords']) {
                 $this->abortFlag = true;
                 $this->importer->addMessage(
-                        LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:notEnoughRecords',
-                                'external_import',
-                                array(
-                                        $countRecords,
-                                        $ctrlConfiguration['minimumRecords']
-                                )
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:notEnoughRecords',
+                        'external_import',
+                        array(
+                            $countRecords,
+                            $generalConfiguration['minimumRecords']
                         )
+                    )
                 );
             }
         }
 
         // Call hooks to perform additional checks,
         // but only if previous check was passed
-        if (!$this->isAbortFlag() && is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['validateRawRecordset'])) {
+        // Using a hook is deprecated
+        // TODO: remove in the next major version
+        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['validateRawRecordset'] ?? null;
+        if (!$this->isAbortFlag() && is_array($hooks)) {
+            trigger_error('Hook "validateRawRecordset" is deprecated. Use a custom step instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['validateRawRecordset'] as $className) {
                 try {
                     $validator = GeneralUtility::makeInstance($className);
@@ -73,12 +80,12 @@ class ValidateDataStep extends AbstractStep
                     break;
                 } catch (\Exception $e) {
                     $this->importer->debug(
-                            sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'preprocessRawRecordset'
-                            ),
-                            1
+                        sprintf(
+                            'Could not instantiate class %s for hook %s',
+                            $className,
+                            'preprocessRawRecordset'
+                        ),
+                        1
                     );
                 }
             }

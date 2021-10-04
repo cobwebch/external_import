@@ -20,7 +20,6 @@ use Cobweb\ExternalImport\Step\StoreDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use \TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
@@ -54,8 +53,7 @@ class ImporterTest extends FunctionalTestCase
             // Connector services need a global LanguageService object
             $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
-            $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-            $this->subject = $objectManager->get(Importer::class);
+            $this->subject = GeneralUtility::makeInstance(Importer::class);
             $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
             $this->subject->setForcedStoragePid(1);
         }
@@ -125,12 +123,17 @@ class ImporterTest extends FunctionalTestCase
     }
 
     /**
-     * Imports the "designers" and checks whether we have the right count or not (3 expected)
+     * Imports the "designers" and checks whether we have the right count or not (3 expected),
+     * including relations to products.
      *
      * @test
      */
-    public function importDesignersWithImporterStoresThreeRecords()
+    public function importDesignersWithImporterStoresThreeRecordsAndCreatesRelations(): void
     {
+        $this->subject->synchronize(
+                'tx_externalimporttest_product',
+                'base'
+        );
         $messages = $this->subject->synchronize(
                 'tx_externalimporttest_designer',
                 0
@@ -140,13 +143,19 @@ class ImporterTest extends FunctionalTestCase
                 'uid',
                 'tx_externalimporttest_designer'
         );
+        // Count products relations
+        $countRelations = $this->getDatabaseConnection()->selectCount(
+                '*',
+                'tx_externalimporttest_product_designer_mm'
+        );
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(3, $countDesigners, serialize($messages));
+        self::assertEquals(3, $countRelations);
     }
 
     /**
      * Imports the "products" with the "base" configuration and checks whether we have the right count or not
-     * (2 expected). Furthermore relations with categories and tags are tested.
+     * (2 expected). Furthermore, relations with categories and tags are tested.
      *
      * @test
      */
@@ -331,23 +340,20 @@ class ImporterTest extends FunctionalTestCase
                 'products_for_stores'
         );
         // Get the number of relations created
-        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('uid_local', 'stock')
-                ->from('tx_externalimporttest_store_product_mm')
+                ->select('stock')
+                ->from('tx_externalimporttest_store_product')
                 // Ensure consistent order for safe comparison
                 ->orderBy('stock', 'ASC')
                 ->execute();
-        $countRelations = 0;
         $stocks = [];
-        while ($row = $databaseResult->fetch()) {
-            $countRelations++;
+        while ($row = $databaseResult->fetchAssociative()) {
             $stocks[] = $row['stock'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(
+        self::assertCount(
                 6,
-                $countRelations,
+                $stocks,
                 serialize($messages)
         );
         self::assertSame(
@@ -503,22 +509,26 @@ class ImporterTest extends FunctionalTestCase
                 'tx_externalimporttest_store'
         );
         // Get the number of relations created
-        /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('uid_local', 'stock')
-                ->from('tx_externalimporttest_store_product_mm')
+                ->select('stock')
+                ->from('tx_externalimporttest_store_product')
                 // Ensure consistent order for safe comparison
                 ->orderBy('stock', 'ASC')
                 ->execute();
-        $countRelations = 0;
         $stocks = [];
-        while ($row = $databaseResult->fetch()) {
-            $countRelations++;
+        while ($row = $databaseResult->fetchAssociative()) {
             $stocks[] = $row['stock'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-        self::assertEquals(2, $countStores, serialize($messages));
-        self::assertEquals(3, $countRelations);
+        self::assertEquals(
+                2,
+                $countStores,
+                serialize($messages)
+        );
+        self::assertCount(
+                3,
+                $stocks
+        );
         self::assertSame(
                 [5, 6, 10],
                 $stocks

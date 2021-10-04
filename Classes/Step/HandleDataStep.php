@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -29,25 +32,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class HandleDataStep extends AbstractStep
 {
-    /**
-     * @var ArrayHandler
-     */
-    protected $arrayHandler;
-
-    /**
-     * @var XmlHandler
-     */
-    protected $xmlHandler;
-
-    public function injectArrayHandler(ArrayHandler $handler): void
-    {
-        $this->arrayHandler = $handler;
-    }
-
-    public function injectXmlHander(XmlHandler $handler): void
-    {
-        $this->xmlHandler = $handler;
-    }
 
     /**
      * Maps the external data to TCA fields.
@@ -65,44 +49,43 @@ class HandleDataStep extends AbstractStep
                 $dataHandler = GeneralUtility::makeInstance($generalConfiguration['dataHandler']);
                 if ($dataHandler instanceof DataHandlerInterface) {
                     $records = $dataHandler->handleData(
-                            $originalData,
-                            $this->importer
+                        $originalData,
+                        $this->importer
                     );
                 } else {
                     $this->abortFlag = true;
                     LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler',
-                            'external_import',
-                            array($generalConfiguration['dataHandler'])
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler',
+                        'external_import',
+                        array($generalConfiguration['dataHandler'])
                     );
                     return;
                 }
-            }
-            catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $this->abortFlag = true;
                 LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler',
-                        'external_import',
-                        array($generalConfiguration['dataHandler'])
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler',
+                    'external_import',
+                    array($generalConfiguration['dataHandler'])
                 );
                 return;
             }
-
-        // Use default handlers
+            // Use default handlers
         } else {
-
             // Prepare the data, depending on result type
             switch ($generalConfiguration['data']) {
                 case 'xml':
-                    $records = $this->xmlHandler->handleData(
-                            $originalData,
-                            $this->importer
+                    $xmlHandler = GeneralUtility::makeInstance(XmlHandler::class);
+                    $records = $xmlHandler->handleData(
+                        $originalData,
+                        $this->importer
                     );
                     break;
                 case 'array':
-                    $records = $this->arrayHandler->handleData(
-                            $originalData,
-                            $this->importer
+                    $arrayHandler = GeneralUtility::makeInstance(ArrayHandler::class);
+                    $records = $arrayHandler->handleData(
+                        $originalData,
+                        $this->importer
                     );
                     break;
 
@@ -136,9 +119,13 @@ class HandleDataStep extends AbstractStep
      * @return array
      * @throws CriticalFailureException
      */
-    protected function preprocessRawData($records): array
+    protected function preprocessRawData(array $records): array
     {
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'])) {
+        // Using a hook is deprecated
+        // TODO: remove in the next major version
+        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'] ?? null;
+        if (is_array($hooks)) {
+            trigger_error('Hook "preprocessRawRecordset" is deprecated. Use a custom step instead.', E_USER_DEPRECATED);
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['preprocessRawRecordset'] as $className) {
                 try {
                     $preProcessor = GeneralUtility::makeInstance($className);
@@ -150,12 +137,12 @@ class HandleDataStep extends AbstractStep
                     throw $e;
                 } catch (\Exception $e) {
                     $this->importer->debug(
-                            sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'preprocessRawRecordset'
-                            ),
-                            1
+                        sprintf(
+                            'Could not instantiate class %s for hook %s',
+                            $className,
+                            'preprocessRawRecordset'
+                        ),
+                        1
                     );
                 }
             }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Domain\Model;
 
 /*
@@ -21,9 +24,7 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 /**
  * Model for the log table.
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Domain\Model
  */
 class Log extends AbstractEntity
 {
@@ -38,7 +39,7 @@ class Log extends AbstractEntity
     protected $crdate;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Domain\Model\BackendUser User who executed the run
+     * @var BackendUser User who executed the run
      */
     protected $cruserId;
 
@@ -73,7 +74,7 @@ class Log extends AbstractEntity
     /**
      * @param int $status
      */
-    public function setStatus($status): void
+    public function setStatus(int $status): void
     {
         $this->status = $status;
     }
@@ -89,7 +90,7 @@ class Log extends AbstractEntity
     /**
      * @param \DateTime $crdate
      */
-    public function setCrdate($crdate): void
+    public function setCrdate(\DateTime $crdate): void
     {
         $this->crdate = $crdate;
     }
@@ -103,7 +104,7 @@ class Log extends AbstractEntity
     }
 
     /**
-     * @param BackendUser $cruserId
+     * @param int|BackendUser $cruserId
      */
     public function setCruserId($cruserId): void
     {
@@ -121,7 +122,7 @@ class Log extends AbstractEntity
     /**
      * @param string $configuration
      */
-    public function setConfiguration($configuration): void
+    public function setConfiguration(string $configuration): void
     {
         $this->configuration = $configuration;
     }
@@ -153,7 +154,7 @@ class Log extends AbstractEntity
     /**
      * @param string $message
      */
-    public function setMessage($message): void
+    public function setMessage(string $message): void
     {
         $this->message = $message;
     }

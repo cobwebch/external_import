@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Step;
 
 /*
@@ -44,11 +47,11 @@ class CheckPermissionsStep extends AbstractStep
                 $userName = 'Unknown';
             }
             $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_rights_for_sync',
-                            'external_import',
-                            array($userName, $table)
-                    )
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_rights_for_sync',
+                    'external_import',
+                    array($userName, $table)
+                )
             );
         }
     }
