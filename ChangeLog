@@ -2,6 +2,7 @@
 
 	* Improve documentation for "children" property (thanks to Mathias Brodala)
 	* Allow for multiple report recipients (thanks to Mathias Brodala)
+	* Review documentation, resolves #200
 
 2021-10-03 Francois Suter (Idéative)  <typo3@ideative.ch>
 

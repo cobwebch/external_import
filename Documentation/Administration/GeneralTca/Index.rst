@@ -50,35 +50,35 @@ Properties
 
 .. container:: ts-properties
 
-	===================================== ================= ========================
-	Property                              Data type         Scope/Step
-	===================================== ================= ========================
-	additionalFields_                     string            Read data
+   ===================================== ================= ========================
+   Property                              Data type         Scope/Step
+   ===================================== ================= ========================
+   additionalFields_                     string            Read data
    arrayPath_                            string            Handle data (array)
    arrayPathFlatten_                     bool              Handle data (array)
    arrayPathSeparator_                   string            Handle data (array)
-	clearCache_                           string            Clear cache
-	connector_                            string            Read data
-	customSteps_                          array             Any step
-	data_                                 string            Read data
-	dataHandler_                          string            Handle data
-	description_                          string            Display
-	disabledOperations_                   string            Store data
-	disableLog_                           boolean           Store data
-	enforcePid_                           boolean           Store data
-	group_                                string            Sync process
-	minimumRecords_                       integer           Validate data
-	namespaces_                           array             Handle data (XML)
-	nodetype_                             string            Handle data (XML)
-	nodepath_                             string            Handle data (XML)
-	parameters_                           array             Read data
-	pid_                                  integer           Store data
-	priority_                             integer           Display/automated import
-	referenceUid_                         string            Store data
-	updateSlugs_                          boolean           Store data
-	useColumnIndex_                       string or integer Configuration
-	whereClause_                          string            Store data
-	===================================== ================= ========================
+   clearCache_                           string            Clear cache
+   connector_                            string            Read data
+   customSteps_                          array             Any step
+   data_                                 string            Read data
+   dataHandler_                          string            Handle data
+   description_                          string            Display
+   disabledOperations_                   string            Store data
+   disableLog_                           boolean           Store data
+   enforcePid_                           boolean           Store data
+   group_                                string            Sync process
+   minimumRecords_                       integer           Validate data
+   namespaces_                           array             Handle data (XML)
+   nodetype_                             string            Handle data (XML)
+   nodepath_                             string            Handle data (XML)
+   parameters_                           array             Read data
+   pid_                                  integer           Store data
+   priority_                             integer           Display/automated import
+   referenceUid_                         string            Store data
+   updateSlugs_                          boolean           Store data
+   useColumnIndex_                       string or integer Configuration
+   whereClause_                          string            Store data
+   ===================================== ================= ========================
 
 
 .. _administration-general-tca-properties-connector:

@@ -114,10 +114,10 @@ Description
   .. code:: php
 
 		[
-				'name' => 'Zaphod Beeblebrox',
-				'book' => [
-						'title' => 'Hitchiker\'s Guide to the Galaxy'
-				]
+         'name' => 'Zaphod Beeblebrox',
+         'book' => [
+            'title' => 'Hitchiker\'s Guide to the Galaxy'
+         ]
 		]
 
   To import the title of the book, use a configuration like:
@@ -125,7 +125,7 @@ Description
   .. code:: php
 
 		[
-				'arrayPath' => 'book/title'
+         'arrayPath' => 'book/title'
 		]
 
   Works only for array-type data.
@@ -349,25 +349,25 @@ Description
    .. code:: php
 
 		'products' => [
-				'exclude' => 0,
-				'label' => 'Products',
-				'config' => [
-						...
-				],
-				'external' => [
-						0 => [
-								'field' => 'products',
-								'substructureFields' => [
-										'products' => [
-												'field' => 'product'
-										],
-										'quantity' => [
-												'field' => 'qty'
-										]
-								],
-								...
-						]
-				]
+         'exclude' => 0,
+         'label' => 'Products',
+         'config' => [
+            ...
+         ],
+         'external' => [
+            0 => [
+               'field' => 'products',
+               'substructureFields' => [
+                  'products' => [
+                     'field' => 'product'
+                  ],
+                  'quantity' => [
+                     'field' => 'qty'
+                  ]
+               ],
+               ...
+            ]
+         ]
 		]
 
    The keys to the configuration array correspond to the names of the columns where the values will be
@@ -505,20 +505,20 @@ Description
   .. code-block:: php
 
 		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
-				0 => [
-						'field' => 'start_date',
-						'transformations => [
-								20 => [
-										'trim' => true
-								],
-								10 => [
-										'userFunction' => [
-												'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
-												'method' => 'parseDate'
-										]
-								]
-						]
-				]
+         0 => [
+            'field' => 'start_date',
+            'transformations => [
+               20 => [
+                  'trim' => true
+               ],
+               10 => [
+                  'userFunction' => [
+                     'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+                     'method' => 'parseDate'
+                  ]
+               ]
+            ]
+         ]
 		];
 
   The "userFunction" will be executed first (:code:`10`) and the "trim" next (:code:`20`).

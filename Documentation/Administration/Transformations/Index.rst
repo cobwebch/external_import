@@ -18,16 +18,16 @@ Properties
 
 .. container:: ts-properties
 
-	========================= ===================================================== =================
-	Property                  Data type                                             Step/Scope
-	========================= ===================================================== =================
+   ========================= ===================================================== =================
+   Property                  Data type                                             Step/Scope
+   ========================= ===================================================== =================
    isEmpty_                  array                                                 Transform data
-	mapping_                  :ref:`Mapping configuration <administration-mapping>` Transform data
-	rteEnabled_               boolean                                               Transform data
-	trim_                     boolean                                               Transform data
-	userFunction_             array                                                 Transform data
-	value_                    simple type (string, integer, boolean)                Transform data
-	========================= ===================================================== =================
+   mapping_                  :ref:`Mapping configuration <administration-mapping>` Transform data
+   rteEnabled_               boolean                                               Transform data
+   trim_                     boolean                                               Transform data
+   userFunction_             array                                                 Transform data
+   value_                    simple type (string, integer, boolean)                Transform data
+   ========================= ===================================================== =================
 
 
 .. _administration-columns-properties-mapping:

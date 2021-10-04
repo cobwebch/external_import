@@ -86,12 +86,12 @@ tx_externalimporttest_tag.php
 
   - **0**: usage of a custom step to filter out some entries.
 
- - **only-delete**: this one is really specific to integration testing, as it is used
-   to test the deletion of existing tags (loaded from a fixture during testing) when
-   importing.
+  - **only-delete**: this one is really specific to integration testing, as it is used
+    to test the deletion of existing tags (loaded from a fixture during testing) when
+    importing.
 
- - **api**: tests the usage of External Import as an API. See class
-   :php:`\Cobweb\ExternalimportTest\Command\ImportCommand`.
+  - **api**: tests the usage of External Import as an API. See class
+    :php:`\Cobweb\ExternalimportTest\Command\ImportCommand`.
 
 Overrides/pages.php
   Scenario: importing some data (in this case products) as pages to test ordering

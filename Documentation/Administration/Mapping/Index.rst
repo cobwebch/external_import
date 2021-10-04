@@ -147,16 +147,16 @@ Description
      .. code-block:: php
 
           $GLOBALS['TCA']['tx_externalimporttest_product']['columns']['categories']['external']['base'] = [
-                  'xpath' => './self::*[@type="current"]/category',
-                  'transformations' => [
-                          10 => [
-                                  'mapping' => [
-                                          'table' => 'sys_category',
-                                          'referenceField' => 'external_key',
-                                          'default' => ''
-                                  ]
-                          ]
-                  ]
+               'xpath' => './self::*[@type="current"]/category',
+               'transformations' => [
+                    10 => [
+                         'mapping' => [
+                              'table' => 'sys_category',
+                              'referenceField' => 'external_key',
+                              'default' => ''
+                         ]
+                    ]
+               ]
           ];
 
 Scope
@@ -280,15 +280,15 @@ Here's an example TCA configuration.
 
 .. code-block:: php
 
-	$GLOBALS['TCA']['fe_users']['columns']['tx_externalimporttut_department']['external'] = array(
-		0 => array(
+	$GLOBALS['TCA']['fe_users']['columns']['tx_externalimporttut_department']['external'] = [
+		0 => [
 			'field' => 'department',
-			'mapping' => array(
+			'mapping' => [
 				'table' => 'tx_externalimporttut_departments',
 				'referenceField' => 'code'
-			)
-		)
-	);
+			]
+		]
+	];
 
 The value found in the "department" field of the external data
 will be matched to the "code" field of the "tx_externalimporttut_departments" table,
@@ -329,18 +329,18 @@ and the external import configuration like:
 .. code-block:: php
 
 	$GLOBALS['TCA']['tx_externalimporttest_product']['columns']['tags']['external'] = [
-            'base' => [
-                    'xpath' => './self::*[@type="current"]/tags',
-                    'transformations' => [
-                            10 => [
-                                    'mapping' => [
-                                            'table' => 'tx_externalimporttest_tag',
-                                            'referenceField' => 'code',
-                                            'multipleValuesSeparator' => ','
-                                    ]
-                            ]
+      'base' => [
+          'xpath' => './self::*[@type="current"]/tags',
+          'transformations' => [
+               10 => [
+                    'mapping' => [
+                         'table' => 'tx_externalimporttest_tag',
+                         'referenceField' => 'code',
+                         'multipleValuesSeparator' => ','
                     ]
-            ]
+               ]
+          ]
+      ]
 	];
 
 The values in the :code:`<tags>` nodes will be split on the

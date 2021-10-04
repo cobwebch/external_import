@@ -17,17 +17,17 @@ Since External Import 5.0, additional fields are defined in their own
 
 .. code-block:: php
 
-	$GLOBALS['TCA']['tx_externalimporttest_tag'] = [
-        'external' => [
-                'additionalFields' => [
-                        0 => [
-                                'quantity' => [
-                                        'field' => 'qty'
-                                ]
-                        ]
-                ]
-        ],
-	];
+   $GLOBALS['TCA']['tx_externalimporttest_tag'] = [
+      'external' => [
+         'additionalFields' => [
+            0 => [
+               'quantity' => [
+                  'field' => 'qty'
+               ]
+            ]
+         ]
+      ],
+   ];
 
 As usual the index (here :code:`0`) must match between the general configuration,
 the columns configuration and the additional fields configuration.
