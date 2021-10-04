@@ -178,6 +178,9 @@ class ReportingUtility implements LoggerAwareInterface
     public function sendMail(string $subject, string $body): void
     {
         $result = 0;
+        $recipientMail = is_array($this->extensionConfiguration['reportEmail'])
+            ? $this->extensionConfiguration['reportEmail']
+            : GeneralUtility::trimExplode(',', $this->extensionConfiguration['reportEmail'], true);
         // Get default mail configuration for sending the report
         $senderMail = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'] ?? '';
         $senderName = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromName'] ?? $senderMail;
@@ -196,11 +199,7 @@ class ReportingUtility implements LoggerAwareInterface
                 ];
                 $mailObject->setFrom($sender);
                 $mailObject->setReplyTo($sender);
-                $mailObject->setTo(
-                    [
-                        $this->extensionConfiguration['reportEmail']
-                    ]
-                );
+                $mailObject->setTo($recipientMail);
                 $mailObject->setSubject($subject);
                 $mailObject->text($body);
                 // Send mail
@@ -213,7 +212,7 @@ class ReportingUtility implements LoggerAwareInterface
 
         // Report error in log, if any
         if ($result === 0) {
-            $comment = 'Reporting mail could not be sent to ' . $this->extensionConfiguration['reportEmail'];
+            $comment = 'Reporting mail could not be sent to ' . implode(', ', $recipientMail);
             if (!empty($message)) {
                 $comment .= ' (' . $message . ')';
             }

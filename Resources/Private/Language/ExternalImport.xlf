@@ -18,7 +18,7 @@
 				<source>Force time limit (seconds): Change the maximun execution time for the import process. Defaut time limit is used if value = -1. See the manual for more details.</source>
 			</trans-unit>
 			<trans-unit id="config.reportEmail" xml:space="preserve">
-				<source>Email for reporting: When the import is executed automatically, you may receive a report about the execution if you set an email address (leave blank for no report).</source>
+				<source>Email for reporting (multiple addresses separated by comma): When the import is executed automatically, you may receive a report about the execution if you set an email address (leave blank for no report).</source>
 			</trans-unit>
 			<trans-unit id="config.reportSubject" xml:space="preserve">
 				<source>Subject of email report: Set a subject for the email report. Additional information will be appended to that subject (i.e. "Full synchronization" ou "Synchronization of table x, index y").</source>
