@@ -81,7 +81,7 @@ getImporter
 Insert Record Preprocess
 """"""""""""""""""""""""
 
-Class: :php:`\Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent`
+Class: :php:`\Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent`
 
 Similar to the "Update Record Preprocess" event, but for
 the insert operation.
