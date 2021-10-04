@@ -1,3 +1,8 @@
+2021-10-04 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve documentation for "children" property (thanks to Mathias Brodala)
+	* Allow for multiple report recipients (thanks to Mathias Brodala)
+
 2021-10-03 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix command line exit codes, resolves #208

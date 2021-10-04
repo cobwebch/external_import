@@ -65,6 +65,9 @@ A new transformation property :ref:`isEmpty <administration-transformations-prop
 is available for checking if a given data can be considered empty or not.
 For maximum flexibility, it relies on the Symfony Expression language.
 
+It is also possible to set multiple mail recipients for the import report
+instead of a single one (see the :ref:`extension configuration <configuration>`).
+
 
 .. _installation-upgrade-510:
 

@@ -29,7 +29,9 @@ Force time limit
 Email for reporting
   If an email address is entered here, a detailed
   report will be sent to this address after every automated
-  synchronization. Mails are not sent after manual synchronizations started
+  synchronization. Multiple email adresses may be defined, separated by commas.
+
+  Mails are not sent after manual synchronizations started
   from the BE module. The mail address used for sending the report is
   (:code:`$GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress']`).
   If it is not defined, the report will not be sent and
