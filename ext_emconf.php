@@ -11,13 +11,13 @@ $EM_CONF[$_EXTKEY] = [
     'createDirs' => '',
     'clearCacheOnLoad' => 0,
     'author_company' => '',
-    'version' => '5.1.1',
+    'version' => '6.0.0',
     'constraints' =>
         [
             'depends' =>
                 [
-                    'svconnector' => '3.4.0-0.0.0',
-                    'typo3' => '10.4.99-11.99.99',
+                    'svconnector' => '4.0.0-0.0.0',
+                    'typo3' => '10.4.0-11.5.99',
                     'scheduler' => '',
                 ],
             'conflicts' =>
@@ -25,7 +25,7 @@ $EM_CONF[$_EXTKEY] = [
                 ],
             'suggests' =>
                 [
-                    'externalimport_tut' => '2.0.1-0.0.0',
+                    'externalimport_tut' => '3.0.1-0.0.0',
                 ],
         ],
 ];
