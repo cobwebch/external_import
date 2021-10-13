@@ -220,7 +220,7 @@ class ArrayHandler implements DataHandlerInterface
             $row = [];
             foreach ($columnConfiguration as $key => $configuration) {
                 try {
-                    $value = $this->getValue($item, $configuration);
+                    $value = $this->getValue($item ?? [], $configuration);
                     $row[$key] = $value;
                 } catch (\Exception $e) {
                     // Nothing to do, we ignore values that were not found

@@ -1,3 +1,7 @@
+2021-10-13 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Ensure an array is passed when getting a value from a substructure
+
 2021-10-05 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Release version 6.0.0
