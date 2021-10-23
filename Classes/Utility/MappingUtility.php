@@ -64,7 +64,7 @@ class MappingUtility implements ImporterAwareInterface
             // in the database, but is part of the import. In this case we need to create a temporary ID for that
             // record and store it in order to reuse it when assembling the DataHandler data map (in the StoreDataStep).
             $isSelfReferential = false;
-            if ($mappingInformation['table'] === $table) {
+            if (($mappingInformation['table'] ?? '') === $table) {
                 $isSelfReferential = true;
             }
 

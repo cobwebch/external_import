@@ -1103,11 +1103,11 @@ class StoreDataStep extends AbstractStep
                         $data = unserialize($row['log_data'], ['allowed_classes' => false]);
                         $message = sprintf(
                             $label,
-                            htmlspecialchars($data[0]),
-                            htmlspecialchars($data[1]),
-                            htmlspecialchars($data[2]),
-                            htmlspecialchars($data[3]),
-                            htmlspecialchars($data[4])
+                            htmlspecialchars($data[0] ?? ''),
+                            htmlspecialchars($data[1] ?? ''),
+                            htmlspecialchars($data[2] ?? ''),
+                            htmlspecialchars($data[3] ?? ''),
+                            htmlspecialchars($data[4] ?? '')
                         );
                     }
                     $this->importer->addMessage(
