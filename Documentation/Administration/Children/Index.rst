@@ -107,7 +107,7 @@ Type
 Description
   List of columns (database fields) needed for the nested table. This is an
   associative array, using the column name as the key. Then each column must
-  have one of two properties
+  have one of two properties:
 
   value
     This is a simple value that will be used for each entry into the nested table.
