@@ -91,7 +91,7 @@ class ValidationResult
      */
     public function countForProperty(string $property): int
     {
-        return $this->results[$property] ? count($this->results[$property]) : 0;
+        return count($this->results[$property] ?? []);
     }
 
     /**

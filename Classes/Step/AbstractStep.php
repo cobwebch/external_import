@@ -126,6 +126,6 @@ abstract class AbstractStep implements ImporterAwareInterface
      */
     public function getParameter($key)
     {
-        return $this->parameters[$key];
+        return $this->parameters[$key] ?? null;
     }
 }

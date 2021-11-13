@@ -68,11 +68,7 @@ class ConfigurationKey
         $this->configurationKey = $configurationKey;
         $keyParts = explode(self::CONCATENATOR, $configurationKey);
         $this->table = $keyParts[0];
-        if ($keyParts[1] === null || $keyParts[1] === '') {
-            $this->index = '';
-        } else {
-            $this->index = $keyParts[1];
-        }
+        $this->index = $keyParts[1] ?? '';
     }
 
     /**
