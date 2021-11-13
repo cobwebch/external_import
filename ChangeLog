@@ -4,6 +4,7 @@
 	* Fix test classes setUp method signature
 	* Update handling of exceptions in test classes
 	* Improve test setup for GeneralConfigurationValidator test class
+	* Avoid trimming non-string data, resolves #212
 
 2021-10-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 

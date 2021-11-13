@@ -80,6 +80,17 @@ Description
   If set to :code:`true`, every value for this column will be trimmed during the
   transformation step.
 
+  .. note::
+
+     With newer versions of PHP, trying to trim a non-string causes an error.
+     To account for that, since External Import 6.0.1, non-string data is left
+     unchanged by this transformation. This may cause changes in your import, as
+     previously the data used to be cast on the fly and trimmed.
+
+     If you are affected by this change, you should create a custom transformation
+     with a :ref:`userFunction <administration-transformations-properties-userfunction>`
+     to cast your data explicitly before calling :code:`trim`.
+
 Scope
   Transform data
 

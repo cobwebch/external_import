@@ -123,6 +123,38 @@ class TransformDataStepTest extends FunctionalTestCase
                         'bar' => ' Not trimmed '
                     ]
                 ]
+            ],
+            'Trim not string data' => [
+                'foo',
+                true,
+                [
+                    0 => [
+                        'foo' => ['bar' => 'baz']
+                    ],
+                    1 => [
+                        'foo' => 2
+                    ],
+                    2 => [
+                        'foo' => true
+                    ],
+                    3 => [
+                        'bar' => 'baz'
+                    ]
+                ],
+                [
+                    0 => [
+                        'foo' => ['bar' => 'baz']
+                    ],
+                    1 => [
+                        'foo' => 2
+                    ],
+                    2 => [
+                        'foo' => true
+                    ],
+                    3 => [
+                        'bar' => 'baz'
+                    ]
+                ]
             ]
         ];
     }

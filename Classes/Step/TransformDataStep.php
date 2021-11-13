@@ -176,7 +176,10 @@ class TransformDataStep extends AbstractStep
     {
         if ((bool)$configuration) {
             foreach ($records as $index => $record) {
-                $records[$index][$name] = trim($record[$name] ?? '');
+                // Apply trim only if input is a string, otherwise leave unchanged
+                if (is_string($record[$name] ?? null)) {
+                    $records[$index][$name] = trim($record[$name]);
+                }
             }
         }
         return $records;
