@@ -35,7 +35,7 @@ class MappingUtilityTest extends UnitTestCase
      */
     protected $mappingUtility;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->mappingUtility = GeneralUtility::makeInstance(MappingUtility::class);
     }

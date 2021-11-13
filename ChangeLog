@@ -1,6 +1,7 @@
 2021-11-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix access to undefined array keys
+	* Fix test classes setUp method signature
 
 2021-10-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 

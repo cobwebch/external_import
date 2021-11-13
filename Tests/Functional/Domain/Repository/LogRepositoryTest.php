@@ -41,7 +41,7 @@ class LogRepositoryTest extends FunctionalTestCase
      */
     protected $queryParameters;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         try {

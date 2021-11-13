@@ -30,7 +30,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
      */
     protected $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->subject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(TemporaryKeyRepository::class);

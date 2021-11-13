@@ -39,7 +39,7 @@ class ImporterTest extends UnitTestCase
      */
     protected $subject;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         // For unit testing, don't inject all dependencies
         $this->subject = GeneralUtility::makeInstance(

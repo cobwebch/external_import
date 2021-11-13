@@ -38,7 +38,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      */
     protected $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         // Connector services need a global LanguageService object

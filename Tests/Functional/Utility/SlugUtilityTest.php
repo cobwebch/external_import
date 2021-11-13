@@ -37,7 +37,7 @@ class SlugUtilityTest extends FunctionalTestCase
      */
     protected $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);

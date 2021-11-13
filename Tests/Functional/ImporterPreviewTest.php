@@ -53,7 +53,7 @@ class ImporterPreviewTest extends FunctionalTestCase
      */
     protected $subject;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         try {

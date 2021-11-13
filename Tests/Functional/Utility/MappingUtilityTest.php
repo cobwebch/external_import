@@ -39,7 +39,7 @@ class MappingUtilityTest extends FunctionalTestCase
      */
     protected $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->subject = GeneralUtility::makeInstance(MappingUtility::class);

@@ -41,7 +41,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
      */
     protected $subject;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         try {
