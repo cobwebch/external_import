@@ -157,13 +157,13 @@ class MappingUtilityTest extends UnitTestCase
     /**
      * @test
      * @dataProvider mappingTestWithStrposWithBadMappingTableProvider
-     * @expectedException \UnexpectedValueException
      * @param string $inputData
      * @param array $mappingTable
      * @param array $mappingConfiguration
      */
     public function failMatchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration): void
     {
+        $this->expectException(\UnexpectedValueException::class);
         $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
     }
 
@@ -234,13 +234,13 @@ class MappingUtilityTest extends UnitTestCase
     /**
      * @test
      * @dataProvider mappingTestWithStriposWithBadMappingTableProvider
-     * @expectedException \UnexpectedValueException
      * @param string $inputData
      * @param array $mappingTable
      * @param array $mappingConfiguration
      */
     public function failMatchWordsWithStriposNotSymmetric($inputData, $mappingTable, $mappingConfiguration): void
     {
+        $this->expectException(\UnexpectedValueException::class);
         $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
     }
 }

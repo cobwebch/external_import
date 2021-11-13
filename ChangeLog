@@ -2,6 +2,7 @@
 
 	* Fix access to undefined array keys
 	* Fix test classes setUp method signature
+	* Update handling of exceptions in test classes
 
 2021-10-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 

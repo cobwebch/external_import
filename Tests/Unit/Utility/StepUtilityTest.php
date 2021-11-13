@@ -227,10 +227,10 @@ class StepUtilityTest extends UnitTestCase
      * @dataProvider customStepsWrongConfigurationProvider
      * @param array $currentSteps
      * @param array $configuration
-     * @expectedException \Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration
      */
     public function validateCustomStepConfigurationWithWrongInformationThrowsException($currentSteps, $configuration): void
     {
+        $this->expectException(\Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration::class);
         $this->subject->validateCustomStepConfiguration(
                 $currentSteps,
                 $configuration

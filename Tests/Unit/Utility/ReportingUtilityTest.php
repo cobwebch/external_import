@@ -51,10 +51,10 @@ class ReportingUtilityTest extends UnitTestCase
 
     /**
      * @test
-     * @expectedException \Cobweb\ExternalImport\Exception\UnknownReportingKeyException
      */
     public function getValueForStepForUnknownKeyThrowsException(): void
     {
+        $this->expectException(\Cobweb\ExternalImport\Exception\UnknownReportingKeyException::class);
         $this->subject->getValueForStep('foo', 'bar');
     }
 
