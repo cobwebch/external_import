@@ -20,15 +20,12 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Validator\GeneralConfigurationValidator;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Localization\LocalizationFactory;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class GeneralConfigurationValidatorTest extends FunctionalTestCase
 {
-    protected $coreExtensionsToLoad = [
-            'frontend'
-    ];
-
     protected $testExtensionsToLoad = [
             'typo3conf/ext/external_import'
     ];
@@ -42,8 +39,14 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     {
         parent::setUp();
         // Connector services need a global LanguageService object
-        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
-        $GLOBALS['LANG']->init('en');
+        $GLOBALS['LANG'] = $this->getAccessibleMock(
+                LanguageService::class,
+                [],
+                [],
+                '',
+                // Don't call the original constructor to avoid a cascade of dependencies
+                false
+        );
 
         $this->subject = GeneralUtility::makeInstance(GeneralConfigurationValidator::class);
     }
