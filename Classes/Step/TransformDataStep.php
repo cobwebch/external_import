@@ -369,6 +369,21 @@ class TransformDataStep extends AbstractStep
             if ($isEmpty) {
                 if (array_key_exists('invalidate', $configuration) && (bool)$configuration['invalidate']) {
                     unset($records[$index]);
+                    // Log info about dropped record
+                    $this->importer->debug(
+                        LocalizationUtility::translate(
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:emptyRecordRemoved',
+                            'external_import',
+                            [
+                                $index,
+                                $name
+                            ]
+                        ),
+                        3,
+                        [
+                            'record' => $record
+                        ]
+                    );
                 } elseif (array_key_exists('default', $configuration)) {
                     $records[$index][$name] = $configuration['default'];
                 }

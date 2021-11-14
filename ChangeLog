@@ -1,3 +1,7 @@
+2021-11-14 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Log message when record with empty value is dropped, references #209
+
 2021-11-13 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix access to undefined array keys

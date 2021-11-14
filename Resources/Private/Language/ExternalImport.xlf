@@ -122,6 +122,9 @@
 			<trans-unit id="transformationFailedWithMessage" xml:space="preserve">
 				<source>Record transformation failed (Message: %s, code: %d). See attached data for details.</source>
 			</trans-unit>
+			<trans-unit id="emptyRecordRemoved" xml:space="preserve">
+				<source>Empty value detected on row %1$d for column %2$s. The whole record was removed.</source>
+			</trans-unit>
 			<trans-unit id="invalidRecordRemoved" xml:space="preserve">
 				<source>Invalid record detected and removed (Message: %s, code: %d). See attached data for details.</source>
 			</trans-unit>
