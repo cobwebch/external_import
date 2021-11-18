@@ -11,7 +11,7 @@ $EM_CONF[$_EXTKEY] = [
     'createDirs' => '',
     'clearCacheOnLoad' => 0,
     'author_company' => '',
-    'version' => '6.0.0',
+    'version' => '6.0.1',
     'constraints' =>
         [
             'depends' =>
@@ -25,7 +25,6 @@ $EM_CONF[$_EXTKEY] = [
                 ],
             'suggests' =>
                 [
-                    'externalimport_tut' => '3.0.1-0.0.0',
                 ],
         ],
 ];
