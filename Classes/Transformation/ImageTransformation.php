@@ -254,7 +254,7 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         }
 
         // Ensure the storage folder is loaded (we keep a local cache of folder objects for efficiency)
-        if ($this->storageFolders[$storagePath] === null) {
+        if (($this->storageFolders[$storagePath] ?? null) === null) {
             $this->storageFolders[$storagePath] = $this->resourceFactory->getFolderObjectFromCombinedIdentifier(
                 $storagePath
             );
