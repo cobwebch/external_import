@@ -1234,7 +1234,9 @@ class StoreDataStep extends AbstractStep
         $this->importer->debug(
             'Stack trace',
             3,
-            $e->getTraceAsString()
+            [
+                $e->getTraceAsString()
+            ]
         );
     }
 

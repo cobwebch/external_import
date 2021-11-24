@@ -1,3 +1,11 @@
+2021-11-24 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Ensure data sent to log is an array
+
+2021-11-19 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix access to undefined array keys
+
 2021-11-18 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Release version 6.0.1
