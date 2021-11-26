@@ -445,45 +445,46 @@ class Importer implements LoggerAwareInterface
     {
         if ($this->isDebug()) {
             $data = is_array($data) ? $data : [$data];
+            $message = '[External Import] ' . $message;
             // Match devlog severities: 0 is info, 1 is notice, 2 is warning, 3 is fatal error, -1 is "OK" message
             switch ($severity) {
                 case 0:
                     $this->logger->info(
-                            $message,
-                            $data
+                        $message,
+                        $data
                     );
                     break;
                 case 1:
                     $this->logger->notice(
-                            $message,
-                            $data
+                        $message,
+                        $data
                     );
                     break;
                 case 2:
                     $this->logger->warning(
-                            $message,
-                            $data
+                        $message,
+                        $data
                     );
                     break;
                 case 3:
                     $this->logger->error(
-                            $message,
-                            $data
+                        $message,
+                        $data
                     );
                     break;
                 default:
                     $this->logger->debug(
-                            $message,
-                            $data
+                        $message,
+                        $data
                     );
             }
         }
         // Push the debug data to the call context for special display, if needed (e.g. the command-line controller)
         if ($this->callContext !== null) {
             $this->callContext->outputDebug(
-                    $message,
-                    $severity,
-                    $data
+                $message,
+                $severity,
+                $data
             );
         }
     }
