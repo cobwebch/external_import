@@ -42,6 +42,71 @@ class ArrayHandlerTest extends UnitTestCase
 
     public function getValueSuccessProvider(): array
     {
+        $sampleStructureComplexity1 = [
+            'test' => [
+                'data' => [
+                    0 => [
+                        'status' => 'valid',
+                        'list' => [
+                            0 => 'me',
+                            1 => 'you'
+                        ]
+                    ],
+                    1 => [
+                        'status' => 'invalid',
+                        'list' => [
+                            4 => 'we'
+                        ]
+                    ],
+                    2 => [
+                        'status' => 'valid',
+                        'list' => [
+                            3 => 'them'
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $sampleStructureComplexity1Modified = $sampleStructureComplexity1;
+        $sampleStructureComplexity1Modified['test']['data'][0]['status'] = 'invalid';
+        $sampleStructureComplexity2 = [
+            'test' => [
+                'data' => [
+                    [
+                        'status' => 'valid',
+                        'list' => [
+                            0 => [
+                                'name' => 'me',
+                                'real' => true
+                            ],
+                            1 => [
+                                'name' => 'you',
+                                'real' => false
+                            ]
+                        ]
+                    ],
+                    [
+                        'status' => 'invalid',
+                        'list' => [
+                            4 => [
+                                'name' => 'we',
+                                'real' => true
+                            ]
+                        ]
+                    ],
+                    [
+                        'status' => 'valid',
+                        'list' => [
+                            3 => [
+                                'name' => 'them',
+                                'real' => true
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
         return [
             'direct simple value' => [
                 'record' => [
@@ -52,7 +117,22 @@ class ArrayHandlerTest extends UnitTestCase
                 ],
                 'result' => 'bar'
             ],
-            'simple array path with keys' => [
+            'direct array value' => [
+                'record' => [
+                    'test' => [
+                        'foo' => 'me',
+                        'bar' => 'you'
+                    ]
+                ],
+                'configuration' => [
+                    'field' => 'test'
+                ],
+                'result' => [
+                    'foo' => 'me',
+                    'bar' => 'you'
+                ]
+            ],
+            'simple array path with keys, simple value' => [
                 'record' => [
                     'test' => [
                         'foo' => 'me',
@@ -64,19 +144,7 @@ class ArrayHandlerTest extends UnitTestCase
                 ],
                 'result' => 'me'
             ],
-            'simple array path with indices on simple type' => [
-                'record' => [
-                    'test' => [
-                        0 => 'me',
-                        1 => 'you'
-                    ]
-                ],
-                'configuration' => [
-                    'arrayPath' => 'test/0'
-                ],
-                'result' => 'me'
-            ],
-            'array path with indices on array structure' => [
+            'simple array path with keys, array value' => [
                 'record' => [
                     'test' => [
                         'data' => [
@@ -95,7 +163,19 @@ class ArrayHandlerTest extends UnitTestCase
                     1 => 'you'
                 ]
             ],
-            'array path with self condition' => [
+            'simple array path with indices' => [
+                'record' => [
+                    'test' => [
+                        0 => 'me',
+                        1 => 'you'
+                    ]
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/0'
+                ],
+                'result' => 'me'
+            ],
+            'array path with condition on intermediary segment' => [
                 'record' => [
                     'test' => [
                         'data' => [
@@ -115,7 +195,7 @@ class ArrayHandlerTest extends UnitTestCase
                     1 => 'you'
                 ]
             ],
-            'array path with condition on simple type' => [
+            'array path with condition on final segment' => [
                 'record' => [
                     'test' => [
                         'data' => 'me'
@@ -127,29 +207,7 @@ class ArrayHandlerTest extends UnitTestCase
                 'result' => 'me',
             ],
             'array path with children condition, multiple results' => [
-                'record' => [
-                    'test' => [
-                        'data' => [
-                            [
-                                'status' => 'valid',
-                                'list' => [
-                                    0 => 'me',
-                                    1 => 'you'
-                                ]
-                            ],
-                            [
-                                'status' => 'invalid',
-                                'list' => []
-                            ],
-                            [
-                                'status' => 'valid',
-                                'list' => [
-                                    3 => 'them'
-                                ]
-                            ],
-                        ]
-                    ]
-                ],
+                'record' => $sampleStructureComplexity1,
                 'configuration' => [
                     'arrayPath' => 'test/data/*{status === \'valid\'}/list'
                 ],
@@ -159,30 +217,59 @@ class ArrayHandlerTest extends UnitTestCase
                     2 => 'them'
                 ]
             ],
-            'array path with children condition, single result' => [
-                'record' => [
-                    'test' => [
-                        'data' => [
-                            [
-                                'status' => 'invalid',
-                                'list' => [
-                                    0 => 'me',
-                                    1 => 'you'
-                                ]
-                            ],
-                            [
-                                'status' => 'invalid',
-                                'list' => []
-                            ],
-                            [
-                                'status' => 'valid',
-                                'list' => [
-                                    3 => 'them'
-                                ]
-                            ],
+            'array path with children condition, multiple results, matching structure preserved' => [
+                'record' => $sampleStructureComplexity1,
+                'configuration' => [
+                    'arrayPath' => 'test/data/*{status === \'valid\'}/./list'
+                ],
+                'result' => [
+                    0 => [
+                        0 => 'me',
+                        1 => 'you'
+                    ],
+                    1 => [
+                        3 => 'them'
+                    ]
+                ]
+            ],
+            'array path with multiple children condition, multiple results, matching structure preserved on every level' => [
+                'record' => $sampleStructureComplexity2,
+                'configuration' => [
+                    'arrayPath' => 'test/data/*{status === \'valid\'}/./list/*{real}/.'
+                ],
+                'result' => [
+                    0 => [
+                        0 => [
+                            'name' => 'me',
+                            'real' => true
+                        ]
+                    ],
+                    1 => [
+                        0 => [
+                            'name' => 'them',
+                            'real' => true
                         ]
                     ]
+                ]
+            ],
+            'array path with multiple children condition, multiple results, matching structure preserved on last level' => [
+                'record' => $sampleStructureComplexity2,
+                'configuration' => [
+                    'arrayPath' => 'test/data/*{status === \'valid\'}/list/*{real}/.'
                 ],
+                'result' => [
+                    0 => [
+                        'name' => 'me',
+                        'real' => true
+                    ],
+                    1 => [
+                        'name' => 'them',
+                        'real' => true
+                    ]
+                ]
+            ],
+            'array path with children condition, single result' => [
+                'record' => $sampleStructureComplexity1Modified,
                 'configuration' => [
                     'arrayPath' => 'test/data/*{status === \'valid\'}/list'
                 ],
@@ -191,29 +278,7 @@ class ArrayHandlerTest extends UnitTestCase
                 ]
             ],
             'array path with children condition, single result, flattened' => [
-                'record' => [
-                    'test' => [
-                        'data' => [
-                            [
-                                'status' => 'invalid',
-                                'list' => [
-                                    0 => 'me',
-                                    1 => 'you'
-                                ]
-                            ],
-                            [
-                                'status' => 'invalid',
-                                'list' => []
-                            ],
-                            [
-                                'status' => 'valid',
-                                'list' => [
-                                    3 => 'them'
-                                ]
-                            ],
-                        ]
-                    ]
-                ],
+                'record' => $sampleStructureComplexity1Modified,
                 'configuration' => [
                     'arrayPath' => 'test/data/*{status === \'valid\'}/list',
                     'arrayPathFlatten' => true
@@ -237,7 +302,11 @@ class ArrayHandlerTest extends UnitTestCase
                             ],
                             [
                                 'status' => 'invalid',
-                                'list' => []
+                                'list' => [
+                                    4 => [
+                                        'name' => 'we'
+                                    ]
+                                ]
                             ],
                             [
                                 'status' => 'valid',
@@ -263,21 +332,6 @@ class ArrayHandlerTest extends UnitTestCase
                     2 => [
                         'name' => 'them'
                     ]
-                ]
-            ],
-            'substructure' => [
-                'record' => [
-                    'test' => [
-                        'foo' => 'me',
-                        'bar' => 'you'
-                    ]
-                ],
-                'configuration' => [
-                    'field' => 'test'
-                ],
-                'result' => [
-                    'foo' => 'me',
-                    'bar' => 'you'
                 ]
             ]
         ];

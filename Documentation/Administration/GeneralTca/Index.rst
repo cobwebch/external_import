@@ -224,99 +224,11 @@ Type
 
 Description
   Pointer to a sub-array inside the incoming external data, as a list of keys
-  separated by some marker (see the :ref:`arrayPathSeparator <administration-general-tca-properties-arraypathseparator>`)
-  property (which defaults to :code:`/`). The sub-array pointed to will be used
+  separated by some marker. The sub-array pointed to will be used
   as the source of data in the subsenquent steps, rather than the whole structure
   that was read during the :code:`ReadDataStep`.
 
-  Conditions can be applied to each segment of the path using the Symfony Expression Language syntax,
-  wrapped in curly braces. If the value being tested is an array, its items can be accessed directly
-  in the expression (see the example below with the :code:`status` item). If the value is a simple type,
-  it can be accessed in the expression with the key :code:`value`.
-
-  The special segments :code:`*` indicates that the path and conditions after that point
-  should be applied to all items of the current value, if that value is an array. The example
-  below clarifies this usage.
-
-  .. note::
-
-     If several "children" are matched when using :code:`*` as a segment, the result will be an array.
-     If a single value was matched, it is returned as is.
-
-  See the `Symfony documentation for reference on the Symfony Expression Language syntax <https://symfony.com/doc/current/components/expression_language/syntax.html>`_.
-
-  **Example**
-
-  Given the following JSON data (which is read into an array):
-
-  .. code-block:: json
-
-      {
-        "count": 2,
-        "data": {
-          "orders": [
-            {
-              "status": "valid",
-              "list": [
-                {
-                  "order": "000001",
-                  "date": "2020-08-07 14:32",
-                  "customer": "Conan the Barbarian",
-                  "products": [
-                    {
-                      "product": "000001",
-                      "qty": 3
-                    },
-                    ...
-                  ]
-                },
-                {
-                  "order": "000003",
-                  "date": "2021-03-07 17:56",
-                  "customer": "Empty basket",
-                  "products": []
-                },
-                {
-                  "order": "000002",
-                  "date": "2020-08-08 06:48",
-                  "customer": "Sonja the Red",
-                  "products": [
-                    {
-                      "product": "000001",
-                      "qty": 1
-                    },
-                    ...
-                  ]
-                }
-              ]
-            },
-            {
-              "status": "invalid",
-              "list": [
-                {
-                  "order": "000021",
-                  "date": "2021-08-24 12:00",
-                  "customer": "Refused",
-                  "products": [
-                    {
-                      "product": "000202",
-                      "qty": 1
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }
-
-  We want to import the orders, i.e. the elements that are keyed to :code:`orders`
-  inside :code:`data`. Among the list of orders, we also want only those with the
-  value "valid" for :code:`status`. Hence the property needs to be
-  :code:`data/orders/*{status === \'valid\'}/list`.
-
-  This will first find all the orders (there are two), then check each of them for their
-  status and finally, within the order that matched, it will extract the list and return just that.
+  For more details on usage and available options, :ref:`see the dedicated page <administration-array-path>`.
 
 Scope
   Handle data (array)
@@ -335,6 +247,14 @@ Description
   the resulting structure is always an array. If the :code:`arrayPath` target is
   actually a single value, this may not be desirable. When :code:`arrayPathFlatten`
   is set to :code:`true`, the result is preserved as a simple type.
+
+  .. note::
+
+     If the :code:`arrayPath` property uses the special :code:`*` segment several times,
+     :code:`arrayPathFlatten` will apply only to the last occurrence. The reason is that
+     the method which traverses the array structure is called recursively on each :code:`*` segment.
+     When the result of the final call is flattened, a simple type is returned back up the
+     call chain, which means that :code:`arrayPathFlatten` has no further effect.
 
 Scope
   Handle data (array)

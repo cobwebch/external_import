@@ -102,40 +102,13 @@ Type
 Description
   Replaces the :ref:`field <administration-columns-properties-field>` property for pointing
   to a field in a "deeper" position inside a multidimensional array. The value is a string
-  comprised of the keys for pointing into the array, separated by some character (:code:`/`
-  by default; can be changed using the :ref:`arrayPathSeparator <administration-columns-properties-array-path-separator>`
-  property).
+  comprised of the keys for pointing into the array, separated by some character.
 
-  Conditions and the special segment :code:`*` are also available. See the
-  :ref:`general configuration property arrayPath for reference <administration-general-tca-properties-arraypath>`.
-
-  Consider the following structure to import:
-
-  .. code:: php
-
-		[
-         'name' => 'Zaphod Beeblebrox',
-         'book' => [
-            'title' => 'Hitchiker\'s Guide to the Galaxy'
-         ]
-		]
-
-  To import the title of the book, use a configuration like:
-
-  .. code:: php
-
-		[
-         'arrayPath' => 'book/title'
-		]
+  For more details on usage and available options, :ref:`see the dedicated page <administration-array-path>`.
 
   Works only for array-type data.
 
-  .. note::
-
-     Using :code:`'arrayPath' => 'book'` is equivalent to using :code:`'field' => 'book'`,
-     but the "field" property should be preferred in such a case.
-
-     If both "field" and "arrayPath" are defined, the latter takes precedence.
+  If both "field" and "arrayPath" are defined, the latter takes precedence.
 
 Scope
   Handle data (array)
@@ -154,6 +127,14 @@ Description
   the resulting structure is always an array. If the :code:`arrayPath` target is
   actually a single value, this may not be desirable. When :code:`arrayPathFlatten`
   is set to :code:`true`, the result is preserved as a simple type.
+
+  .. note::
+
+     If the :code:`arrayPath` property uses the special :code:`*` segment several times,
+     :code:`arrayPathFlatten` will apply only to the last occurrence. The reason is that
+     the method which traverses the array structure is called recursively on each :code:`*` segment.
+     When the result of the final call is flattened, a simple type is returned back up the
+     call chain, which means that :code:`arrayPathFlatten` has no further effect.
 
 Scope
   Handle data (array)

@@ -246,6 +246,11 @@ class ArrayHandler implements DataHandlerInterface
         if (count($segments) > 0) {
             do {
                 $segment = array_shift($segments);
+                // This special segment is handled by looking ahead when the current segment is "*"
+                // When it is itself the current segment, it should do nothing
+                if ($segment === '.') {
+                    continue;
+                }
                 $key = $segment;
                 $condition = '';
                 // If the segment contains a condition, extract it
@@ -256,11 +261,12 @@ class ArrayHandler implements DataHandlerInterface
                         $condition = $matches[2];
                     }
                 }
-                // Consider all children of the current value
-                // NOTE: this makes sense only if the current value is an array, if it is not, it is left unchanged
+                // Look for a new value using the segment only if the current value is an array
                 if (is_array($value)) {
+                    // Consider all children of the current value
                     if ($key === '*') {
                         $newValue = [];
+                        $nextSegment = current($segments);
                         foreach ($value as $itemValue) {
                             // Apply condition on each item, if defined
                             $result = $this->applyCondition($condition, $itemValue);
@@ -272,8 +278,22 @@ class ArrayHandler implements DataHandlerInterface
                                     $flattenResults
                                 );
                                 if (is_array($resultingItems)) {
-                                    foreach ($resultingItems as $resultingItem) {
-                                        $newValue[] = $resultingItem;
+                                    // If the next segment is a ".", we want to take the resulting items as is
+                                    // (in particular, if it's an array, it is preserved)
+                                    if ($nextSegment === '.') {
+                                        $newValue[] = $resultingItems;
+
+                                    // Otherwise, we want to create a list of all elements inside the resulting items
+                                    // (this emulates the selection of sub-nodes with XPath, consider a structure like:
+                                    // <books><book><title>Foo</title><authors><author>A</author><author>B</author></authors></book>
+                                    // <book><title>Bar</title><authors><author>C</author></authors></book></books>
+                                    // With an XPath like "//author" I expect to have a list of all authors, one after the other
+                                    // no matter which book they belong to. I don't expect to have a first array with A and C
+                                    // and a second array with C.
+                                    } else {
+                                        foreach ($resultingItems as $resultingItem) {
+                                            $newValue[] = $resultingItem;
+                                        }
                                     }
                                 } else {
                                     $newValue[] = $resultingItems;

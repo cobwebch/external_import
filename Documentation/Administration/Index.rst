@@ -40,4 +40,5 @@ each example (in the Tutorial).
    Transformations/Index
    Mapping/Index
    Children/Index
+   ArrayPath/Index
    LogCleanup/Index

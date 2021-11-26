@@ -1,3 +1,7 @@
+2021-11-26 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix and enhance arrayPath property, improve tests and documentation, resolves #216
+
 2021-11-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Ensure data sent to log is an array
