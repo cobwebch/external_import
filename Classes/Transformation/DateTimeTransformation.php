@@ -49,6 +49,11 @@ class DateTimeTransformation implements SingletonInterface, ImporterAwareInterfa
      */
     public function parseDate(array $record, string $index, array $params)
     {
+        // Keep null as output value
+        if ($record[$index] === null) {
+            return null;
+        }
+
         $value = strtotime($record[$index]);
         // Consider time zone offset
         // This is necessary because TCEmain will subtract the time zone offset upon saving the data,
