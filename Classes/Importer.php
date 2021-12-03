@@ -445,7 +445,12 @@ class Importer implements LoggerAwareInterface
     {
         if ($this->isDebug()) {
             $data = is_array($data) ? $data : [$data];
-            $message = '[External Import] ' . $message;
+            $message = sprintf(
+                '[External Import - %s - %s] %s',
+                $this->externalConfiguration->getTable(),
+                $this->externalConfiguration->getIndex(),
+                $message
+            );
             // Match devlog severities: 0 is info, 1 is notice, 2 is warning, 3 is fatal error, -1 is "OK" message
             switch ($severity) {
                 case 0:
