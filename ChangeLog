@@ -1,3 +1,7 @@
+2021-12-11 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Consider "uniqueInTable" condition when upating slugs, references #195
+
 2021-11-26 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix and enhance arrayPath property, improve tests and documentation, resolves #216

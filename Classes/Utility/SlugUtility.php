@@ -106,6 +106,7 @@ class SlugUtility
             $fieldConfiguration
         );
         $slugCandidate = $slugHelper->generate($record, $pid);
+        // Take care of the various unicity conditions, if any
         if (GeneralUtility::inList('uniqueInSite', $fieldConfiguration['eval'])) {
             $state = RecordStateFactory::forName($table)
                 ->fromArray(
@@ -135,6 +136,27 @@ class SlugUtility
                     $record['uid']
                 );
             $slug = $slugHelper->buildSlugForUniqueInPid($slugCandidate, $state);
+        } elseif (GeneralUtility::inList('uniqueInTable', $fieldConfiguration['eval'])) {
+            $state = RecordStateFactory::forName($table)
+                ->fromArray(
+                    $record,
+                    $pid
+                );
+            try {
+                $slug = $slugHelper->buildSlugForUniqueInTable($slugCandidate, $state);
+            } catch (\Exception $e) {
+                // Let the slug be empty and log the problem
+                $this->importer->addMessage(
+                    sprintf(
+                        'Could not generate slug for record %1$d in table %2$s (reason: %3$s [%4$d])',
+                        $record['uid'],
+                        $table,
+                        $e->getMessage(),
+                        $e->getCode()
+                    ),
+                    AbstractMessage::NOTICE
+                );
+            }
         } else {
             $slug = $slugCandidate;
         }
