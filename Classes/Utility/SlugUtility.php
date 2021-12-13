@@ -136,7 +136,7 @@ class SlugUtility
                     $record['uid']
                 );
             $slug = $slugHelper->buildSlugForUniqueInPid($slugCandidate, $state);
-        } elseif (GeneralUtility::inList('uniqueInTable', $fieldConfiguration['eval'])) {
+        } elseif (GeneralUtility::inList('unique', $fieldConfiguration['eval'])) {
             $state = RecordStateFactory::forName($table)
                 ->fromArray(
                     $record,
