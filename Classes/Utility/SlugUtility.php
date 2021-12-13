@@ -107,7 +107,7 @@ class SlugUtility
         );
         $slugCandidate = $slugHelper->generate($record, $pid);
         // Take care of the various unicity conditions, if any
-        if (GeneralUtility::inList('uniqueInSite', $fieldConfiguration['eval'])) {
+        if (GeneralUtility::inList('uniqueInSite', $fieldConfiguration['eval'] ?? '')) {
             $state = RecordStateFactory::forName($table)
                 ->fromArray(
                     $record,
@@ -128,7 +128,7 @@ class SlugUtility
                     AbstractMessage::NOTICE
                 );
             }
-        } elseif (GeneralUtility::inList('uniqueInPid', $fieldConfiguration['eval'])) {
+        } elseif (GeneralUtility::inList('uniqueInPid', $fieldConfiguration['eval'] ?? '')) {
             $state = RecordStateFactory::forName($table)
                 ->fromArray(
                     $record,
@@ -136,7 +136,7 @@ class SlugUtility
                     $record['uid']
                 );
             $slug = $slugHelper->buildSlugForUniqueInPid($slugCandidate, $state);
-        } elseif (GeneralUtility::inList('unique', $fieldConfiguration['eval'])) {
+        } elseif (GeneralUtility::inList('unique', $fieldConfiguration['eval'] ?? '')) {
             $state = RecordStateFactory::forName($table)
                 ->fromArray(
                     $record,
