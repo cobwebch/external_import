@@ -1,3 +1,7 @@
+2021-12-15 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Avoid overriding existing table garbage collection task setup, resolves #224
+
 2021-12-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Consider "uniqueInTable" condition when upating slugs, references #195
