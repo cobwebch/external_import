@@ -1,6 +1,7 @@
 2021-12-15 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Avoid overriding existing table garbage collection task setup, resolves #224
+	* Add custom steps during validation to allow reference between custom steps, resolves #220
 
 2021-12-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 

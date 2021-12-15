@@ -109,6 +109,13 @@ Description
   imported data will go through the usual RTE transformation process on
   the way to the database.
 
+  .. note::
+
+     Since the data goes through the RTE transformation process, you should mind
+     the settings of the RTE for the given field if the results are unexpected. This
+     is particularly true for tags which are not inside other tags and need to be
+     explicitly allowed using the :ref:`allowTagsOutside <t3tsconfig:allowtagsoutside>` option.
+
 Scope
   Transform data
 

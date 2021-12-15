@@ -415,6 +415,7 @@ class GeneralConfigurationValidator
             foreach ($property as $customStepConfiguration) {
                 try {
                     $this->stepUtility->validateCustomStepConfiguration($steps, $customStepConfiguration);
+                    $steps = $this->stepUtility->insertStep($steps, $customStepConfiguration);
                 } catch (InvalidCustomStepConfiguration $e) {
                     $this->results->add(
                         'customSteps',
