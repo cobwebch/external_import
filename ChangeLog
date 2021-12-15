@@ -2,6 +2,7 @@
 
 	* Avoid overriding existing table garbage collection task setup, resolves #224
 	* Add custom steps during validation to allow reference between custom steps, resolves #220
+	* Add note about RTE transformations for rich-text fields, resolves #221
 
 2021-12-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
