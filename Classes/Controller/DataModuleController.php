@@ -109,8 +109,8 @@ class DataModuleController extends ActionController
                 parent::initializeView($view);
             }
             $publicResourcesPath = PathUtility::getAbsoluteWebPath(
-                    ExtensionManagementUtility::extPath('external_import')
-                ) . 'Resources/Public/';
+                ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
+            );
             $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
             $pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
             $pageRenderer->addRequireJsConfiguration(
