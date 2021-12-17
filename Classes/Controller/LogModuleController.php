@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Controller;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -78,8 +79,8 @@ class LogModuleController extends ActionController
         }
         $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
         $publicResourcesPath = PathUtility::getAbsoluteWebPath(
-                ExtensionManagementUtility::extPath('external_import')
-            ) . 'Resources/Public/';
+            ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
+        );
         $pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
         $pageRenderer->addRequireJsConfiguration(
             [
