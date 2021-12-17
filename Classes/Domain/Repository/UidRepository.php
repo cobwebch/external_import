@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Exception\MissingConfigurationException;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -98,9 +99,10 @@ class UidRepository
         if (count($constraints) > 0) {
             $queryBuilder->where(...$constraints);
         }
-        $res = $queryBuilder->execute();
-        if ($res) {
-            while ($row = $res->fetchAssociative(\PDO::FETCH_ASSOC)) {
+        $result = $queryBuilder->execute();
+        if ($result) {
+            $iterator = CompatibilityUtility::resultIteratorFactory();
+            while ($row = $iterator->next($result)) {
                 // Don't consider records with empty references, as they can't be matched
                 // to external data anyway (but a real zero is acceptable)
                 if (!empty($row[$referenceUidField]) || $row[$referenceUidField] === '0' || $row[$referenceUidField] === 0) {

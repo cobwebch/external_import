@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Cobweb\ExternalImport\Domain\Repository;
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -17,6 +15,9 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+namespace Cobweb\ExternalImport\Domain\Repository;
+
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -61,7 +62,9 @@ class ChildrenRepository
     public function findFirstExistingRecord(string $table, array $conditions): int
     {
         $queryBuilder = $this->prepareQueryBuilder($table, $conditions);
-        $record = $queryBuilder->execute()->fetchAssociative();
+        $result = $queryBuilder->execute();
+        $iterator = CompatibilityUtility::resultIteratorFactory();
+        $record = $iterator->next($result);
         if ($record) {
             return (int)$record['uid'];
         }

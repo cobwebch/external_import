@@ -1,6 +1,7 @@
 2021-12-17 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix path to Datatables library, resolves #225 (thanks to Oliver Hader)
+	* Add compatibility layer for different versions of symfony/dbal, resolves #214
 
 2021-12-15 Francois Suter (Idéative)  <typo3@ideative.ch>
 

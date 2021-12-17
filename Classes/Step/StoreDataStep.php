@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Cobweb\ExternalImport\Step;
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -17,6 +15,8 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+namespace Cobweb\ExternalImport\Step;
+
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Repository\ChildrenRepository;
 use Cobweb\ExternalImport\Event\CmdmapPostprocessEvent;
@@ -25,8 +25,7 @@ use Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent;
 use Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent;
 use Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
-use Cobweb\ExternalImport\Importer;
-use Cobweb\ExternalImport\Utility\ManyToManyUtility;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -1061,7 +1060,7 @@ class StoreDataStep extends AbstractStep
         if (count($errorLog) > 0) {
             // If there are errors, get these messages from the sys_log table (assuming they are the latest ones)
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_log');
-            $res = $queryBuilder->select('*')
+            $result = $queryBuilder->select('*')
                 ->from('sys_log')
                 ->where(
                     $queryBuilder->expr()->eq(
@@ -1085,8 +1084,9 @@ class StoreDataStep extends AbstractStep
                     count($errorLog)
                 )
                 ->execute();
-            if ($res) {
-                while ($row = $res->fetchAssociative()) {
+            if ($result) {
+                $iterator = CompatibilityUtility::resultIteratorFactory();
+                while ($row = $iterator->next($result)) {
                     // Check if there's a label for the message
                     $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
                     $label = LocalizationUtility::translate(

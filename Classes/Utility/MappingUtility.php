@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Cobweb\ExternalImport\Utility;
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -16,6 +14,8 @@ namespace Cobweb\ExternalImport\Utility;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
+namespace Cobweb\ExternalImport\Utility;
 
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
@@ -220,14 +220,15 @@ class MappingUtility implements ImporterAwareInterface
                         DeletedRestriction::class
                     )
                 );
-            $res = $queryBuilder->selectLiteral($referenceField, $valueField)
+            $result = $queryBuilder->selectLiteral($referenceField, $valueField)
                 ->from($mappingData['table'])
                 ->where($whereClause)
                 ->execute();
 
             // Fill hash table
-            if ($res) {
-                while ($row = $res->fetchAssociative()) {
+            if ($result) {
+                $iterator = CompatibilityUtility::resultIteratorFactory();
+                while ($row = $iterator->next($result)) {
                     // Don't consider records with empty references, as they can't be matched
                     // to external data anyway (but a real zero is acceptable)
                     if (!empty($row[$referenceField]) || $row[$referenceField] === '0' || $row[$referenceField] === 0) {

@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Cobweb\ExternalImport\Utility;
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -17,9 +15,13 @@ namespace Cobweb\ExternalImport\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+namespace Cobweb\ExternalImport\Utility;
+
+use Cobweb\ExternalImport\Compatibility\Dbal\AbstractResultIterator;
+use Cobweb\ExternalImport\Compatibility\Dbal\ResultIteratorV10;
+use Cobweb\ExternalImport\Compatibility\Dbal\ResultIteratorV11;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
-use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
 
 /**
  * Small class for encapsulating methods related to backwards-compatibility.
@@ -38,5 +40,19 @@ class CompatibilityUtility
         return !(VersionNumberUtility::convertVersionNumberToInteger(
                 TYPO3_branch
             ) >= VersionNumberUtility::convertVersionNumberToInteger('11.0.0'));
+    }
+
+    /**
+     * Returns the proper wrapper for iterating on a symfony/dbal result object
+     * depending on TYPO3 version.
+     *
+     * @return AbstractResultIterator
+     */
+    public static function resultIteratorFactory(): AbstractResultIterator
+    {
+        if (self::isV10()) {
+            return GeneralUtility::makeInstance(ResultIteratorV10::class);
+        }
+        return GeneralUtility::makeInstance(ResultIteratorV11::class);
     }
 }
