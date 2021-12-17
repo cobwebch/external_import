@@ -1,3 +1,7 @@
+2021-12-17 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix path to Datatables library, resolves #225 (thanks to Oliver Hader)
+
 2021-12-15 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Avoid overriding existing table garbage collection task setup, resolves #224
