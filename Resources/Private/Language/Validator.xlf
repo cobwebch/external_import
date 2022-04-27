@@ -132,10 +132,10 @@
 				<source>The "substructureFields" configuration for field %s is empty. This is not allowed for array-type data.</source>
 			</trans-unit>
 			<trans-unit id="substructureFieldsPropertyWithWrongConfigurationForArrayTypeData" xml:space="preserve">
-				<source>The "substructureFields" configuration contains invalid properties (%1$s) for array-type data. Only 2$%s are allowed.</source>
+				<source>The "substructureFields" configuration contains invalid properties (%1$s) for array-type data. Only %2$s are allowed.</source>
 			</trans-unit>
 			<trans-unit id="substructureFieldsPropertyWithWrongConfigurationForXmlTypeData" xml:space="preserve">
-				<source>The "substructureFields" configuration contains invalid properties (%1$s) for XML-type data. Only 2$%s are allowed (as well as being empty).</source>
+				<source>The "substructureFields" configuration contains invalid properties (%1$s) for XML-type data. Only %2$s are allowed (as well as being empty).</source>
 			</trans-unit>
 			<trans-unit id="mmPropertyDeprecated" xml:space="preserve">
 				<source>The MM property is deprecated. Do not use it anymore. Switch to "multipleRows" or "children" instead.</source>
