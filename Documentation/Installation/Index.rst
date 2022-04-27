@@ -40,7 +40,7 @@ each hook.
 External Import is now configured for using the standard (Symfony)
 dependency injection mechanism. This means it is not necessary to instantiate the
 :php:`\Cobweb\ExternalImport\Importer` class using Extbase's
-:php:`\TYPO3\CMS\Extbase\Object\ObjectManager` anymore whe using the Importer
+:php:`\TYPO3\CMS\Extbase\Object\ObjectManager` anymore when using the Importer
 as an API.
 
 The PHP code was cleaned up as much as possible and strict typing was declared

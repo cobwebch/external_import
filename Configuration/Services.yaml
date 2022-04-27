@@ -31,6 +31,10 @@ services:
     public: true
     shared: false
 
+  Cobweb\ExternalImport\Handler\ArrayHandler:
+    public: true
+    shared: false
+
   Cobweb\ExternalImport\Validator\ColumnConfigurationValidator:
     public: true
     shared: false

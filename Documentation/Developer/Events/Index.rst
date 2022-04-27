@@ -47,6 +47,35 @@ getExternalConfiguration
    look like.
 
 
+.. _developer-events-substructure-preprocess:
+
+Substructure Preprocess
+"""""""""""""""""""""""
+
+Class: :php:`\Cobweb\ExternalImport\Event\SubstructurePreprocessEvent`
+
+This event is triggered whenever a data structure is going to be handled by the
+:ref:`substructureFields <administration-columns-properties-substructure-fields>`
+property. It is fired just before the directives defined in the :code:`substructureFields`
+property are applied and makes it possible to change the substructure.
+The event has the following API:
+
+getSubstructureConfiguration
+  Returns the corresponding :code:`substructureFields` configuration.
+
+getColumn
+  Returns the name of the column being handled.
+
+getStructure
+  Returns the structure being handled.
+
+setStructure
+  Sets the (modified) structure.
+
+getImporter
+  Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+
+
 .. _developer-events-update-record-preprocess:
 
 Update Record Preprocess

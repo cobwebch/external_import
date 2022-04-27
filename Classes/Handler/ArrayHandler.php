@@ -18,11 +18,11 @@ namespace Cobweb\ExternalImport\Handler;
  */
 
 use Cobweb\ExternalImport\DataHandlerInterface;
+use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
 use Cobweb\ExternalImport\Importer;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
-use TYPO3\CMS\Core\Utility\ArrayUtility;
-use TYPO3\CMS\Core\Utility\Exception\MissingArrayPathException;
 
 /**
  * Remaps data from a "raw" PHP array to an array mapped to TCA columns.
@@ -32,12 +32,18 @@ use TYPO3\CMS\Core\Utility\Exception\MissingArrayPathException;
 class ArrayHandler implements DataHandlerInterface
 {
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
      * @var ExpressionLanguage
      */
     protected $expressionLanguage;
 
-    public function __construct()
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
+        $this->eventDispatcher = $eventDispatcher;
         $this->expressionLanguage = new ExpressionLanguage();
     }
 
@@ -108,6 +114,17 @@ class ArrayHandler implements DataHandlerInterface
                     try {
                         $theValue = $this->getValue($theRecord, $columnData);
                         if (isset($columnData['substructureFields'])) {
+                            // Fire event to manipulate substructure
+                            /** @var SubstructurePreprocessEvent $event */
+                            $event = $this->eventDispatcher->dispatch(
+                                new SubstructurePreprocessEvent(
+                                    $theValue,
+                                    $columnData['substructureFields'],
+                                    $columnName,
+                                    $importer
+                                )
+                            );
+                            $theValue = $event->getSubstructure();
                             $rows[$columnName] = $this->getSubstructureValues(
                                 $theValue,
                                 $columnData['substructureFields']
