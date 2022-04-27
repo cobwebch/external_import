@@ -358,7 +358,7 @@ class ColumnConfigurationValidator
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:substructureFieldsPropertyWithEmptyConfigurationForArrayTypeData',
                             'external_import',
                             [
-                                $property
+                                $field
                             ]
                         ),
                         AbstractMessage::ERROR
