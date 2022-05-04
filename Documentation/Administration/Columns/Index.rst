@@ -488,13 +488,13 @@ Description
 		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
          0 => [
             'field' => 'start_date',
-            'transformations => [
+            'transformations' => [
                20 => [
                   'trim' => true
                ],
                10 => [
                   'userFunction' => [
-                     'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+                     'class' => \Cobweb\ExternalImport\Transformation\DateTimeTransformation::class,
                      'method' => 'parseDate'
                   ]
                ]
