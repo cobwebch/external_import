@@ -488,7 +488,7 @@ Description
 		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
          0 => [
             'field' => 'start_date',
-            'transformations => [
+            'transformations' => [
                20 => [
                   'trim' => true
                ],
