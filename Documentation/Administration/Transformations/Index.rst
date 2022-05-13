@@ -61,7 +61,41 @@ Type
 Description
   With this property, it is possible to set a fixed value for a given
   field. For example, this might be used to set a flag for all imported
-  records.
+  records. Or you might want to use different types for different import sources.
+  
+  **Example**:
+  
+  .. code-block:: php
+     :caption: EXT:my_extension/Configuration/Overrides/tx_sometable.php
+      
+     $GLOBALS['TCA']['tx_sometable'] = array_replace_recursive($GLOBALS['TCA']['tx_sometable'],
+     [
+       // ...
+         'columns' => [
+             'type' => [
+                 'external' => [
+                     0 => [
+                         'transformations' => [
+                             10 => [
+                                 // Default type
+                                 'value' => 0
+                             ]
+                         ],
+                     ],
+                     'another_import' => [
+                         'transformations' => [
+                             10 => [
+                                 // Another type
+                                 'value' => 1
+                             ]
+                         ],
+                     ]
+                 ]
+             ],
+          // ...
+         ],
+     ]);
+
 
 Scope
   Transform data
