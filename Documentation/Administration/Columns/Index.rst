@@ -39,6 +39,10 @@ The properties for the columns configuration are described below.
    :ref:`Datamap Postprocess event <developer-events-datamap-postprocess>` or the
    :ref:`Cmdmap Postprocess event <developer-events-cmdmap-postprocess>`
    which are triggered after :php:`DataHandler` operations.
+   
+.. hint::
+
+   You can set static values by using the :ref:`transformation > value <administration-columns-properties-value>`.
 
 
 .. _administration-columns-properties:
