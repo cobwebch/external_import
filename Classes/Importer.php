@@ -165,18 +165,19 @@ class Importer implements LoggerAwareInterface
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
     public function __construct(
-            ConfigurationRepository $configurationRepository,
-            ReportingUtility $reportingUtility,
-            UidRepository $uidRepository,
-            TemporaryKeyRepository $temporaryKeyRepository
+        ConfigurationRepository $configurationRepository,
+        ReportingUtility $reportingUtility,
+        UidRepository $uidRepository,
+        TemporaryKeyRepository $temporaryKeyRepository,
+        ExtensionConfiguration $extensionConfiguration
     ) {
         $this->configurationRepository = $configurationRepository;
         $this->reportingUtility = $reportingUtility;
         $this->uidRepository = $uidRepository;
         $this->temporaryKeyRepository = $temporaryKeyRepository;
 
-        $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(
-                'external_import'
+        $this->extensionConfiguration = $extensionConfiguration->get(
+            'external_import'
         );
         $this->setDebug((bool)$this->extensionConfiguration['debug']);
 
