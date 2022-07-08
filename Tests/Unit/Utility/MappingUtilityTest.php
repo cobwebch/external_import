@@ -22,9 +22,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Test case for the External Import mapping utility.
  *
- * @author Francois Suter <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Tests\Unit\Utility
  */
 class MappingUtilityTest extends UnitTestCase
 {

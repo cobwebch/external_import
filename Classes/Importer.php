@@ -35,9 +35,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 /**
  * This class drives the import process by moving from step to step, aborting when necessary and triggering the reporting.
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport
  */
 class Importer implements LoggerAwareInterface
 {

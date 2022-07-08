@@ -24,9 +24,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 /**
  * Example transformation functions for the 'external_import' extension
  *
- * @author Francois Suter (Cobweb) <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Transformation
  */
 class DateTimeTransformation implements SingletonInterface, ImporterAwareInterface
 {

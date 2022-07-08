@@ -27,9 +27,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Test case for the External Import importer.
  *
- * @author Francois Suter <typo3@cobweb.ch>
- * @package TYPO3
- * @subpackage tx_externalimport
+ * @package Cobweb\ExternalImport\Tests\Unit
  */
 class ImporterTest extends UnitTestCase
 {
