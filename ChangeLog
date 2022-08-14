@@ -2,6 +2,14 @@
 
 	* Delete children records when none is present in import data, resolves #232
 
+2022-07-21 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix DBAL compatibility issue (thanks to Regis Tedone)
+
+2022-05-13 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve documentation (thanks to Lina Wolf)
+
 2021-12-17 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix path to Datatables library, resolves #225 (thanks to Oliver Hader)
