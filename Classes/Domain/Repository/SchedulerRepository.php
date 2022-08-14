@@ -70,6 +70,11 @@ class SchedulerRepository implements SingletonInterface
         }
     }
 
+    public function __toString()
+    {
+        return self::class;
+    }
+
     /**
      * Fetches all tasks related to the external import extension.
      *
@@ -152,8 +157,7 @@ class SchedulerRepository implements SingletonInterface
                 ->orderBy('groupName')
                 ->execute();
             $iterator = CompatibilityUtility::resultIteratorFactory();
-            $rows = $iterator->next($rows);
-            foreach ($rows as $row) {
+            while ($row = $iterator->next($rows)) {
                 $groups[$row['uid']] = $row['groupName'];
             }
         } catch (\Exception $e) {
