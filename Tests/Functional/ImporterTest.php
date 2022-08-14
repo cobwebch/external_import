@@ -486,52 +486,56 @@ class ImporterTest extends FunctionalTestCase
 
     /**
      * Imports the "stores" and checks whether we have the right count or not
-     * (2 expected). Also checks relations between products and stores,
-     * including the "stock" additional field.
+     * (3 expected). Also checks relations between products and stores,
+     * including the "stock" additional field. One existing product for a given store
+     * is expected to be deleted, because absent from the import.
      *
      * @test
      */
-    public function importStoresWithImporterStoresTwoRecordsAndCreatesRelations(): void
+    public function importStoresWithImporterStoresThreeRecordsAndCreatesRelations(): void
     {
+        // Prepare one product in a store that has none in the imported data. It should get deleted.
+        $this->importDataSet(__DIR__ . '/Fixtures/ProductsInStores.xml');
+
         // First import products, so that relations can be created
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'more'
+            'tx_externalimporttest_product',
+            'more'
         );
 
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_store',
-                0
+            'tx_externalimporttest_store',
+            0
         );
-        // Get the number of products stored
+        // Get the number of stores stored (NOTE: one already exists in the fixture)
         $countStores = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'tx_externalimporttest_store'
+            'uid',
+            'tx_externalimporttest_store'
         );
         // Get the number of relations created
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('stock')
-                ->from('tx_externalimporttest_store_product')
-                // Ensure consistent order for safe comparison
-                ->orderBy('stock', 'ASC')
-                ->execute();
+            ->select('stock')
+            ->from('tx_externalimporttest_store_product')
+            // Ensure consistent order for safe comparison
+            ->orderBy('stock', 'ASC')
+            ->execute();
         $stocks = [];
         while ($row = $databaseResult->fetchAssociative()) {
             $stocks[] = $row['stock'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(
-                2,
-                $countStores,
-                serialize($messages)
+            3,
+            $countStores,
+            serialize($messages)
         );
         self::assertCount(
-                3,
-                $stocks
+            3,
+            $stocks
         );
         self::assertSame(
-                [5, 6, 10],
-                $stocks
+            [5, 6, 10],
+            $stocks
         );
     }
 

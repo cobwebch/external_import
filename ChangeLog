@@ -1,3 +1,7 @@
+2022-08-14 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Delete children records when none is present in import data, resolves #232
+
 2021-12-17 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix path to Datatables library, resolves #225 (thanks to Oliver Hader)
