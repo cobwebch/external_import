@@ -41,43 +41,69 @@ class UidRepositoryTest extends FunctionalTestCase
     public function configurationDataProvider(): array
     {
         return [
-                'No special configuration' => [
-                        [
-                                'referenceUid' => 'tstamp'
-                        ],
-                        [
-                                1520788063 => 2,
-                                1520788087 => 3
-                        ],
-                        [
-                                1520788063 => 1,
-                                1520788087 => 2
-                        ]
+            'No special configuration, no pid restriction' => [
+                [
+                    'referenceUid' => 'tstamp'
                 ],
-                'Pid restriction' => [
-                        [
-                                'referenceUid' => 'tstamp',
-                                'enforcePid' => true
-                        ],
-                        [
-                                1520788063 => 2
-                        ],
-                        [
-                                1520788063 => 1
-                        ]
+                [
+                    1520788063 => 2,
+                    1520788087 => 3
                 ],
-                'Where clause' => [
-                        [
-                                'referenceUid' => 'tstamp',
-                                'whereClause' => 'header like \'%deleted%\''
-                        ],
-                        [
-                                1520788087 => 3
-                        ],
-                        [
-                                1520788087 => 2
-                        ]
+                [
+                    1520788063 => 1,
+                    1520788087 => 2
                 ]
+            ],
+            'Pid restriction true' => [
+                [
+                    'referenceUid' => 'tstamp',
+                    'enforcePid' => true
+                ],
+                [
+                    1520788063 => 2
+                ],
+                [
+                    1520788063 => 1
+                ]
+            ],
+            'Pid restriction true-ish' => [
+                [
+                    'referenceUid' => 'tstamp',
+                    'enforcePid' => 1
+                ],
+                [
+                    1520788063 => 2
+                ],
+                [
+                    1520788063 => 1
+                ]
+            ],
+            'Pid restriction other than true' => [
+                [
+                    'referenceUid' => 'tstamp',
+                    'enforcePid' => false
+                ],
+                [
+                    1520788063 => 2,
+                    1520788087 => 3
+                ],
+                [
+                    1520788063 => 1,
+                    1520788087 => 2
+                ]
+            ],
+            'Where clause' => [
+                [
+                    'referenceUid' => 'tstamp',
+                    'whereClause' => 'header like \'%deleted%\''
+                ],
+                [
+                    1520788087 => 3
+                ],
+                [
+                    1520788087 => 2
+                ]
+            ]
         ];
     }
 
@@ -90,7 +116,7 @@ class UidRepositoryTest extends FunctionalTestCase
      * @throws \Nimut\TestingFramework\Exception\Exception
      * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
-    public function getExistingUidsTriggersFetchingOfUidsAndPids($configuration, $listOfUids, $listOfPids): void
+    public function getExistingUidsTriggersFetchingOfUidsAndPids(array $configuration, array $listOfUids, array $listOfPids): void
     {
         $this->importDataSet(__DIR__ . '/../../Fixtures/UidRepository.xml');
         $configurationObject = GeneralUtility::makeInstance(Configuration::class);
@@ -101,12 +127,12 @@ class UidRepositoryTest extends FunctionalTestCase
         }
         $this->subject->setConfiguration($configurationObject);
         self::assertSame(
-                $listOfUids,
-                $this->subject->getExistingUids()
+            $listOfUids,
+            $this->subject->getExistingUids()
         );
         self::assertSame(
-                $listOfPids,
-                $this->subject->getCurrentPids()
+            $listOfPids,
+            $this->subject->getCurrentPids()
         );
     }
 

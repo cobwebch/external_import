@@ -2,6 +2,7 @@
 
 	* Delete children records when none is present in import data, resolves #232
 	* Ensure strict typing when reading TCE log, resolves #246 (thanks to Timo Webler)
+	* Fix handling of "enforcePid" flag, resolves #249
 
 2022-07-21 Francois Suter (Idéative)  <typo3@ideative.ch>
 
