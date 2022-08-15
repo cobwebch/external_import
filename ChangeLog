@@ -1,6 +1,24 @@
-2022-04-27 Francois Suter (Idéative)  <typo3@ideative.ch>
+2022-08-16 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add event for manipulating substructures, resolves #235
+
+2022-08-15 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Release version 6.0.4
+
+2022-08-14 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Delete children records when none is present in import data, resolves #232
+	* Ensure strict typing when reading TCE log, resolves #246 (thanks to Timo Webler)
+	* Fix handling of "enforcePid" flag, resolves #249
+
+2022-07-21 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix DBAL compatibility issue (thanks to Regis Tedone)
+
+2022-05-13 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve documentation (thanks to Lina Wolf)
 
 2021-12-17 Francois Suter (Idéative)  <typo3@ideative.ch>
 

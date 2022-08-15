@@ -39,6 +39,10 @@ The properties for the columns configuration are described below.
    :ref:`Datamap Postprocess event <developer-events-datamap-postprocess>` or the
    :ref:`Cmdmap Postprocess event <developer-events-cmdmap-postprocess>`
    which are triggered after :php:`DataHandler` operations.
+   
+.. hint::
+
+   You can set static values by using the :ref:`transformation > value <administration-columns-properties-value>`.
 
 
 .. _administration-columns-properties:
@@ -488,13 +492,13 @@ Description
 		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
          0 => [
             'field' => 'start_date',
-            'transformations => [
+            'transformations' => [
                20 => [
                   'trim' => true
                ],
                10 => [
                   'userFunction' => [
-                     'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+                     'class' => \Cobweb\ExternalImport\Transformation\DateTimeTransformation::class,
                      'method' => 'parseDate'
                   ]
                ]

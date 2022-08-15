@@ -22,7 +22,7 @@ External Import
 		  data import, fetch data, services
 
 	:Copyright:
-		2007-2021
+		2007-2022
 
 	:Author:
 		  François Suter (Idéative)

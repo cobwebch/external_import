@@ -78,6 +78,11 @@ class StoreDataStep extends AbstractStep
     protected $mainRecordsToDelete = [];
 
     /**
+     * @var array For each field with "children", for each parent record, reference values for the "delete" operation
+     */
+    protected $childrenReferenceValues = [];
+
+    /**
      * @var array List of child records that need to be deleted
      */
     protected $childRecordsToDelete = [];
@@ -808,11 +813,11 @@ class StoreDataStep extends AbstractStep
                     $dataToStore[$id]['__children__'] = [];
                 }
                 foreach ($this->childColumns as $mainColumnName => $childColumnConfiguration) {
+                    $childTable = $childColumnConfiguration['table'];
+                    $childConfiguration = $childColumnConfiguration['columns'];
                     // Generate the child structure only if the record has a value for the given column,
                     // else incomplete data will ensue
                     if (isset($record[$mainColumnName])) {
-                        $childTable = $childColumnConfiguration['table'];
-                        $childConfiguration = $childColumnConfiguration['columns'];
                         if (!isset($dataToStore[$id]['__children__'][$mainColumnName])) {
                             $dataToStore[$id]['__children__'][$mainColumnName] = [];
                         }
@@ -826,6 +831,16 @@ class StoreDataStep extends AbstractStep
                         );
                         $dataToStore[$id]['__children__'][$mainColumnName][$childTable][key($childStructure)] = current(
                             $childStructure
+                        );
+                    }
+                    // Gather data needed for deletion of no longer extant children later on (only for non new records)
+                    if (strpos((string)$id, 'NEW') === false) {
+                        $this->assembleChildrenDeletionInformation(
+                            $mainColumnName,
+                            $id,
+                            $record,
+                            $childTable,
+                            $childConfiguration
                         );
                     }
                 }
@@ -899,6 +914,48 @@ class StoreDataStep extends AbstractStep
     }
 
     /**
+     * Assembles a set of reference values for children deletion for each parent record.
+     *
+     * NOTE: this information exists at parent-level, i.e. there's one entry per parent record, not per child record.
+     *
+     * @param string $parentColumn
+     * @param int $parentId
+     * @param array $parentData
+     * @param string $childTable
+     * @param array $childConfiguration
+     * @return void
+     */
+    public function assembleChildrenDeletionInformation(string $parentColumn, int $parentId, array $parentData, string $childTable, array $childConfiguration): void
+    {
+        // Ensure proper initialization of reference array
+        if (!isset($this->childrenReferenceValues[$parentId])) {
+            $this->childrenReferenceValues[$parentId] = [];
+        }
+        if (!isset($this->childrenReferenceValues[$parentId][$parentColumn])) {
+            $this->childrenReferenceValues[$parentId][$parentColumn] = [];
+        }
+        $this->childrenReferenceValues[$parentId][$parentColumn][$childTable] = [];
+        // Assemble the reference values
+        foreach ($childConfiguration as $name => $configuration) {
+            if (in_array($name, $this->childColumns[$parentColumn]['controlColumnsForDelete'], true)) {
+                // If it is a value, use it as is
+                if (isset($configuration['value'])) {
+                    $this->childrenReferenceValues[$parentId][$parentColumn][$childTable][$name] = $configuration['value'];
+
+                // If it is a field, get the value from the field, if defined
+                // (if it's the special value "__parent.id__", use the parent record's id)
+                } elseif (isset($configuration['field'])) {
+                    if ($configuration['field'] === '__parent.id__') {
+                        $this->childrenReferenceValues[$parentId][$parentColumn][$childTable][$name] = $parentId;
+                    } elseif (isset($parentData[$configuration['field']])) {
+                        $this->childrenReferenceValues[$parentId][$parentColumn][$childTable][$name] = $parentData[$configuration['field']];
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Goes through all children records (if any) and checks which are already existing and which should
      * be deleted.
      *
@@ -915,81 +972,101 @@ class StoreDataStep extends AbstractStep
             // Act only if the parent record is not new (if it is new, all its child records will be new too)
             // and if it has child records. Otherwise, keep as is.
             $newDataToStore[$id] = $record;
-            if (strpos((string)$id, 'NEW') === false && isset($record['__children__']) && count($record['__children__']) > 0) {
-                // Reset the children list
-                $newDataToStore[$id]['__children__'] = [];
-                foreach ($record['__children__'] as $column => $childrenListForTable) {
-                    foreach ($childrenListForTable as $table => $children) {
-                        $iterator = 0;
-                        $updatedChildren = [];
-                        $allExistingChildren = [];
-                        foreach ($children as $childId => $childData) {
-                            // If no columns were defined for checking existing records, don't bother and consider the record to be new
-                            if (count($this->childColumns[$column]['controlColumnsForUpdate']) === 0) {
-                                $newDataToStore[$id]['__children__'][$column][$table][$childId] = $childData;
-                            } else {
-                                // If deletion is not disabled, grab existing records
-                                // (this is done once, but we need the data from one child record)
-                                if ($iterator === 0 && !$this->childColumns[$column]['disabledOperations']['delete'] && count(
-                                        $this->childColumns[$column]['controlColumnsForDelete']
-                                    ) > 0) {
-                                    $controlValues = [];
-                                    foreach ($this->childColumns[$column]['controlColumnsForDelete'] as $name) {
-                                        $controlValues[$name] = $childData[$name];
-                                    }
-                                    $allExistingChildren = $childrenRepository->findAllExistingRecords(
-                                        $table,
-                                        $controlValues
-                                    );
-                                }
-                                // Check if the child record already exists
-                                $controlValues = [];
-                                $hasAllControlValues = true;
-                                foreach ($this->childColumns[$column]['controlColumnsForUpdate'] as $name) {
-                                    if (isset($childData[$name])) {
-                                        $controlValues[$name] = $childData[$name];
-                                    } else {
-                                        // If a control value is missing, we can't check this record
-                                        $hasAllControlValues = false;
-                                        break;
-                                    }
-                                }
-                                // If all control values were found, proceed with existence check
-                                if ($hasAllControlValues) {
-                                    try {
-                                        $existingId = $childrenRepository->findFirstExistingRecord(
-                                            $table,
-                                            $controlValues
+            if (strpos((string)$id, 'NEW') === false) {
+                $childrenColumnsChecked = [];
+                if (isset($record['__children__']) && count($record['__children__']) > 0) {
+                    // Reset the children list
+                    $newDataToStore[$id]['__children__'] = [];
+                    foreach ($record['__children__'] as $column => $childrenListForTable) {
+                        foreach ($childrenListForTable as $childTable => $children) {
+                            $iterator = 0;
+                            $updatedChildren = [];
+                            $allExistingChildren = [];
+                            foreach ($children as $childId => $childData) {
+                                // If no columns were defined for checking existing records, don't bother and consider the record to be new
+                                if (count($this->childColumns[$column]['controlColumnsForUpdate']) === 0) {
+                                    $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;
+                                } else {
+                                    // If deletion is not disabled, grab existing records
+                                    // (this is done once, but we need the data from one child record)
+                                    if ($iterator === 0 && !$this->childColumns[$column]['disabledOperations']['delete'] && count(
+                                            $this->childColumns[$column]['controlColumnsForDelete']
+                                        ) > 0) {
+                                        $allExistingChildren = $childrenRepository->findAllExistingRecords(
+                                            $childTable,
+                                            $this->childrenReferenceValues[$id][$column][$childTable]
                                         );
-                                        $updatedChildren[] = $existingId;
-                                        // If update operation is allowed, keep the child record but replace its "NEW***" temporary key
-                                        // so that it gets updated
-                                        if (!$this->childColumns[$column]['disabledOperations']['update']) {
-                                            $newDataToStore[$id]['__children__'][$column][$table][$existingId] = $childData;
-                                        }
-                                    } catch (\Exception $e) {
-                                        // The relation does not exist yet, keep record as is, if insert operation is allowed
-                                        if (!$this->childColumns[$column]['disabledOperations']['insert']) {
-                                            $newDataToStore[$id]['__children__'][$column][$table][$childId] = $childData;
+                                        // Mark the column as having been checked
+                                        $childrenColumnsChecked[] = $column;
+                                    }
+                                    // Check if the child record already exists
+                                    $controlValues = [];
+                                    $hasAllControlValues = true;
+                                    foreach ($this->childColumns[$column]['controlColumnsForUpdate'] as $name) {
+                                        if (isset($childData[$name])) {
+                                            $controlValues[$name] = $childData[$name];
+                                        } else {
+                                            // If a control value is missing, we can't check this record
+                                            $hasAllControlValues = false;
+                                            break;
                                         }
                                     }
+                                    // If all control values were found, proceed with existence check
+                                    if ($hasAllControlValues) {
+                                        try {
+                                            $existingId = $childrenRepository->findFirstExistingRecord(
+                                                $childTable,
+                                                $controlValues
+                                            );
+                                            $updatedChildren[] = $existingId;
+                                            // If update operation is allowed, keep the child record but replace its "NEW***" temporary key
+                                            // so that it gets updated
+                                            if (!$this->childColumns[$column]['disabledOperations']['update']) {
+                                                $newDataToStore[$id]['__children__'][$column][$childTable][$existingId] = $childData;
+                                            }
+                                        } catch (\Exception $e) {
+                                            // The relation does not exist yet, keep record as is, if insert operation is allowed
+                                            if (!$this->childColumns[$column]['disabledOperations']['insert']) {
+                                                $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;
+                                            }
+                                        }
                                     // If a control value was missing, let the record be considered to be new (if inserts are allowed)
                                     // This will probably create a database error at at later point, but the user
                                     // will get to see it in the logs
-                                } elseif (!$this->childColumns[$column]['disabledOperations']['insert']) {
-                                    $newDataToStore[$id]['__children__'][$column][$table][$childId] = $childData;
+                                    } elseif (!$this->childColumns[$column]['disabledOperations']['insert']) {
+                                        $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;
+                                    }
+                                }
+                                $iterator++;
+                            }
+                            // Mark existing records that were not updated for deletion (if allowed)
+                            if (!$this->childColumns[$column]['disabledOperations']['delete']) {
+                                $childrenToDelete = array_diff($allExistingChildren, $updatedChildren);
+                                if (!isset($this->childRecordsToDelete[$childTable])) {
+                                    $this->childRecordsToDelete[$childTable] = [];
+                                }
+                                foreach ($childrenToDelete as $item) {
+                                    $this->childRecordsToDelete[$childTable][] = $item;
                                 }
                             }
-                            $iterator++;
                         }
-                        // Mark existing records that were not updated for deletion (if allowed)
-                        if (!$this->childColumns[$column]['disabledOperations']['delete']) {
-                            $childrenToDelete = array_diff($allExistingChildren, $updatedChildren);
-                            if (!isset($this->childRecordsToDelete[$table])) {
-                                $this->childRecordsToDelete[$table] = [];
-                            }
-                            foreach ($childrenToDelete as $item) {
-                                $this->childRecordsToDelete[$table][] = $item;
+                    }
+
+                }
+                // Loop on all children columns which were not checked in order to delete children that don't exist any more
+                // Children columns are not checked either when the record has no children at all, or may have children in
+                // some columns, but not all
+                // NOTE: the code is a bit overreaching for now, since multiple children configuration are not supported yet
+                $childrenControlValues = $this->childrenReferenceValues[$id] ?? [];
+                foreach ($childrenControlValues as $column => $childrenControlValuesForColumn) {
+                    if (!$this->childColumns[$column]['disabledOperations']['delete'] && !in_array($column, $childrenColumnsChecked, true)) {
+                        foreach ($childrenControlValuesForColumn as $childTable => $childrenControlValuesForTable) {
+                            $allExistingChildren = $childrenRepository->findAllExistingRecords(
+                                $childTable,
+                                $childrenControlValuesForTable
+                            );
+                            foreach ($allExistingChildren as $item) {
+                                $this->childRecordsToDelete[$childTable][] = $item;
                             }
                         }
                     }
@@ -1103,11 +1180,11 @@ class StoreDataStep extends AbstractStep
                         $data = unserialize($row['log_data'], ['allowed_classes' => false]);
                         $message = sprintf(
                             $label,
-                            htmlspecialchars($data[0] ?? ''),
-                            htmlspecialchars($data[1] ?? ''),
-                            htmlspecialchars($data[2] ?? ''),
-                            htmlspecialchars($data[3] ?? ''),
-                            htmlspecialchars($data[4] ?? '')
+                            htmlspecialchars((string)($data[0] ?? '')),
+                            htmlspecialchars((string)($data[1] ?? '')),
+                            htmlspecialchars((string)($data[2] ?? '')),
+                            htmlspecialchars((string)($data[3] ?? '')),
+                            htmlspecialchars((string)($data[4] ?? ''))
                         );
                     }
                     $this->importer->addMessage(

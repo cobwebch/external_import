@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Exception\SchedulerRepositoryException;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -67,6 +68,11 @@ class SchedulerRepository implements SingletonInterface
                 $this->tasks[] = $aTaskObject;
             }
         }
+    }
+
+    public function __toString()
+    {
+        return self::class;
     }
 
     /**
@@ -149,9 +155,9 @@ class SchedulerRepository implements SingletonInterface
             $rows = $queryBuilder->select('uid', 'groupName')
                 ->from('tx_scheduler_task_group')
                 ->orderBy('groupName')
-                ->execute()
-                ->fetchAllAssociative(\PDO::FETCH_ASSOC);
-            foreach ($rows as $row) {
+                ->execute();
+            $iterator = CompatibilityUtility::resultIteratorFactory();
+            while ($row = $iterator->next($rows)) {
                 $groups[$row['uid']] = $row['groupName'];
             }
         } catch (\Exception $e) {
