@@ -1,3 +1,7 @@
+2022-08-18 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve base64 image tranformation with automatic format detection, resolves #250
+
 2022-08-16 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add event for manipulating substructures, resolves #235

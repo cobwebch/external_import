@@ -197,23 +197,34 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         // Get the storage folder
         $folder = $this->initializeStorageFolder($parameters['storage']);
 
+        // Determine the type of image base on the base64 content
+        $imageContent = base64_decode($record[$index]);
+
+        $fileInformation = finfo_open();
+        $mimeType = finfo_buffer($fileInformation, $imageContent, FILEINFO_MIME_TYPE);
+        $result = preg_match('/image\/(.*)/', $mimeType, $matches);
+        if ($result === 1) {
+            $extension = $matches[1];
+            // Handle special MIME type for SVG
+            if ($extension === 'svg+xml') {
+                $extension = 'svg';
+            }
+        } elseif (isset($parameters['defaultExtension'])) {
+            $extension = $parameters['defaultExtension'];
+        } else {
+            throw new \InvalidArgumentException(
+                'Image type could not be determined and default extension parameter is not set',
+                1660851605
+            );
+        }
+
         // Assemble a file name
         if (isset($parameters['nameField'], $record[$parameters['nameField']])) {
             $fileName = $record[$parameters['nameField']];
         } else {
             $fileName = sha1($record[$index]);
         }
-        if (isset($parameters['defaultExtension'])) {
-            $fileName .= '.' . $parameters['defaultExtension'];
-        } else {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Default extension parameter not set for file %s',
-                    $fileName
-                ),
-                1603033956
-            );
-        }
+        $fileName .= '.' . $extension;
         try {
             $fileName = $folder->getStorage()->sanitizeFileName(
                 $fileName,
@@ -231,7 +242,7 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
             // If the file does not yet exist locally, grab it from the remote server and add it to predefined storage
         } else {
             $fileObject = $folder->createFile($fileName);
-            $fileObject->setContents(base64_decode($record[$index]));
+            $fileObject->setContents($imageContent);
         }
         // Return the file's ID
         return $fileObject->getUid();
