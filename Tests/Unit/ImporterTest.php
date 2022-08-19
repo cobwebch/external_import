@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -41,18 +42,19 @@ class ImporterTest extends UnitTestCase
     {
         // For unit testing, don't inject all dependencies
         $this->subject = GeneralUtility::makeInstance(
-                Importer::class,
-                $this->getAccessibleMock(ConfigurationRepository::class),
-                $this->getAccessibleMock(
-                        ReportingUtility::class,
-                        [],
-                        [],
-                        '',
-                        // Don't call the original constructor to avoid a cascade of dependencies
-                        false
-                ),
-                $this->getAccessibleMock(UidRepository::class),
-                $this->getAccessibleMock(TemporaryKeyRepository::class)
+            Importer::class,
+            $this->getAccessibleMock(ConfigurationRepository::class),
+            $this->getAccessibleMock(
+                ReportingUtility::class,
+                [],
+                [],
+                '',
+                // Don't call the original constructor to avoid a cascade of dependencies
+                false
+            ),
+            $this->getAccessibleMock(UidRepository::class),
+            $this->getAccessibleMock(TemporaryKeyRepository::class),
+            new ExtensionConfiguration()
         );
     }
 
@@ -62,16 +64,16 @@ class ImporterTest extends UnitTestCase
     public function getExtensionConfigurationInitiallyReturnsDefaultConfiguration(): void
     {
         self::assertSame(
-                [
-                        'storagePID' => '0',
-                        'logStorage' => '0',
-                        'timelimit' => '-1',
-                        'reportEmail' => '',
-                        'reportSubject' => '',
-                        'debug' => '0',
-                        'disableLog' => '0',
-                ],
-                $this->subject->getExtensionConfiguration()
+            [
+                'storagePID' => '0',
+                'logStorage' => '0',
+                'timelimit' => '-1',
+                'reportEmail' => '',
+                'reportSubject' => '',
+                'debug' => '0',
+                'disableLog' => '0',
+            ],
+            $this->subject->getExtensionConfiguration()
         );
     }
 
@@ -81,7 +83,7 @@ class ImporterTest extends UnitTestCase
     public function getExternalConfigurationInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getExternalConfiguration()
+            $this->subject->getExternalConfiguration()
         );
     }
 
@@ -91,12 +93,12 @@ class ImporterTest extends UnitTestCase
     public function getMessagesInitiallyReturnsEmptyStructure(): void
     {
         self::assertSame(
-                [
-                        AbstractMessage::ERROR => [],
-                        AbstractMessage::WARNING => [],
-                        AbstractMessage::OK => []
-                ],
-                $this->subject->getMessages()
+            [
+                AbstractMessage::ERROR => [],
+                AbstractMessage::WARNING => [],
+                AbstractMessage::OK => []
+            ],
+            $this->subject->getMessages()
         );
     }
 
@@ -107,8 +109,8 @@ class ImporterTest extends UnitTestCase
     {
         $this->subject->addMessage('foo', AbstractMessage::WARNING);
         self::assertCount(
-                1,
-                $this->subject->getMessages()[AbstractMessage::WARNING]
+            1,
+            $this->subject->getMessages()[AbstractMessage::WARNING]
         );
     }
 
@@ -120,12 +122,12 @@ class ImporterTest extends UnitTestCase
         $this->subject->addMessage('foo', AbstractMessage::WARNING);
         $this->subject->resetMessages();
         self::assertSame(
-                [
-                        AbstractMessage::ERROR => [],
-                        AbstractMessage::WARNING => [],
-                        AbstractMessage::OK => []
-                ],
-                $this->subject->getMessages()
+            [
+                AbstractMessage::ERROR => [],
+                AbstractMessage::WARNING => [],
+                AbstractMessage::OK => []
+            ],
+            $this->subject->getMessages()
         );
     }
 
@@ -135,8 +137,8 @@ class ImporterTest extends UnitTestCase
     public function getContextInitiallyReturnsManualContext(): void
     {
         self::assertSame(
-                'manual',
-                $this->subject->getContext()
+            'manual',
+            $this->subject->getContext()
         );
     }
 
@@ -147,8 +149,8 @@ class ImporterTest extends UnitTestCase
     {
         $this->subject->setContext('cli');
         self::assertSame(
-                'cli',
-                $this->subject->getContext()
+            'cli',
+            $this->subject->getContext()
         );
     }
 
@@ -192,7 +194,7 @@ class ImporterTest extends UnitTestCase
     public function isTestModeInitiallyReturnsFalse(): void
     {
         self::assertFalse(
-                $this->subject->isTestMode()
+            $this->subject->isTestMode()
         );
     }
 
@@ -203,7 +205,7 @@ class ImporterTest extends UnitTestCase
     {
         $this->subject->setTestMode(true);
         self::assertTrue(
-                $this->subject->isTestMode()
+            $this->subject->isTestMode()
         );
     }
 
@@ -221,8 +223,8 @@ class ImporterTest extends UnitTestCase
     public function getPreviewStepInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
-                '',
-                $this->subject->getPreviewStep()
+            '',
+            $this->subject->getPreviewStep()
         );
     }
 
@@ -233,8 +235,8 @@ class ImporterTest extends UnitTestCase
     {
         $this->subject->setPreviewStep('foo');
         self::assertSame(
-                'foo',
-                $this->subject->getPreviewStep()
+            'foo',
+            $this->subject->getPreviewStep()
         );
     }
 
@@ -249,15 +251,15 @@ class ImporterTest extends UnitTestCase
     public function previewDataProvider(): array
     {
         return [
-                'string' => [
-                        '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><node>foo</node>'
-                ],
-                'array' => [
-                        [
-                                'name' => 'Foo',
-                                'title' => 'Bar'
-                        ]
+            'string' => [
+                '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><node>foo</node>'
+            ],
+            'array' => [
+                [
+                    'name' => 'Foo',
+                    'title' => 'Bar'
                 ]
+            ]
         ];
     }
 
@@ -270,8 +272,8 @@ class ImporterTest extends UnitTestCase
     {
         $this->subject->setPreviewData($data);
         self::assertSame(
-                $data,
-                $this->subject->getPreviewData()
+            $data,
+            $this->subject->getPreviewData()
         );
     }
 
@@ -282,7 +284,7 @@ class ImporterTest extends UnitTestCase
     {
         $this->subject->resetPreviewData();
         self::assertNull(
-                $this->subject->getPreviewData()
+            $this->subject->getPreviewData()
         );
     }
 
@@ -292,8 +294,8 @@ class ImporterTest extends UnitTestCase
     public function getStartTimeInitiallyReturnsZero(): void
     {
         self::assertEquals(
-                0,
-                $this->subject->getStartTime()
+            0,
+            $this->subject->getStartTime()
         );
     }
 
@@ -305,8 +307,8 @@ class ImporterTest extends UnitTestCase
         $now = time();
         $this->subject->setStartTime($now);
         self::assertEquals(
-                $now,
-                $this->subject->getStartTime()
+            $now,
+            $this->subject->getStartTime()
         );
     }
 
@@ -316,8 +318,8 @@ class ImporterTest extends UnitTestCase
     public function getEndTimeInitiallyReturnsZero(): void
     {
         self::assertEquals(
-                0,
-                $this->subject->getEndTime()
+            0,
+            $this->subject->getEndTime()
         );
     }
 
@@ -329,8 +331,8 @@ class ImporterTest extends UnitTestCase
         $now = time();
         $this->subject->setEndTime($now);
         self::assertEquals(
-                $now,
-                $this->subject->getEndTime()
+            $now,
+            $this->subject->getEndTime()
         );
     }
 }

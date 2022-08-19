@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Handler\ArrayHandler;
 use Cobweb\ExternalImport\Importer;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 /**
  * Test suite for the ArrayHandler class.
@@ -37,7 +38,9 @@ class ArrayHandlerTest extends UnitTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = new ArrayHandler();
+        $this->subject = new ArrayHandler(
+            $this->getMockBuilder(EventDispatcher::class)->disableOriginalConstructor()->getMock()
+        );
     }
 
     public function getValueSuccessProvider(): array
