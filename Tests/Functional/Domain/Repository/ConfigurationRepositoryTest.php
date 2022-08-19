@@ -28,12 +28,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ConfigurationRepositoryTest extends FunctionalTestCase
 {
     protected $coreExtensionsToLoad = [
-            'scheduler',
+        'scheduler',
     ];
 
     protected $testExtensionsToLoad = [
-            'typo3conf/ext/external_import',
-            'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/external_import',
+        'typo3conf/ext/externalimport_test'
     ];
 
     /**
@@ -50,14 +50,13 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
             $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
 
             $this->subject = GeneralUtility::makeInstance(ConfigurationRepository::class);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             self::markTestSkipped(
-                    sprintf(
-                            'Some initializations could not be performed (Exception: %s [%d])',
-                            $e->getMessage(),
-                            $e->getCode()
-                    )
+                sprintf(
+                    'Some initializations could not be performed (Exception: %s [%d])',
+                    $e->getMessage(),
+                    $e->getCode()
+                )
             );
         }
     }
@@ -69,22 +68,22 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     {
         $groups = $this->subject->findByGroup('Products');
         self::assertCount(
-                3,
-                $groups
+            3,
+            $groups
         );
     }
 
     public function syncFlagProvider(): array
     {
         return [
-                'sync is true' => [
-                        true,
-                        16
-                ],
-                'sync is false' => [
-                        false,
-                        1
-                ]
+            'sync is true' => [
+                true,
+                16
+            ],
+            'sync is false' => [
+                false,
+                1
+            ]
         ];
     }
 
@@ -94,10 +93,10 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     public function findAllGroupsReturnsListOfGroups(): void
     {
         self::assertSame(
-                [
-                        'Products'
-                ],
-                $this->subject->findAllGroups()
+            [
+                'Products'
+            ],
+            $this->subject->findAllGroups()
         );
     }
 
@@ -111,57 +110,77 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     {
         // TODO: this is not very satisfying, because the default user provided by the backend user fixture is admin
         self::assertCount(
-                $expectedCount,
-                $this->subject->findBySync($sync)
+            $expectedCount,
+            $this->subject->findBySync($sync)
         );
     }
 
     public function findConfigurationProvider(): array
     {
         return [
-                'simple configuration' => [
-                        // Table
-                        'tx_externalimporttest_bundle',
-                        // Index
-                        0,
-                        // Sample test value from the ctrl configuration (property: referenceUid)
-                        'bundle_code',
-                        // Sample test value from the columns configuration (column corresponding to referenceUid property, i.e. "bundle_code")
-                        [
-                                'field' => 'code',
-                                'transformations' => [
-                                        10 => [
-                                                'trim' => true
-                                        ]
-                                ]
-                        ],
-                        [
-                                'position' => [
-                                        'field' => 'position',
-                                        'transformations' => [
-                                                10 => [
-                                                        'userFunction' => [
-                                                                'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
-                                                                'method' => 'stripPositionMarker'
-                                                        ]
-                                                ]
-                                        ],
-                                        \Cobweb\ExternalImport\Domain\Model\Configuration::DO_NOT_SAVE_KEY => true
-                                ]
+            'simple configuration' => [
+                'table' => 'tx_externalimporttest_bundle',
+                'index' => 0,
+                'referenceUid' => 'bundle_code',
+                'testedProperty' => 'bundle_code',
+                'columnConfiguration' => [
+                    'field' => 'code',
+                    'transformations' => [
+                        10 => [
+                            'trim' => true
                         ]
+                    ]
                 ],
-                'configuration with useColumnIndex' => [
-                        'tx_externalimporttest_product',
-                        'stable',
-                        'sku',
-                        // NOTE: this is expected to match information from the "base" configuration,
-                        // since the "stable" configuration has the useColumnIndex property pointing to "base" configuration
-                        [
-                                'xpath' => './self::*[@type="current"]/item',
-                                'attribute' => 'sku'
+                'additionalFields' => [
+                    'position' => [
+                        'field' => 'position',
+                        'transformations' => [
+                            10 => [
+                                'userFunction' => [
+                                    'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                                    'method' => 'stripPositionMarker'
+                                ]
+                            ]
                         ],
-                        []
+                        \Cobweb\ExternalImport\Domain\Model\Configuration::DO_NOT_SAVE_KEY => true
+                    ]
                 ]
+            ],
+            'configuration with useColumnIndex and no specific configuration' => [
+                'table' => 'tx_externalimporttest_product',
+                'index' => 'stable',
+                'referenceUid' => 'sku',
+                'testedProperty' => 'sku',
+                // NOTE: this is expected to match information from the "base" configuration,
+                // since the "stable" configuration has the useColumnIndex property pointing to "base" configuration
+                'columnConfiguration' => [
+                    'xpath' => './self::*[@type="current"]/item',
+                    'attribute' => 'sku'
+                ],
+                'additionalFields' => []
+            ],
+            'configuration with useColumnIndex but specific configuration' => [
+                'table' => 'tx_externalimporttest_product',
+                'index' => 'stable',
+                'referenceUid' => 'sku',
+                'testedProperty' => 'name',
+                // NOTE: in this case the "name" column has its own configuration, despite the use of useColumnIndex
+                'columnConfiguration' => [
+                    'xpath' => './self::*[@type="current"]/item',
+                    'transformations' => [
+                        10 => [
+                            'userFunction' => [
+                                'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                                'method' => 'caseTransformation',
+                                'parameters' => [
+                                    'transformation' => 'upper'
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'additionalFields' => []
+            ]
         ];
     }
 
@@ -170,29 +189,33 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
      * @dataProvider findConfigurationProvider
      * @param string $table
      * @param mixed $index
-     * @param string $expectedGeneralValue
+     * @param string $expectedReferenceUdiValue
      * @param array $expectedColumnConfiguration
      * @param array $expectedAdditionalFieldsConfiguration
      */
-    public function findConfigurationObjectReturnsExpectedConfiguration($table, $index, $expectedGeneralValue, $expectedColumnConfiguration, $expectedAdditionalFieldsConfiguration): void
-    {
+    public function findConfigurationObjectReturnsExpectedConfiguration(
+        $table,
+        $index,
+        $expectedReferenceUdiValue,
+        $testColumnName,
+        $expectedColumnConfiguration,
+        $expectedAdditionalFieldsConfiguration
+    ): void {
         $configuration = $this->subject->findConfigurationObject(
-                $table,
-                $index
+            $table,
+            $index
         );
         self::assertSame(
-                $expectedGeneralValue,
-                $configuration->getGeneralConfigurationProperty('referenceUid')
+            $expectedReferenceUdiValue,
+            $configuration->getGeneralConfigurationProperty('referenceUid')
         );
         self::assertSame(
-                $expectedColumnConfiguration,
-                $configuration->getConfigurationForColumn(
-                        $configuration->getGeneralConfigurationProperty('referenceUid')
-                )
+            $expectedColumnConfiguration,
+            $configuration->getConfigurationForColumn($testColumnName)
         );
         self::assertSame(
-                $expectedAdditionalFieldsConfiguration,
-                $configuration->getAdditionalFields()
+            $expectedAdditionalFieldsConfiguration,
+            $configuration->getAdditionalFields()
         );
     }
 
@@ -203,8 +226,8 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     {
         // TODO: this is not very satisfying, because the default user provided by the backend user fixture is admin
         self::assertSame(
-                'all',
-                $this->subject->findGlobalWriteAccess()
+            'all',
+            $this->subject->findGlobalWriteAccess()
         );
     }
 
@@ -214,56 +237,56 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     public function findOrderedConfigurationsReturnsFullOrderedList(): void
     {
         $expectedList = [
-                1000 => [
-                        ['table' => 'tx_externalimporttest_product', 'index' => 'general_configuration_errors', 'group' => '-']
-                ],
-                5000 => [
-                        ['table' => 'tx_externalimporttest_tag', 'index' => 0, 'group' => '-']
-                ],
-                5050 => [
-                        ['table' => 'sys_category', 'index' => 'product_categories', 'group' => '-'],
-                        ['table' => 'sys_category', 'index' => 'column_configuration_errors', 'group' => '-']
-                ],
-                5080 => [
-                        ['table' => 'tx_externalimporttest_designer', 'index' => 0, 'group' => '-']
-                ],
-                5100 => [
-                        ['table' => 'tx_externalimporttest_product', 'index' => 'base', 'group' => 'Products']
-                ],
-                5110 => [
-                        ['table' => 'tx_externalimporttest_product', 'index' => 'more', 'group' => 'Products']
-                ],
-                5120 => [
-                        ['table' => 'tx_externalimporttest_product', 'index' => 'stable', 'group' => 'Products']
-                ],
-                5200 => [
-                        ['table' => 'tx_externalimporttest_bundle', 'index' => 0, 'group' => '-']
-                ],
-                5300 => [
-                        ['table' => 'tx_externalimporttest_order', 'index' => 0, 'group' => '-']
-                ],
-                5400 => [
-                        ['table' => 'tx_externalimporttest_store', 'index' => 0, 'group' => '-']
-                ],
-                5410 => [
-                        ['table' => 'tx_externalimporttest_product', 'index' => 'products_for_stores', 'group' => '-']
-                ],
-                5500 => [
-                        ['table' => 'tx_externalimporttest_invoice', 'index' => 0, 'group' => '-']
-                ],
-                5800 => [
-                        ['table' => 'pages', 'index' => 'product_pages', 'group' => '-']
-                ],
-                5810 => [
-                        ['table' => 'tx_externalimporttest_product', 'index' => 'updated_products', 'group' => '-']
-                ],
-                5900 => [
-                        ['table' => 'tx_externalimporttest_tag', 'index' => 'only-delete', 'group' => '-']
-                ]
+            1000 => [
+                ['table' => 'tx_externalimporttest_product', 'index' => 'general_configuration_errors', 'group' => '-']
+            ],
+            5000 => [
+                ['table' => 'tx_externalimporttest_tag', 'index' => 0, 'group' => '-']
+            ],
+            5050 => [
+                ['table' => 'sys_category', 'index' => 'product_categories', 'group' => '-'],
+                ['table' => 'sys_category', 'index' => 'column_configuration_errors', 'group' => '-']
+            ],
+            5080 => [
+                ['table' => 'tx_externalimporttest_designer', 'index' => 0, 'group' => '-']
+            ],
+            5100 => [
+                ['table' => 'tx_externalimporttest_product', 'index' => 'base', 'group' => 'Products']
+            ],
+            5110 => [
+                ['table' => 'tx_externalimporttest_product', 'index' => 'more', 'group' => 'Products']
+            ],
+            5120 => [
+                ['table' => 'tx_externalimporttest_product', 'index' => 'stable', 'group' => 'Products']
+            ],
+            5200 => [
+                ['table' => 'tx_externalimporttest_bundle', 'index' => 0, 'group' => '-']
+            ],
+            5300 => [
+                ['table' => 'tx_externalimporttest_order', 'index' => 0, 'group' => '-']
+            ],
+            5400 => [
+                ['table' => 'tx_externalimporttest_store', 'index' => 0, 'group' => '-']
+            ],
+            5410 => [
+                ['table' => 'tx_externalimporttest_product', 'index' => 'products_for_stores', 'group' => '-']
+            ],
+            5500 => [
+                ['table' => 'tx_externalimporttest_invoice', 'index' => 0, 'group' => '-']
+            ],
+            5800 => [
+                ['table' => 'pages', 'index' => 'product_pages', 'group' => '-']
+            ],
+            5810 => [
+                ['table' => 'tx_externalimporttest_product', 'index' => 'updated_products', 'group' => '-']
+            ],
+            5900 => [
+                ['table' => 'tx_externalimporttest_tag', 'index' => 'only-delete', 'group' => '-']
+            ]
         ];
         self::assertSame(
-                $expectedList,
-                $this->subject->findOrderedConfigurations()
+            $expectedList,
+            $this->subject->findOrderedConfigurations()
         );
     }
 
@@ -273,76 +296,76 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     public function findByTableAndIndexReturnsExternalConfiguration(): void
     {
         $externalConfiguration = $this->subject->findByTableAndIndex(
-                'tx_externalimporttest_bundle',
-                0
+            'tx_externalimporttest_bundle',
+            0
         );
         self::assertSame(
-                [
-                        'general' => [
-                                'connector' => 'json',
-                                'parameters' => [
-                                        'uri' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Bundles.json'
-                                ],
-                                'data' => 'array',
-                                'referenceUid' => 'bundle_code',
-                                'priority' => 5200,
-                                'description' => 'List of bundles',
-                                'pid' => 0
-                        ],
-                        'additionalFields' => [
-                                'position' => [
-                                        'field' => 'position',
-                                        'transformations' => [
-                                                10 => [
-                                                        'userFunction' => [
-                                                                'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
-                                                                'method' => 'stripPositionMarker'
-                                                        ]
-                                                ]
-                                        ]
-                                ]
-                        ],
-                        'columns' => [
-                                'bundle_code' => [
-                                        'field' => 'code',
-                                        'transformations' => [
-                                                10 => [
-                                                        'trim' => true
-                                                ]
-                                        ]
-                                ],
-                                'maker' => [
-                                        'arrayPath' => 'maker/name',
-                                        'transformations' => [
-                                                10 => [
-                                                        'trim' => true
-                                                ]
-                                        ]
-                                ],
-                                'name' => [
-                                        'field' => 'name',
-                                        'transformations' => [
-                                                10 => [
-                                                        'trim' => true
-                                                ]
-                                        ]
-                                ],
-                                'products' => [
-                                        'field' => 'product',
-                                        'multipleRows' => true,
-                                        'multipleSorting' => 'position',
-                                        'transformations' => [
-                                                10 => [
-                                                        'mapping' => [
-                                                                'table' => 'tx_externalimporttest_product',
-                                                                'referenceField' => 'sku'
-                                                        ]
-                                                ]
-                                        ]
-                                ]
-                        ]
+            [
+                'general' => [
+                    'connector' => 'json',
+                    'parameters' => [
+                        'uri' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Bundles.json'
+                    ],
+                    'data' => 'array',
+                    'referenceUid' => 'bundle_code',
+                    'priority' => 5200,
+                    'description' => 'List of bundles',
+                    'pid' => 0
                 ],
-                $externalConfiguration
+                'additionalFields' => [
+                    'position' => [
+                        'field' => 'position',
+                        'transformations' => [
+                            10 => [
+                                'userFunction' => [
+                                    'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                                    'method' => 'stripPositionMarker'
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'columns' => [
+                    'bundle_code' => [
+                        'field' => 'code',
+                        'transformations' => [
+                            10 => [
+                                'trim' => true
+                            ]
+                        ]
+                    ],
+                    'maker' => [
+                        'arrayPath' => 'maker/name',
+                        'transformations' => [
+                            10 => [
+                                'trim' => true
+                            ]
+                        ]
+                    ],
+                    'name' => [
+                        'field' => 'name',
+                        'transformations' => [
+                            10 => [
+                                'trim' => true
+                            ]
+                        ]
+                    ],
+                    'products' => [
+                        'field' => 'product',
+                        'multipleRows' => true,
+                        'multipleSorting' => 'position',
+                        'transformations' => [
+                            10 => [
+                                'mapping' => [
+                                    'table' => 'tx_externalimporttest_product',
+                                    'referenceField' => 'sku'
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            $externalConfiguration
         );
     }
 }

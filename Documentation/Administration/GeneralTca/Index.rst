@@ -381,12 +381,101 @@ Description
   In a basic configuration the same index must be used for the general
   TCA configuration and for each column configuration. With this property
   it is possible to use a different index for the column configurations.
-  The "ctrl" part has to exist with its own index, but the columns may refer
-  to another index and thus their configuration does not need to be defined.
-  Obviously the index referred to must exist for columns.
+  The general configuration part has to exist with its own index (say "index A"), but the columns may refer
+  to another index (say "index B") and thus their configuration does not need to be defined.
+  Obviously the index referred to ("index B") must exist for columns.
 
   The type may be a string or an integer, because a configuration key
   may also be either a string or an integer.
+
+  Since version 6.1, it is possible to define specific configurations for selected
+  columns using the index from the general configuration ("index A"). It will not
+  be overridden by the configuration corresponding to the index referred to with
+  :code:`useColumnIndex` property ("index B").
+
+  Example:
+
+  .. code-block:: php
+
+      'stable' => [
+          'connector' => 'feed',
+          'parameters' => [
+              'uri' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/StableProducts.xml',
+              'encoding' => 'utf8'
+          ],
+          'group' => 'Products',
+          'data' => 'xml',
+          'nodetype' => 'products',
+          'referenceUid' => 'sku',
+          'priority' => 5120,
+          'useColumnIndex' => 'base',
+          ...
+      ],
+
+  This general configuration makes reference to the "base" configuration. This means
+  that all columns will use the "base" configuration, unless they have a configuration
+  using specifically the "stable" index. So the "sku" column will use the configuration
+  from the "base" index:
+
+  .. code-block:: php
+
+     'sku' => [
+         'exclude' => false,
+         'label' => 'SKU',
+         'config' => [
+             'type' => 'input',
+             'size' => 10
+         ],
+         'external' => [
+             'base' => [
+                 'xpath' => './self::*[@type="current"]/item',
+                 'attribute' => 'sku'
+             ],
+             'products_for_stores' => [
+                 'field' => 'product'
+             ],
+             'updated_products' => [
+                 'field' => 'product_sku'
+             ]
+         ]
+     ],
+
+  However, the "name" column has a specific configuration corresponding to the "stable"
+  index, so it will be used, and not the configuration from the "base" index:
+
+  .. code-block:: php
+
+     'name' => [
+         'exclude' => false,
+         'label' => 'Name',
+         'config' => [
+             'type' => 'input',
+             'size' => 30,
+             'eval' => 'required,trim',
+         ],
+         'external' => [
+             'base' => [
+                 'xpath' => './self::*[@type="current"]/item',
+             ],
+             'stable' => [
+                 'xpath' => './self::*[@type="current"]/item',
+                 'transformations' => [
+                     10 => [
+                         'userFunction' => [
+                             'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                             'method' => 'caseTransformation',
+                             'parameters' => [
+                                 'transformation' => 'upper'
+                             ]
+                         ]
+                     ]
+                 ]
+             ],
+             'updated_products' => [
+                 'field' => 'name'
+             ]
+         ]
+     ],
 
 Scope
   Configuration

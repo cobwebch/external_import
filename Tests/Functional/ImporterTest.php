@@ -238,76 +238,75 @@ class ImporterTest extends FunctionalTestCase
     }
 
     /**
-     * Imports the "products" with the "more" configuration and checks whether we have the right count or not
+     * Imports the "products" with the "stable" configuration and checks whether we have the right count or not
      * (2 expected).
      *
-     * This test also checks that old MM relations are removed.
+     * This test also checks that old MM relations are removed and that the useColumnIndex override has been taken
+     * into account (product names are uppercase)
      *
      * @test
      */
     public function importStableProductsWithImporterStoresTwoRecordsAndRemovesOldRelations(): void
     {
-        try {
-            // Create 1 category and 1 relation to it. The relation should be removed by the import process.
-            $this->importDataSet(__DIR__ . '/Fixtures/CategoriesMM.xml');
+        // Create 1 category and 1 relation to it. The relation should be removed by the import process.
+        $this->importDataSet(__DIR__ . '/Fixtures/CategoriesMM.xml');
 
-            $messages = $this->subject->synchronize(
-                    'tx_externalimporttest_product',
-                    'stable'
-            );
-            // Get the number of products stored
-            $countProducts = $this->getDatabaseConnection()->selectCount(
-                    'uid',
-                    'tx_externalimporttest_product'
-            );
-            $products = $this->getDatabaseConnection()->getDatabaseInstance()
-                    ->select('uid', 'name', 'categories')
-                    ->from('tx_externalimporttest_product')
-                    ->execute()
-                    ->fetchAll();
-            // Get the categories relations
-            $relations = $this->getDatabaseConnection()->getDatabaseInstance()
-                    ->select('uid_local', 'uid_foreign')
-                    ->from('sys_category_record_mm')
-                    ->where('tablenames = \'tx_externalimporttest_product\'')
-                    ->execute()
-                    ->fetchAll();
-            $countRelations = count($relations);
-            $firstRelation = array_pop($relations);
-            // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
-            self::assertEquals(
-                    2,
-                    $countProducts,
-                    serialize($messages)
-            );
-            // There should have been no updates (operation is disabled)
-            self::assertEquals(
-                    0,
-                    $this->subject->getReportingUtility()->getValueForStep(
-                            StoreDataStep::class,
-                            'updates'
-                    )
-            );
-            // There should be only 1 relation, because the one from the fixture is expected to have been deleted
-            self::assertEquals(
-                    1,
-                    $countRelations
-            );
-            // The remaining relation should be with the second product (uid: 2)
-            self::assertEquals(
-                    2,
-                    $firstRelation['uid_foreign']
-            );
-        }
-        catch (\Exception $e) {
-            self::markTestSkipped(
-                    sprintf(
-                            'Categories relations fixture could not be loaded (Exception: %s [%d])',
-                            $e->getMessage(),
-                            $e->getCode()
-                    )
-            );
-        }
+        $messages = $this->subject->synchronize(
+            'tx_externalimporttest_product',
+            'stable'
+        );
+        // Get the number of products stored
+        $countProducts = $this->getDatabaseConnection()->selectCount(
+            'uid',
+            'tx_externalimporttest_product'
+        );
+        $products = $this->getDatabaseConnection()->getDatabaseInstance()
+            ->select('name')
+            ->from('tx_externalimporttest_product')
+            ->orderBy('sku', 'asc')
+            ->execute()
+            ->fetchAll();
+        // Get the categories relations
+        $relations = $this->getDatabaseConnection()->getDatabaseInstance()
+            ->select('uid_local', 'uid_foreign')
+            ->from('sys_category_record_mm')
+            ->where('tablenames = \'tx_externalimporttest_product\'')
+            ->execute()
+            ->fetchAll();
+        $countRelations = count($relations);
+        $firstRelation = array_pop($relations);
+        // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
+        self::assertEquals(
+            2,
+            $countProducts,
+            serialize($messages)
+        );
+        self::assertEquals(
+            'OLD IRON KETTLE',
+            $products[0]['name']
+        );
+        self::assertEquals(
+            'OLD FRYING PAN',
+            $products[1]['name']
+        );
+        // There should have been no updates (operation is disabled)
+        self::assertEquals(
+            0,
+            $this->subject->getReportingUtility()->getValueForStep(
+                StoreDataStep::class,
+                'updates'
+            )
+        );
+        // There should be only 1 relation, because the one from the fixture is expected to have been deleted
+        self::assertEquals(
+            1,
+            $countRelations
+        );
+        // The remaining relation should be with the second product (uid: 2)
+        self::assertEquals(
+            2,
+            $firstRelation['uid_foreign']
+        );
     }
 
     /**

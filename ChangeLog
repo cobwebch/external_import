@@ -1,3 +1,7 @@
+2022-08-19 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Allow specific field configuration when using useColumnIndex, resolves #219
+
 2022-08-18 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve base64 image tranformation with automatic format detection, resolves #250

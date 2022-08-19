@@ -93,13 +93,17 @@ class ConfigurationRepository
 
         // Load columns configuration
         // Override the configuration index for columns, if so defined
-        $columnIndex = $configuration['general']['useColumnIndex'] ?? $index;
+        $alternateIndex = $configuration['general']['useColumnIndex'] ?? '';
         if (isset($GLOBALS['TCA'][$table]['columns'])) {
             $columnsConfiguration = $GLOBALS['TCA'][$table]['columns'];
             ksort($columnsConfiguration);
             foreach ($columnsConfiguration as $columnName => $columnData) {
-                if (isset($columnData['external'][$columnIndex])) {
-                    $configuration['columns'][$columnName] = $columnData['external'][$columnIndex];
+                // If a configuration for the given column and index exists, it always takes precedence,
+                // otherwise the alternate index is considered, if defined
+                if (isset($columnData['external'][$index])) {
+                    $configuration['columns'][$columnName] = $columnData['external'][$index];
+                } elseif ($alternateIndex !== '' && isset($columnData['external'][$alternateIndex])) {
+                    $configuration['columns'][$columnName] = $columnData['external'][$alternateIndex];
                 }
             }
         }
