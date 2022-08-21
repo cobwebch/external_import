@@ -1,3 +1,7 @@
+2022-08-21 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Remove handling of time zone in date transformation user function, resolves #226
+
 2022-08-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Allow specific field configuration when using useColumnIndex, resolves #219

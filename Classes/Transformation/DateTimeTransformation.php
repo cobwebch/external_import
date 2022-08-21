@@ -53,14 +53,6 @@ class DateTimeTransformation implements SingletonInterface, ImporterAwareInterfa
         }
 
         $value = strtotime((string)$record[$index]);
-        // Consider time zone offset
-        // This is necessary because TCEmain will subtract the time zone offset upon saving the data,
-        // so the offset must be added first to compensate for this
-        // NOTE: this correction was made dependent on a parameter (enforceTimeZone), but it might
-        // make sense to execute it all the time, given the context in which this method is called
-        if (!empty($params['enforceTimeZone'] ?? null) && !empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['serverTimeZone'] ?? null)) {
-            $value += ($GLOBALS['TYPO3_CONF_VARS']['SYS']['serverTimeZone'] * 3600);
-        }
         // Format value only if a function was defined
         if (isset($params['function'])) {
             // Use strftime for formatting
