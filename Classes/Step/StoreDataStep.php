@@ -743,6 +743,10 @@ class StoreDataStep extends AbstractStep
         $multipleValues = [];
         $handledUids = [];
         foreach ($records as $record) {
+            // If the external key (reference id) is not set, skip record
+            if (!isset($record[$referenceUid])) {
+                continue;
+            }
             $externalId = $record[$referenceUid];
             // Get the existing uid or generate a key if no uid is found (e.g. it's a new record)
             if (isset($existingUids[$externalId])) {

@@ -1,3 +1,7 @@
+2022-08-30 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Skip import of records with no reference uid, resolves #241
+
 2022-08-21 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Remove handling of time zone in date transformation user function, resolves #226

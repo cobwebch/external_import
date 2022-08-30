@@ -288,6 +288,12 @@ Description
   Name of the column where the equivalent of a primary key for the
   external data is stored.
 
+  Records for which this data does not exist are skipped (since version 6.1).
+  This is tested with PHP's :code:`isset()` function. If you think your data
+  may contain empty values and you wish to skip them too, use the
+  :ref:`isEmpty <administration-transformations-properties-isempty>` transformation
+  property with the :code:`invalidate` option set to :code:`true`.
+
   .. important::
 
      This is the name of a field in the TYPO3 CMS database, not in

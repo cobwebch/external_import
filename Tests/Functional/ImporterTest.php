@@ -361,7 +361,7 @@ class ImporterTest extends FunctionalTestCase
 
     /**
      * Imports the "bundles" and checks whether we have the right count or not
-     * (2 expected). Also checks relations between products and bundles,
+     * (3 expected out of 4, one does not have a referenceUid). Also checks relations between products and bundles,
      * including the order of the products inside the bundles.
      *
      * @test

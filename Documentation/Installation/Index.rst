@@ -21,6 +21,19 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-610:
+
+Upgrade to 6.1.0
+""""""""""""""""
+
+Records which have external key set (the value references by the
+:ref:`referenceUid <administration-general-tca-properties-reference-uid>` property)
+are now skipped in the import. Indeed it makes no sense to import records without
+such keys, as they can never be updated and - if several are created in a single
+import run - they will override each other. Still it is a change of behaviour and
+should be noted.
+
+
 .. _installation-upgrade-600:
 
 Upgrade to 6.0.0
