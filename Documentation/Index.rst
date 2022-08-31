@@ -7,45 +7,116 @@
 External Import
 ===============
 
-.. only:: html
+:Extension key:
+   external_import
 
-	:Language:
-		  en
+:Package name:
+   cobweb/external_import
 
-	:Version:
-		|release|
+:Version:
+   |release|
 
-	:Description:
-		  Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line interface and an API.
+:Language:
+   en
 
-	:Keywords:
-		  data import, fetch data, services
+:Author:
+   François Suter (Idéative), `typo3@ideative.ch <typo3@ideative.ch>`_
 
-	:Copyright:
-		2007-2022
+:License:
+   This document is published under the `Open Publication License <http://www.opencontent.org/openpub/>`_.
 
-	:Author:
-		  François Suter (Idéative)
-
-	:Email:
-		  typo3@ideative.ch
-
-	:License:
-		This document is published under the Open Content License
-		available from http://www.opencontent.org/openpub/
-
-	:Rendered:
-		|today|
+:Rendered:
+   |today|
 
 
-The content of this document is related to TYPO3,
-a GNU/GPL CMS/Framework available from `www.typo3.org <https://www.typo3.org/>`_.
+----
+
+Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line interface and an API.
+
+----
+
+.. container:: row m-0 p-0
+
+   .. container:: col-12 col-md-6 pl-0 pr-3 py-3 m-0
+
+      .. container:: card px-0 h-100
+
+         .. rst-class:: card-header h3
+
+            .. rubric:: :ref:`Introduction <introduction>`
+
+         .. container:: card-body
+
+            A general presentation of the features provided by this extension.
+
+   .. container:: col-12 col-md-6 pl-0 pr-3 py-3 m-0
+
+      .. container:: card px-0 h-100
+
+         .. rst-class:: card-header h3
+
+            .. rubric:: :ref:`Installation <installation>`
+
+         .. container:: card-body
+
+            Installing and updagring the extension, with highlights of new features.
+            General extension configuration.
+
+   .. container:: col-12 col-md-6 pl-0 pr-3 py-3 m-0
+
+      .. container:: card px-0 h-100
+
+         .. rst-class:: card-header h3
+
+            .. rubric:: :ref:`User manual <user>`
+
+         .. container:: card-body
+
+            How the extension works and what are the various tools available.
+
+   .. container:: col-12 col-md-6 pl-0 pr-3 py-3 m-0
+
+      .. container:: card px-0 h-100
+
+         .. rst-class:: card-header h3
+
+            .. rubric:: :ref:`Import configuration <import-configuration>`
+
+         .. container:: card-body
+
+            How the extension works and what are the various tools available.
+
+   .. container:: col-12 col-md-6 pl-0 pr-3 py-3 m-0
+
+      .. container:: card px-0 h-100
+
+         .. rst-class:: card-header h3
+
+            .. rubric:: :ref:`Developer's guide <developer>`
+
+         .. container:: card-body
+
+            Everything about events, user functions and all other entry points
+            for programatically enhancing the import process. Description of the
+            main APIs.
+
+   .. container:: col-12 col-md-6 pl-0 pr-3 py-3 m-0
+
+      .. container:: card px-0 h-100
+
+         .. rst-class:: card-header h3
+
+            .. rubric:: :ref:`Known problems <problems>`
+
+         .. container:: card-body
+
+            Description of the known (and tricky) issues that are not (yet) solved.
 
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
    :titlesonly:
-   :glob:
+   :hidden:
 
    Introduction/Index
    Installation/Index

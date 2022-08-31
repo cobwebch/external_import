@@ -79,7 +79,7 @@ is available for checking if a given data can be considered empty or not.
 For maximum flexibility, it relies on the Symfony Expression language.
 
 It is also possible to set multiple mail recipients for the import report
-instead of a single one (see the :ref:`extension configuration <configuration>`).
+instead of a single one (see the :ref:`extension configuration <installation-configuration>`).
 
 
 .. _installation-upgrade-510:
@@ -195,3 +195,11 @@ As is mentioned in the introduction, this extension makes heavy use
 of an extended syntax for the TCA. If you are not familiar with the
 TCA, you are strongly advised to read up on it in the
 :ref:`TCA Reference manual <t3tca:start>`.
+
+
+.. toctree::
+   :maxdepth: 5
+   :titlesonly:
+   :glob:
+
+   Configuration/Index

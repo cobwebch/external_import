@@ -63,6 +63,35 @@ https://github.com/cobwebch/externalimport_test
    - :ref:`Mapping data <user-mapping-data>`
 
 
+.. _other-extensions:
+
+Differences with other extensions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There exists several extensions for importing data into TYPO3, including the system
+extension "impexp". Extension "impexp" is specifically designed to export data from
+a TYPO3 installation and import it again into TYPO3, using a specific file format ("T3D").
+When the need is to move around data that is already in a TYPO3 installation, "impexp" is the logical choice.
+External Import differs by being designed to import data into TYPO3 from a large variety of
+sources **outside** TYPO3.
+
+There are other extensions available, like `xlsimport <https://extensions.typo3.org/extension/xlsimport>`_
+and `importr <https://extensions.typo3.org/extension/importr>`_, which were released
+years after External Import and - as such - I never really looked into them since I had all the tools
+I needed. So it is hard to compare their features.
+
+"xlsimport" can import only Excel and CSV format, but mostly cannot be automated (no Scheduler task,
+nor command line call). Also the import configuration cannot be saved and must be repeated
+each time. On the other hand, this is very convenient for one-time imports, definitely
+quicker and lighter to set up than External Import.
+
+"importr" seems to come quite close to External Import in terms of features, although
+maybe with less flexibility in the data handling and less import sources (import
+resources can probably be added). It is probably easier to set up than External Import,
+since it allows for simply pointing to an Extbase model, plus a simple mapping of fields
+to import.
+
+
 .. _suport:
 
 Questions and support

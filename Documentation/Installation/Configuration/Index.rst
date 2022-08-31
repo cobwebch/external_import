@@ -1,10 +1,11 @@
-﻿.. include:: ../Includes.txt
+﻿.. include:: ../../Includes.txt
 
 
+.. _installation-configuration:
 .. _configuration:
 
-Configuration
--------------
+Extension configuration
+-----------------------
 
 The extension has the following configuration options:
 

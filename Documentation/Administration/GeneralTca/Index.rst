@@ -341,7 +341,7 @@ Type
 Description
   ID of the page where the imported records should be stored. Can be
   ignored and the general storage pid is used instead
-  (:ref:`see Configuration <configuration>`).
+  (:ref:`see Configuration <installation-configuration>`).
 
 Scope
   Store data
@@ -708,7 +708,7 @@ Type
 Description
   Set to :code:`true` to disable logging by the TYP3 Core Engine. This setting will override
   the general "Disable logging" setting
-  (see :ref:`Configuration for more details <configuration>`).
+  (see :ref:`Configuration for more details <installation-configuration>`).
 
 Scope
   Store data

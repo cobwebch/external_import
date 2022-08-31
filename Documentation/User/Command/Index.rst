@@ -57,7 +57,7 @@ Debugging on the command-line
 
 Debugging on the command-line is achieved by using the verbose flag, which is
 available for all commands. If global debugging is turned on
-(see the :ref:`Extension configuration <configuration>`), debugged variables
+(see the :ref:`Extension configuration <installation-configuration>`), debugged variables
 will be dumped along with the usual output from the External Import command.
 If global debugging is disabled, it can be enabled for a single run, by
 using the "debug" flag:

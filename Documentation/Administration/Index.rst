@@ -1,10 +1,11 @@
 .. include:: ../Includes.txt
 
 
+.. _import-configuration:
 .. _administration:
 
-Administration
---------------
+Import configuration
+--------------------
 
 To start inserting data from an external source into your TYPO3 CMS
 tables, you must first extend their TCA with a specific syntax. This
