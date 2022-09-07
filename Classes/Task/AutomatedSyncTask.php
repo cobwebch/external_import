@@ -156,16 +156,20 @@ class AutomatedSyncTask extends AbstractTask
                 $group
             );
         } else {
-            $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
-            $configuration = $configurationRepository->findConfigurationObject($this->table, $this->index);
-            $info = sprintf(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'
-                ),
-                $this->table,
-                $this->index,
-                $configuration->getGeneralConfigurationProperty('priority')
-            );
+            try {
+                $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
+                $configuration = $configurationRepository->findConfigurationObject($this->table, $this->index);
+                $info = sprintf(
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'
+                    ),
+                    $this->table,
+                    $this->index,
+                    $configuration->getGeneralConfigurationProperty('priority')
+                );
+            } catch (\Exception $e) {
+                $info = '';
+            }
         }
         return $info;
     }

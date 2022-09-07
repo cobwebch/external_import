@@ -368,4 +368,16 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
             $externalConfiguration
         );
     }
+
+    /**
+     * @test
+     */
+    public function findByTableAndIndexWithWrongInformationThrowsException(): void
+    {
+        $this->expectException(\Cobweb\ExternalImport\Exception\NoConfigurationException::class);
+        $this->subject->findByTableAndIndex(
+            'foo',
+            'bar'
+        );
+    }
 }

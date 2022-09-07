@@ -673,7 +673,7 @@ class ImporterTest extends FunctionalTestCase
     }
 
     /**
-     * Checks that running an erroneous configuration exists early with a single error message.
+     * Checks that running an erroneous configuration exits early with a single error message.
      *
      * @param string $table Name of the table to import into
      * @param string $configuration Name of the configuration to check
@@ -683,8 +683,8 @@ class ImporterTest extends FunctionalTestCase
     public function importWithErroneousConfigurationReturnsError($table, $configuration): void
     {
         $messages = $this->subject->synchronize(
-                $table,
-                $configuration
+            $table,
+            $configuration
         );
         $messageLevel = key($messages);
         $messagesForLevel = $messages[$messageLevel];

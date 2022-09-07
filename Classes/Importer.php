@@ -24,6 +24,7 @@ use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
+use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -206,9 +207,14 @@ class Importer implements LoggerAwareInterface
      * @param mixed $index Index of the synchronisation configuration to use
      * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return void
+     * @throws NoConfigurationException
      */
     protected function initialize(string $table, $index, $defaultSteps = null): void
     {
+        // Assign back-reference to reporting utility
+        $this->reportingUtility->setImporter($this);
+
+        // Fetch the requested configuration
         $this->externalConfiguration = $this->configurationRepository->findConfigurationObject(
                 $table,
                 $index,
@@ -221,8 +227,6 @@ class Importer implements LoggerAwareInterface
         $this->uidRepository->setConfiguration($this->externalConfiguration);
         $this->uidRepository->resetExistingUids();
         $this->uidRepository->resetCurrentPids();
-        // Assign back-reference to reporting utility
-        $this->reportingUtility->setImporter($this);
     }
 
     /**
@@ -238,36 +242,47 @@ class Importer implements LoggerAwareInterface
         $this->resetMessages();
         try {
             $this->initialize(
-                    $table,
-                    $index,
-                    self::SYNCHRONYZE_DATA_STEPS
+                $table,
+                $index,
+                self::SYNCHRONYZE_DATA_STEPS
             );
 
             $data = GeneralUtility::makeInstance(Data::class);
             $this->runSteps($data);
         } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
-                            'external_import',
-                            [
-                                    $e->getMessage()
-                            ]
-                    ),
-                    AbstractMessage::WARNING
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
+                    'external_import',
+                    [
+                        $e->getMessage()
+                    ]
+                ),
+                AbstractMessage::WARNING
+            );
+        } catch (NoConfigurationException $e) {
+            $this->addMessage(
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
+                    'external_import',
+                    [
+                        $table,
+                        $index,
+                        $e->getMessage(),
+                        $e->getCode()
+                    ]
+                )
             );
         } catch (\Exception $e) {
             $this->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
-                            'external_import',
-                            [
-                                    $table,
-                                    $index,
-                                    $e->getMessage(),
-                                    $e->getCode()
-                            ]
-                    )
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:generalProcessError',
+                    'external_import',
+                    [
+                        $e->getMessage(),
+                        $e->getCode()
+                    ]
+                )
             );
         }
         // Log results
@@ -292,9 +307,9 @@ class Importer implements LoggerAwareInterface
         $this->setContext('api');
         try {
             $this->initialize(
-                    $table,
-                    $index,
-                    self::IMPORT_DATA_STEPS
+                $table,
+                $index,
+                self::IMPORT_DATA_STEPS
             );
 
             // Initialize the Data object with the raw data
@@ -303,26 +318,37 @@ class Importer implements LoggerAwareInterface
             $this->runSteps($data);
         } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
-                            'external_import',
-                            [
-                                    $e->getMessage()
-                            ]
-                    )
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
+                    'external_import',
+                    [
+                        $e->getMessage()
+                    ]
+                )
+            );
+        } catch (NoConfigurationException $e) {
+            $this->addMessage(
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
+                    'external_import',
+                    [
+                        $table,
+                        $index,
+                        $e->getMessage(),
+                        $e->getCode()
+                    ]
+                )
             );
         } catch (\Exception $e) {
             $this->addMessage(
-                    LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
-                            'external_import',
-                            [
-                                    $table,
-                                    $index,
-                                    $e->getMessage(),
-                                    $e->getCode()
-                            ]
-                    )
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:generalProcessError',
+                    'external_import',
+                    [
+                        $e->getMessage(),
+                        $e->getCode()
+                    ]
+                )
             );
         }
         // Log results

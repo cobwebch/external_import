@@ -1,3 +1,7 @@
+2022-09-07 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve exception handling in case of missing configuration, resolves #242
+
 2022-08-31 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve and restructure documentation, resolves #215

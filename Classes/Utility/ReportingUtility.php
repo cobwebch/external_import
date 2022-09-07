@@ -110,10 +110,10 @@ class ReportingUtility implements LoggerAwareInterface
                     $logEntry->setStatus($status);
                     $logEntry->setCrdate($now);
                     $logEntry->setCruserId($currentUser);
-                    $logEntry->setConfiguration(
-                        $this->importer->getExternalConfiguration()->getTable() .
-                        ' / ' . $this->importer->getExternalConfiguration()->getIndex()
-                    );
+                    $configuration = $this->importer->getExternalConfiguration() ?
+                        $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex() :
+                        'Invalid configuration';
+                    $logEntry->setConfiguration($configuration);
                     $logEntry->setContext($importContext);
                     $logEntry->setMessage($message);
                     $logEntry->setDuration(

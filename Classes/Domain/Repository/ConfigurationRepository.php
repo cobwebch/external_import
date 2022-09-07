@@ -65,6 +65,7 @@ class ConfigurationRepository
      * @param string $table Name of the table
      * @param string|int $index Key of the configuration
      * @return array The relevant TCA configuration
+     * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
      */
     public function findByTableAndIndex(string $table, $index): array
     {
@@ -79,10 +80,19 @@ class ConfigurationRepository
             $configuration['general'] = $this->processGeneralConfiguration(
                 $GLOBALS['TCA'][$table]['external']['general'][$index]
             );
-            // Check for legacy general configuration
+        // Check for legacy general configuration
         } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
             $configuration['general'] = $this->processGeneralConfiguration(
                 $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
+            );
+        } else {
+            throw new \Cobweb\ExternalImport\Exception\NoConfigurationException(
+                sprintf(
+                    'No configuration found for table %s and index %s',
+                    $table,
+                    $index
+                ),
+                1662459744
             );
         }
 
@@ -207,6 +217,7 @@ class ConfigurationRepository
      * @param string|int $index Key of the configuration
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return Configuration
+     * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
      */
     public function findConfigurationObject(string $table, $index, $defaultSteps = null): Configuration
     {

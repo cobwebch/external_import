@@ -26,6 +26,7 @@ use TYPO3\CMS\Backend\Template\Components\Menu\MenuItem;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -245,27 +246,42 @@ class DataModuleController extends ActionController
         $this->prepareCloseButton('listSynchronizable');
 
         // Load the configuration
-        $configuration = $this->configurationRepository->findConfigurationObject(
-            $table,
-            $index
-        );
-
-        $previewData = null;
-        if ($stepClass !== '') {
-            // Synchronize the chosen configuration in preview mode
-            /** @var Importer $importer */
-            $importer = $this->objectManager->get(Importer::class);
-            $importer->setContext('manual');
-            $importer->setPreviewStep($stepClass);
-            $messages = $importer->synchronize($table, $index);
-            $this->prepareMessages($messages, false);
-            $previewData = $importer->getPreviewData();
-        }
-        // The step list should use the class names also as keys
-        $steps = $configuration->getSteps();
         $stepList = [];
-        foreach ($steps as $step) {
-            $stepList[$step] = $step;
+        $previewData = null;
+        try {
+            $configuration = $this->configurationRepository->findConfigurationObject(
+                $table,
+                $index
+            );
+
+            if ($stepClass !== '') {
+                // Synchronize the chosen configuration in preview mode
+                /** @var Importer $importer */
+                $importer = $this->objectManager->get(Importer::class);
+                $importer->setContext('manual');
+                $importer->setPreviewStep($stepClass);
+                $messages = $importer->synchronize($table, $index);
+                $this->prepareMessages($messages, false);
+                $previewData = $importer->getPreviewData();
+            }
+            // The step list should use the class names also as keys
+            $steps = $configuration->getSteps();
+            foreach ($steps as $step) {
+                $stepList[$step] = $step;
+            }
+        } catch (\Exception $e) {
+            $this->addFlashMessage(
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurred',
+                    'external_import',
+                    [
+                        $e->getMessage(),
+                        $e->getCode()
+                    ]
+                ),
+                '',
+                AbstractMessage::ERROR
+            );
         }
         $this->view->assignMultiple(
             [
@@ -287,11 +303,29 @@ class DataModuleController extends ActionController
      */
     public function viewConfigurationAction(string $table, string $index): void
     {
-        $configuration = $this->configurationRepository->findConfigurationObject(
-            $table,
-            $index
-        );
-        $connector = $configuration->getGeneralConfigurationProperty('connector');
+        $configuration = null;
+        $connector = '';
+        try {
+            $configuration = $this->configurationRepository->findConfigurationObject(
+                $table,
+                $index
+            );
+            $connector = $configuration->getGeneralConfigurationProperty('connector');
+        } catch (\Exception $e) {
+            $this->addFlashMessage(
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurred',
+                    'external_import',
+                    [
+                        $e->getMessage(),
+                        $e->getCode()
+                    ]
+                ),
+                '',
+                AbstractMessage::ERROR
+            );
+        }
+
         // Define which action to go back to for the close button (depends on whether the configuration is synchronizable or not)
         if (empty($connector)) {
             $returnAction = 'listNonSynchronizable';

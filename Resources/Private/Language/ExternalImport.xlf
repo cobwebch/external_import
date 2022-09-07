@@ -197,6 +197,9 @@
 			<trans-unit id="noConfigurationFound" xml:space="preserve">
 				<source>The requested configuration was not found (table: %1$s, index: %2$s). Message: %3$s [%4$d]</source>
 			</trans-unit>
+			<trans-unit id="generalProcessError" xml:space="preserve">
+				<source>An error occurred. The process was interrupted. Message: %1$s [%2$d]</source>
+			</trans-unit>
 			<trans-unit id="wrongPreviewStep" xml:space="preserve">
 				<source>The requested preview step (%s) was not found among the current process steps. Process was aborted.</source>
 			</trans-unit>
