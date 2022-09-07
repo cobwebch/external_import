@@ -42,16 +42,10 @@ class StoreDataStepTest extends FunctionalTestCase
      */
     protected $subject;
 
-    /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
     public function setUp(): void
     {
         parent::setUp();
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $this->objectManager->get(StoreDataStep::class);
+        $this->subject = GeneralUtility::makeInstance(StoreDataStep::class);
         $this->subject->setData(GeneralUtility::makeInstance(Data::class));
     }
 
@@ -447,7 +441,7 @@ class StoreDataStepTest extends FunctionalTestCase
      */
     public function prepareDataToStoreReturnsPreparedData(array $generalConfiguration, array $columnConfiguration, array $input, array $output, array $existingUids): void
     {
-        $configuration = $this->objectManager->get(Configuration::class);
+        $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         $configuration->setTable('foo');

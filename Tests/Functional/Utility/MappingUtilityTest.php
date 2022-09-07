@@ -18,7 +18,6 @@ namespace Cobweb\ExternalImport\Tests\Functional\Utility;
 use Cobweb\ExternalImport\Utility\MappingUtility;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Test class for the MappingUtility.

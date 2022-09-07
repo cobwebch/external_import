@@ -40,8 +40,10 @@ class SlugUtilityTest extends FunctionalTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->subject = $objectManager->get(SlugUtility::class);
+        $this->subject = GeneralUtility::makeInstance(
+            SlugUtility::class,
+            GeneralUtility::makeInstance(\Cobweb\ExternalImport\Importer::class)
+        );
     }
 
     /**
@@ -50,8 +52,8 @@ class SlugUtilityTest extends FunctionalTestCase
     public function resolveSlugFieldNamesFindsListOfSlugFields(): void
     {
         self::assertSame(
-                ['path_segment'],
-                $this->subject->resolveSlugFieldNames('tx_externalimporttest_product')
+            ['path_segment'],
+            $this->subject->resolveSlugFieldNames('tx_externalimporttest_product')
         );
     }
 }

@@ -134,7 +134,6 @@ class StepUtility
         }
 
         // Check  if custom step class exists and try to instantiate it
-        // NOTE: this is not a full instantiation, which would need to be done with the ObjectManager
         $stepClass = $configuration['class'];
         if (!class_exists($stepClass)) {
             throw new InvalidCustomStepConfiguration(

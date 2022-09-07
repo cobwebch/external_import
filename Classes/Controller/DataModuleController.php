@@ -224,7 +224,7 @@ class DataModuleController extends ActionController
     {
         // Synchronize the chosen data
         /** @var Importer $importer */
-        $importer = $this->objectManager->get(Importer::class);
+        $importer = GeneralUtility::makeInstance(Importer::class);
         $importer->setContext('manual');
         $messages = $importer->synchronize($table, $index);
         $this->prepareMessages($messages);
@@ -256,8 +256,7 @@ class DataModuleController extends ActionController
 
             if ($stepClass !== '') {
                 // Synchronize the chosen configuration in preview mode
-                /** @var Importer $importer */
-                $importer = $this->objectManager->get(Importer::class);
+                $importer = GeneralUtility::makeInstance(Importer::class);
                 $importer->setContext('manual');
                 $importer->setPreviewStep($stepClass);
                 $messages = $importer->synchronize($table, $index);
@@ -545,6 +544,7 @@ class DataModuleController extends ActionController
      */
     protected function prepareDocHeaderMenu(): void
     {
+        // TODO: switch to GeneralUtility::makeInstance once UriBuilder is ready for this
         $uriBuilder = $this->objectManager->get(UriBuilder::class);
         $uriBuilder->setRequest($this->request);
 

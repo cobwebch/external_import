@@ -20,7 +20,6 @@ namespace Cobweb\ExternalImport\Task;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
@@ -80,8 +79,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') .
             '</option>';
         // Get configuration repository for fetching values
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $configurationRepository = $objectManager->get(ConfigurationRepository::class);
+        $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
 
         // Add groups selection
         $groups = $configurationRepository->findAllGroups();
