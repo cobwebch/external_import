@@ -2,6 +2,7 @@
 
 	* Improve exception handling in case of missing configuration, resolves #242
 	* Clean up usage of ObjectManager, resolves #252
+	* Release version 6.1.0
 
 2022-08-31 Francois Suter (Idéative)  <typo3@ideative.ch>
 
