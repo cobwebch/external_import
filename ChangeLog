@@ -1,3 +1,11 @@
+2022-10-104 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Release version 6.1.1
+
+2022-10-03 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Avoid overwriting BE users custom permissions (thanks to Mario Lubenka)
+
 2022-09-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve exception handling in case of missing configuration, resolves #242
