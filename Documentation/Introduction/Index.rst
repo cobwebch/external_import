@@ -55,7 +55,7 @@ https://github.com/cobwebch/externalimport_test
    options can often be combined for even more possibilities. This can be quite
    confusing in the beginning.
 
-   Please take time to read the whole :ref:`User manuel chapter <user>` and the
+   Please take time to read the whole :ref:`User manual chapter <user>` and the
    already mentioned tutorial. In particular, you should read the following sections:
 
    - :ref:`General considerations <user-general>`
@@ -63,10 +63,10 @@ https://github.com/cobwebch/externalimport_test
    - :ref:`Mapping data <user-mapping-data>`
 
 
-.. _other-extensions:
+.. _alternatives:
 
-Differences with other extensions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Alternatives
+^^^^^^^^^^^^
 
 There exists several extensions for importing data into TYPO3, including the system
 extension "impexp". Extension "impexp" is specifically designed to export data from
@@ -80,10 +80,9 @@ and `importr <https://extensions.typo3.org/extension/importr>`_, which were rele
 years after External Import and - as such - I never really looked into them since I had all the tools
 I needed. So it is hard to compare their features.
 
-"xlsimport" can import only Excel and CSV format, but mostly cannot be automated (no Scheduler task,
-nor command line call). Also the import configuration cannot be saved and must be repeated
-each time. On the other hand, this is very convenient for one-time imports, definitely
-quicker and lighter to set up than External Import.
+"xlsimport" is designed for one-time import of data in Excel and CSV format. It cannot be automated
+and the import configuration cannot be saved. The process is definitely quicker and lighter to set up
+than External Import, but is limited if you need to import the same data on a regular basis.
 
 "importr" seems to come quite close to External Import in terms of features, although
 maybe with less flexibility in the data handling and less import sources (import

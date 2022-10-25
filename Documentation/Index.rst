@@ -84,7 +84,7 @@ Tool for importing data from external sources into the TYPO3 database, using an 
 
          .. container:: card-body
 
-            How the extension works and what are the various tools available.
+            All the options available when setting up an import configuration.
 
    .. container:: col-12 col-md-6 pl-0 pr-3 py-3 m-0
 
