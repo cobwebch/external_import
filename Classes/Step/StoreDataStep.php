@@ -837,7 +837,7 @@ class StoreDataStep extends AbstractStep
                             $childStructure
                         );
                     }
-                    // Gather data needed for deletion of no longer extant children later on (only for non new records)
+                    // Gather data needed for deletion of no longer extant children later on (only for non-new records)
                     if (strpos((string)$id, 'NEW') === false) {
                         $this->assembleChildrenDeletionInformation(
                             $mainColumnName,
@@ -1035,7 +1035,7 @@ class StoreDataStep extends AbstractStep
                                             }
                                         }
                                     // If a control value was missing, let the record be considered to be new (if inserts are allowed)
-                                    // This will probably create a database error at at later point, but the user
+                                    // This will probably create a database error at a later point, but the user
                                     // will get to see it in the logs
                                     } elseif (!$this->childColumns[$column]['disabledOperations']['insert']) {
                                         $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;

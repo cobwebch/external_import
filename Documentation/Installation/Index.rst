@@ -26,7 +26,7 @@ Upgrading and what's new
 Upgrade to 6.1.0
 """"""""""""""""
 
-Records which have external key set (the value references by the
+Records which have no external key set (the value referenced by the
 :ref:`referenceUid <administration-general-tca-properties-reference-uid>` property)
 are now skipped in the import. Indeed it makes no sense to import records without
 such keys, as they can never be updated and - if several are created in a single
