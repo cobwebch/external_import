@@ -18,16 +18,28 @@ namespace Cobweb\ExternalImport\Handler;
  */
 
 use Cobweb\ExternalImport\DataHandlerInterface;
+use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
 use Cobweb\ExternalImport\Importer;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
- * Remaps data from a XML structure to an array mapped to TCA columns.
+ * Remaps data from an XML structure to an array mapped to TCA columns.
  *
  * @package Cobweb\ExternalImport\Handler
  */
 class XmlHandler implements DataHandlerInterface
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
     /**
      * Maps the incoming data to an associative array with TCA column names as keys.
      *
@@ -87,6 +99,18 @@ class XmlHandler implements DataHandlerInterface
                             $columnData,
                             $xPathObject
                         );
+                        // Fire event to manipulate substructure
+                        /** @var SubstructurePreprocessEvent $event */
+                        $event = $this->eventDispatcher->dispatch(
+                            new SubstructurePreprocessEvent(
+                                $nodeList,
+                                $columnData['substructureFields'],
+                                $columnName,
+                                'xml',
+                                $importer
+                            )
+                        );
+                        $nodeList = $event->getSubstructure();
                         $rows[$columnName] = $this->getSubstructureValues(
                             $nodeList,
                             $columnData['substructureFields'],

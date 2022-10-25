@@ -121,6 +121,7 @@ class ArrayHandler implements DataHandlerInterface
                                     $theValue,
                                     $columnData['substructureFields'],
                                     $columnName,
+                                    'array',
                                     $importer
                                 )
                             );

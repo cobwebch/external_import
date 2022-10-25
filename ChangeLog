@@ -1,4 +1,8 @@
-2022-10-104 Francois Suter (Idéative)  <typo3@ideative.ch>
+2022-10-25 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fire substructure preprocess event also for XML-type structures, resolves #257
+
+2022-10-04 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Release version 6.1.1
 

@@ -21,6 +21,19 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-620:
+
+Upgrade to 6.2.0
+""""""""""""""""
+
+The :ref:`Substructure Preprocess event <developer-events-substructure-preprocess>`
+is now fired for both array-type and XML-type data (previously, only for array-type data).
+To know which type of data is being handled, a new :code:`getDataType()` method is available.
+The type of structure that must be returned after modfication (by calling :code:`setStructure()`
+must be either an array or a :code:`\DomNodeList`, as opposed to just an array in older versions.
+Existing event listeners may need to be adapted.
+
+
 .. _installation-upgrade-610:
 
 Upgrade to 6.1.0

@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Handler;
 
 use Cobweb\ExternalImport\Handler\XmlHandler;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 /**
  * Test suite for the XmlHandler class.
@@ -35,7 +36,9 @@ class XmlHandlerTest extends UnitTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = new XmlHandler();
+        $this->subject = new XmlHandler(
+            $this->getMockBuilder(EventDispatcher::class)->disableOriginalConstructor()->getMock()
+        );
     }
 
     public function getValueSuccessProvider(): array

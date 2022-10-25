@@ -66,15 +66,26 @@ getSubstructureConfiguration
 getColumn
   Returns the name of the column being handled.
 
+getDataType
+  **(since version 6.2.0)** Returns the type of data being handled ("array" or "xml").
+
 getStructure
   Returns the structure being handled.
 
 setStructure
-  Sets the (modified) structure.
+  Sets the (modified) structure. **(since version 6.2.0)** This must be an array for array-type data or
+  a :code:`\DomNodeList` for XML-type data.
 
 getImporter
   Current instance of :php:`\Cobweb\ExternalImport\Importer`.
 
+.. important::
+
+   Since version 6.2.0, this event is fired for both array-type and XML-type data
+   (previously, only for array-type data). To know which type of data is being handled,
+   a new :code:`getDataType()` method is available. The type of structure that must be returned
+   after modfication (by calling :code:`setStructure()` must be either an array or a :code:`\DomNodeList`,
+   as opposed to just an array in older versions.
 
 .. _developer-events-update-record-preprocess:
 

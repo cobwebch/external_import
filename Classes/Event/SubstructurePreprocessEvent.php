@@ -32,9 +32,9 @@ final class SubstructurePreprocessEvent
     protected $importer;
 
     /**
-     * @var array The substructure to handle
+     * @var array|\DOMNodeList The substructure to handle
      */
-    protected $substructure = [];
+    protected $substructure;
 
     /**
      * @var array The current substructure configuration
@@ -46,11 +46,17 @@ final class SubstructurePreprocessEvent
      */
     protected $column = '';
 
-    public function __construct(array $substructure, array $substructureConfiguration, string $column, Importer $importer)
+    /**
+     * @var string The type of data being handled ("array" or "xml")
+     */
+    protected $dataType = '';
+
+    public function __construct($substructure, array $substructureConfiguration, string $column, string $dataType, Importer $importer)
     {
         $this->substructure = $substructure;
         $this->substructureConfiguration = $substructureConfiguration;
         $this->column = $column;
+        $this->dataType = $dataType;
         $this->importer = $importer;
     }
 
@@ -79,17 +85,25 @@ final class SubstructurePreprocessEvent
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getSubstructure(): array
+    public function getDataType(): string
+    {
+        return $this->dataType;
+    }
+
+    /**
+     * @return array|\DOMNodeList
+     */
+    public function getSubstructure()
     {
         return $this->substructure;
     }
 
     /**
-     * @param array $substructure
+     * @param array|\DOMNodeList $substructure
      */
-    public function setSubstructure(array $substructure): void
+    public function setSubstructure($substructure): void
     {
         $this->substructure = $substructure;
     }
