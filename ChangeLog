@@ -1,3 +1,7 @@
+2022-11-06 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Fix wrong class name in code example, resolves #258
+
 2022-10-25 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fire substructure preprocess event also for XML-type structures, resolves #257

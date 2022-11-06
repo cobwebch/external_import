@@ -62,12 +62,12 @@ Description
   With this property, it is possible to set a fixed value for a given
   field. For example, this might be used to set a flag for all imported
   records. Or you might want to use different types for different import sources.
-  
+
   **Example**:
-  
+
   .. code-block:: php
      :caption: EXT:my_extension/Configuration/Overrides/tx_sometable.php
-      
+
      $GLOBALS['TCA']['tx_sometable'] = array_replace_recursive($GLOBALS['TCA']['tx_sometable'],
      [
        // ...
@@ -182,7 +182,7 @@ Description
             'transformations' => [
                10 => [
                   'userFunction' => [
-                     'class' => \Cobweb\ExternalImport\Task\DateTimeTransformation::class,
+                     'class' => \Cobweb\ExternalImport\Transformation\DateTimeTransformation::class,
                      'method' => 'parseDate'
                   ]
                ]
