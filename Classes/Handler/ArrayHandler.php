@@ -154,10 +154,11 @@ class ArrayHandler implements DataHandlerInterface
                     } else {
                         // Add as many records to the import data as the highest count, while filling in with the values found in each substructure
                         // NOTE: this is not equivalent to a full denormalization, but is enough for the needs of External Import
+                        $referenceData = $data[$referenceCounter];
                         for ($i = 0; $i < $maxItems; $i++) {
                             // Base data is the first entry of the $data array
                             // NOTE: the first pass is a neutral operation
-                            $data[$counter] = $data[$referenceCounter];
+                            $data[$counter] = $referenceData;
                             // Add a value from each structure field to each row, if it exists
                             foreach ($rows as $column => $items) {
                                 if (isset($items[$i])) {
