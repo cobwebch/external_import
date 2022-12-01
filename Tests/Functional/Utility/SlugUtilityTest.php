@@ -18,7 +18,6 @@ namespace Cobweb\ExternalImport\Tests\Functional\Utility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Test class for the SlugUtility.
@@ -28,8 +27,8 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class SlugUtilityTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
-            'typo3conf/ext/external_import',
-            'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/external_import',
+        'typo3conf/ext/externalimport_test'
     ];
 
     /**
