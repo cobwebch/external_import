@@ -110,6 +110,9 @@
 			<trans-unit id="childrenProperyColumnsInformationWrongSubproperties" xml:space="preserve">
 				<source>The "columns" information of the "children" property must use "field" or "value" as key, not "%s".</source>
 			</trans-unit>
+			<trans-unit id="childrenProperySortingIsIncomplete" xml:space="preserve">
+				<source>The "sorting" information of the "children" property must contain both a "source" and a "target" sub-property.</source>
+			</trans-unit>
 			<trans-unit id="childrenProperyControlColumnsForUpdateMissing" xml:space="preserve">
 				<source>The "controlColumnsForUpdate" information of the "children" property is not set or is empty. This means that all child records will be considered to be new and be created unless the "insert" operation has been disabled.</source>
 			</trans-unit>

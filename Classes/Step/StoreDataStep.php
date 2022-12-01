@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
 use Cobweb\ExternalImport\Domain\Repository\ChildrenRepository;
 use Cobweb\ExternalImport\Event\CmdmapPostprocessEvent;
 use Cobweb\ExternalImport\Event\DatamapPostprocessEvent;
@@ -25,6 +26,7 @@ use Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent;
 use Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent;
 use Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Utility\ChildrenSortingUtility;
 use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -88,13 +90,19 @@ class StoreDataStep extends AbstractStep
     protected $childRecordsToDelete = [];
 
     /**
+     * @var ChildrenSorting DTO object for storing children sorting data
+     */
+    protected ChildrenSorting $childrenSortingInformation;
+
+    /**
      * @var EventDispatcherInterface
      */
     protected $eventDispatcher;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, ChildrenSorting $childrenSortingInformation)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->childrenSortingInformation = $childrenSortingInformation;
     }
 
     public function __toString()
@@ -401,6 +409,8 @@ class StoreDataStep extends AbstractStep
                         }
                     }
                 }
+                // Do the same in the children sorting information
+                $this->childrenSortingInformation->replaceAllNewIds($tce->substNEWwithIDs);
 
                 // Prepare data for post-processing
                 foreach ($tceData as $tableRecords) {
@@ -625,6 +635,15 @@ class StoreDataStep extends AbstractStep
         // Report any errors that might have been raised by the DataHandler
         $this->reportTceErrors($tce->errorLog);
 
+        // Sort children, if needed and if not in preview mode
+        if ($this->childrenSortingInformation->hasSortingInformation() && !$this->importer->isPreview()) {
+            $sortingUtility = GeneralUtility::makeInstance(
+                ChildrenSortingUtility::class,
+                $this->importer
+            );
+            $sortingUtility->sortChildRecords($this->childrenSortingInformation);
+        }
+
         // Set informational messages (not in preview mode)
         if (!$this->importer->isPreview()) {
             $this->importer->addMessage(
@@ -829,9 +848,11 @@ class StoreDataStep extends AbstractStep
                             $dataToStore[$id]['__children__'][$mainColumnName][$childTable] = [];
                         }
                         $childStructure = $this->prepareChildStructure(
+                            $childTable,
                             $childConfiguration,
                             $id,
-                            $record
+                            $record,
+                            $childColumnConfiguration['sorting'] ?? []
                         );
                         $dataToStore[$id]['__children__'][$mainColumnName][$childTable][key($childStructure)] = current(
                             $childStructure
@@ -888,12 +909,14 @@ class StoreDataStep extends AbstractStep
     /**
      * Prepares the data structure for an IRRE child record.
      *
+     * @param string $childTable Name of targeted child table
      * @param array $childConfiguration Configuration for the child record fields
      * @param mixed $parentId Id of the parent record
      * @param array $parentData Data of the parent record
+     * @param array $sortingInformation Child sorting information (if any)
      * @return array[]
      */
-    public function prepareChildStructure(array $childConfiguration, $parentId, array $parentData): array
+    public function prepareChildStructure(string $childTable, array $childConfiguration, $parentId, array $parentData, array $sortingInformation): array
     {
         // NOTE: all child records are assembled here as if they were new. They are filtered later on.
         $temporaryKey = $this->importer->getTemporaryKeyRepository()->generateTemporaryKey();
@@ -912,6 +935,15 @@ class StoreDataStep extends AbstractStep
                 } elseif (isset($parentData[$configuration['field']])) {
                     $childStructure[$temporaryKey][$name] = $parentData[$configuration['field']];
                 }
+            }
+            // Store the sorting information (used at a later point)
+            if (count($sortingInformation)) {
+                $this->childrenSortingInformation->addSortingInformation(
+                    $childTable,
+                    $temporaryKey,
+                    $sortingInformation['target'],
+                    $parentData[$sortingInformation['source']] ?? 0
+                );
             }
         }
         return $childStructure;
@@ -1027,6 +1059,14 @@ class StoreDataStep extends AbstractStep
                                             // so that it gets updated
                                             if (!$this->childColumns[$column]['disabledOperations']['update']) {
                                                 $newDataToStore[$id]['__children__'][$column][$childTable][$existingId] = $childData;
+                                                // If children need to be sorted later on, replace existing ID in the prepared information
+                                                if (isset($this->childColumns[$column]['sorting'])) {
+                                                    $this->childrenSortingInformation->replaceId(
+                                                        $childTable,
+                                                        $childId,
+                                                        $existingId
+                                                    );
+                                                }
                                             }
                                         } catch (\Exception $e) {
                                             // The relation does not exist yet, keep record as is, if insert operation is allowed
@@ -1117,6 +1157,9 @@ class StoreDataStep extends AbstractStep
                     }
                 }
                 $childrenData['disabledOperations'] = $disabledOperations;
+                if (array_key_exists('sorting', $columnData)) {
+                    $childrenData['sorting'] = $columnData['sorting'];
+                }
                 // Store the updated information
                 $this->childColumns[$columnName] = $childrenData;
             }

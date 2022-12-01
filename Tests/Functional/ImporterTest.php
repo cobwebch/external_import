@@ -166,53 +166,67 @@ class ImporterTest extends FunctionalTestCase
         }
         // Import tags and categories first, so that relations can be created to them from products
         $this->subject->synchronize(
-                'tx_externalimporttest_tag',
-                0
+            'tx_externalimporttest_tag',
+            0
         );
         $this->subject->synchronize(
-                'sys_category',
-                'product_categories'
+            'sys_category',
+            'product_categories'
         );
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
+            'tx_externalimporttest_product',
+            'base'
         );
         // Get the number of products stored and their tag relations
         /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('uid', 'tags')
-                ->from('tx_externalimporttest_product')
-                // Ensure consistent order for safe comparison
-                ->orderBy('uid', 'ASC')
-                ->execute();
+            ->select('uid', 'tags')
+            ->from('tx_externalimporttest_product')
+            // Ensure consistent order for safe comparison
+            ->orderBy('uid', 'ASC')
+            ->execute();
         $countProducts = 0;
         $tagRelations = [];
-        while ($row = $databaseResult->fetch()) {
+        while ($row = $databaseResult->fetchAssociative()) {
             $countProducts++;
             $tagRelations[$row['uid']] = $row['tags'];
         }
         // Get the number of categories relations created
         $countRelations = $this->getDatabaseConnection()->selectCount(
-                'uid_local',
-                'sys_category_record_mm',
-                'tablenames = \'tx_externalimporttest_product\''
+            'uid_local',
+            'sys_category_record_mm',
+            'tablenames = \'tx_externalimporttest_product\''
         );
-        // Get the number of sys_file_reference records created
-        $countFiles = $this->getDatabaseConnection()->selectCount(
-                'uid_local',
-                'sys_file_reference',
-                'tablenames = \'tx_externalimporttest_product\''
-        );
+        // Get the number and order of sys_file_reference records created
+        $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
+            ->select('uid', 'sorting_foreign')
+            ->from('sys_file_reference')
+            // Ensure consistent order for safe comparison
+            ->orderBy('sorting_foreign', 'ASC')
+            ->execute();
+        $countFiles = 0;
+        $sorting = [];
+        while ($row = $databaseResult->fetchAssociative()) {
+            $countFiles++;
+            $sorting[$row['uid']] = $row['sorting_foreign'];
+        }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(2, $countProducts, serialize($messages));
         self::assertEquals(2, $countRelations);
+        self::assertSame(
+            [
+                1 => '1,3',
+                2 => '2,3'
+            ],
+            $tagRelations
+        );
         self::assertEquals(2, $countFiles);
         self::assertSame(
-                [
-                        1 => '1,3',
-                        2 => '2,3'
-                ],
-                $tagRelations
+            [
+                1 => 2,
+                2 => 1
+            ],
+            $sorting
         );
     }
 

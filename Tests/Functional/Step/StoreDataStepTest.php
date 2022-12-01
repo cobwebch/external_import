@@ -21,26 +21,23 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Test suite for the StoreDataStep class.
  *
  * NOTE: the TCE structure produced for storage is tested in \Cobweb\ExternalImport\Tests\Functional\ImporterPreviewTest
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Validator
  */
 class StoreDataStepTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
-            'typo3conf/ext/external_import',
-            'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/external_import',
+        'typo3conf/ext/externalimport_test'
     ];
 
     /**
      * @var StoreDataStep
      */
-    protected $subject;
+    protected StoreDataStep $subject;
 
     public function setUp(): void
     {
@@ -52,380 +49,380 @@ class StoreDataStepTest extends FunctionalTestCase
     public function dataToStoreProvider(): array
     {
         return [
-                'no denormalized data' => [
-                        'generalConfiguration' => [
-                                'referenceUid' => 'code'
-                        ],
-                        'columnConfiguration' => [
-                                'code' => [],
-                                'first_name' => [],
-                                'last_name' => [],
-                                'useless' => [
-                                        Configuration::DO_NOT_SAVE_KEY => true
-                                ]
-                        ],
-                        'input' => [
-                                [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin',
-                                        'useless' => 'Useless information'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'useless' => 'Useless information'
-                                ]
-                        ],
-                        'output' => [
-                                1 => [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin'
-                                ],
-                                'NEW1' => [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom'
-                                ]
-                        ],
-                        'existingUids' => [
-                                'JP' => 1
-                        ]
+            'no denormalized data' => [
+                'generalConfiguration' => [
+                    'referenceUid' => 'code'
                 ],
-                'no denormalized data - insert disabled' => [
-                        'generalConfiguration' => [
-                                'referenceUid' => 'code',
-                                'disabledOperations' => 'insert'
-                        ],
-                        'columnConfiguration' => [
-                                'code' => [],
-                                'first_name' => [],
-                                'last_name' => [],
-                                'useless' => [
-                                        Configuration::DO_NOT_SAVE_KEY => true
-                                ]
-                        ],
-                        'input' => [
-                                [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin',
-                                        'useless' => 'Useless information'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'useless' => 'Useless information'
-                                ]
-                        ],
-                        'output' => [
-                                1 => [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin'
-                                ]
-                        ],
-                        'existingUids' => [
-                                'JP' => 1
-                        ]
+                'columnConfiguration' => [
+                    'code' => [],
+                    'first_name' => [],
+                    'last_name' => [],
+                    'useless' => [
+                        Configuration::DO_NOT_SAVE_KEY => true
+                    ]
                 ],
-                'no denormalized data - update disabled' => [
-                        'generalConfiguration' => [
-                                'referenceUid' => 'code',
-                                'disabledOperations' => 'update'
-                        ],
-                        'columnConfiguration' => [
-                                'code' => [],
-                                'first_name' => [],
-                                'last_name' => [],
-                                'useless' => [
-                                        Configuration::DO_NOT_SAVE_KEY => true
-                                ]
-                        ],
-                        'input' => [
-                                [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin',
-                                        'useless' => 'Useless information'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'useless' => 'Useless information'
-                                ]
-                        ],
-                        'output' => [
-                                'NEW1' => [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom'
-                                ]
-                        ],
-                        'existingUids' => [
-                                'JP' => 1
-                        ]
+                'input' => [
+                    [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'useless' => 'Useless information'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'useless' => 'Useless information'
+                    ]
                 ],
-                'single denormalized data' => [
-                        'generalConfiguration' => [
-                                'referenceUid' => 'code'
-                        ],
-                        'columnConfiguration' => [
-                                'code' => [],
-                                'first_name' => [],
-                                'last_name' => [],
-                                'book' => [
-                                        'multipleRows' => true
-                                ],
-                                'useless' => [
-                                        Configuration::DO_NOT_SAVE_KEY => true
-                                ]
-                        ],
-                        'input' => [
-                                [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin',
-                                        'book' => 2,
-                                        'useless' => 'Useless information'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'book' => 1,
-                                        'useless' => 'Useless information'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'book' => 2,
-                                        'useless' => 'Useless information'
-                                ]
-                        ],
-                        'output' => [
-                                1 => [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin',
-                                        'book' => '2'
-                                ],
-                                'NEW1' => [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'book' => '1,2'
-                                ]
-                        ],
-                        'existingUids' => [
-                                'JP' => 1
-                        ]
+                'output' => [
+                    1 => [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin'
+                    ],
+                    'NEW1' => [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom'
+                    ]
                 ],
-                'multiple denormalized data' => [
-                        'generalConfiguration' => [
-                                'referenceUid' => 'code'
-                        ],
-                        'columnConfiguration' => [
-                                'code' => [],
-                                'first_name' => [],
-                                'last_name' => [],
-                                'book' => [
-                                        'multipleRows' => true
-                                ],
-                                'relations' => [
-                                        'multipleRows' => true
-                                ]
-                        ],
-                        'input' => [
-                                [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin',
-                                        'book' => 2,
-                                        'relations' => 'TP'
-                                ],
-                                [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin',
-                                        'book' => 2,
-                                        'relations' => 'JF'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'book' => 1,
-                                        'relations' => 'JP'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'book' => 1,
-                                        'relations' => 'JF'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'book' => 2,
-                                        'relations' => 'JP'
-                                ],
-                                [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'book' => 2,
-                                        'relations' => 'JF'
-                                ]
-                        ],
-                        'output' => [
-                                1 => [
-                                        'code' => 'JP',
-                                        'first_name' => 'Joey',
-                                        'last_name' => 'Pechorin',
-                                        'book' => '2',
-                                        'relations' => 'TP,JF'
-                                ],
-                                'NEW1' => [
-                                        'code' => 'AP',
-                                        'first_name' => 'Amnesia',
-                                        'last_name' => 'Phreedom',
-                                        'book' => '1,2',
-                                        'relations' => 'JP,JF'
-                                ]
-                        ],
-                        'existingUids' => [
-                                'JP' => 1
-                        ]
+                'existingUids' => [
+                    'JP' => 1
+                ]
+            ],
+            'no denormalized data - insert disabled' => [
+                'generalConfiguration' => [
+                    'referenceUid' => 'code',
+                    'disabledOperations' => 'insert'
                 ],
-                'children data' => [
-                        'generalConfiguration' => [
-                                'referenceUid' => 'order'
-                        ],
-                        'columnConfiguration' => [
-                                'order' => [],
-                                'customer' => [],
-                                'products' => [
-                                        'children' => [
-                                                'table' => 'tx_externalimporttest_order_items',
-                                                'columns' => [
-                                                        'uid_local' => [
-                                                                'field' => '__parent.id__',
-                                                        ],
-                                                        'uid_foreign' => [
-                                                                'field' => 'products',
-                                                        ],
-                                                        'quantity' => [
-                                                                'field' => 'quantity'
-                                                        ]
-                                                ]
-                                        ]
+                'columnConfiguration' => [
+                    'code' => [],
+                    'first_name' => [],
+                    'last_name' => [],
+                    'useless' => [
+                        Configuration::DO_NOT_SAVE_KEY => true
+                    ]
+                ],
+                'input' => [
+                    [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'useless' => 'Useless information'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'useless' => 'Useless information'
+                    ]
+                ],
+                'output' => [
+                    1 => [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin'
+                    ]
+                ],
+                'existingUids' => [
+                    'JP' => 1
+                ]
+            ],
+            'no denormalized data - update disabled' => [
+                'generalConfiguration' => [
+                    'referenceUid' => 'code',
+                    'disabledOperations' => 'update'
+                ],
+                'columnConfiguration' => [
+                    'code' => [],
+                    'first_name' => [],
+                    'last_name' => [],
+                    'useless' => [
+                        Configuration::DO_NOT_SAVE_KEY => true
+                    ]
+                ],
+                'input' => [
+                    [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'useless' => 'Useless information'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'useless' => 'Useless information'
+                    ]
+                ],
+                'output' => [
+                    'NEW1' => [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom'
+                    ]
+                ],
+                'existingUids' => [
+                    'JP' => 1
+                ]
+            ],
+            'single denormalized data' => [
+                'generalConfiguration' => [
+                    'referenceUid' => 'code'
+                ],
+                'columnConfiguration' => [
+                    'code' => [],
+                    'first_name' => [],
+                    'last_name' => [],
+                    'book' => [
+                        'multipleRows' => true
+                    ],
+                    'useless' => [
+                        Configuration::DO_NOT_SAVE_KEY => true
+                    ]
+                ],
+                'input' => [
+                    [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'book' => 2,
+                        'useless' => 'Useless information'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 1,
+                        'useless' => 'Useless information'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 2,
+                        'useless' => 'Useless information'
+                    ]
+                ],
+                'output' => [
+                    1 => [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'book' => '2'
+                    ],
+                    'NEW1' => [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => '1,2'
+                    ]
+                ],
+                'existingUids' => [
+                    'JP' => 1
+                ]
+            ],
+            'multiple denormalized data' => [
+                'generalConfiguration' => [
+                    'referenceUid' => 'code'
+                ],
+                'columnConfiguration' => [
+                    'code' => [],
+                    'first_name' => [],
+                    'last_name' => [],
+                    'book' => [
+                        'multipleRows' => true
+                    ],
+                    'relations' => [
+                        'multipleRows' => true
+                    ]
+                ],
+                'input' => [
+                    [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'book' => 2,
+                        'relations' => 'TP'
+                    ],
+                    [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'book' => 2,
+                        'relations' => 'JF'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 1,
+                        'relations' => 'JP'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 1,
+                        'relations' => 'JF'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 2,
+                        'relations' => 'JP'
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 2,
+                        'relations' => 'JF'
+                    ]
+                ],
+                'output' => [
+                    1 => [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'book' => '2',
+                        'relations' => 'TP,JF'
+                    ],
+                    'NEW1' => [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => '1,2',
+                        'relations' => 'JP,JF'
+                    ]
+                ],
+                'existingUids' => [
+                    'JP' => 1
+                ]
+            ],
+            'children data' => [
+                'generalConfiguration' => [
+                    'referenceUid' => 'order'
+                ],
+                'columnConfiguration' => [
+                    'order' => [],
+                    'customer' => [],
+                    'products' => [
+                        'children' => [
+                            'table' => 'tx_externalimporttest_order_items',
+                            'columns' => [
+                                'uid_local' => [
+                                    'field' => '__parent.id__',
+                                ],
+                                'uid_foreign' => [
+                                    'field' => 'products',
+                                ],
+                                'quantity' => [
+                                    'field' => 'quantity'
                                 ]
-                        ],
-                        'input' => [
-                                [
-                                        'order' => '000001',
-                                        'customer' => 'Conan the Barbarian',
-                                        'products' => 1,
+                            ]
+                        ]
+                    ]
+                ],
+                'input' => [
+                    [
+                        'order' => '000001',
+                        'customer' => 'Conan the Barbarian',
+                        'products' => 1,
+                        'quantity' => 3
+                    ],
+                    [
+                        'order' => '000001',
+                        'customer' => 'Conan the Barbarian',
+                        'products' => 2,
+                        'quantity' => 5
+                    ],
+                    [
+                        'order' => '000001',
+                        'customer' => 'Conan the Barbarian',
+                        'products' => 3,
+                        'quantity' => 10
+                    ],
+                    [
+                        'order' => '000002',
+                        'customer' => 'Sonja the Red',
+                        'products' => 1,
+                        'quantity' => 2
+                    ],
+                    [
+                        'order' => '000002',
+                        'customer' => 'Sonja the Red',
+                        'products' => 2,
+                        'quantity' => 3
+                    ],
+                    [
+                        'order' => '000003',
+                        'customer' => 'The Black Currant',
+                        // Test that no children are generated, because the field is not defined
+                        'products' => null,
+                        'quantity' => 3
+                    ]
+                ],
+                'output' => [
+                    1 => [
+                        'order' => '000001',
+                        'customer' => 'Conan the Barbarian',
+                        'products' => 1,
+                        '__children__' => [
+                            'products' => [
+                                'tx_externalimporttest_order_items' => [
+                                    'NEW1' => [
+                                        'uid_local' => 1,
+                                        'uid_foreign' => 1,
                                         'quantity' => 3
-                                ],
-                                [
-                                        'order' => '000001',
-                                        'customer' => 'Conan the Barbarian',
-                                        'products' => 2,
+                                    ],
+                                    'NEW2' => [
+                                        'uid_local' => 1,
+                                        'uid_foreign' => 2,
                                         'quantity' => 5
-                                ],
-                                [
-                                        'order' => '000001',
-                                        'customer' => 'Conan the Barbarian',
-                                        'products' => 3,
+                                    ],
+                                    'NEW3' => [
+                                        'uid_local' => 1,
+                                        'uid_foreign' => 3,
                                         'quantity' => 10
-                                ],
-                                [
-                                        'order' => '000002',
-                                        'customer' => 'Sonja the Red',
-                                        'products' => 1,
-                                        'quantity' => 2
-                                ],
-                                [
-                                        'order' => '000002',
-                                        'customer' => 'Sonja the Red',
-                                        'products' => 2,
-                                        'quantity' => 3
-                                ],
-                                [
-                                        'order' => '000003',
-                                        'customer' => 'The Black Currant',
-                                        // Test that no children are generated, because the field is not defined
-                                        'products' => null,
-                                        'quantity' => 3
+                                    ]
                                 ]
-                        ],
-                        'output' => [
-                                1 => [
-                                        'order' => '000001',
-                                        'customer' => 'Conan the Barbarian',
-                                        'products' => 1,
-                                        '__children__' => [
-                                                'products' => [
-                                                        'tx_externalimporttest_order_items' => [
-                                                                'NEW1' => [
-                                                                        'uid_local' => 1,
-                                                                        'uid_foreign' => 1,
-                                                                        'quantity' => 3
-                                                                ],
-                                                                'NEW2' => [
-                                                                        'uid_local' => 1,
-                                                                        'uid_foreign' => 2,
-                                                                        'quantity' => 5
-                                                                ],
-                                                                'NEW3' => [
-                                                                        'uid_local' => 1,
-                                                                        'uid_foreign' => 3,
-                                                                        'quantity' => 10
-                                                                ]
-                                                        ]
-                                                ]
-                                        ]
-                                ],
-                                'NEW4' => [
-                                        'order' => '000002',
-                                        'customer' => 'Sonja the Red',
-                                        'products' => 1,
-                                        '__children__' => [
-                                                'products' => [
-                                                        'tx_externalimporttest_order_items' => [
-                                                                'NEW5' => [
-                                                                        'uid_local' => 'NEW4',
-                                                                        'uid_foreign' => 1,
-                                                                        'quantity' => 2
-                                                                ],
-                                                                'NEW6' => [
-                                                                        'uid_local' => 'NEW4',
-                                                                        'uid_foreign' => 2,
-                                                                        'quantity' => 3
-                                                                ]
-                                                        ]
-                                                ]
-                                        ]
-                                ],
-                                'NEW7' => [
-                                        'order' => '000003',
-                                        'customer' => 'The Black Currant',
-                                        '__children__' => []
-                                ]
-                        ],
-                        'existingUids' => [
-                                '000001' => 1
+                            ]
                         ]
+                    ],
+                    'NEW4' => [
+                        'order' => '000002',
+                        'customer' => 'Sonja the Red',
+                        'products' => 1,
+                        '__children__' => [
+                            'products' => [
+                                'tx_externalimporttest_order_items' => [
+                                    'NEW5' => [
+                                        'uid_local' => 'NEW4',
+                                        'uid_foreign' => 1,
+                                        'quantity' => 2
+                                    ],
+                                    'NEW6' => [
+                                        'uid_local' => 'NEW4',
+                                        'uid_foreign' => 2,
+                                        'quantity' => 3
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    'NEW7' => [
+                        'order' => '000003',
+                        'customer' => 'The Black Currant',
+                        '__children__' => []
+                    ]
                 ],
+                'existingUids' => [
+                    '000001' => 1
+                ]
+            ],
         ];
     }
 
@@ -458,39 +455,39 @@ class StoreDataStepTest extends FunctionalTestCase
         $this->subject->prepareStructuredInformation($columnConfiguration);
 
         self::assertSame(
-                $output,
-                $this->subject->prepareDataToStore()
+            $output,
+            $this->subject->prepareDataToStore()
         );
     }
 
     public function childStructureProvider(): array
     {
         return [
-                'orders' => [
-                        'childConfiguration' => [
-                                'uid_local' => [
-                                        'field' => '__parent.id__',
-                                ],
-                                'uid_foreign' => [
-                                        'field' => 'products',
-                                ],
-                                'quantity' => [
-                                        'field' => 'quantity'
-                                ]
-                        ],
-                        'parentId' => 'NEW2',
-                        'parentData' => [
-                                'products' => 1,
-                                'quantity' => 3
-                        ],
-                        'result' => [
-                                'NEW1' => [
-                                        'uid_local' => 'NEW2',
-                                        'uid_foreign' => 1,
-                                        'quantity' => 3
-                                ]
-                        ]
+            'orders' => [
+                'childConfiguration' => [
+                    'uid_local' => [
+                        'field' => '__parent.id__',
+                    ],
+                    'uid_foreign' => [
+                        'field' => 'products',
+                    ],
+                    'quantity' => [
+                        'field' => 'quantity'
+                    ]
+                ],
+                'parentId' => 'NEW2',
+                'parentData' => [
+                    'products' => 1,
+                    'quantity' => 3
+                ],
+                'result' => [
+                    'NEW1' => [
+                        'uid_local' => 'NEW2',
+                        'uid_foreign' => 1,
+                        'quantity' => 3
+                    ]
                 ]
+            ]
         ];
     }
 
@@ -511,8 +508,8 @@ class StoreDataStepTest extends FunctionalTestCase
         $importer->method('getTemporaryKeyRepository')->willReturn($temporaryKeyRepository);
         $this->subject->setImporter($importer);
         self::assertSame(
-                $result,
-                $this->subject->prepareChildStructure($childConfiguration, $parentId, $parentData)
+            $result,
+            $this->subject->prepareChildStructure('foo', $childConfiguration, $parentId, $parentData, [])
         );
     }
 
@@ -525,18 +522,18 @@ class StoreDataStepTest extends FunctionalTestCase
         $importer = $this->createMock(Importer::class);
         $this->subject->setImporter($importer);
         $fakeConfiguration = [
-                'foo' => [
-                        'disabledOperations' => 'insert'
-                ],
-                'bar' => [],
-                'baz' => [
-                        'disabledOperations' => 'update,insert'
-                ]
+            'foo' => [
+                'disabledOperations' => 'insert'
+            ],
+            'bar' => [],
+            'baz' => [
+                'disabledOperations' => 'update,insert'
+            ]
         ];
         $this->subject->prepareStructuredInformation($fakeConfiguration);
         self::assertSame(
-                ['foo', 'baz'],
-                $this->subject->getFieldsExcludedFromInserts()
+            ['foo', 'baz'],
+            $this->subject->getFieldsExcludedFromInserts()
         );
     }
 
@@ -548,18 +545,18 @@ class StoreDataStepTest extends FunctionalTestCase
         $importer = $this->createMock(Importer::class);
         $this->subject->setImporter($importer);
         $fakeConfiguration = [
-                'foo' => [
-                        'disabledOperations' => 'update'
-                ],
-                'bar' => [],
-                'baz' => [
-                        'disabledOperations' => 'update,insert'
-                ]
+            'foo' => [
+                'disabledOperations' => 'update'
+            ],
+            'bar' => [],
+            'baz' => [
+                'disabledOperations' => 'update,insert'
+            ]
         ];
         $this->subject->prepareStructuredInformation($fakeConfiguration);
         self::assertSame(
-                ['foo', 'baz'],
-                $this->subject->getFieldsExcludedFromUpdates()
+            ['foo', 'baz'],
+            $this->subject->getFieldsExcludedFromUpdates()
         );
     }
 }

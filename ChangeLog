@@ -1,5 +1,9 @@
 2022-11-25 Francois Suter (Idéative)  <typo3@ideative.ch>
 
+	* Introduce child records sorting feature, resolves #256
+
+2022-11-25 Francois Suter (Idéative)  <typo3@ideative.ch>
+
 	* Fix wrong copying of data when denormalizing with substructure fields
 
 2022-11-06 Francois Suter (Idéative)  <typo3@ideative.ch>

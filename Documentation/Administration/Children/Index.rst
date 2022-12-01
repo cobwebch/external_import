@@ -19,7 +19,7 @@ scenarios which may help understand this feature.
 
 .. code-block:: php
 
-		$GLOBALS['TCA']['tx_externalimporttest_product']['columns']['pictures']['external'] = [
+      $GLOBALS['TCA']['tx_externalimporttest_product']['columns']['pictures']['external'] = [
          'base' => [
               'field' => 'Pictures', // remote db field
               'transformations' => [
@@ -33,31 +33,35 @@ scenarios which may help understand this feature.
                       ]
                   ]
               ],
-             'children' => [
-                     'table' => 'sys_file_reference',
-                     'columns' => [
-                             'uid_local' => [
-                                     'field' => 'pictures'
-                             ],
-                             'uid_foreign' => [
-                                     'field' => '__parent.id__'
-                             ],
-                             'title' => [
-                                     'field' => 'picture_title'
-                             ],
-                             'tablenames' => [
-                                     'value' => 'tx_externalimporttest_product'
-                             ],
-                             'fieldname' => [
-                                     'value' => 'pictures'
-                             ],
-                             'table_local' => [
-                                     'value' => 'sys_file'
-                             ]
-                     ],
-                     'controlColumnsForUpdate' => 'uid_local, uid_foreign, tablenames, fieldname, table_local',
-                     'controlColumnsForDelete' => 'uid_foreign, tablenames, fieldname, table_local',
-             ]
+              'children' => [
+                  'table' => 'sys_file_reference',
+                  'columns' => [
+                      'uid_local' => [
+                          'field' => 'pictures'
+                      ],
+                      'uid_foreign' => [
+                          'field' => '__parent.id__'
+                      ],
+                      'title' => [
+                          'field' => 'picture_title'
+                      ],
+                      'tablenames' => [
+                          'value' => 'tx_externalimporttest_product'
+                      ],
+                      'fieldname' => [
+                          'value' => 'pictures'
+                      ],
+                      'table_local' => [
+                          'value' => 'sys_file'
+                      ]
+                  ],
+                  'sorting' => [
+                      'source' => 'picture_order',
+                      'target' => 'sorting_foreign'
+                  ],
+                  'controlColumnsForUpdate' => 'uid_local, uid_foreign, tablenames, fieldname, table_local',
+                  'controlColumnsForDelete' => 'uid_foreign, tablenames, fieldname, table_local'
+              ]
              ...
          ]
       ]
@@ -187,6 +191,47 @@ Scope
   Store data
 
 
+.. _administration-children-properties-sorting:
+
+sorting
+~~~~~~~
+
+Type
+  array
+
+Description
+  External Import stores child records in the order in which they appear, which is generally
+  the order in which they are in the external data source. It may be needed to sort the child
+  records differently, according to some other data available in the in the external source.
+
+  This property allows this. It is defined by two elements:
+
+  source
+    The name of the column containing the sorting value in the external data source.
+    This column should ideally contain numerical values. If that is not the case, the values
+    are cast to integer when they are used, so you need to make sure that the values contained
+    in this column can be cast safely.
+
+    If the sorting value is missing for some records, a value of :code:`0` will be used
+    instead, putting those child records at the top of the list.
+
+  target
+    The name of the sorting field in the child record table.
+
+  Both elements are mandatory. Configuration validation will fail otherwise.
+
+  .. code-block:: php
+
+      'sorting' => [
+          'source' => 'picture_order',
+          'target' => 'sorting_foreign'
+      ],
+
+Scope
+  Store data
+
+
+.. _administration-children-properties-disabled-operations:
 .. _administration-children-properties-control-columns-for-disabled-operations:
 
 disabledOperations

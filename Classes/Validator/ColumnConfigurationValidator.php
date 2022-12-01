@@ -235,6 +235,19 @@ class ColumnConfigurationValidator
                 }
             }
         }
+        // Check the "sorting" property (it must have both a "source" and a "target" entry
+        if (array_key_exists('sorting', $childrenConfiguration)) {
+            if (!array_key_exists('source', $childrenConfiguration['sorting']) || !array_key_exists('target', $childrenConfiguration['sorting'])) {
+                $this->results->add(
+                    'field',
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperySortingIsIncomplete',
+                        'external_import'
+                    ),
+                    AbstractMessage::ERROR
+                );
+            }
+        }
         // Check the "controlColumnsForUpdate" property
         if (array_key_exists('controlColumnsForUpdate', $childrenConfiguration)) {
             $controlColumns = GeneralUtility::trimExplode(',', $childrenConfiguration['controlColumnsForUpdate']);
