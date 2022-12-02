@@ -77,11 +77,12 @@ Properties
    ========================= ==================== ===================
    Property                  Data type            Step/Scope
    ========================= ==================== ===================
-   table_                    string               Store data
    columns_                  array                Store data
    controlColumnsForUpdate_  string               Store data
    controlColumnsForDelete_  string               Store data
    disabledOperations_       string               Store data
+   sorting_                  array                Store data
+   table_                    string               Store data
    ========================= ==================== ===================
 
 
