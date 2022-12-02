@@ -179,7 +179,7 @@ class Configuration
 
         // Store the storage pid from the configuration
         // It is stored in a separate variable as it might be overridden
-        $this->storagePid = $generalConfiguration['pid'];
+        $this->storagePid = $generalConfiguration['pid'] ?? 0;
     }
 
     /**

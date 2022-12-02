@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 /*
@@ -30,7 +32,12 @@ class UidRepositoryTest extends FunctionalTestCase
     /**
      * @var UidRepository
      */
-    protected $subject;
+    protected UidRepository $subject;
+
+    public function __sleep()
+    {
+        return [];
+    }
 
     public function setUp(): void
     {
@@ -113,8 +120,6 @@ class UidRepositoryTest extends FunctionalTestCase
      * @param array $listOfPids
      * @test
      * @dataProvider configurationDataProvider
-     * @throws \Nimut\TestingFramework\Exception\Exception
-     * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
     public function getExistingUidsTriggersFetchingOfUidsAndPids(array $configuration, array $listOfUids, array $listOfPids): void
     {
@@ -122,7 +127,7 @@ class UidRepositoryTest extends FunctionalTestCase
         $configurationObject = GeneralUtility::makeInstance(Configuration::class);
         $configurationObject->setTable('tt_content');
         $configurationObject->setGeneralConfiguration($configuration);
-        if ($configuration['enforcePid']) {
+        if ($configuration['enforcePid'] ?? false) {
             $configurationObject->setStoragePid(1);
         }
         $this->subject->setConfiguration($configurationObject);
@@ -138,10 +143,10 @@ class UidRepositoryTest extends FunctionalTestCase
 
     /**
      * @test
-     * @expectedException \Cobweb\ExternalImport\Exception\MissingConfigurationException
      */
     public function getExistingUidsWithoutConfigurationThrowsException(): void
     {
+        $this->expectException(\Cobweb\ExternalImport\Exception\MissingConfigurationException::class);
         $this->subject->getExistingUids();
     }
 }

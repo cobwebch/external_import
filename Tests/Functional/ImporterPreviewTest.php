@@ -51,7 +51,12 @@ class ImporterPreviewTest extends FunctionalTestCase
     /**
      * @var Importer
      */
-    protected $subject;
+    protected Importer $subject;
+
+    public function __sleep()
+    {
+        return [];
+    }
 
     protected function setUp(): void
     {
@@ -218,7 +223,8 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'sku' => '000001',
                         'tags' => 'attack,metal',
                         'pictures' => 'https://loremflickr.com/320/240/scotland',
-                        'picture_title' => 'View from the left'
+                        'picture_title' => 'View from the left',
+                        'picture_order' => '2'
                     ],
                     [
                         'attributes' => "\n\t\t\t<quality>Robust</quality>\n\t\t\t<quality>Stylish</quality>\n\t\t\t<quality>Reliable</quality>\n\t\t",
@@ -228,7 +234,8 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'sku' => '000001',
                         'tags' => 'attack,metal',
                         'pictures' => 'https://loremflickr.com/320/240/volcano',
-                        'picture_title' => 'View from above'
+                        'picture_title' => 'View from above',
+                        'picture_order' => '1'
                     ],
                     [
                         'attributes' => "\n\t\t\t<quality>Robust</quality>\n\t\t\t<quality>Stylish</quality>\n\t\t\t<quality>Reliable</quality>\n\t\t",
@@ -421,7 +428,8 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'name' => 'Long sword (base)',
                         'sku' => '000001',
                         'pictures' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
-                        'picture_title' => 'View from the left'
+                        'picture_title' => 'View from the left',
+                        'picture_order' => '2'
                     ],
                     [
                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
@@ -430,7 +438,8 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'name' => 'Long sword (base)',
                         'sku' => '000001',
                         'pictures' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
-                        'picture_title' => 'View from above'
+                        'picture_title' => 'View from above',
+                        'picture_order' => '1'
                     ],
                     [
                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",

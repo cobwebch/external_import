@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Functional;
 
 /*
@@ -30,18 +32,23 @@ use \TYPO3\CMS\Core\Localization\LanguageService;
 class ImporterTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
-            'typo3conf/ext/svconnector',
-            'typo3conf/ext/svconnector_csv',
-            'typo3conf/ext/svconnector_feed',
-            'typo3conf/ext/svconnector_json',
-            'typo3conf/ext/external_import',
-            'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/svconnector',
+        'typo3conf/ext/svconnector_csv',
+        'typo3conf/ext/svconnector_feed',
+        'typo3conf/ext/svconnector_json',
+        'typo3conf/ext/external_import',
+        'typo3conf/ext/externalimport_test'
     ];
 
     /**
      * @var Importer
      */
-    protected $subject;
+    protected Importer $subject;
+
+    public function __sleep(): array
+    {
+        return [];
+    }
 
     protected function setUp(): void
     {
@@ -54,14 +61,13 @@ class ImporterTest extends FunctionalTestCase
             $this->subject = GeneralUtility::makeInstance(Importer::class);
             $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
             $this->subject->setForcedStoragePid(1);
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             self::markTestSkipped(
-                    sprintf(
-                            'Some initializations could not be performed (Exception: %s [%d])',
-                            $e->getMessage(),
-                            $e->getCode()
-                    )
+                sprintf(
+                    'Some initializations could not be performed (Exception: %s [%d])',
+                    $e->getMessage(),
+                    $e->getCode()
+                )
             );
         }
     }
@@ -76,18 +82,18 @@ class ImporterTest extends FunctionalTestCase
     public function importTagsWithImporterStoresFiveRecords(): void
     {
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_tag',
-                0
+            'tx_externalimporttest_tag',
+            0
         );
         $countRecords = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'tx_externalimporttest_tag'
+            'uid',
+            'tx_externalimporttest_tag'
         );
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(
-                5,
-                $countRecords,
-                serialize($messages)
+            5,
+            $countRecords,
+            serialize($messages)
         );
     }
 
@@ -100,19 +106,19 @@ class ImporterTest extends FunctionalTestCase
     public function importCategoriesWithImporterStoresFourRecordsWithOneParentRelation(): void
     {
         $messages = $this->subject->synchronize(
-                'sys_category',
-                'product_categories'
+            'sys_category',
+            'product_categories'
         );
         // Count imported categories
         $countRecords = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'sys_category'
+            'uid',
+            'sys_category'
         );
         // Count records having a parent
         $countChildren = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'sys_category',
-                'parent > 0'
+            'uid',
+            'sys_category',
+            'parent > 0'
         );
 
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
@@ -129,22 +135,22 @@ class ImporterTest extends FunctionalTestCase
     public function importDesignersWithImporterStoresThreeRecordsAndCreatesRelations(): void
     {
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
+            'tx_externalimporttest_product',
+            'base'
         );
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_designer',
-                0
+            'tx_externalimporttest_designer',
+            0
         );
         // Get the number of designers stored
         $countDesigners = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'tx_externalimporttest_designer'
+            'uid',
+            'tx_externalimporttest_designer'
         );
         // Count products relations
         $countRelations = $this->getDatabaseConnection()->selectCount(
-                '*',
-                'tx_externalimporttest_product_designer_mm'
+            '*',
+            'tx_externalimporttest_product_designer_mm'
         );
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(3, $countDesigners, serialize($messages));
@@ -223,8 +229,8 @@ class ImporterTest extends FunctionalTestCase
         self::assertEquals(2, $countFiles);
         self::assertSame(
             [
-                1 => 2,
-                2 => 1
+                2 => 1,
+                1 => 2
             ],
             $sorting
         );
@@ -239,13 +245,13 @@ class ImporterTest extends FunctionalTestCase
     public function importMoreProductsWithImporterStoresTwoRecords(): void
     {
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'more'
+            'tx_externalimporttest_product',
+            'more'
         );
         // Get the number of products stored
         $countProducts = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'tx_externalimporttest_product'
+            'uid',
+            'tx_externalimporttest_product'
         );
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(2, $countProducts, serialize($messages));
@@ -279,14 +285,14 @@ class ImporterTest extends FunctionalTestCase
             ->from('tx_externalimporttest_product')
             ->orderBy('sku', 'asc')
             ->execute()
-            ->fetchAll();
+            ->fetchAllAssociative();
         // Get the categories relations
         $relations = $this->getDatabaseConnection()->getDatabaseInstance()
             ->select('uid_local', 'uid_foreign')
             ->from('sys_category_record_mm')
             ->where('tablenames = \'tx_externalimporttest_product\'')
             ->execute()
-            ->fetchAll();
+            ->fetchAllAssociative();
         $countRelations = count($relations);
         $firstRelation = array_pop($relations);
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
@@ -334,42 +340,42 @@ class ImporterTest extends FunctionalTestCase
     {
         // First import products and stores, so that relations can be created
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
+            'tx_externalimporttest_product',
+            'base'
         );
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'stable'
+            'tx_externalimporttest_product',
+            'stable'
         );
         $this->subject->synchronize(
-                'tx_externalimporttest_store',
-                0
+            'tx_externalimporttest_store',
+            0
         );
 
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'products_for_stores'
+            'tx_externalimporttest_product',
+            'products_for_stores'
         );
         // Get the number of relations created
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('stock')
-                ->from('tx_externalimporttest_store_product')
-                // Ensure consistent order for safe comparison
-                ->orderBy('stock', 'ASC')
-                ->execute();
+            ->select('stock')
+            ->from('tx_externalimporttest_store_product')
+            // Ensure consistent order for safe comparison
+            ->orderBy('stock', 'ASC')
+            ->execute();
         $stocks = [];
         while ($row = $databaseResult->fetchAssociative()) {
             $stocks[] = $row['stock'];
         }
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertCount(
-                6,
-                $stocks,
-                serialize($messages)
+            6,
+            $stocks,
+            serialize($messages)
         );
         self::assertSame(
-                [5, 6, 8, 10, 12, 20],
-                $stocks
+            [5, 6, 8, 10, 12, 20],
+            $stocks
         );
     }
 
@@ -384,36 +390,36 @@ class ImporterTest extends FunctionalTestCase
     {
         // First import all products, so that relations can be created
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
+            'tx_externalimporttest_product',
+            'base'
         );
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'more'
+            'tx_externalimporttest_product',
+            'more'
         );
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'stable'
+            'tx_externalimporttest_product',
+            'stable'
         );
 
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_bundle',
-                0
+            'tx_externalimporttest_bundle',
+            0
         );
         // Get the number of bundles stored
         $countBundles = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'tx_externalimporttest_bundle'
+            'uid',
+            'tx_externalimporttest_bundle'
         );
         // Get the number of relations created
         /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('uid_local', 'uid_foreign', 'sorting')
-                ->from('tx_externalimporttest_bundle_product_mm')
-                // Ensure consistent order for safe comparison
-                ->orderBy('uid_local', 'ASC')
-                ->addOrderBy('sorting', 'ASC')
-                ->execute();
+            ->select('uid_local', 'uid_foreign', 'sorting')
+            ->from('tx_externalimporttest_bundle_product_mm')
+            // Ensure consistent order for safe comparison
+            ->orderBy('uid_local', 'ASC')
+            ->addOrderBy('sorting', 'ASC')
+            ->execute();
         $countRelations = 0;
         $sortedProducts = [];
         while ($row = $databaseResult->fetch()) {
@@ -424,8 +430,8 @@ class ImporterTest extends FunctionalTestCase
         self::assertEquals(3, $countBundles, serialize($messages));
         self::assertEquals(8, $countRelations);
         self::assertSame(
-                [3, 4, 1, 2, 6, 1, 5, 2],
-                $sortedProducts
+            [3, 4, 1, 2, 6, 1, 5, 2],
+            $sortedProducts
         );
     }
 
@@ -442,44 +448,44 @@ class ImporterTest extends FunctionalTestCase
             $this->importDataSet(__DIR__ . '/Fixtures/Orders.xml');
         } catch (\Exception $e) {
             self::markTestSkipped(
-                    sprintf(
-                            'Orders fixture could not be loaded (Exception: %s [%d])',
-                            $e->getMessage(),
-                            $e->getCode()
-                    )
+                sprintf(
+                    'Orders fixture could not be loaded (Exception: %s [%d])',
+                    $e->getMessage(),
+                    $e->getCode()
+                )
             );
         }
         // First import all products, so that relations can be created
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
+            'tx_externalimporttest_product',
+            'base'
         );
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'more'
+            'tx_externalimporttest_product',
+            'more'
         );
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'stable'
+            'tx_externalimporttest_product',
+            'stable'
         );
 
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_order',
-                0
+            'tx_externalimporttest_order',
+            0
         );
         // Get the number of orders stored
         $countOrders = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'tx_externalimporttest_order'
+            'uid',
+            'tx_externalimporttest_order'
         );
         // Get the number of relations created
         /** @var \Doctrine\DBAL\Driver\Statement $databaseResult */
         $databaseResult = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('uid_local', 'quantity')
-                ->from('tx_externalimporttest_order_items')
-                // Ensure consistent order for safe comparison
-                ->orderBy('uid_local', 'ASC')
-                ->execute();
+            ->select('uid_local', 'quantity')
+            ->from('tx_externalimporttest_order_items')
+            // Ensure consistent order for safe comparison
+            ->orderBy('uid_local', 'ASC')
+            ->execute();
         $countRelations = 0;
         $quantities = [];
         while ($row = $databaseResult->fetch()) {
@@ -490,8 +496,8 @@ class ImporterTest extends FunctionalTestCase
         self::assertEquals(3, $countOrders, serialize($messages));
         self::assertEquals(7, $countRelations);
         self::assertSame(
-                [3, 1, 10, 2, 1, 2, 1],
-                $quantities
+            [3, 1, 10, 2, 1, 2, 1],
+            $quantities
         );
     }
 
@@ -559,12 +565,12 @@ class ImporterTest extends FunctionalTestCase
     public function importInvoicesWithImporterStoresThreeRecords(): void
     {
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_invoice',
-                0
+            'tx_externalimporttest_invoice',
+            0
         );
         $countRecords = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'tx_externalimporttest_invoice'
+            'uid',
+            'tx_externalimporttest_invoice'
         );
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(3, $countRecords, serialize($messages));
@@ -578,44 +584,44 @@ class ImporterTest extends FunctionalTestCase
     public function importProductsAsPagesWithImporterCreatesProperPageTree(): void
     {
         $messages = $this->subject->synchronize(
-                'pages',
-                'product_pages'
+            'pages',
+            'product_pages'
         );
         // Three new pages should be attached to the storage page
         $parentPages = $this->getDatabaseConnection()->getDatabaseInstance()
-                ->select('uid', 'title')
-                ->from('pages')
-                ->where('pid = 1')
-                ->execute()
-                ->fetchAll();
+            ->select('uid', 'title')
+            ->from('pages')
+            ->where('pid = 1')
+            ->execute()
+            ->fetchAllAssociative();
         $countParentPages = $this->getDatabaseConnection()->selectCount(
-                'uid',
-                'pages',
-                'pid = 1'
+            'uid',
+            'pages',
+            'pid = 1'
         );
         // NOTE: the serializing of the Importer messages is a quick way to debug anything gone wrong
         self::assertEquals(3, $countParentPages, serialize($messages));
 
         // Next, the page called "Product 1" should have 2 child pages, "Product 2" none and "Product 3" 1 child page
         $pageTree = [
-                [
-                        'title' => 'Product 1',
-                        'children' => 2
-                ],
-                [
-                        'title' => 'Product 2',
-                        'children' => 0
-                ],
-                [
-                        'title' => 'Product 3',
-                        'children' => 1
-                ]
+            [
+                'title' => 'Product 1',
+                'children' => 2
+            ],
+            [
+                'title' => 'Product 2',
+                'children' => 0
+            ],
+            [
+                'title' => 'Product 3',
+                'children' => 1
+            ]
         ];
         foreach ($pageTree as $page) {
             $children = $this->getDatabaseConnection()->selectCount(
-                    'uid',
-                    'pages',
-                    'pid IN (SELECT uid FROM pages WHERE title = \'' . $page['title'] . '\')'
+                'uid',
+                'pages',
+                'pid IN (SELECT uid FROM pages WHERE title = \'' . $page['title'] . '\')'
             );
             self::assertEquals($page['children'], $children);
         }
@@ -632,38 +638,38 @@ class ImporterTest extends FunctionalTestCase
             $this->importDataSet(__DIR__ . '/Fixtures/ExtraStoragePage.xml');
         } catch (\Exception $e) {
             self::markTestSkipped(
-                    sprintf(
-                            'Extra storage page fixture could not be loaded (Exception: %s [%d])',
-                            $e->getMessage(),
-                            $e->getCode()
-                    )
+                sprintf(
+                    'Extra storage page fixture could not be loaded (Exception: %s [%d])',
+                    $e->getMessage(),
+                    $e->getCode()
+                )
             );
         }
         // First import base products
         $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'base'
+            'tx_externalimporttest_product',
+            'base'
         );
         // Import "updated" products, which is supposed to move one product to a different page
         $messages = $this->subject->synchronize(
-                'tx_externalimporttest_product',
-                'updated_products'
+            'tx_externalimporttest_product',
+            'updated_products'
         );
         $movedProducts = $this->getDatabaseConnection()->select(
-                'name',
-                'tx_externalimporttest_product',
-                'pid = 2'
+            'name',
+            'tx_externalimporttest_product',
+            'pid = 2'
         )->fetchAll();
         // A single product should have been moved
         self::assertCount(
-                1,
-                $movedProducts,
-                serialize($messages)
+            1,
+            $movedProducts,
+            serialize($messages)
         );
         // That product should have an updated slug
         self::assertSame(
-                'Long sword (updated)',
-                $movedProducts[0]['name']
+            'Long sword (updated)',
+            $movedProducts[0]['name']
         );
     }
 
@@ -675,14 +681,14 @@ class ImporterTest extends FunctionalTestCase
     public function wrongConfigurationNames(): array
     {
         return [
-                'Wrong general configuration' => [
-                        'tx_externalimporttest_product',
-                        'general_configuration_errors'
-                ],
-                'Wrong column configuration' => [
-                        'sys_categories',
-                        'column_configuration_errors'
-                ]
+            'Wrong general configuration' => [
+                'tx_externalimporttest_product',
+                'general_configuration_errors'
+            ],
+            'Wrong column configuration' => [
+                'sys_categories',
+                'column_configuration_errors'
+            ]
         ];
     }
 

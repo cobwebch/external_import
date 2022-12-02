@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Functional\Step;
 
 /*
@@ -38,6 +41,11 @@ class StoreDataStepTest extends FunctionalTestCase
      * @var StoreDataStep
      */
     protected StoreDataStep $subject;
+
+    public function __sleep()
+    {
+        return [];
+    }
 
     public function setUp(): void
     {

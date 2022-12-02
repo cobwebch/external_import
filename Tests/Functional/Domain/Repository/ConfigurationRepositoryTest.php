@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 /*
@@ -39,7 +41,12 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     /**
      * @var ConfigurationRepository
      */
-    protected $subject;
+    protected ConfigurationRepository $subject;
+
+    public function __sleep()
+    {
+        return [];
+    }
 
     public function setUp(): void
     {
