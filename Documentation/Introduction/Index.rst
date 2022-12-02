@@ -139,15 +139,15 @@ You are very welcome to support the further development of this
 extension. You will get mentioned here.
 
 - A good part of the development of version 3.0 was sponsored by the
-  `State of Vaud <http://vd.ch>`_.
+  `State of Vaud <https://www.vd.ch/>`_.
 
 - The :ref:`xmlValue <administration-columns-properties-xmlvalue>`
-  property was sponsored by `Bendoo e-work solutions <https://www.bendoo.nl/en/>`_.
+  property was sponsored by `Bendoo e-work solutions <https://www.bendoo.nl/>`_.
 
 - The development of version 5.0 benefited from much sponsoring:
 
   - `Idéative <https://www.ideative.ch/>`_
-  - `Bendoo e-work solutions <https://www.bendoo.nl/en/>`_
+  - `Bendoo e-work solutions <https://www.bendoo.nl/>`_
   - `mehrwert intermediale kommunikation GmbH <https://www.mehrwert.de/>`_
   - Benni Mack
   - Tomas Norre
