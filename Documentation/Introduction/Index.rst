@@ -80,9 +80,10 @@ and `importr <https://extensions.typo3.org/extension/importr>`_, which were rele
 years after External Import and - as such - I never really looked into them since I had all the tools
 I needed. So it is hard to compare their features.
 
-"xlsimport" is designed for one-time import of data in Excel and CSV format. It cannot be automated
-and the import configuration cannot be saved. The process is definitely quicker and lighter to set up
-than External Import, but is limited if you need to import the same data on a regular basis.
+"xlsimport" is designed for one-time import of data in Excel and CSV format. It cannot be automated.
+An interface is provided for the mapping configuration, but it cannot be saved.
+The process is definitely quicker and lighter to set up than External Import,
+but is limited if you need to import the same data on a regular basis.
 
 "importr" seems to come quite close to External Import in terms of features, although
 maybe with less flexibility in the data handling and less import sources (import
