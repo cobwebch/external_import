@@ -281,10 +281,10 @@ class ConfigurationRepository
                                 $description = $externalConfiguration['description'];
                             }
                         }
-                        if (strpos($sections['ctrl']['title'], 'LLL:') === 0) {
+                        if (strpos($sections['ctrl']['title'] ?? '', 'LLL:') === 0) {
                             $tableTitle = LocalizationUtility::translate($sections['ctrl']['title']);
                         } else {
-                            $tableTitle = $sections['ctrl']['title'];
+                            $tableTitle = $sections['ctrl']['title'] ?? 'untitled';
                         }
                         // Store the base configuration
                         $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
