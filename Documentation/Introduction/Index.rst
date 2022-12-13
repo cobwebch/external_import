@@ -156,6 +156,7 @@ extension. You will get mentioned here.
 
 - The development of version 6.0 was largely funded by the `Lausanne University Hospital (CHUV) <https://www.lausanneuniversityhospital.com/home>`_
 
+- The feature for sorting child records, introduced in version 6.2, was sponsored by `Ines Willenbrock <https://www.insert-into.net>`_.
 
 .. _credits:
 
