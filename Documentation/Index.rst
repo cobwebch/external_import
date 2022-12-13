@@ -113,6 +113,8 @@ Tool for importing data from external sources into the TYPO3 database, using an 
             Description of the known (and tricky) issues that are not (yet) solved.
 
 
+.. Table of Contents
+
 .. toctree::
    :maxdepth: 2
    :titlesonly:
@@ -126,4 +128,10 @@ Tool for importing data from external sources into the TYPO3 database, using an 
    Developer/Index
    KnownProblems/Index
    Appendix/Index
-   Targets
+
+.. Meta Menu
+
+.. toctree::
+   :hidden:
+
+   Sitemap
