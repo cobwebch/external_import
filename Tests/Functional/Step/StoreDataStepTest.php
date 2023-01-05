@@ -40,7 +40,7 @@ class StoreDataStepTest extends FunctionalTestCase
     /**
      * @var StoreDataStep
      */
-    protected StoreDataStep $subject;
+    protected $subject;
 
     public function __sleep()
     {

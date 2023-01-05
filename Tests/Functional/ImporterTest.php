@@ -43,7 +43,7 @@ class ImporterTest extends FunctionalTestCase
     /**
      * @var Importer
      */
-    protected Importer $subject;
+    protected $subject;
 
     public function __sleep(): array
     {

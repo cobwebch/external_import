@@ -28,7 +28,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ChildrenSortingUtility
 {
-    protected Importer $importer;
+    /**
+     * @var Importer
+     */
+    protected $importer;
 
     public function __construct(Importer $importer)
     {

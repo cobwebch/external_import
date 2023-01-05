@@ -92,7 +92,7 @@ class StoreDataStep extends AbstractStep
     /**
      * @var ChildrenSorting DTO object for storing children sorting data
      */
-    protected ChildrenSorting $childrenSortingInformation;
+    protected $childrenSortingInformation;
 
     /**
      * @var EventDispatcherInterface

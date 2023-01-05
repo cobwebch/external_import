@@ -41,7 +41,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     /**
      * @var ConfigurationRepository
      */
-    protected ConfigurationRepository $subject;
+    protected $subject;
 
     public function __sleep()
     {

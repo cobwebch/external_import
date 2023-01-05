@@ -51,7 +51,7 @@ class ImporterPreviewTest extends FunctionalTestCase
     /**
      * @var Importer
      */
-    protected Importer $subject;
+    protected $subject;
 
     public function __sleep()
     {

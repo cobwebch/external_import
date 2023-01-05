@@ -23,7 +23,7 @@ namespace Cobweb\ExternalImport\Domain\Model\Dto;
  */
 class ChildrenSorting
 {
-    protected array $sortingInformation = [];
+    protected $sortingInformation = [];
 
     /**
      * Returns true if there's at least one element in the sorting information array for at least one table

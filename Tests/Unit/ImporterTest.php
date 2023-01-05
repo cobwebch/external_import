@@ -36,7 +36,7 @@ class ImporterTest extends UnitTestCase
     /**
      * @var Importer
      */
-    protected Importer $subject;
+    protected $subject;
 
     protected function setUp(): void
     {

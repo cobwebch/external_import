@@ -24,7 +24,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ChildrenSortingTest extends UnitTestCase
 {
-    protected ChildrenSorting $subject;
+    /**
+     * @var ChildrenSorting
+     */
+    protected $subject;
 
     public function setUp(): void
     {

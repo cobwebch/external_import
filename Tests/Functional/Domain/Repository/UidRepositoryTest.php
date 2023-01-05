@@ -32,7 +32,7 @@ class UidRepositoryTest extends FunctionalTestCase
     /**
      * @var UidRepository
      */
-    protected UidRepository $subject;
+    protected $subject;
 
     public function __sleep()
     {
