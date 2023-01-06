@@ -16,7 +16,7 @@ $EM_CONF[$_EXTKEY] = [
         [
             'depends' =>
                 [
-                    'svconnector' => '4.0.0-0.0.0',
+                    'svconnector' => '4.0.0-5.99.99',
                     'typo3' => '10.4.0-11.5.99',
                     'scheduler' => '',
                 ],
