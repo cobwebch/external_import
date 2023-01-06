@@ -15,8 +15,10 @@ namespace Cobweb\ExternalImport\Tests\Unit\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -37,7 +39,14 @@ class StoreDataStepTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(
             StoreDataStep::class,
             $this->getAccessibleMock(
-                \TYPO3\CMS\Core\EventDispatcher\EventDispatcher::class,
+                EventDispatcher::class,
+                null,
+                [],
+                '',
+                false
+            ),
+            $this->getAccessibleMock(
+                ChildrenSorting::class,
                 null,
                 [],
                 '',
