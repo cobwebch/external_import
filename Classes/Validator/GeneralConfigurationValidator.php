@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\StepUtility;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -154,11 +155,9 @@ class GeneralConfigurationValidator
     public function validateConnectorProperty(string $property): void
     {
         if (!empty($property)) {
-            $services = ExtensionManagementUtility::findService(
-                'connector',
-                $property
-            );
-            if ($services === false) {
+            try {
+                CompatibilityUtility::getConnectorService($property);
+            } catch (\Exception $e) {
                 $this->results->add(
                     'connector',
                     LocalizationUtility::translate(
@@ -180,22 +179,20 @@ class GeneralConfigurationValidator
      */
     public function validateConnectorConfigurationProperty(string $connector, array $property): void
     {
-        $connectorService = GeneralUtility::makeInstanceService(
-            'connector',
-            $connector
-        );
-        // Proceed only if connector was found
-        // NOTE: we do not report if connector was not found, because this is the task of validateConnectorProperty()
-        if ($connectorService !== false) {
-            $results = $connectorService->checkConfiguration($property);
-            foreach ($results as $severity => $messages) {
-                foreach ($messages as $message) {
-                    $this->results->add(
-                        'parameters',
-                        $message,
-                        $severity
-                    );
-                }
+        try {
+            $connectorService = CompatibilityUtility::getConnectorService($connector);
+        } catch (\Exception $e) {
+            // NOTE: we do not report if connector was not found, because this is the task of validateConnectorProperty()
+            return;
+        }
+        $results = $connectorService->checkConfiguration($property);
+        foreach ($results as $severity => $messages) {
+            foreach ($messages as $message) {
+                $this->results->add(
+                    'parameters',
+                    $message,
+                    $severity
+                );
             }
         }
     }

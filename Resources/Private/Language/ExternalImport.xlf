@@ -56,6 +56,9 @@
 			<trans-unit id="no_service" xml:space="preserve">
 				<source>No service available</source>
 			</trans-unit>
+			<trans-unit id="service_error" xml:space="preserve">
+				<source>There was an error requesting the given connector service (%s). Reason: %s, code: %d.</source>
+			</trans-unit>
 			<trans-unit id="missingCtrlConfigurationError" xml:space="preserve">
 				<source>No general configuration could be found for table "%1$s" and index "%2$s". Import was aborted.</source>
 			</trans-unit>

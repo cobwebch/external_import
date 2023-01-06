@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\Svconnector\Service\ConnectorBase;
 use Cobweb\SvconnectorFeed\Service\ConnectorFeed;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -334,7 +335,15 @@ class ConfigurationTest extends UnitTestCase
      */
     public function setConnectorSetsConnector(): void
     {
-        $connector = GeneralUtility::makeInstance(ConnectorFeed::class);
+        // Use a mock as full initialization requires to be in a functional testing environment
+        /** @var ConnectorBase $connector */
+        $connector = $this->getAccessibleMock(
+            ConnectorFeed::class,
+            [],
+            [],
+            '',
+            false
+        );
         $this->subject->setConnector($connector);
         self::assertSame(
                 $connector,

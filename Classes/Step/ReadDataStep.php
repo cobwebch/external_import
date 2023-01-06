@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -51,121 +52,89 @@ class ReadDataStep extends AbstractStep
     {
         $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         // Check if there are any services of the given type
-        $services = ExtensionManagementUtility::findService(
-            'connector',
-            $generalConfiguration['connector']
-        );
-
-        // The service is not available
-        if ($services === false) {
+        try {
+            $connector = CompatibilityUtility::getConnectorService($generalConfiguration['connector']);
+        } catch (\Exception $e) {
             $this->setAbortFlag(true);
             $this->importer->addMessage(
                 LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_service',
-                    'external_import'
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:service_error',
+                    'external_import',
+                    [
+                        $generalConfiguration['connector'],
+                        $e->getMessage(),
+                        $e->getCode(),
+                    ]
                 )
             );
-        } else {
-            /** @var $connector ConnectorBase */
-            $connector = GeneralUtility::makeInstanceService(
-                'connector',
-                $generalConfiguration['connector']
-            );
+            return;
+        }
 
-            // The service was instantiated, but an error occurred while initiating the connection
-            // The returned value is not a Connector service
-            if (!($connector instanceof ConnectorBase)) {
-                $this->setAbortFlag(true);
-                // If the returned value is an array, we have proper error reporting.
-                if (is_array($connector)) {
+        // Store a reference to the connector object for the callback step
+        $this->importer->getExternalConfiguration()->setConnector($connector);
+        $data = [];
+
+        // Pre-process connector parameters
+        try {
+            $parameters = $this->processParameters($generalConfiguration['parameters']);
+        } catch (CriticalFailureException $e) {
+            // If a critical failure occurred during hook execution, set the abort flag and return to controller
+            $this->setAbortFlag(true);
+            return;
+        }
+
+        // A problem may happen while fetching the data
+        // If so, the import process has to be aborted
+        switch ($generalConfiguration['data']) {
+            case 'xml':
+                try {
+                    $data = $connector->fetchXML($parameters);
+                } catch (\Exception $e) {
+                    $this->abortFlag = true;
                     $this->importer->addMessage(
                         LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_with_error',
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
                             'external_import',
                             [
-                                $connector['msg'],
-                                $connector['nr']
+                                $e->getMessage()
                             ]
                         )
                     );
-                    // Otherwise display generic error message
-                } else {
+                }
+                break;
+
+            case 'array':
+                try {
+                    $data = $connector->fetchArray($parameters);
+                } catch (\Exception $e) {
+                    $this->abortFlag = true;
                     $this->importer->addMessage(
                         LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched',
-                            'external_import'
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
+                            'external_import',
+                            [
+                                $e->getMessage()
+                            ]
                         )
                     );
                 }
-                // The connection is established, get the data
-            } else {
-                // Store a reference to the connector object for the callback step
-                $this->importer->getExternalConfiguration()->setConnector($connector);
-                $data = [];
+                break;
 
-                // Pre-process connector parameters
-                try {
-                    $parameters = $this->processParameters($generalConfiguration['parameters']);
-                } catch (CriticalFailureException $e) {
-                    // If a critical failure occurred during hook execution, set the abort flag and return to controller
-                    $this->setAbortFlag(true);
-                    return;
-                }
-
-                // A problem may happen while fetching the data
-                // If so, the import process has to be aborted
-                switch ($generalConfiguration['data']) {
-                    case 'xml':
-                        try {
-                            $data = $connector->fetchXML($parameters);
-                        } catch (\Exception $e) {
-                            $this->abortFlag = true;
-                            $this->importer->addMessage(
-                                LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
-                                    'external_import',
-                                    [
-                                        $e->getMessage()
-                                    ]
-                                )
-                            );
-                        }
-                        break;
-
-                    case 'array':
-                        try {
-                            $data = $connector->fetchArray($parameters);
-                        } catch (\Exception $e) {
-                            $this->abortFlag = true;
-                            $this->importer->addMessage(
-                                LocalizationUtility::translate(
-                                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
-                                    'external_import',
-                                    [
-                                        $e->getMessage()
-                                    ]
-                                )
-                            );
-                        }
-                        break;
-
-                    // If the data type is not defined, issue error and abort process
-                    default:
-                        $this->abortFlag = true;
-                        $this->importer->addMessage(
-                            LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_type_not_defined',
-                                'external_import'
-                            )
-                        );
-                        break;
-                }
-
-                // Set the data as raw data (and also as preview, if activated)
-                $this->getData()->setRawData($data);
-                $this->setPreviewData($data);
-            }
+            // If the data type is not defined, issue error and abort process
+            default:
+                $this->abortFlag = true;
+                $this->importer->addMessage(
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_type_not_defined',
+                        'external_import'
+                    )
+                );
+                break;
         }
+
+        // Set the data as raw data (and also as preview, if activated)
+        $this->getData()->setRawData($data);
+        $this->setPreviewData($data);
     }
 
     /**

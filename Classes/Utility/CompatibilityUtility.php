@@ -20,6 +20,10 @@ namespace Cobweb\ExternalImport\Utility;
 use Cobweb\ExternalImport\Compatibility\Dbal\AbstractResultIterator;
 use Cobweb\ExternalImport\Compatibility\Dbal\ResultIteratorV10;
 use Cobweb\ExternalImport\Compatibility\Dbal\ResultIteratorV11;
+use Cobweb\Svconnector\Exception\ConnectorRuntimeException;
+use Cobweb\Svconnector\Exception\UnknownServiceException;
+use Cobweb\Svconnector\Registry\ConnectorRegistry;
+use Cobweb\Svconnector\Service\ConnectorBase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
@@ -54,5 +58,56 @@ class CompatibilityUtility
             return GeneralUtility::makeInstance(ResultIteratorV10::class);
         }
         return GeneralUtility::makeInstance(ResultIteratorV11::class);
+    }
+
+    /**
+     * Returns the requested connector service, depending on the available architecture
+     * (old TYPO3 services or new connector registry).
+     *
+     * @param string $key
+     * @return ConnectorBase
+     * @throws UnknownServiceException|ConnectorRuntimeException
+     */
+    public static function getConnectorService(string $key): ConnectorBase
+    {
+        if (class_exists(ConnectorRegistry::class)) {
+            $registry = GeneralUtility::makeInstance(ConnectorRegistry::class);
+            $service = $registry->getServiceForType($key);
+            if (!$service->isAvailable()) {
+                throw new ConnectorRuntimeException(
+                    sprintf(
+                        'The requested connector service (%s) is not available.',
+                        $key
+                    ),
+                    1673026928
+                );
+            }
+        } else {
+            $service = GeneralUtility::makeInstanceService(
+                'connector',
+                $key
+            );
+            if (!$service) {
+                throw new UnknownServiceException(
+                    sprintf(
+                        'No connector service found for type %s',
+                        $key
+                    ),
+                    1673026336
+                );
+            }
+
+            if (is_array($service)) {
+                throw new ConnectorRuntimeException(
+                    sprintf(
+                        'The connector service could not be initialized. Reason %s (code: %s).',
+                        $service['msg'],
+                        $service['nr']
+                    ),
+                    1673026771
+                );
+            }
+        }
+        return $service;
     }
 }

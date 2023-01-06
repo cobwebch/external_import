@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Functional\Validator;
 
 /*
@@ -20,14 +22,15 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Validator\GeneralConfigurationValidator;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Localization\LocalizationFactory;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class GeneralConfigurationValidatorTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
-            'typo3conf/ext/external_import'
+        'typo3conf/ext/external_import',
+        'typo3conf/ext/svconnector',
     ];
 
     /**
@@ -38,7 +41,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     public function setUp(): void
     {
         parent::setUp();
-        // Connector services need a global LanguageService object
+        // Localized validation messages need a global LanguageService object
         $GLOBALS['LANG'] = $this->getAccessibleMock(
                 LanguageService::class,
                 [],
@@ -54,29 +57,29 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     public function validConfigurationProvider(): array
     {
         return [
-                'Typical configuration for array type' => [
-                        [
-                                'data' => 'array',
-                                'referenceUid' => 'external_id',
-                                'pid' => 12
-                        ]
-                ],
-                'Typical configuration for xml type (nodetype)' => [
-                        [
-                                'data' => 'xml',
-                                'nodetype' => 'foo',
-                                'referenceUid' => 'external_id',
-                                'pid' => 12
-                        ]
-                ],
-                'Typical configuration for xml type (nodepath)' => [
-                        [
-                                'data' => 'xml',
-                                'nodepath' => '//foo',
-                                'referenceUid' => 'external_id',
-                                'pid' => 12
-                        ]
+            'Typical configuration for array type' => [
+                [
+                    'data' => 'array',
+                    'referenceUid' => 'external_id',
+                    'pid' => 12
                 ]
+            ],
+            'Typical configuration for xml type (nodetype)' => [
+                [
+                    'data' => 'xml',
+                    'nodetype' => 'foo',
+                    'referenceUid' => 'external_id',
+                    'pid' => 12
+                ]
+            ],
+            'Typical configuration for xml type (nodepath)' => [
+                [
+                    'data' => 'xml',
+                    'nodepath' => '//foo',
+                    'referenceUid' => 'external_id',
+                    'pid' => 12
+                ]
+            ]
         ];
     }
 
@@ -85,44 +88,44 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider validConfigurationProvider
      */
-    public function isValidReturnsTrueForValidConfiguration($configuration): void
+    public function isValidReturnsTrueForValidConfiguration(array $configuration): void
     {
         self::assertTrue(
-                $this->subject->isValid(
-                        $this->prepareConfigurationObject(
-                                'tt_content',
-                                $configuration
-                        )
+            $this->subject->isValid(
+                $this->prepareConfigurationObject(
+                    'tt_content',
+                    $configuration
                 )
+            )
         );
     }
 
     public function invalidConfigurationProvider(): array
     {
         return [
-                'Missing data property' => [
-                        [
-                                'reference_uid' => 'external_id'
-                        ]
-                ],
-                'Invalid data property' => [
-                        [
-                                'data' => 'foo',
-                                'reference_uid' => 'external_id'
-                        ]
-                ],
-                'Invalid connector property' => [
-                        [
-                                'data' => 'array',
-                                'reference_uid' => 'external_id',
-                                'connector' => uniqid('', true)
-                        ]
-                ],
-                'Missing reference_uid property' => [
-                        [
-                                'data' => 'array'
-                        ]
+            'Missing data property' => [
+                [
+                    'reference_uid' => 'external_id'
                 ]
+            ],
+            'Invalid data property' => [
+                [
+                    'data' => 'foo',
+                    'reference_uid' => 'external_id'
+                ]
+            ],
+            'Invalid connector property' => [
+                [
+                    'data' => 'array',
+                    'reference_uid' => 'external_id',
+                    'connector' => uniqid('', true)
+                ]
+            ],
+            'Missing reference_uid property' => [
+                [
+                    'data' => 'array'
+                ]
+            ]
         ];
     }
 
@@ -131,29 +134,29 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidConfigurationProvider
      */
-    public function isValidReturnsFalseForInvalidConfiguration($configuration): void
+    public function isValidReturnsFalseForInvalidConfiguration(array $configuration): void
     {
         self::assertFalse(
-                $this->subject->isValid(
-                        $this->prepareConfigurationObject(
-                                'tt_content',
-                                $configuration
-                        )
+            $this->subject->isValid(
+                $this->prepareConfigurationObject(
+                    'tt_content',
+                    $configuration
                 )
+            )
         );
     }
 
     public function invalidDataPropertyConfigurationProvider(): array
     {
         return [
-                'Missing data property' => [
-                        []
-                ],
-                'Invalid data property' => [
-                        [
-                                'data' => 'foo'
-                        ]
+            'Missing data property' => [
+                []
+            ],
+            'Invalid data property' => [
+                [
+                    'data' => 'foo'
                 ]
+            ]
         ];
     }
 
@@ -162,18 +165,18 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidDataPropertyConfigurationProvider
      */
-    public function validateDataPropertyWithInvalidValueRaisesError($configuration): void
+    public function validateDataPropertyWithInvalidValueRaisesError(array $configuration): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        'tt_content',
-                        $configuration
-                )
+            $this->prepareConfigurationObject(
+                'tt_content',
+                $configuration
+            )
         );
         $results = $this->subject->getResults()->getForProperty('data');
         self::assertSame(
-                FlashMessage::ERROR,
-                $results[0]['severity']
+            FlashMessage::ERROR,
+            $results[0]['severity']
         );
     }
 
@@ -183,34 +186,34 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     public function validateConnectorPropertyWithInvalidValueRaisesError(): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        'tt_content',
-                        [
-                            // Some random connector name
-                            'connector' => uniqid('', true)
-                        ]
-                )
+            $this->prepareConfigurationObject(
+                'tt_content',
+                [
+                    // Some random connector name
+                    'connector' => uniqid('', true)
+                ]
+            )
         );
         $results = $this->subject->getResults()->getForProperty('connector');
         self::assertSame(
-                FlashMessage::ERROR,
-                $results[0]['severity']
+            FlashMessage::ERROR,
+            $results[0]['severity']
         );
     }
 
     public function invalidDataHandlerPropertyConfigurationProvider(): array
     {
         return [
-                'Not existing class' => [
-                        [
-                                'dataHandler' => 'Cobweb\\ExternalImport\\' . time()
-                        ]
-                ],
-                'Class not implementing proper interface' => [
-                        [
-                                'dataHandler' => Importer::class
-                        ]
+            'Not existing class' => [
+                [
+                    'dataHandler' => 'Cobweb\\ExternalImport\\' . time()
                 ]
+            ],
+            'Class not implementing proper interface' => [
+                [
+                    'dataHandler' => Importer::class
+                ]
+            ]
         ];
     }
 
@@ -219,18 +222,18 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidDataHandlerPropertyConfigurationProvider
      */
-    public function validateDataHandlerPropertyWithInvalidValueRaisesNotice($configuration): void
+    public function validateDataHandlerPropertyWithInvalidValueRaisesNotice(array $configuration): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        'tt_content',
-                        $configuration
-                )
+            $this->prepareConfigurationObject(
+                'tt_content',
+                $configuration
+            )
         );
         $results = $this->subject->getResults()->getForProperty('dataHandler');
         self::assertSame(
-                FlashMessage::NOTICE,
-                $results[0]['severity']
+            AbstractMessage::NOTICE,
+            $results[0]['severity']
         );
     }
 
@@ -240,17 +243,17 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     public function validateNodetypePropertyForXmlDataWithEmptyValueRaisesError(): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        'tt_content',
-                        [
-                                'data' => 'xml'
-                        ]
-                )
+            $this->prepareConfigurationObject(
+                'tt_content',
+                [
+                    'data' => 'xml'
+                ]
+            )
         );
         $results = $this->subject->getResults()->getForProperty('nodetype');
         self::assertSame(
-                FlashMessage::ERROR,
-                $results[0]['severity']
+            AbstractMessage::ERROR,
+            $results[0]['severity']
         );
     }
 
@@ -260,15 +263,15 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     public function validateReferenceUidPropertyWithEmptyValueRaisesError(): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        'tt_content',
-                        []
-                )
+            $this->prepareConfigurationObject(
+                'tt_content',
+                []
+            )
         );
         $results = $this->subject->getResults()->getForProperty('referenceUid');
         self::assertSame(
-                FlashMessage::ERROR,
-                $results[0]['severity']
+            FlashMessage::ERROR,
+            $results[0]['severity']
         );
     }
 
@@ -278,17 +281,17 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     public function validatePriorityPropertyWithEmptyValueRaisesNotice(): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        'tt_content',
-                        [
-                                'connector' => 'foo'
-                        ]
-                )
+            $this->prepareConfigurationObject(
+                'tt_content',
+                [
+                    'connector' => 'foo'
+                ]
+            )
         );
         $results = $this->subject->getResults()->getForProperty('priority');
         self::assertSame(
-                FlashMessage::NOTICE,
-                $results[0]['severity']
+            AbstractMessage::NOTICE,
+            $results[0]['severity']
         );
     }
 
@@ -298,45 +301,45 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     public function validatePidPropertyWithEmptyValueForRootTableRaisesNotice(): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        'be_users',
-                        [
-                            // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
-                            // be set to 0 if missing from configuration
-                            'pid' => 0
-                        ]
-                )
+            $this->prepareConfigurationObject(
+                'be_users',
+                [
+                    // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
+                    // be set to 0 if missing from configuration
+                    'pid' => 0
+                ]
+            )
         );
         $results = $this->subject->getResults()->getForProperty('pid');
         self::assertSame(
-                FlashMessage::NOTICE,
-                $results[0]['severity']
+            AbstractMessage::NOTICE,
+            $results[0]['severity']
         );
     }
 
     public function invalidPidPropertyConfigurationProvider(): array
     {
         return [
-                'Missing pid, non-root table' => [
-                        'tt_content',
-                        [
-                            // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
-                            // be set to 0 if missing from configuration
-                            'pid' => 0
-                        ]
-                ],
-                'Negative pid' => [
-                        'tt_content',
-                        [
-                                'pid' => -12
-                        ]
-                ],
-                'Positive pid, root table' => [
-                        'be_users',
-                        [
-                                'pid' => 12
-                        ]
+            'Missing pid, non-root table' => [
+                'tt_content',
+                [
+                    // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
+                    // be set to 0 if missing from configuration
+                    'pid' => 0
                 ]
+            ],
+            'Negative pid' => [
+                'tt_content',
+                [
+                    'pid' => -12
+                ]
+            ],
+            'Positive pid, root table' => [
+                'be_users',
+                [
+                    'pid' => 12
+                ]
+            ]
         ];
     }
 
@@ -346,18 +349,18 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidPidPropertyConfigurationProvider
      */
-    public function validatePidPropertyWithInvalidValueRaisesError($table, $configuration): void
+    public function validatePidPropertyWithInvalidValueRaisesError(string $table, array $configuration): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        $table,
-                        $configuration
-                )
+            $this->prepareConfigurationObject(
+                $table,
+                $configuration
+            )
         );
         $results = $this->subject->getResults()->getForProperty('pid');
         self::assertSame(
-                FlashMessage::ERROR,
-                $results[0]['severity']
+            AbstractMessage::ERROR,
+            $results[0]['severity']
         );
     }
 
@@ -367,17 +370,17 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     public function validateUseColumnIndexPropertyWithInvalidValueRaisesError(): void
     {
         $this->subject->isValid(
-                $this->prepareConfigurationObject(
-                        'tt_content',
-                        [
-                                'useColumnIndex' => 'foo'
-                        ]
-                )
+            $this->prepareConfigurationObject(
+                'tt_content',
+                [
+                    'useColumnIndex' => 'foo'
+                ]
+            )
         );
         $results = $this->subject->getResults()->getForProperty('useColumnIndex');
         self::assertSame(
-                FlashMessage::ERROR,
-                $results[0]['severity']
+            AbstractMessage::ERROR,
+            $results[0]['severity']
         );
     }
 
@@ -388,7 +391,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
      * @param array $configuration
      * @return Configuration
      */
-    protected function prepareConfigurationObject($table, $configuration): Configuration
+    protected function prepareConfigurationObject(string $table, array $configuration): Configuration
     {
         $configurationObject = GeneralUtility::makeInstance(Configuration::class);
         $configurationObject->setTable($table);
