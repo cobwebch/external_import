@@ -181,8 +181,8 @@ class Importer implements LoggerAwareInterface
         $this->setDebug((bool)$this->extensionConfiguration['debug']);
 
         // Force PHP limit execution time if set
-        if (isset($this->extensionConfiguration['timelimit']) && ($this->extensionConfiguration['timelimit'] > -1)) {
-            set_time_limit($this->extensionConfiguration['timelimit']);
+        if (isset($this->extensionConfiguration['timelimit']) && ((int)$this->extensionConfiguration['timelimit'] > -1)) {
+            set_time_limit((int)$this->extensionConfiguration['timelimit']);
         }
         // Initialize message array
         $this->resetMessages();
