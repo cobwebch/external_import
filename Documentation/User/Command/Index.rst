@@ -24,6 +24,16 @@ Synchronize a single configuration
   :code:`path/to/php path/to/bin/typo3 externalimport:sync --table=foo --index=bar`.
 
 
+.. _user-command-storage:
+
+Forcing the storage page
+""""""""""""""""""""""""
+
+The :code:`storage` flag can be used to pass the id of a page in the TYPO3 system
+where the imported data will be stored. This overrides both the TCA and the extension
+settings.
+
+
 .. _user-command-preview:
 
 Running in preview mode

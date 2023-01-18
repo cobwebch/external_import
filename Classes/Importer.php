@@ -591,8 +591,6 @@ class Importer implements LoggerAwareInterface
     /**
      * Forces the storage pid for imported records.
      *
-     * This is meant essentially for testing, but can also be useful when using Importer::import().
-     *
      * @param mixed $pid
      */
     public function setForcedStoragePid($pid): void

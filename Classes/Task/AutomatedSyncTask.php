@@ -43,6 +43,11 @@ class AutomatedSyncTask extends AbstractTask
     public $index;
 
     /**
+     * @var int Uid of a page for storage (overrides TCA and extension setting)
+     */
+    public int $storage = 0;
+
+    /**
      * Executes the job registered in the Scheduler task
      *
      * @return bool
@@ -56,6 +61,10 @@ class AutomatedSyncTask extends AbstractTask
         // Instantiate the import object and call appropriate method depending on command
         $importer = GeneralUtility::makeInstance(Importer::class);
         $importer->setContext('scheduler');
+        // Override the storage page, if defined
+        if ($this->storage > 0) {
+            $importer->setForcedStoragePid($this->storage);
+        }
         // Get the extension's configuration from the importer object
         $extensionConfiguration = $importer->getExtensionConfiguration();
         // Synchronize all tables

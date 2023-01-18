@@ -94,6 +94,12 @@ class ImportCommand extends Command
                 'Print a list of all existing External Import configurations available for synchronization.'
             )
             ->addOption(
+                'storage',
+                's',
+                InputOption::VALUE_REQUIRED,
+                'Define a specific page (using its uid) in TYPO3 where to store the imported data. Overrides TCA or extension settings.'
+            )
+            ->addOption(
                 'debug',
                 'd',
                 InputOption::VALUE_NONE,
@@ -149,6 +155,12 @@ class ImportCommand extends Command
                 $group = $input->getOption('group');
                 $table = $input->getOption('table');
                 $index = $input->getOption('index');
+
+                // Override the storage page, if defined
+                $storage = (int)$input->getOption('storage');
+                if ($storage > 0) {
+                    $this->importer->setForcedStoragePid($storage);
+                }
 
                 // Check output options
                 $debug = $input->getOption('debug');

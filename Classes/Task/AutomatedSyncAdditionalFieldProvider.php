@@ -32,14 +32,13 @@ use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
  */
 class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInterface
 {
-    /**
-     * Name of the additional field
-     */
-    protected static $fieldName = 'syncItem';
+    // Name of the additional fields
+    protected static $itemFieldName = 'syncItem';
+    protected static $storageFieldName = 'syncStorage';
 
     /**
      * This method is used to define new fields for adding or editing a task
-     * In this case, it adds an sleep time field
+     * In this case, it adds several options related to External Import usage.
      *
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
      * @param AbstractTask $task When editing, reference to the current task object. Null when adding.
@@ -53,25 +52,27 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *                   ['cshLabel']    => The code of the CSH label
      * @throws \TYPO3\CMS\Extbase\Object\Exception
      */
-    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule)
+    public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule): array
     {
-        // Initialize extra field value
-        if (empty($taskInfo[self::$fieldName])) {
+        $additionalFields = [];
+
+        // Add field for items to synchronize
+        if (empty($taskInfo[self::$itemFieldName])) {
             if ($schedulerModule->getCurrentAction()->equals(Action::ADD)) {
-                $taskInfo[self::$fieldName] = 'all';
+                $taskInfo[self::$itemFieldName] = 'all';
             } elseif ($schedulerModule->getCurrentAction()->equals(Action::EDIT)) {
                 // In case of edit, set to internal value if no data was submitted already
                 $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                 $configurationKey->setTableAndIndex($task->table, (string)$task->index);
-                $taskInfo[self::$fieldName] = $configurationKey->getConfigurationKey();
+                $taskInfo[self::$itemFieldName] = $configurationKey->getConfigurationKey();
             }
         }
 
         // Write the code for the field
-        $fieldID = 'task_' . self::$fieldName;
-        $fieldCode = '<select name="tx_scheduler[' . self::$fieldName . ']" id="' . $fieldID . '" class="form-control">';
+        $fieldID = 'task_' . self::$itemFieldName;
+        $fieldCode = '<select name="tx_scheduler[' . self::$itemFieldName . ']" id="' . $fieldID . '" class="form-control">';
         $selected = '';
-        if ($taskInfo[self::$fieldName] === 'all') {
+        if ($taskInfo[self::$itemFieldName] === 'all') {
             $selected = ' selected="selected"';
         }
         // Add "all" selector
@@ -90,7 +91,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             foreach ($groups as $group) {
                 $id = 'group:' . $group;
                 $selected = '';
-                if ($taskInfo[self::$fieldName] === $id) {
+                if ($taskInfo[self::$itemFieldName] === $id) {
                     $selected = ' selected="selected"';
                 }
                 $fieldCode .= '<option value="' . $id . '"' . $selected . '>' . $group . '</option>';
@@ -107,7 +108,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             foreach ($configurations as $configuration) {
                 $id = $configuration['id'];
                 $selected = '';
-                if ($taskInfo[self::$fieldName] === $id) {
+                if ($taskInfo[self::$itemFieldName] === $id) {
                     $selected = ' selected="selected"';
                 }
                 $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') .
@@ -121,12 +122,27 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $fieldCode .= '</optgroup>';
         }
         $fieldCode .= '</select>';
-        $additionalFields = [];
         $additionalFields[$fieldID] = [
             'code' => $fieldCode,
             'label' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:field.syncItem',
             'cshKey' => '_MOD_user_txexternalimportM1',
             'cshLabel' => $fieldID
+        ];
+
+        // Add field for storage page override
+        if (empty($taskInfo[self::$storageFieldName])) {
+            if ($schedulerModule->getCurrentAction()->equals(Action::ADD)) {
+                $taskInfo[self::$storageFieldName] = '';
+            } elseif ($schedulerModule->getCurrentAction()->equals(Action::EDIT)) {
+                // In case of edit, set to internal value if no data was submitted already
+                $taskInfo[self::$storageFieldName] = $task->storage;
+            }
+        }
+        $fieldID = 'task_' . self::$storageFieldName;
+        $fieldCode = '<input type="text" class="form-control" name="tx_scheduler[' . self::$storageFieldName . ']" id="' . $fieldID . '" value="' . ($taskInfo[self::$storageFieldName] ?? '') . '" size="10">';
+        $additionalFields[$fieldID] = [
+            'code' => $fieldCode,
+            'label' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:field.syncStorage',
         ];
 
         return $additionalFields;
@@ -156,7 +172,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      */
     public function saveAdditionalFields(array $submittedData, AbstractTask $task): void
     {
-        $fieldValue = $submittedData[self::$fieldName];
+        $fieldValue = $submittedData[self::$itemFieldName];
         if ($fieldValue === 'all' || strpos($fieldValue, 'group:') === 0) {
             $task->table = $fieldValue;
             $task->index = 0;
@@ -165,6 +181,10 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $configurationKey->setConfigurationKey($fieldValue);
             $task->table = $configurationKey->getTable();
             $task->index = $configurationKey->getIndex();
+        }
+        $fieldValue = (int)$submittedData[self::$storageFieldName];
+        if ($fieldValue > 0) {
+            $task->storage = $fieldValue;
         }
     }
 }

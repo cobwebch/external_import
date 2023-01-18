@@ -161,6 +161,9 @@
 			<trans-unit id="field.syncItem" xml:space="preserve">
 				<source>Item to synchronize</source>
 			</trans-unit>
+			<trans-unit id="field.syncStorage" xml:space="preserve">
+				<source>Storage page (overrides TCA and extension setting)</source>
+			</trans-unit>
 			<trans-unit id="label.1" xml:space="preserve">
 				<source>Warnings</source>
 			</trans-unit>
