@@ -1,6 +1,7 @@
 2023-01-18 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Add possibility to override storage pid at runtime, resolves #265
+	* Document the Scheduler task, resolves #266
 
 2023-01-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 

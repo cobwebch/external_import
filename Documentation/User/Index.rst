@@ -14,6 +14,7 @@ User manual
 
    General/Index
    BackendModule/Index
+   Scheduler/Index
    Command/Index
    MappingData/Index
    Cache/Index
