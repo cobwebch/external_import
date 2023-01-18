@@ -45,7 +45,7 @@ class AutomatedSyncTask extends AbstractTask
     /**
      * @var int Uid of a page for storage (overrides TCA and extension setting)
      */
-    public int $storage = 0;
+    public $storage = 0;
 
     /**
      * Executes the job registered in the Scheduler task
