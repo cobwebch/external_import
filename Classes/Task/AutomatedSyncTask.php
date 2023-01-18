@@ -180,6 +180,15 @@ class AutomatedSyncTask extends AbstractTask
                 $info = '';
             }
         }
+        if ($this->storage > 0) {
+            if (!empty($info)) {
+                $info .= ' / ';
+            }
+            $info .= sprintf(
+                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:overrideStoragePid'),
+                $this->storage
+            );
+        }
         return $info;
     }
 }
