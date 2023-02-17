@@ -813,6 +813,10 @@ class StoreDataStep extends AbstractStep
                     $multipleValues[$id] = [];
                 }
                 foreach ($denormalizedColumns as $name) {
+                    // Skip if no value is present in the record
+                    if (!array_key_exists($name, $record)) {
+                        continue;
+                    }
                     if (!isset($multipleValues[$id][$name])) {
                         $multipleValues[$id][$name] = [];
                     }
@@ -878,7 +882,8 @@ class StoreDataStep extends AbstractStep
                 foreach ($denormalizedColumns as $name) {
                     // Using the first entry, check if the multiple values are an array
                     // If yes, perform sorting and extract the values
-                    if (is_array($multipleValues[$id][$name][0])) {
+                    $referenceEntry = $multipleValues[$id][$name][0] ?? null;
+                    if (is_array($referenceEntry)) {
                         usort(
                             $multipleValues[$id][$name],
                             function ($a, $b) {
@@ -891,7 +896,7 @@ class StoreDataStep extends AbstractStep
                         }
                         // Otherwise use the values as is
                     } else {
-                        $values = $multipleValues[$id][$name];
+                        $values = $multipleValues[$id][$name] ?? [];
                     }
                     // Extract the values and implode them
                     $dataToStore[$id][$name] = implode(',', array_unique($values));

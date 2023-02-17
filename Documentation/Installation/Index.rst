@@ -21,6 +21,19 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-630:
+
+Upgrade to 6.3.0
+""""""""""""""""
+
+External Import now supports Connector services registered with new system introduced with
+extension "svconnector" version 5.0.0, while staying compatible with the older versions.
+
+Another small new feature is the possibility to define a storage pid for the imported data
+on the :ref:`command line <user-command>` or when creating a :ref:`Scheduler task <user-scheduler>`,
+which overrides storage information that might be found in the TCA or in the extension configuration.
+
+
 .. _installation-upgrade-620:
 
 Upgrade to 6.2.0
