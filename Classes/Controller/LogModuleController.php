@@ -18,87 +18,90 @@ namespace Cobweb\ExternalImport\Controller;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
-use TYPO3\CMS\Backend\View\BackendTemplateView;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
 /**
  * Controller for the "Log" backend module
- *
- * @package Cobweb\ExternalImport\Controller
  */
 class LogModuleController extends ActionController
 {
 
-    /**
-     * @var BackendTemplateView
-     */
-    protected $view;
+    protected ModuleTemplateFactory $moduleTemplateFactory;
 
-    /**
-     * @var LogRepository
-     */
-    protected $logRepository;
+    protected ?ModuleTemplate $moduleTemplate = null;
 
-    /**
-     * Injects an instance of the log repository.
-     *
-     * @param LogRepository $logRepository
-     * @return void
-     */
-    public function injectLogRepository(LogRepository $logRepository): void
-    {
+    protected PageRenderer $pageRenderer;
+
+    protected LogRepository $logRepository;
+
+    public function __construct(
+        ModuleTemplateFactory $moduleTemplateFactory,
+        PageRenderer $pageRenderer,
+        LogRepository $logRepository
+    ) {
+        $this->moduleTemplateFactory = $moduleTemplateFactory;
+        $this->pageRenderer = $pageRenderer;
         $this->logRepository = $logRepository;
     }
 
-    /**
-     * Initializes the template to use for all actions.
-     *
-     * @return void
-     */
-    protected function initializeAction(): void
+    public function initializeAction(): void
     {
-        $this->defaultViewObjectName = BackendTemplateView::class;
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate->setTitle(
+            'External Import - ' .
+            $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/LogModule.xlf:mlang_tabs_tab')
+        );
     }
 
     /**
-     * Initializes the view before invoking an action method.
+     * Loads the resources (JS, CSS) needed by some action views.
      *
-     * @param ViewInterface $view The view to be initialized
      * @return void
-     * @api
      */
-    protected function initializeView(ViewInterface $view): void
+    protected function loadResources(): void
     {
-        if ($view instanceof BackendTemplateView) {
-            parent::initializeView($view);
-        }
-        $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
         $publicResourcesPath = PathUtility::getAbsoluteWebPath(
             ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
         );
-        $pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
-        $pageRenderer->addRequireJsConfiguration(
+        $this->pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
+        $this->pageRenderer->addRequireJsConfiguration(
             [
                 'paths' => [
                     'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
                 ]
             ]
         );
-        $pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/LogModule');
-        $pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/LogModule');
+        $this->pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
     }
 
     /**
      * Displays the list of all available log entries.
      *
-     * @return void
+     * @return ResponseInterface
      */
-    public function listAction(): void
+    public function listAction(): ResponseInterface
     {
+        $this->loadResources();
+
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
+    }
+
+    /**
+     * Returns the global language object.
+     *
+     * @return LanguageService
+     */
+    protected function getLanguageService(): LanguageService
+    {
+        return $GLOBALS['LANG'];
     }
 }

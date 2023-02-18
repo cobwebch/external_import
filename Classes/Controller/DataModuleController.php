@@ -20,124 +20,70 @@ namespace Cobweb\ExternalImport\Controller;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
 use Cobweb\ExternalImport\Importer;
-use TYPO3\CMS\Backend\Template\Components\ButtonBar;
-use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
-use TYPO3\CMS\Backend\Template\Components\Menu\MenuItem;
-use TYPO3\CMS\Backend\View\BackendTemplateView;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Backend\Template\ModuleTemplate;
+use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
-use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Controller for the "Data Import" backend module
- *
- * @package Cobweb\ExternalImport\Controller
  */
 class DataModuleController extends ActionController
 {
 
-    /**
-     * @var BackendTemplateView
-     */
-    protected $view;
+    protected ModuleTemplateFactory $moduleTemplateFactory;
 
-    /**
-     * @var ConfigurationRepository
-     */
-    protected $configurationRepository;
+    protected ?ModuleTemplate $moduleTemplate = null;
 
-    /**
-     * @var SchedulerRepository
-     */
-    protected $schedulerRepository;
+    protected PageRenderer $pageRenderer;
 
-    /**
-     * Injects an instance of the configuration repository.
-     *
-     * @param ConfigurationRepository $configurationRepository
-     * @return void
-     */
-    public function injectConfigurationRepository(ConfigurationRepository $configurationRepository): void
-    {
+    protected ConfigurationRepository $configurationRepository;
+
+    protected SchedulerRepository $schedulerRepository;
+
+    protected IconFactory $iconFactory;
+
+    public function __construct(
+        ModuleTemplateFactory $moduleTemplateFactory,
+        PageRenderer $pageRenderer,
+        IconFactory $iconFactory,
+        ConfigurationRepository $configurationRepository,
+        SchedulerRepository $schedulerRepository
+    ) {
+        $this->moduleTemplateFactory = $moduleTemplateFactory;
+        $this->pageRenderer = $pageRenderer;
+        $this->iconFactory = $iconFactory;
         $this->configurationRepository = $configurationRepository;
-    }
-
-    /**
-     * Injects an instance of the scheduler repository.
-     *
-     * @param SchedulerRepository $schedulerRepository
-     * @return void
-     */
-    public function injectSchedulerRepository(SchedulerRepository $schedulerRepository): void
-    {
         $this->schedulerRepository = $schedulerRepository;
     }
 
-    /**
-     * Initializes the template to use for all actions.
-     *
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentNameException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
-     */
-    protected function initializeAction(): void
+    public function initializeAction(): void
     {
-        $this->defaultViewObjectName = BackendTemplateView::class;
-    }
-
-    /**
-     * Initializes the view before invoking an action method.
-     *
-     * @param ViewInterface $view The view to be initialized
-     * @return void
-     * @api
-     */
-    protected function initializeView(ViewInterface $view): void
-    {
-        // Do not initialize the view for certain actions (which just do processing and do not display anything)
-        $currentAction = $this->request->getControllerActionName();
-        if ($currentAction !== 'synchronize' && $currentAction !== 'createTask' && $currentAction !== 'updateTask' && $currentAction !== 'deleteTask') {
-            if ($view instanceof BackendTemplateView) {
-                parent::initializeView($view);
-            }
-            $publicResourcesPath = PathUtility::getAbsoluteWebPath(
-                ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
-            );
-            $pageRenderer = $view->getModuleTemplate()->getPageRenderer();
-            $pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
-            $pageRenderer->addRequireJsConfiguration(
-                [
-                    'paths' => [
-                        'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
-                    ]
-                ]
-            );
-            $pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
-            $pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
-
-            // Evaluate write access on all tables
-            $globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();
-            $view->assign('globalWriteAccess', $globalWriteAccess);
-        }
+        $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $this->moduleTemplate->setTitle(
+            'External Import - ' .
+            $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/DataModule.xlf:mlang_tabs_tab')
+        );
     }
 
     /**
      * Renders the list of all synchronizable tables.
      *
-     * @return void
+     * @return ResponseInterface
      */
-    public function listSynchronizableAction(): void
+    public function listSynchronizableAction(): ResponseInterface
     {
-        $this->prepareDocHeaderMenu();
+        $this->prepareView('listSynchronizable');
 
         $configurations = $this->configurationRepository->findBySync(true);
         // Issue information message if there are no configurations at all
@@ -149,7 +95,7 @@ class DataModuleController extends ActionController
                         'external_import'
                     ),
                     '',
-                    FlashMessage::INFO
+                    AbstractMessage::INFO
                 );
             } catch (\Exception $e) {
                 // The above code should really work, nothing to do if it doesn't
@@ -177,16 +123,19 @@ class DataModuleController extends ActionController
                 ]
             ]
         );
+
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
      * Renders the list of all non-synchronizable tables.
      *
-     * @return void
+     * @return ResponseInterface
      */
-    public function listNonSynchronizableAction(): void
+    public function listNonSynchronizableAction(): ResponseInterface
     {
-        $this->prepareDocHeaderMenu();
+        $this->prepareView('listNonSynchronizable');
 
         $configurations = $this->configurationRepository->findBySync(false);
         // Issue information message if there are no configurations at all
@@ -198,7 +147,7 @@ class DataModuleController extends ActionController
                         'external_import'
                     ),
                     '',
-                    FlashMessage::INFO
+                    AbstractMessage::INFO
                 );
             } catch (\Exception $e) {
                 // The above code should really work, nothing to do if it doesn't
@@ -209,6 +158,9 @@ class DataModuleController extends ActionController
                 'configurations' => $configurations
             ]
         );
+
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -218,12 +170,10 @@ class DataModuleController extends ActionController
      * @param string $index Key of the external configuration
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function synchronizeAction(string $table, string $index): void
     {
         // Synchronize the chosen data
-        /** @var Importer $importer */
         $importer = GeneralUtility::makeInstance(Importer::class);
         $importer->setContext('manual');
         $messages = $importer->synchronize($table, $index);
@@ -239,11 +189,12 @@ class DataModuleController extends ActionController
      * @param string $table The name of the table to synchronize
      * @param string $index Key of the external configuration
      * @param string $stepClass Name of the Step class to preview
+     * @return ResponseInterface
      */
-    public function previewAction(string $table, string $index, $stepClass = ''): void
+    public function previewAction(string $table, string $index, string $stepClass = ''): ResponseInterface
     {
         // Add a close button to the toolbar
-        $this->prepareCloseButton('listSynchronizable');
+        $this->prepareView('', 'listSynchronizable');
 
         // Load the configuration
         $stepList = [];
@@ -291,6 +242,9 @@ class DataModuleController extends ActionController
                 'previewData' => $previewData
             ]
         );
+
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -298,9 +252,9 @@ class DataModuleController extends ActionController
      *
      * @param string $table The name of the table to synchronize
      * @param string $index Key of the external configuration
-     * @return void
+     * @return ResponseInterface
      */
-    public function viewConfigurationAction(string $table, string $index): void
+    public function viewConfigurationAction(string $table, string $index): ResponseInterface
     {
         $configuration = null;
         $connector = '';
@@ -332,7 +286,7 @@ class DataModuleController extends ActionController
             $returnAction = 'listSynchronizable';
         }
         // Add a close button to the toolbar
-        $this->prepareCloseButton($returnAction);
+        $this->prepareView('', $returnAction);
 
         $this->view->assignMultiple(
             [
@@ -341,6 +295,9 @@ class DataModuleController extends ActionController
                 'configuration' => $configuration
             ]
         );
+
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -348,23 +305,26 @@ class DataModuleController extends ActionController
      *
      * @param string $table Name of the table to set a task for
      * @param string $index Index of the configuration to set a task for
-     * @return void
+     * @return ResponseInterface
      */
-    public function newTaskAction(string $table, $index = ''): void
+    public function newTaskAction(string $table, string $index = ''): ResponseInterface
     {
         // Add a close button to the toolbar
-        $this->prepareCloseButton('listSynchronizable');
-        $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
+        $this->prepareView('', 'listSynchronizable');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
 
         $this->view->assignMultiple(
             [
                 'table' => $table,
                 'index' => $index,
                 'groups' => $this->schedulerRepository->fetchAllGroups(),
-                'errors' => $this->controllerContext->getRequest()->getOriginalRequestMappingResults(
+                'errors' => $this->request->getOriginalRequestMappingResults(
                 )->getFlattenedErrors()
             ]
         );
+
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -377,7 +337,6 @@ class DataModuleController extends ActionController
      * @param string $index Index for which to set an automated task for
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      * @\TYPO3\CMS\Extbase\Annotation\Validate(param="frequency", validator="\Cobweb\ExternalImport\Validator\FrequencyValidator")
      */
     public function createTaskAction(
@@ -385,7 +344,7 @@ class DataModuleController extends ActionController
         string $frequency,
         int $group,
         \DateTime $start_date_hr = null,
-        $index = ''
+        string $index = ''
     ): void {
         try {
             $this->schedulerRepository->saveTask(
@@ -413,7 +372,7 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                FlashMessage::ERROR
+                AbstractMessage::ERROR
             );
         }
         $this->redirect('listSynchronizable');
@@ -423,15 +382,14 @@ class DataModuleController extends ActionController
      * Displays the editing form for the given scheduler task.
      *
      * @param int $uid Id of the task to edit
-     * @return void
+     * @return ResponseInterface
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
-    public function editTaskAction(int $uid): void
+    public function editTaskAction(int $uid): ResponseInterface
     {
         // Add a close button to the toolbar
-        $this->prepareCloseButton('listSynchronizable');
-        $this->view->getModuleTemplate()->getPageRenderer()->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
+        $this->prepareView('', 'listSynchronizable');
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
 
         try {
             $task = $this->schedulerRepository->fetchTaskByUid($uid);
@@ -439,7 +397,8 @@ class DataModuleController extends ActionController
                 [
                     'task' => $task,
                     'groups' => $this->schedulerRepository->fetchAllGroups(),
-                    'errors' => $this->controllerContext->getRequest()->getOriginalRequestMappingResults()
+                    'errors' => $this->request
+                        ->getOriginalRequestMappingResults()
                         ->getFlattenedErrors()
                 ]
             );
@@ -450,10 +409,13 @@ class DataModuleController extends ActionController
                     'external_import'
                 ),
                 '',
-                FlashMessage::ERROR
+                AbstractMessage::ERROR
             );
             $this->redirect('listSynchronizable');
         }
+
+        $this->moduleTemplate->setContent($this->view->render());
+        return $this->htmlResponse($this->moduleTemplate->renderContent());
     }
 
     /**
@@ -465,7 +427,6 @@ class DataModuleController extends ActionController
      * @param \DateTime $start_date_hr Automation start date
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      * @\TYPO3\CMS\Extbase\Annotation\Validate(param="frequency", validator="\Cobweb\ExternalImport\Validator\FrequencyValidator")
      */
     public function updateTaskAction(int $uid, string $frequency, int $group, \DateTime $start_date_hr = null): void
@@ -497,7 +458,7 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                FlashMessage::ERROR
+                AbstractMessage::ERROR
             );
         }
         $this->redirect('listSynchronizable');
@@ -509,7 +470,6 @@ class DataModuleController extends ActionController
      * @param int $uid Id of the scheduler task to delete
      * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function deleteTaskAction(int $uid): void
     {
@@ -531,66 +491,89 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                FlashMessage::ERROR
+                AbstractMessage::ERROR
             );
         }
         $this->redirect('listSynchronizable');
     }
 
     /**
-     * Defines the menu items in the docheader.
+     * Prepares the view when the action actually displays something.
+     *
+     * Some actions just perform something and redirect to another view.
+     *
+     * @param string $menuAction
+     * @param string $closeButtonAction
+     * @return void
+     */
+    protected function prepareView(string $menuAction = '', string $closeButtonAction = ''): void
+    {
+        $this->loadResources();
+        // If the view is called by one of the actions in the menu, render the menu
+        if ($menuAction !== '') {
+            $this->prepareMainMenu($menuAction);
+        }
+        // Add a close button, if a return action is defined
+        if ($closeButtonAction !== '') {
+            $this->prepareCloseButton($closeButtonAction);
+        }
+    }
+
+    /**
+     * Loads the resources (JS, CSS) needed by some action views.
      *
      * @return void
      */
-    protected function prepareDocHeaderMenu(): void
+    protected function loadResources(): void
     {
-        // TODO: switch to GeneralUtility::makeInstance once UriBuilder is ready for this
-        $uriBuilder = $this->objectManager->get(UriBuilder::class);
-        $uriBuilder->setRequest($this->request);
+        $publicResourcesPath = PathUtility::getAbsoluteWebPath(
+            ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
+        );
+        $this->pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
+        $this->pageRenderer->addRequireJsConfiguration(
+            [
+                'paths' => [
+                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
+                ]
+            ]
+        );
+        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
+        $this->pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
 
-        /** @var Menu $menu */
-        $menu = GeneralUtility::makeInstance(Menu::class);
-        $menu->setIdentifier('_externalImportMenu');
+        // Evaluate write access on all tables
+        $globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();
+        $this->view->assign('globalWriteAccess', $globalWriteAccess);
+    }
+
+    /**
+     * Defines the menu items in the docheader.
+     *
+     * @param string $action
+     * @return void
+     */
+    protected function prepareMainMenu(string $action): void
+    {
+        $this->uriBuilder->setRequest($this->request);
+
+        $menu = $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->makeMenu();
+        $menu->setIdentifier('ExternalImportMenu');
 
         // Link to synchronizable tables view
-        /** @var MenuItem $synchronizationMenuItem */
-        $synchronizationMenuItem = GeneralUtility::makeInstance(MenuItem::class);
-        $action = 'listSynchronizable';
-        $isActive = $this->request->getControllerActionName() === $action;
-        $synchronizationMenuItem->setTitle(
-            LocalizationUtility::translate(
-                'function_sync',
-                'external_import'
-            )
+        $menu->addMenuItem(
+            $menu->makeMenuItem()
+            ->setTitle(LocalizationUtility::translate('function_sync', 'external_import'))
+            ->setHref($this->uriBuilder->uriFor('listSynchronizable'))
+            ->setActive($action === 'listSynchronizable')
         );
-        $uri = $uriBuilder->reset()->uriFor(
-            $action,
-            [],
-            'DataModule'
-        );
-        $synchronizationMenuItem->setHref($uri)->setActive($isActive);
-
         // Link to non-synchronizable tables view
-        /** @var MenuItem $noSynchronizationMenuItem */
-        $noSynchronizationMenuItem = GeneralUtility::makeInstance(MenuItem::class);
-        $action = 'listNonSynchronizable';
-        $isActive = $this->request->getControllerActionName() === $action;
-        $noSynchronizationMenuItem->setTitle(
-            LocalizationUtility::translate(
-                'function_nosync',
-                'external_import'
-            )
+        $menu->addMenuItem(
+            $menu->makeMenuItem()
+            ->setTitle(LocalizationUtility::translate('function_nosync', 'external_import'))
+            ->setHref($this->uriBuilder->uriFor('listNonSynchronizable'))
+            ->setActive($action === 'listNonSynchronizable')
         );
-        $uri = $uriBuilder->reset()->uriFor(
-            $action,
-            [],
-            'DataModule'
-        );
-        $noSynchronizationMenuItem->setHref($uri)->setActive($isActive);
 
-        $menu->addMenuItem($synchronizationMenuItem);
-        $menu->addMenuItem($noSynchronizationMenuItem);
-        $this->view->getModuleTemplate()->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
+        $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry()->addMenu($menu);
     }
 
     /**
@@ -601,17 +584,14 @@ class DataModuleController extends ActionController
      */
     protected function prepareCloseButton(string $returnAction): void
     {
-        $closeIcon = $this->view->getModuleTemplate()->getIconFactory()->getIcon('actions-close', Icon::SIZE_SMALL);
-        $closeButton = $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar()->makeLinkButton()
+        $closeIcon = $this->iconFactory->getIcon('actions-close', Icon::SIZE_SMALL);
+        $closeButton = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar()->makeLinkButton()
             ->setIcon($closeIcon)
             ->setTitle(LocalizationUtility::translate('back_to_list', 'external_import'))
             ->setHref(
                 $this->uriBuilder->uriFor($returnAction)
             );
-        $this->view->getModuleTemplate()->getDocHeaderComponent()->getButtonBar()->addButton(
-            $closeButton,
-            ButtonBar::BUTTON_POSITION_LEFT
-        );
+        $this->moduleTemplate->getDocHeaderComponent()->getButtonBar()->addButton($closeButton);
     }
 
     /**
@@ -622,7 +602,7 @@ class DataModuleController extends ActionController
      * @param array $messages List of messages from an External Import run
      * @param bool $storeInSession Whether to store the flash messages in session or not
      */
-    protected function prepareMessages(array $messages, $storeInSession = true): void
+    protected function prepareMessages(array $messages, bool $storeInSession = true): void
     {
         // If there are too many messages, Remove extra messages and add warning about it
         // to avoid cluttering the interface
@@ -670,5 +650,15 @@ class DataModuleController extends ActionController
     protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
+    }
+
+    /**
+     * Returns the global language object.
+     *
+     * @return LanguageService
+     */
+    protected function getLanguageService(): LanguageService
+    {
+        return $GLOBALS['LANG'];
     }
 }
