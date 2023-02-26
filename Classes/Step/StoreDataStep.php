@@ -799,7 +799,7 @@ class StoreDataStep extends AbstractStep
                 $this->valuesExcludedFromSaving[$id] = [];
                 foreach ($columnConfiguration as $name => $configuration) {
                     // The values that are excluded are temporarily stored for later restoration
-                    if (array_key_exists(Configuration::DO_NOT_SAVE_KEY, $configuration)) {
+                    if (array_key_exists(Configuration::DO_NOT_SAVE_KEY, $configuration) && array_key_exists($name, $record)) {
                         $this->valuesExcludedFromSaving[$id][$name] = $record[$name];
                         // Make sure a value actually exists
                     } elseif (isset($record[$name])) {

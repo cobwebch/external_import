@@ -126,8 +126,6 @@ class AutomatedSyncTask extends AbstractTask
                 );
                 if (count($messages[AbstractMessage::ERROR]) > 0) {
                     $globalStatus = 'ERROR';
-                } elseif (count($messages[AbstractMessage::WARNING]) > 0) {
-                    $globalStatus = 'WARNING';
                 }
                 // Assemble the subject and send the mail
                 $subject = empty($extensionConfiguration['reportSubject']) ? '' : $extensionConfiguration['reportSubject'];
@@ -135,10 +133,10 @@ class AutomatedSyncTask extends AbstractTask
                 $importer->getReportingUtility()->sendMail($subject, $reportContent);
             }
         }
-        // If any warning or error happened, throw an exception
+        // If any error happened, throw an exception
         if ($globalStatus !== 'OK') {
             throw new \Exception(
-                'One or more errors or warnings happened. Please consult the log.',
+                'One or more errors happened. Please consult the log.',
                 1258116760
             );
         }
