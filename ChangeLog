@@ -1,3 +1,12 @@
+2023-02-26 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Release version 6.3.2
+
+2023-02-25 Mathias Brodala (Pagemachine AG)  <mbrodala@pagemachine.de>
+
+	* Avoid undefined array key warning with additionalFields
+	* Scheduler task fails only on errors, not warnings, resolves #272
+
 2023-02-15 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Fix various PHP 8+ compatibility issues
