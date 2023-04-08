@@ -1,5 +1,7 @@
 <html data-namespace-typo3-fluid="true"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
 
 	<ex:validateGeneralConfiguration configuration="{configuration}" as="results">
@@ -141,7 +143,12 @@
 				<tr>
 					<td><f:translate id="storage_pid" /></td>
 					<td>
-						<ex:be.pageLink page="{generalConfiguration.pid}" />
+						<f:if condition="{storageRecord}">
+							<a href="{be:moduleLink(route: 'web_list', arguments:'{id: generalConfiguration.pid}')}">
+								<core:iconForRecord table="pages" row="{storageRecord}"/>
+								{storageRecord.title}
+							</a>
+						</f:if>
 						<f:if condition="{results.pid}">
 							<ex:displayValidationResult result="{results.pid}" />
 						</f:if>

@@ -20,10 +20,8 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Exception\SchedulerRepositoryException;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand;
@@ -156,8 +154,7 @@ class SchedulerRepository implements SingletonInterface
                 ->from('tx_scheduler_task_group')
                 ->orderBy('groupName')
                 ->execute();
-            $iterator = CompatibilityUtility::resultIteratorFactory();
-            while ($row = $iterator->next($rows)) {
+            while ($row = $rows->fetchAssociative()) {
                 $groups[$row['uid']] = $row['groupName'];
             }
         } catch (\Exception $e) {
@@ -177,7 +174,9 @@ class SchedulerRepository implements SingletonInterface
         $cronCommand = $taskObject->getExecution()->getCronCmd();
         $interval = $taskObject->getExecution()->getInterval();
         $displayFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
-        $editFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['USdateFormat'] ? 'H:i m-d-Y' : 'H:i d-m-Y';
+        // TODO: this used to be configured according to $GLOBALS['TYPO3_CONF_VARS']['SYS']['USdateFormat']. Something else may emerge in the future.
+        // Reference: https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/12.0/Breaking-96550-TYPO3_CONF_VARSSYSUSdateFormatRemoved.html
+        $editFormat = 'H:i d-m-Y';
 
         $startTimestamp = $taskObject->getExecution()->getStart();
         return [
@@ -281,7 +280,6 @@ class SchedulerRepository implements SingletonInterface
      *
      * @param string $frequency Automation frequency
      * @param int $group Scheduler task group
-     * @param \DateTime|null $startDate Automation start date
      * @param string $table Name of the table for which to set an automated task for
      * @param string $index Index for which to set an automated task for
      * @param int $uid Id of an existing task (will be 0 for a new task)
@@ -290,23 +288,19 @@ class SchedulerRepository implements SingletonInterface
     public function prepareTaskData(
         string $frequency,
         int $group,
-        \DateTime $startDate = null,
-        $table = '',
-        $index = '',
-        $uid = 0
+        string $table = '',
+        string $index = '',
+        int $uid = 0
     ): array {
         // Assemble base data
-        $taskData = array(
+        $taskData = [
             'uid' => (int)$uid,
             'table' => $table,
             'index' => $index,
             'group' => (int)$group,
             'interval' => 0,
             'croncmd' => ''
-        );
-        if (isset($startDate)) {
-            $taskData['start'] = $startDate->format('U');
-        }
+        ];
         // Handle frequency, which may be a simple number of seconds or a cron command
         // Try interpreting the frequency as a cron command
         try {

@@ -21,6 +21,16 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-700:
+
+Upgrade to 7.0.0
+""""""""""""""""
+
+When editing Scheduler tasks in the External Import backend module, it is no longer
+possible to define a start date (this tiny feature was a lot of hassle to maintain
+across TYPO3 versions).
+
+
 .. _installation-upgrade-630:
 
 Upgrade to 6.3.0

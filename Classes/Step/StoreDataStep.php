@@ -27,7 +27,6 @@ use Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent;
 use Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Utility\ChildrenSortingUtility;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -1214,8 +1213,7 @@ class StoreDataStep extends AbstractStep
                 )
                 ->execute();
             if ($result) {
-                $iterator = CompatibilityUtility::resultIteratorFactory();
-                while ($row = $iterator->next($result)) {
+                while ($row = $result->fetchAssociative()) {
                     // Check if there's a label for the message
                     $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
                     $label = LocalizationUtility::translate(

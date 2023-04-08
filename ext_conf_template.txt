@@ -4,7 +4,7 @@
 # cat=basic/enable/a; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.storagePid
 storagePID = 0
 
-# cat=basic/enable/a; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.logStorage
+# cat=basic/enable/b; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.logStorage
 logStorage = 0
 
 # cat=basic/enable/c; type=int; label=LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:config.timeLimit

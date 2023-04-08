@@ -101,3 +101,20 @@ a.next {
 .external-import-steps-legend .external-import-step {
 	margin-right: 1rem;
 }
+
+/* Colors for the status icons */
+.log-icon-information {
+	color: var(--badge-notice-bg);
+}
+.log-icon-notification {
+	color: var(--badge-danger-bg);
+}
+.log-icon-success {
+	color: var(--badge-success-bg);
+}
+.log-icon-warning {
+	color: var(--badge-warning-bg);
+}
+.log-icon-danger {
+	color: var(--badge-danger-bg);
+}

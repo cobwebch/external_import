@@ -227,8 +227,7 @@ class MappingUtility implements ImporterAwareInterface
 
             // Fill hash table
             if ($result) {
-                $iterator = CompatibilityUtility::resultIteratorFactory();
-                while ($row = $iterator->next($result)) {
+                while ($row = $result->fetchAssociative()) {
                     // Don't consider records with empty references, as they can't be matched
                     // to external data anyway (but a real zero is acceptable)
                     if (!empty($row[$referenceField]) || $row[$referenceField] === '0' || $row[$referenceField] === 0) {

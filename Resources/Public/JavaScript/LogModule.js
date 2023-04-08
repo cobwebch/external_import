@@ -32,21 +32,12 @@ define(['jquery',
 	 * Preloads all the status icons.
 	 */
 	ExternalImportLogModule.loadStatusIcons = function () {
-		Icons.getIcon('status-dialog-information', Icons.sizes.small, '', '').done(function(markup) {
-			ExternalImportLogModule.icons[-2] = markup;
-		});
-		Icons.getIcon('status-dialog-notification', Icons.sizes.small, '', '').done(function(markup) {
-			ExternalImportLogModule.icons[-1] = markup;
-		});
-		Icons.getIcon('status-dialog-ok', Icons.sizes.small, '', '').done(function(markup) {
-			ExternalImportLogModule.icons[0] = markup;
-		});
-		Icons.getIcon('status-dialog-warning', Icons.sizes.small, '', '').done(function(markup) {
-			ExternalImportLogModule.icons[1] = markup;
-		});
-		Icons.getIcon('status-dialog-error', Icons.sizes.small, '', '').done(function(markup) {
-			ExternalImportLogModule.icons[2] = markup;
-		});
+		let iconContainer = $('#tx_externalimport_loglist_icons');
+		ExternalImportLogModule.icons[-2] = $(iconContainer).find('#icon_information').html();
+		ExternalImportLogModule.icons[-1] = $(iconContainer).find('#icon_notification').html();
+		ExternalImportLogModule.icons[0] = $(iconContainer).find('#icon_success').html();
+		ExternalImportLogModule.icons[1] = $(iconContainer).find('#icon_warning').html();
+		ExternalImportLogModule.icons[2] = $(iconContainer).find('#icon_danger').html();
 	};
 
 	/**

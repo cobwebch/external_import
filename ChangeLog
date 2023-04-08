@@ -1,3 +1,7 @@
+2023-04-08 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Compatiblity with TYPO3 12 and PHP 8.1, resolves #269
+
 2023-02-28 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Adapt backend modules to new backend templating, resolves #267

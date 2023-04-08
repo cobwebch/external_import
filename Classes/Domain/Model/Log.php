@@ -18,7 +18,6 @@ namespace Cobweb\ExternalImport\Domain\Model;
  */
 
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
-use TYPO3\CMS\Extbase\Domain\Model\BackendUser;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**

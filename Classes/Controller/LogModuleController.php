@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Controller;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
@@ -74,10 +75,21 @@ class LogModuleController extends ActionController
         $this->pageRenderer->addRequireJsConfiguration(
             [
                 'paths' => [
-                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
+                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables',
                 ]
             ]
         );
+        // TODO: remove and replace with Luxon when compatibility with v11 is dropped
+        // Reference: https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/12.1/Important-88158-ReplacedMomentJsWithLuxon.html
+        if (CompatibilityUtility::isV12()) {
+            $this->pageRenderer->addRequireJsConfiguration(
+                [
+                    'paths' => [
+                        'moment' => $publicResourcesPath . 'JavaScript/Contrib/moment'
+                    ]
+                ]
+            );
+        }
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/LogModule');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
     }

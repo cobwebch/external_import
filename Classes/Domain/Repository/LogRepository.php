@@ -56,7 +56,7 @@ class LogRepository extends Repository
         if ($queryParameters->getSearch() !== '' && count($queryParameters->getSearchColumns()) > 0) {
             $query->matching(
                 $query->logicalOr(
-                    $this->assembleSearchConditions(
+                    ...$this->assembleSearchConditions(
                         $query,
                         $queryParameters->getSearch(),
                         $queryParameters->getSearchColumns()
@@ -96,7 +96,7 @@ class LogRepository extends Repository
         if ($queryParameters->getSearch() !== '' && count($queryParameters->getSearchColumns()) > 0) {
             $query->matching(
                 $query->logicalOr(
-                    $this->assembleSearchConditions(
+                    ...$this->assembleSearchConditions(
                         $query,
                         $queryParameters->getSearch(),
                         $queryParameters->getSearchColumns()

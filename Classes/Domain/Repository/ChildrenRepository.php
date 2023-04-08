@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Domain\Repository;
 
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -63,8 +62,7 @@ class ChildrenRepository
     {
         $queryBuilder = $this->prepareQueryBuilder($table, $conditions);
         $result = $queryBuilder->execute();
-        $iterator = CompatibilityUtility::resultIteratorFactory();
-        $record = $iterator->next($result);
+        $record = $result->fetchAssociative();
         if ($record) {
             return (int)$record['uid'];
         }

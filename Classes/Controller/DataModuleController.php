@@ -23,6 +23,7 @@ use Cobweb\ExternalImport\Importer;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
@@ -168,10 +169,9 @@ class DataModuleController extends ActionController
      *
      * @param string $table The name of the table to synchronize
      * @param string $index Key of the external configuration
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @return ResponseInterface
      */
-    public function synchronizeAction(string $table, string $index): void
+    public function synchronizeAction(string $table, string $index): ResponseInterface
     {
         // Synchronize the chosen data
         $importer = GeneralUtility::makeInstance(Importer::class);
@@ -180,7 +180,7 @@ class DataModuleController extends ActionController
         $this->prepareMessages($messages);
 
         // Redirect to the list of synchronizable tables
-        $this->redirect('listSynchronizable');
+        return $this->redirect('listSynchronizable');
     }
 
     /**
@@ -292,8 +292,9 @@ class DataModuleController extends ActionController
             [
                 'table' => $table,
                 'index' => $index,
-                'configuration' => $configuration
-            ]
+                'configuration' => $configuration,
+                'storageRecord' => BackendUtility::getRecord('pages', $configuration->getStoragePid())
+            ],
         );
 
         $this->moduleTemplate->setContent($this->view->render());
@@ -318,8 +319,6 @@ class DataModuleController extends ActionController
                 'table' => $table,
                 'index' => $index,
                 'groups' => $this->schedulerRepository->fetchAllGroups(),
-                'errors' => $this->request->getOriginalRequestMappingResults(
-                )->getFlattenedErrors()
             ]
         );
 
@@ -333,25 +332,21 @@ class DataModuleController extends ActionController
      * @param string $table Name of the table for which to set an automated task for
      * @param string $frequency Automation frequency
      * @param int $group Scheduler task group
-     * @param \DateTime $start_date_hr Automation start date
      * @param string $index Index for which to set an automated task for
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @return ResponseInterface
      * @\TYPO3\CMS\Extbase\Annotation\Validate(param="frequency", validator="\Cobweb\ExternalImport\Validator\FrequencyValidator")
      */
     public function createTaskAction(
         string $table,
         string $frequency,
         int $group,
-        \DateTime $start_date_hr = null,
         string $index = ''
-    ): void {
+    ): ResponseInterface {
         try {
             $this->schedulerRepository->saveTask(
                 $this->schedulerRepository->prepareTaskData(
                     $frequency,
                     $group,
-                    $start_date_hr,
                     $table,
                     $index
                 )
@@ -375,7 +370,7 @@ class DataModuleController extends ActionController
                 AbstractMessage::ERROR
             );
         }
-        $this->redirect('listSynchronizable');
+        return $this->redirect('listSynchronizable');
     }
 
     /**
@@ -383,7 +378,6 @@ class DataModuleController extends ActionController
      *
      * @param int $uid Id of the task to edit
      * @return ResponseInterface
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
     public function editTaskAction(int $uid): ResponseInterface
     {
@@ -397,9 +391,6 @@ class DataModuleController extends ActionController
                 [
                     'task' => $task,
                     'groups' => $this->schedulerRepository->fetchAllGroups(),
-                    'errors' => $this->request
-                        ->getOriginalRequestMappingResults()
-                        ->getFlattenedErrors()
                 ]
             );
         } catch (\Exception $e) {
@@ -411,7 +402,7 @@ class DataModuleController extends ActionController
                 '',
                 AbstractMessage::ERROR
             );
-            $this->redirect('listSynchronizable');
+            return $this->redirect('listSynchronizable');
         }
 
         $this->moduleTemplate->setContent($this->view->render());
@@ -424,19 +415,16 @@ class DataModuleController extends ActionController
      * @param int $uid Id of the task to update
      * @param string $frequency Automation frequency
      * @param int $group Scheduler task group
-     * @param \DateTime $start_date_hr Automation start date
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @return ResponseInterface
      * @\TYPO3\CMS\Extbase\Annotation\Validate(param="frequency", validator="\Cobweb\ExternalImport\Validator\FrequencyValidator")
      */
-    public function updateTaskAction(int $uid, string $frequency, int $group, \DateTime $start_date_hr = null): void
+    public function updateTaskAction(int $uid, string $frequency, int $group): ResponseInterface
     {
         try {
             $this->schedulerRepository->saveTask(
                 $this->schedulerRepository->prepareTaskData(
                     $frequency,
                     $group,
-                    $start_date_hr,
                     '',
                     '',
                     $uid
@@ -461,17 +449,16 @@ class DataModuleController extends ActionController
                 AbstractMessage::ERROR
             );
         }
-        $this->redirect('listSynchronizable');
+        return $this->redirect('listSynchronizable');
     }
 
     /**
      * Deletes the given scheduler task.
      *
      * @param int $uid Id of the scheduler task to delete
-     * @return void
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @return ResponseInterface
      */
-    public function deleteTaskAction(int $uid): void
+    public function deleteTaskAction(int $uid): ResponseInterface
     {
         try {
             $this->schedulerRepository->deleteTask($uid);
@@ -494,7 +481,7 @@ class DataModuleController extends ActionController
                 AbstractMessage::ERROR
             );
         }
-        $this->redirect('listSynchronizable');
+        return $this->redirect('listSynchronizable');
     }
 
     /**

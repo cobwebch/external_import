@@ -17,15 +17,12 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Utility;
 
-use Cobweb\ExternalImport\Compatibility\Dbal\AbstractResultIterator;
-use Cobweb\ExternalImport\Compatibility\Dbal\ResultIteratorV10;
-use Cobweb\ExternalImport\Compatibility\Dbal\ResultIteratorV11;
 use Cobweb\Svconnector\Exception\ConnectorRuntimeException;
 use Cobweb\Svconnector\Exception\UnknownServiceException;
 use Cobweb\Svconnector\Registry\ConnectorRegistry;
 use Cobweb\Svconnector\Service\ConnectorBase;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Small class for encapsulating methods related to backwards-compatibility.
@@ -35,29 +32,14 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 class CompatibilityUtility
 {
     /**
-     * Checks whether we are running TYPO3 v10 or not (i.e. more, TYPO3 v11).
+     * Checks whether we are running TYPO3 v12 or not.
      *
      * @return bool
      */
-    public static function isV10(): bool
+    public static function isV12(): bool
     {
-        return !(VersionNumberUtility::convertVersionNumberToInteger(
-                TYPO3_branch
-            ) >= VersionNumberUtility::convertVersionNumberToInteger('11.0.0'));
-    }
-
-    /**
-     * Returns the proper wrapper for iterating on a symfony/dbal result object
-     * depending on TYPO3 version.
-     *
-     * @return AbstractResultIterator
-     */
-    public static function resultIteratorFactory(): AbstractResultIterator
-    {
-        if (self::isV10()) {
-            return GeneralUtility::makeInstance(ResultIteratorV10::class);
-        }
-        return GeneralUtility::makeInstance(ResultIteratorV11::class);
+        $typo3Version = GeneralUtility::makeInstance(Typo3Version::class);
+        return $typo3Version->getMajorVersion() === 12;
     }
 
     /**

@@ -43,7 +43,7 @@ class FrequencyValidator extends AbstractValidator
      * @param string $value The frequency to validate
      * @return bool
      */
-    public function isValid($value): bool
+    public function isValid($value): void
     {
         // Frequency is mandatory (NOTE: this does not work, empty strings are not submitted for validation. Core bug or my mistake?)
         if ($value === '') {
@@ -54,19 +54,19 @@ class FrequencyValidator extends AbstractValidator
                 ),
                 1463494395
             );
-            return false;
+//            return false;
         }
 
         // Try interpreting the frequency as a cron command
         try {
             NormalizeCommand::normalize($value);
-            return true;
+//            return true;
         } // If the cron command was invalid, we may still have a valid frequency in seconds
         catch (\Exception $e) {
             // Check if the frequency is a valid number
             // If yes, assume it is a frequency in seconds, else return error message
             if (is_numeric($value)) {
-                return true;
+//                return true;
             }
 
             $this->addError(
@@ -79,7 +79,7 @@ class FrequencyValidator extends AbstractValidator
                 ),
                 1463495019
             );
-            return false;
+//            return false;
         }
     }
 }

@@ -38,7 +38,6 @@ class LogAjaxController
      * @param ServerRequestInterface $request
      * @param ResponseInterface|null $response
      * @return ResponseInterface
-     * @throws \TYPO3\CMS\Extbase\Object\Exception
      */
     public function getAction(ServerRequestInterface $request, ResponseInterface $response = null): ResponseInterface
     {
