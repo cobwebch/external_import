@@ -520,7 +520,7 @@ class DataModuleController extends ActionController
         $this->pageRenderer->addRequireJsConfiguration(
             [
                 'paths' => [
-                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/jquery.dataTables'
+                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/datatables'
                 ]
             ]
         );
