@@ -231,33 +231,6 @@ class StoreDataStep extends AbstractStep
                         1
                     );
                 }
-                // First call a pre-processing hook
-                // Using a hook is deprecated
-                // TODO: remove in the next major version
-                $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'] ?? null;
-                if (is_array($hooks)) {
-                    trigger_error('Hook "updatePreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent instead.', E_USER_DEPRECATED);
-                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['updatePreProcess'] as $className) {
-                        try {
-                            $preProcessor = GeneralUtility::makeInstance($className);
-                            $theRecord = $preProcessor->processBeforeUpdate($theRecord, $this->importer);
-                        } catch (CriticalFailureException $e) {
-                            $this->abortFlag = true;
-                            return;
-                        } catch (\Exception $e) {
-                            $this->importer->debug(
-                                sprintf(
-                                    'Could not use class %s for hook %s (error: %s, code: %d)',
-                                    $className,
-                                    'updatePreProcess',
-                                    $e->getMessage(),
-                                    $e->getCode()
-                                ),
-                                1
-                            );
-                        }
-                    }
-                }
 
                 // Remove the fields which must be excluded from updates
                 if (count($this->fieldsExcludedFromUpdates) > 0) {
@@ -301,33 +274,6 @@ class StoreDataStep extends AbstractStep
                         ),
                         1
                     );
-                }
-                // First call a pre-processing hook
-                // Using a hook is deprecated
-                // TODO: remove in the next major version
-                $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'] ?? null;
-                if (is_array($hooks)) {
-                    trigger_error('Hook "insertPreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent instead.', E_USER_DEPRECATED);
-                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['insertPreProcess'] as $className) {
-                        try {
-                            $preProcessor = GeneralUtility::makeInstance($className);
-                            $theRecord = $preProcessor->processBeforeInsert($theRecord, $this->importer);
-                        } catch (CriticalFailureException $e) {
-                            $this->abortFlag = true;
-                            return;
-                        } catch (\Exception $e) {
-                            $this->importer->debug(
-                                sprintf(
-                                    'Could not use class %s for hook %s (error: %s, code: %d)',
-                                    $className,
-                                    'insertPreProcess',
-                                    $e->getMessage(),
-                                    $e->getCode()
-                                ),
-                                1
-                            );
-                        }
-                    }
                 }
 
                 // Remove the fields which must be excluded from inserts
@@ -455,31 +401,6 @@ class StoreDataStep extends AbstractStep
                         1
                     );
                 }
-                // Post-processing hook after data was saved
-                // Using a hook is deprecated
-                // TODO: remove in the next major version
-                $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] ?? null;
-                if (is_array($hooks)) {
-                    trigger_error('Hook "datamapPostProcess" is deprecated. Use \Cobweb\ExternalImport\Event\DatamapPostprocessEvent instead.', E_USER_DEPRECATED);
-                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['datamapPostProcess'] as $className) {
-                        try {
-                            $postProcessor = GeneralUtility::makeInstance($className);
-                            $postProcessor->datamapPostProcess($mainTable, $savedData, $this->importer);
-                        } catch (CriticalFailureException $e) {
-                            $this->abortFlag = true;
-                            return;
-                        } catch (\Exception $e) {
-                            $this->importer->debug(
-                                sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'datamapPostProcess'
-                                ),
-                                1
-                            );
-                        }
-                    }
-                }
             } catch (\Exception $e) {
                 // Abort the process and report about the error
                 $this->handleTceException($e);
@@ -531,31 +452,6 @@ class StoreDataStep extends AbstractStep
                     1
                 );
             }
-            // Call a pre-processing hook
-            // Using a hook is deprecated
-            // TODO: remove in the next major version
-            $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'] ?? null;
-            if (is_array($hooks)) {
-                trigger_error('Hook "deletePreProcess" is deprecated. Use \Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent instead.', E_USER_DEPRECATED);
-                foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['deletePreProcess'] as $className) {
-                    try {
-                        $preProcessor = GeneralUtility::makeInstance($className);
-                        $absentUids = $preProcessor->processBeforeDelete($mainTable, $absentUids, $this->importer);
-                    } catch (CriticalFailureException $e) {
-                        $this->abortFlag = true;
-                        return;
-                    } catch (\Exception $e) {
-                        $this->importer->debug(
-                            sprintf(
-                                'Could not instantiate class %s for hook %s',
-                                $className,
-                                'deletePreProcess'
-                            ),
-                            1
-                        );
-                    }
-                }
-            }
             if (count($absentUids) > 0) {
                 $tceDeleteCommands[$mainTable] = [];
                 foreach ($absentUids as $id) {
@@ -598,31 +494,6 @@ class StoreDataStep extends AbstractStep
                         ),
                         1
                     );
-                }
-                // Call a post-processing hook
-                // Using a hook is deprecated
-                // TODO: remove in the next major version
-                $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] ?? null;
-                if (is_array($hooks)) {
-                    trigger_error('Hook "cmdmapPostProcess" is deprecated. Use \Cobweb\ExternalImport\Event\CmdmapPostprocessEvent instead.', E_USER_DEPRECATED);
-                    foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['cmdmapPostProcess'] as $className) {
-                        try {
-                            $postProcessor = GeneralUtility::makeInstance($className);
-                            $absentUids = $postProcessor->cmdmapPostProcess($mainTable, $absentUids, $this->importer);
-                        } catch (CriticalFailureException $e) {
-                            $this->abortFlag = true;
-                            return;
-                        } catch (\Exception $e) {
-                            $this->importer->debug(
-                                sprintf(
-                                    'Could not instantiate class %s for hook %s',
-                                    $className,
-                                    'cmdmapPostProcess'
-                                ),
-                                1
-                            );
-                        }
-                    }
                 }
             } catch (\Exception $e) {
                 // Abort the process and report about the error

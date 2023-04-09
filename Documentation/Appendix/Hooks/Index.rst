@@ -1,6 +1,7 @@
 ﻿.. include:: ../../Includes.txt
 
 
+.. _appendix-hooks:
 .. _developer-hooks:
 
 Hooks
@@ -8,22 +9,10 @@ Hooks
 
 .. warning::
 
-   Since External Import version 6.0.0, all hooks have been deprecated.
-   They will be removed in version 7.0.0. Some hooks should be replaced by
+   All hooks were removed in version 7.0.0. This chapter was preserved for those still
+   using hooks, as it includes replacement instructions. Some hooks should be replaced by
    :ref:`custom process steps <developer-steps>`. For others PSR-14 compliant
    :ref:`events <developer-events>` have been introduced. See below for each hook.
-
-   If you have never used hooks, just ignore this page entirely...
-
-The external import process contains many hooks for improved
-flexibility. They are described below. When running in
-:ref:`preview mode <user-backend-module-synchronizable-preview>`
-some hooks are not called.
-
-Some hooks may throw the special exception :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`.
-This will cause their "parent" step to abort. More details in the chapter about
-:ref:`critical exceptions <developer-critical-exceptions>`. Which hooks
-may do this is mentioned below.
 
 
 processParameters

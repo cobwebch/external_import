@@ -153,34 +153,6 @@ class ReadDataStep extends AbstractStep
                 $this->importer->getExternalConfiguration()
             )
         );
-        $parameters = $event->getParameters();
-        // Using a hook is deprecated
-        // TODO: remove in the next major version
-        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] ?? null;
-        if (is_array($hooks)) {
-            trigger_error('Hook "processParameters" is deprecated. Use \Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent instead.', E_USER_DEPRECATED);
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
-                try {
-                    $preProcessor = GeneralUtility::makeInstance($className);
-                    $parameters = $preProcessor->processParameters(
-                        $parameters,
-                        $this->importer->getExternalConfiguration()
-                    );
-                } catch (CriticalFailureException $e) {
-                    // This exception must not be caught here, but thrown further up
-                    throw $e;
-                } catch (\Exception $e) {
-                    $this->importer->debug(
-                        sprintf(
-                            'Could not instantiate class %s for hook %s',
-                            $className,
-                            'processParameters'
-                        ),
-                        1
-                    );
-                }
-            }
-        }
-        return $parameters;
+        return $event->getParameters();
     }
 }

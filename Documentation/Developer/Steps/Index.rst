@@ -156,10 +156,6 @@ In this example, the "name" field of every record is used to filter acceptable e
    have been removed. This is very important to avoid having empty entries in your
    import.
 
-   This used to be done automatically when using hooks "preprocessRawRecordset" and
-   "preprocessRecordset". When replacing these hooks by custom steps, make sure to
-   call :code:`array_values()` if needed.
-
 .. code-block:: php
 
    <?php

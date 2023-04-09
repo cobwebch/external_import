@@ -74,21 +74,6 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
         );
         $processedParameters = $event->getParameters();
 
-        // Call any hook that may be declared to process parameters
-        // Using a hook is deprecated
-        // TODO: remove in the next major version
-        $hooks = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] ?? null;
-        if (is_array($hooks)) {
-            trigger_error('Hook "processParameters" is deprecated. Use \Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent instead.', E_USER_DEPRECATED);
-            foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['external_import']['processParameters'] as $className) {
-                $preProcessor = GeneralUtility::makeInstance($className);
-                $processedParameters = $preProcessor->processParameters(
-                    $configuration->getGeneralConfigurationProperty('parameters'),
-                    $configuration
-                );
-            }
-        }
-
         $templateVariableContainer = $renderingContext->getVariableProvider();
         $templateVariableContainer->add('processedParameters', $processedParameters);
 

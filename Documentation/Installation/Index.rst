@@ -30,6 +30,10 @@ When editing Scheduler tasks in the External Import backend module, it is no lon
 possible to define a start date (this tiny feature was a lot of hassle to maintain
 across TYPO3 versions).
 
+All hooks were removed. If you were still using hooks, please refer to the
+:ref:`archived page about hooks <appendix-hooks>`
+to find replacement instructions.
+
 
 .. _installation-upgrade-630:
 

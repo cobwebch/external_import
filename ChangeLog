@@ -2,6 +2,7 @@
 
 	* Compatiblity with TYPO3 12 and PHP 8.1, resolves #269
 	* Update DataTables to latest version (1.13.4), resolves #268
+	* Remove deprecated code, resolves #270
 
 2023-02-28 Francois Suter (Idéative)  <typo3@ideative.ch>
 
