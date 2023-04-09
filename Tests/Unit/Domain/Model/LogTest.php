@@ -96,7 +96,7 @@ class LogTest extends UnitTestCase
      */
     public function setCruserIdSetsCruserId(): void
     {
-        $user = new \TYPO3\CMS\Extbase\Domain\Model\BackendUser();
+        $user = new \Cobweb\ExternalImport\Domain\Model\BackendUser();
         $user->setUserName('ford.escort');
         $this->subject->setCruserId(
                 $user

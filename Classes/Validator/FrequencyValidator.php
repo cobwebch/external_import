@@ -41,11 +41,11 @@ class FrequencyValidator extends AbstractValidator
      * Validates the frequency as a number of seconds or a cron syntax.
      *
      * @param string $value The frequency to validate
-     * @return bool
+     * @return void
      */
     public function isValid($value): void
     {
-        // Frequency is mandatory (NOTE: this does not work, empty strings are not submitted for validation. Core bug or my mistake?)
+        // Frequency is mandatory
         if ($value === '') {
             $this->addError(
                 LocalizationUtility::translate(
@@ -54,32 +54,28 @@ class FrequencyValidator extends AbstractValidator
                 ),
                 1463494395
             );
-//            return false;
         }
 
         // Try interpreting the frequency as a cron command
         try {
             NormalizeCommand::normalize($value);
-//            return true;
-        } // If the cron command was invalid, we may still have a valid frequency in seconds
+        }
+        // If the cron command was invalid, we may still have a valid frequency in seconds
         catch (\Exception $e) {
             // Check if the frequency is a valid number
-            // If yes, assume it is a frequency in seconds, else return error message
-            if (is_numeric($value)) {
-//                return true;
+            // If yes, assume it is a frequency in seconds, else issue error
+            if (!is_numeric($value)) {
+                $this->addError(
+                    LocalizationUtility::translate(
+                        'error_wrong_frequency',
+                        'external_import',
+                        array(
+                            $e->getMessage()
+                        )
+                    ),
+                    1463495019
+                );
             }
-
-            $this->addError(
-                LocalizationUtility::translate(
-                    'error_wrong_frequency',
-                    'external_import',
-                    array(
-                        $e->getMessage()
-                    )
-                ),
-                1463495019
-            );
-//            return false;
         }
     }
 }

@@ -72,6 +72,10 @@ class LogModuleController extends ActionController
             ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
         );
         $this->pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
+        // TODO: remove when compatibility with v11 is dropped
+        if (CompatibilityUtility::isV11()) {
+            $this->pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport11.css');
+        }
         $this->pageRenderer->addRequireJsConfiguration(
             [
                 'paths' => [

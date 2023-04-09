@@ -32,6 +32,17 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class CompatibilityUtility
 {
     /**
+     * Checks whether we are running TYPO3 v11 or not.
+     *
+     * @return bool
+     */
+    public static function isV11(): bool
+    {
+        $typo3Version = GeneralUtility::makeInstance(Typo3Version::class);
+        return $typo3Version->getMajorVersion() === 11;
+    }
+
+    /**
      * Checks whether we are running TYPO3 v12 or not.
      *
      * @return bool
