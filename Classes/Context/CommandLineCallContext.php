@@ -29,7 +29,7 @@ class CommandLineCallContext extends AbstractCallContext
     /**
      * @var SymfonyStyle
      */
-    protected $io;
+    protected SymfonyStyle $io;
 
     /**
      * Sets the SymfonyStyle component for formatted output.

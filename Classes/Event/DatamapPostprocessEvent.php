@@ -28,12 +28,12 @@ final class DatamapPostprocessEvent
     /**
      * @var Importer Back-reference to the calling Importer instance
      */
-    protected $importer;
+    protected Importer $importer;
 
     /**
      * @var array Stored data, structured as TCE datamap with additional information
      */
-    protected $data = [];
+    protected array $data = [];
 
     public function __construct(array $data, Importer $importer)
     {

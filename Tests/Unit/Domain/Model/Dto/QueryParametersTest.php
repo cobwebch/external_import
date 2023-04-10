@@ -230,7 +230,7 @@ class QueryParametersTest extends UnitTestCase
      * @param string $value
      * @param string $expected
      */
-    public function setDirectionSetsSanitizedValue($value, $expected): void
+    public function setDirectionSetsSanitizedValue(string $value, string $expected): void
     {
         $this->subject->setDirection($value);
         self::assertSame(

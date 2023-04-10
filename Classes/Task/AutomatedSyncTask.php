@@ -35,7 +35,7 @@ class AutomatedSyncTask extends AbstractTask
     /**
      * @var string Name of the table to synchronize ("all" for all tables)
      */
-    public $table;
+    public string $table;
 
     /**
      * @var mixed Index of the particular synchronization
@@ -45,7 +45,7 @@ class AutomatedSyncTask extends AbstractTask
     /**
      * @var int Uid of a page for storage (overrides TCA and extension setting)
      */
-    public $storage = 0;
+    public int $storage = 0;
 
     /**
      * Executes the job registered in the Scheduler task

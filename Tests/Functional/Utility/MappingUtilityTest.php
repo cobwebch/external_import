@@ -116,7 +116,7 @@ class MappingUtilityTest extends FunctionalTestCase
      * @param array $results
      * @throws \Nimut\TestingFramework\Exception\Exception
      */
-    public function getMappingReturnsRecordsToMap($mappingConfiguration, $results): void
+    public function getMappingReturnsRecordsToMap(array $mappingConfiguration, array $results): void
     {
         $this->importDataSet(__DIR__ . '/../Fixtures/Mappings.xml');
         $mappings = $this->subject->getMapping($mappingConfiguration);
@@ -240,7 +240,7 @@ class MappingUtilityTest extends FunctionalTestCase
      * @param array $result Mapped records (expected result)
      * @throws \Nimut\TestingFramework\Exception\Exception
      */
-    public function mapDataMapsDataAndAppliesDefaultValueIfDefined($records, $table, $columnName, $mappingInformation, $result)
+    public function mapDataMapsDataAndAppliesDefaultValueIfDefined(array $records, string $table, string $columnName, array $mappingInformation, array $result)
     {
         $this->importDataSet(__DIR__ . '/../Fixtures/Mappings.xml');
         $mappedRecords = $this->subject->mapData($records, $table, $columnName, $mappingInformation);

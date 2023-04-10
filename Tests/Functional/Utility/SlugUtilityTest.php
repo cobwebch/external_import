@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Tests\Functional\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\SlugUtility;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -41,7 +42,7 @@ class SlugUtilityTest extends FunctionalTestCase
         parent::setUp();
         $this->subject = GeneralUtility::makeInstance(
             SlugUtility::class,
-            GeneralUtility::makeInstance(\Cobweb\ExternalImport\Importer::class)
+            GeneralUtility::makeInstance(Importer::class)
         );
     }
 

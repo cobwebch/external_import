@@ -40,17 +40,17 @@ class ImportCommand extends Command
     /**
      * @var SymfonyStyle
      */
-    protected $io;
+    protected SymfonyStyle $io;
 
     /**
      * @var ConfigurationRepository
      */
-    protected $configurationRepository;
+    protected ConfigurationRepository $configurationRepository;
 
     /**
      * @var Importer
      */
-    protected $importer;
+    protected Importer $importer;
 
     /**
      * Configures the command by setting its name, description and options.

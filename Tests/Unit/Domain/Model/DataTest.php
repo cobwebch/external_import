@@ -28,7 +28,7 @@ class DataTest extends UnitTestCase
     /**
      * @var Data
      */
-    protected $subject;
+    protected Data $subject;
 
     public function setUp(): void
     {

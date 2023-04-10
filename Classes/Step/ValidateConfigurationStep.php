@@ -31,12 +31,12 @@ class ValidateConfigurationStep extends AbstractStep
     /**
      * @var GeneralConfigurationValidator
      */
-    protected $generalValidator;
+    protected GeneralConfigurationValidator $generalValidator;
 
     /**
      * @var ColumnConfigurationValidator
      */
-    protected $columnValidator;
+    protected ColumnConfigurationValidator $columnValidator;
 
     public function __construct(
         GeneralConfigurationValidator $generalConfigurationValidator,

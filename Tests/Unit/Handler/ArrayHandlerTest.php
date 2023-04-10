@@ -33,7 +33,7 @@ class ArrayHandlerTest extends UnitTestCase
     /**
      * @var ArrayHandler
      */
-    protected $subject;
+    protected ArrayHandler $subject;
 
     public function setUp(): void
     {
@@ -444,7 +444,7 @@ class ArrayHandlerTest extends UnitTestCase
      * @param array $record
      * @param array $configuration
      */
-    public function getValueThrowsInvalidArgumentExceptionIfValueNotFound($record, $configuration): void
+    public function getValueThrowsInvalidArgumentExceptionIfValueNotFound(array $record, array $configuration): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $value = $this->subject->getValue($record, $configuration);

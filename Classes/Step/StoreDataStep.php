@@ -41,62 +41,62 @@ class StoreDataStep extends AbstractStep
     /**
      * @var array
      */
-    protected $fieldsExcludedFromInserts = [];
+    protected array $fieldsExcludedFromInserts = [];
 
     /**
      * @var array
      */
-    protected $fieldsExcludedFromUpdates = [];
+    protected array $fieldsExcludedFromUpdates = [];
 
     /**
      * @var array List of substructure fields for each column (if any)
      */
-    protected $substructureFields = [];
+    protected array $substructureFields = [];
 
     /**
      * @var array Temporary storage for the values that are not saved and that are restored after saving
      */
-    protected $valuesExcludedFromSaving = [];
+    protected array $valuesExcludedFromSaving = [];
 
     /**
      * @var array Map of internal id (maybe "NEW***" for new records) to external id (reference uid in the external data)
      */
-    protected $idToExternalIdMap = [];
+    protected array $idToExternalIdMap = [];
 
     /**
      * @var array List of all columns having a "children" configuration (preloaded to avoid looping on the whole structure everytime)
      */
-    protected $childColumns = [];
+    protected array $childColumns = [];
 
     /**
      * @var bool True if at least one column has a "children" configuration (preloaded to avoid looping on the whole structure everytime)
      */
-    protected $hasChildColumns = false;
+    protected bool $hasChildColumns = false;
 
     /**
      * @var array List of records from the main table that need to be deleted
      */
-    protected $mainRecordsToDelete = [];
+    protected array $mainRecordsToDelete = [];
 
     /**
      * @var array For each field with "children", for each parent record, reference values for the "delete" operation
      */
-    protected $childrenReferenceValues = [];
+    protected array $childrenReferenceValues = [];
 
     /**
      * @var array List of child records that need to be deleted
      */
-    protected $childRecordsToDelete = [];
+    protected array $childRecordsToDelete = [];
 
     /**
      * @var ChildrenSorting DTO object for storing children sorting data
      */
-    protected $childrenSortingInformation;
+    protected ChildrenSorting $childrenSortingInformation;
 
     /**
      * @var EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    protected EventDispatcherInterface $eventDispatcher;
 
     public function __construct(EventDispatcherInterface $eventDispatcher, ChildrenSorting $childrenSortingInformation)
     {

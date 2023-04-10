@@ -18,7 +18,6 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\DataHandlerInterface;
-use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Handler\ArrayHandler;
 use Cobweb\ExternalImport\Handler\XmlHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;

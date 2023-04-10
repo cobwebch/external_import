@@ -39,7 +39,7 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
     /**
      * @var string Used to return a dummy identifier in preview mode
      */
-    public static $previewMessage = 'Preview mode. Image not handled, nor saved.';
+    public static string $previewMessage = 'Preview mode. Image not handled, nor saved.';
 
     /**
      * @var ResourceFactory
@@ -49,7 +49,7 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
     /**
      * @var Folder[] Array of Folder objects
      */
-    protected $storageFolders = [];
+    protected array $storageFolders = [];
 
     public function __construct()
     {

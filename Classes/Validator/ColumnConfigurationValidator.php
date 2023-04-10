@@ -18,7 +18,6 @@ namespace Cobweb\ExternalImport\Validator;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
-use Cobweb\ExternalImport\Step\TransformDataStep;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -36,12 +35,12 @@ class ColumnConfigurationValidator
     /**
      * @var string[] List of properties allowed for substructureFields when handling array-type data
      */
-    protected static $substructurePropertiesForArrayType = ['field', 'arrayPath', 'arrayPathSeparator'];
+    protected static array $substructurePropertiesForArrayType = ['field', 'arrayPath', 'arrayPathSeparator'];
 
     /**
      * @var string[] List of properties allowed for substructureFields when handling XML-type data
      */
-    protected static $substructurePropertiesForXmlType = [
+    protected static array $substructurePropertiesForXmlType = [
         'field',
         'fieldNS',
         'attribute',
@@ -53,7 +52,7 @@ class ColumnConfigurationValidator
     /**
      * @var ValidationResult
      */
-    protected $results;
+    protected ValidationResult $results;
 
     public function __construct(ValidationResult $result)
     {

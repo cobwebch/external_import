@@ -32,9 +32,9 @@ class Configuration
     public const DO_NOT_SAVE_KEY = '_txexternalimport_doNotSave';
 
     /**
-     * @var string Name of the table to which the configuration applies
+     * @var string|null Name of the table to which the configuration applies
      */
-    protected $table;
+    protected ?string $table = null;
 
     /**
      * @var int|string Index identifying the configuration for the given table
@@ -44,52 +44,52 @@ class Configuration
     /**
      * @var array General part of the External Import configuration
      */
-    protected $generalConfiguration = [];
+    protected array $generalConfiguration = [];
 
     /**
      * @var array External Import configuration for each column
      */
-    protected $columnConfiguration = [];
+    protected array $columnConfiguration = [];
 
     /**
-     * @var int ID of storage page
+     * @var int|null ID of storage page
      */
-    protected $storagePid;
+    protected ?int $storagePid = null;
 
     /**
      * @var array List of fields that must be read from distant source, but will not be stored to DB
      */
-    protected $additionalFields = [];
+    protected array $additionalFields = [];
 
     /**
      * @var int Number of additional fields (cached to avoid counting too often)
      */
-    protected $countAdditionalFields = 0;
+    protected int $countAdditionalFields = 0;
 
     /**
      * @var array List of steps that the process will go through (depends on process type)
      */
-    protected $steps = [];
+    protected array $steps = [];
 
     /**
      * @var array List of default steps for the process
      */
-    protected $defaultSteps = [];
+    protected array $defaultSteps = [];
 
     /**
      * @var array List of all custom steps (valid or not)
      */
-    protected $customSteps = [];
+    protected array $customSteps = [];
 
     /**
      * @var array List of parameters associated with custom steps (if any)
      */
-    protected $stepParameters = [];
+    protected array $stepParameters = [];
 
     /**
-     * @var ConnectorBase Reference to the connector object
+     * @var ConnectorBase|null Reference to the connector object
      */
-    protected $connector;
+    protected ?ConnectorBase $connector = null;
 
     public function __toString()
     {
@@ -143,10 +143,10 @@ class Configuration
      * on some properties.
      *
      * @param array $generalConfiguration
-     * @param array $defaultSteps List of default steps (if null will be guessed by the repository)
+     * @param array|null $defaultSteps List of default steps (if null will be guessed by the repository)
      * @return void
      */
-    public function setGeneralConfiguration(array $generalConfiguration, $defaultSteps = null): void
+    public function setGeneralConfiguration(array $generalConfiguration, array $defaultSteps = null): void
     {
         $this->generalConfiguration = $generalConfiguration;
         $stepUtility = GeneralUtility::makeInstance(StepUtility::class);
@@ -190,10 +190,7 @@ class Configuration
      */
     public function getGeneralConfigurationProperty($key)
     {
-        if (array_key_exists($key, $this->generalConfiguration)) {
-            return $this->generalConfiguration[$key];
-        }
-        return null;
+        return $this->generalConfiguration[$key] ?? null;
     }
 
     /**
@@ -225,12 +222,9 @@ class Configuration
      * @param string $column Name of the column
      * @return array
      */
-    public function getConfigurationForColumn($column): array
+    public function getConfigurationForColumn(string $column): array
     {
-        if (array_key_exists($column, $this->columnConfiguration)) {
-            return $this->columnConfiguration[$column];
-        }
-        return [];
+        return $this->columnConfiguration[$column] ?? [];
     }
 
     /**
@@ -284,7 +278,7 @@ class Configuration
     /**
      * @param int $storagePid
      */
-    public function setStoragePid($storagePid): void
+    public function setStoragePid(int $storagePid): void
     {
         $this->storagePid = $storagePid;
     }

@@ -37,12 +37,12 @@ class SlugUtility
     /**
      * @var Importer
      */
-    protected $importer;
+    protected Importer $importer;
 
     /**
      * @var array
      */
-    protected $slugFieldNamesPerTable = [];
+    protected array $slugFieldNamesPerTable = [];
 
     public function __construct(Importer $importer)
     {

@@ -140,7 +140,7 @@ class StepUtilityTest extends UnitTestCase
      * @param array $configuration
      * @param array $resultingSteps
      */
-    public function insertStepInsertsCustomStepAtCorrectLocation($currentSteps, $configuration, $resultingSteps): void
+    public function insertStepInsertsCustomStepAtCorrectLocation(array $currentSteps, array $configuration, array $resultingSteps): void
     {
         self::assertSame(
                 $resultingSteps,
@@ -228,7 +228,7 @@ class StepUtilityTest extends UnitTestCase
      * @param array $currentSteps
      * @param array $configuration
      */
-    public function validateCustomStepConfigurationWithWrongInformationThrowsException($currentSteps, $configuration): void
+    public function validateCustomStepConfigurationWithWrongInformationThrowsException(array $currentSteps, array $configuration): void
     {
         $this->expectException(\Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration::class);
         $this->subject->validateCustomStepConfiguration(
@@ -243,7 +243,7 @@ class StepUtilityTest extends UnitTestCase
      * @param array $currentSteps
      * @param array $configuration
      */
-    public function insertStepWithWrongInformationReturnsCurrentSteps($currentSteps, $configuration): void
+    public function insertStepWithWrongInformationReturnsCurrentSteps(array $currentSteps, array $configuration): void
     {
         self::assertSame(
                 $currentSteps,

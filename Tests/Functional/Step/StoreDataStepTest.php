@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Tests\Functional\Step;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
+use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
@@ -451,7 +452,7 @@ class StoreDataStepTest extends FunctionalTestCase
         $configuration->setColumnConfiguration($columnConfiguration);
         $configuration->setTable('foo');
         $this->subject->getData()->setRecords($input);
-        $uidRepository = $this->createMock(\Cobweb\ExternalImport\Domain\Repository\UidRepository::class);
+        $uidRepository = $this->createMock(UidRepository::class);
         $uidRepository->method('getExistingUids')->willReturn($existingUids);
         $importer = $this->createMock(Importer::class);
         $importer->method('getExternalConfiguration')->willReturn($configuration);

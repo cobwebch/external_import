@@ -217,7 +217,7 @@ class ConfigurationRepository
      * @return Configuration
      * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
      */
-    public function findConfigurationObject(string $table, $index, $defaultSteps = null): Configuration
+    public function findConfigurationObject(string $table, $index, array $defaultSteps = null): Configuration
     {
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $externalConfiguration = $this->findByTableAndIndex($table, $index);
@@ -244,7 +244,7 @@ class ConfigurationRepository
      */
     public function findBySync(bool $isSynchronizable): array
     {
-        $isSynchronizable = (bool)$isSynchronizable;
+        $isSynchronizable = $isSynchronizable;
         $configurations = [];
 
         // Get a list of all external import Scheduler tasks
@@ -371,7 +371,7 @@ class ConfigurationRepository
      * @param array $configuration The external import configuration to process
      * @return array The processed configuration
      */
-    protected function processGeneralConfiguration($configuration): array
+    protected function processGeneralConfiguration(array $configuration): array
     {
         // If the pid is not set in the current configuration, use global storage pid
         $pid = 0;

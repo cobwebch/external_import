@@ -25,6 +25,7 @@ use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
+use Cobweb\ExternalImport\Step\AbstractStep;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -52,62 +53,59 @@ class Importer implements LoggerAwareInterface
     /**
      * @var array List of result messages
      */
-    protected $messages = [];
+    protected array $messages = [];
 
     /**
      * @var ConfigurationRepository
      */
-    protected $configurationRepository;
+    protected ConfigurationRepository $configurationRepository;
 
     /**
-     * @var Configuration Full External Import configuration
+     * @var Configuration|null Full External Import configuration
      */
-    protected $externalConfiguration;
+    protected ?Configuration $externalConfiguration = null;
 
     /**
      * @var ReportingUtility Utility for reporting after import
      */
-    protected $reportingUtility;
+    protected ReportingUtility $reportingUtility;
 
     /**
      * @var UidRepository
      */
-    protected $uidRepository;
+    protected UidRepository $uidRepository;
 
     /**
      * @var TemporaryKeyRepository
      */
-    protected $temporaryKeyRepository;
+    protected TemporaryKeyRepository $temporaryKeyRepository;
 
     /**
-     * @var int Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
+     * @var int|null Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
      */
-    protected $forcedStoragePid;
+    protected ?int $forcedStoragePid = null;
 
     /**
      * @var string Context in which the import run is executed
      */
-    protected $context = 'manual';
+    protected string $context = 'manual';
 
-    /**
-     * @var AbstractCallContext
-     */
-    protected $callContext;
+    protected ?AbstractCallContext $callContext = null;
 
     /**
      * @var bool Whether debugging is turned on or off
      */
-    protected $debug = false;
+    protected bool $debug = false;
 
     /**
      * @var bool Whether the output should be verbose or not (currently only affects calls made via the command line)
      */
-    protected $verbose = false;
+    protected bool $verbose = false;
 
     /**
      * @var string Name of the Step class at which the process should stop when running in preview mode
      */
-    protected $previewStep = '';
+    protected string $previewStep = '';
 
     /**
      * @var string|array Data to be returned as preview data
@@ -117,17 +115,17 @@ class Importer implements LoggerAwareInterface
     /**
      * @var bool Set to true to trigger testing mode (used only for unit testing)
      */
-    protected $testMode = false;
+    protected bool $testMode = false;
 
     /**
      * @var int Start time of the current run
      */
-    protected $startTime = 0;
+    protected int $startTime = 0;
 
     /**
      * @var int End time of the current run
      */
-    protected $endTime = 0;
+    protected int $endTime = 0;
 
     /**
      * @var array List of default steps for the synchronize data process
@@ -205,11 +203,11 @@ class Importer implements LoggerAwareInterface
      *
      * @param string $table Name of the table to synchronise
      * @param mixed $index Index of the synchronisation configuration to use
-     * @param array $defaultSteps List of default steps (if null will be guessed by the Configuration object)
+     * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return void
      * @throws NoConfigurationException
      */
-    protected function initialize(string $table, $index, $defaultSteps = null): void
+    protected function initialize(string $table, $index, array $defaultSteps = null): void
     {
         // Assign back-reference to reporting utility
         $this->reportingUtility->setImporter($this);
@@ -379,7 +377,7 @@ class Importer implements LoggerAwareInterface
         // Loop on all the process steps
         foreach ($steps as $stepClass) {
             $this->resetPreviewData();
-            /** @var \Cobweb\ExternalImport\Step\AbstractStep $step */
+            /** @var AbstractStep $step */
             $step = GeneralUtility::makeInstance($stepClass);
             $step->setImporter($this);
             $step->setData($data);
@@ -466,7 +464,7 @@ class Importer implements LoggerAwareInterface
      * @param null $data Data associated with the debugging information
      * @return void
      */
-    public function debug(string $message, $severity = 0, $data = null): void
+    public function debug(string $message, int $severity = 0, $data = null): void
     {
         if ($this->isDebug()) {
             $data = is_array($data) ? $data : [$data];

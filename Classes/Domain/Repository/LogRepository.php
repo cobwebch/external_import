@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
+use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
@@ -47,7 +48,7 @@ class LogRepository extends Repository
      * Performs a search on the database based on given criteria, with ordering and pagination.
      *
      * @param QueryParameters $queryParameters
-     * @return array|\TYPO3\CMS\Extbase\Persistence\QueryResultInterface
+     * @return array|QueryResultInterface
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
     public function findBySearch(QueryParameters $queryParameters)

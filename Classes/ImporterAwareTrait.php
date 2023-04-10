@@ -27,7 +27,7 @@ trait ImporterAwareTrait
     /**
      * @var Importer
      */
-    protected $importer;
+    protected Importer $importer;
 
     /**
      * Set the internal Importer instance.

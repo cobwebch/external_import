@@ -24,7 +24,6 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\StepUtility;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -41,17 +40,17 @@ class GeneralConfigurationValidator
     /**
      * @var string Name of the table for which the configuration is checked
      */
-    protected $table;
+    protected string $table;
 
     /**
      * @var ValidationResult
      */
-    protected $results;
+    protected ValidationResult $results;
 
     /**
      * @var StepUtility
      */
-    protected $stepUtility;
+    protected StepUtility $stepUtility;
 
     public function __construct(ValidationResult $result, StepUtility $stepUtility)
     {
@@ -246,7 +245,7 @@ class GeneralConfigurationValidator
      * @param string $nodepath Nodepath property value
      * @return void
      */
-    public function validateNodeProperty($nodetype = '', $nodepath = ''): void
+    public function validateNodeProperty(string $nodetype = '', string $nodepath = ''): void
     {
         if (empty($nodetype) && empty($nodepath)) {
             $this->results->add(

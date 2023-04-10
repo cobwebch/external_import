@@ -31,7 +31,7 @@ class UpdateRecordPreprocessEventTest extends UnitTestCase
     /**
      * @var UpdateRecordPreprocessEvent
      */
-    protected $subject;
+    protected UpdateRecordPreprocessEvent $subject;
 
     /**
      * @var Importer

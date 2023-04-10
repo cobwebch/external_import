@@ -31,7 +31,7 @@ class ChildrenSortingUtility
     /**
      * @var Importer
      */
-    protected $importer;
+    protected Importer $importer;
 
     public function __construct(Importer $importer)
     {

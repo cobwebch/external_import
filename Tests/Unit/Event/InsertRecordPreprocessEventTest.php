@@ -31,7 +31,7 @@ class InsertRecordPreprocessEventTest extends UnitTestCase
     /**
      * @var InsertRecordPreprocessEvent
      */
-    protected $subject;
+    protected InsertRecordPreprocessEvent $subject;
 
     /**
      * @var Importer

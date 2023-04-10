@@ -29,17 +29,17 @@ final class UpdateRecordPreprocessEvent
     /**
      * @var Importer Back-reference to the calling Importer instance
      */
-    protected $importer;
+    protected Importer $importer;
 
     /**
      * @var array The record currently being prepared for update
      */
-    protected $record = [];
+    protected array $record = [];
 
     /**
      * @var int The primary key of the record
      */
-    protected $uid;
+    protected int $uid;
 
     public function __construct(int $uid, array $record, Importer $importer)
     {

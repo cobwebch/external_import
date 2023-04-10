@@ -31,7 +31,7 @@ class XmlHandlerTest extends UnitTestCase
     /**
      * @var XmlHandler
      */
-    protected $subject;
+    protected XmlHandler $subject;
 
     public function setUp(): void
     {

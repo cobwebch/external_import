@@ -72,7 +72,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingConfiguration
      * @param string $expectedResult
      */
-    public function matchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult): void
+    public function matchWordsWithStrposNotSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration, string $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
@@ -112,7 +112,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingConfiguration
      * @param string $expectedResult
      */
-    public function matchWordsWithStrposSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult): void
+    public function matchWordsWithStrposSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration, string $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
@@ -159,7 +159,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingTable
      * @param array $mappingConfiguration
      */
-    public function failMatchWordsWithStrposNotSymmetric($inputData, $mappingTable, $mappingConfiguration): void
+    public function failMatchWordsWithStrposNotSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration): void
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
@@ -199,7 +199,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingConfiguration
      * @param string $expectedResult
      */
-    public function matchWordsWithStirposNotSymmetric($inputData, $mappingTable, $mappingConfiguration, $expectedResult): void
+    public function matchWordsWithStirposNotSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration, string $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
         self::assertEquals($expectedResult, $actualResult);
@@ -236,7 +236,7 @@ class MappingUtilityTest extends UnitTestCase
      * @param array $mappingTable
      * @param array $mappingConfiguration
      */
-    public function failMatchWordsWithStriposNotSymmetric($inputData, $mappingTable, $mappingConfiguration): void
+    public function failMatchWordsWithStriposNotSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration): void
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);

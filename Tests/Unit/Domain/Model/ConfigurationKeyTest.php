@@ -27,7 +27,7 @@ class ConfigurationKeyTest extends UnitTestCase
     /**
      * @var ConfigurationKey
      */
-    protected $subject;
+    protected ConfigurationKey $subject;
 
     public function setUp(): void
     {
@@ -99,10 +99,10 @@ class ConfigurationKeyTest extends UnitTestCase
      * @test
      * @dataProvider configurationProvider
      * @param string $table
-     * @param string $index
+     * @param mixed $index
      * @param string $key
      */
-    public function setConfigurationKeySetsTableAndIndex($table, $index, $key): void
+    public function setConfigurationKeySetsTableAndIndex(string $table, $index, string $key): void
     {
         $this->subject->setConfigurationKey($key);
         self::assertEquals($table, $this->subject->getTable());
@@ -113,10 +113,10 @@ class ConfigurationKeyTest extends UnitTestCase
      * @test
      * @dataProvider configurationProvider
      * @param string $table
-     * @param string $index
+     * @param mixed $index
      * @param string $key
      */
-    public function setTableAndIndexSetsConfigurationKey($table, $index, $key): void
+    public function setTableAndIndexSetsConfigurationKey(string $table, $index, string $key): void
     {
         $this->subject->setTableAndIndex($table, (string)$index);
         self::assertEquals($key, $this->subject->getConfigurationKey());

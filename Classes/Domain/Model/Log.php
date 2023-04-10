@@ -30,37 +30,37 @@ class Log extends AbstractEntity
     /**
      * @var int Run status (based on FlashMessage codes)
      */
-    protected $status = AbstractMessage::NOTICE;
+    protected int $status = AbstractMessage::NOTICE;
 
     /**
-     * @var \DateTime Run date and time
+     * @var \DateTime|null Run date and time
      */
-    protected $crdate;
+    protected ?\DateTime $crdate = null;
 
     /**
-     * @var BackendUser User who executed the run
+     * @var BackendUser|null User who executed the run
      */
-    protected $cruserId;
+    protected ?BackendUser $cruserId = null;
 
     /**
      * @var string Name of the corresponding external import configuration (table and index)
      */
-    protected $configuration = '';
+    protected string $configuration = '';
 
     /**
      * @var string Execution context
      */
-    protected $context = '';
+    protected string $context = '';
 
     /**
      * @var string The log message
      */
-    protected $message = '';
+    protected string $message = '';
 
     /**
      * @var int Run duration (in seconds)
      */
-    protected $duration = 0;
+    protected int $duration = 0;
 
     /**
      * @return int

@@ -31,12 +31,12 @@ class TemporaryKeyRepository
     /**
      * @var int Incremental number to be used for temporary keys during test mode (used for unit testing)
      */
-    protected static $forcedTemporaryKeySerial = 0;
+    protected static int $forcedTemporaryKeySerial = 0;
 
     /**
      * @var array List of temporary keys created on the fly for new records
      */
-    protected $temporaryKeys = [];
+    protected array $temporaryKeys = [];
 
     /**
      * @var Random
@@ -46,7 +46,7 @@ class TemporaryKeyRepository
     /**
      * @var bool Set to true to trigger testing mode (used only for unit testing)
      */
-    protected $testMode = false;
+    protected bool $testMode = false;
 
     public function __construct()
     {
@@ -112,10 +112,7 @@ class TemporaryKeyRepository
      */
     public function getTemporaryKeyForValue($value, string $table): ?string
     {
-        if (isset($this->temporaryKeys[$table][$value])) {
-            return $this->temporaryKeys[$table][$value];
-        }
-        return null;
+        return $this->temporaryKeys[$table][$value] ?? null;
     }
 
     /**

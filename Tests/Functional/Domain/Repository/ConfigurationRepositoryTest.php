@@ -17,7 +17,9 @@ namespace Cobweb\ExternalImport\Tests\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalimportTest\UserFunction\Transformation;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -113,7 +115,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
      * @test
      * @dataProvider syncFlagProvider
      */
-    public function findBySyncFindsCorrectCountOfConfigurations($sync, $expectedCount): void
+    public function findBySyncFindsCorrectCountOfConfigurations(bool $sync, int $expectedCount): void
     {
         // TODO: this is not very satisfying, because the default user provided by the backend user fixture is admin
         self::assertCount(
@@ -144,12 +146,12 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                         'transformations' => [
                             10 => [
                                 'userFunction' => [
-                                    'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                                    'class' => Transformation::class,
                                     'method' => 'stripPositionMarker'
                                 ]
                             ]
                         ],
-                        \Cobweb\ExternalImport\Domain\Model\Configuration::DO_NOT_SAVE_KEY => true
+                        Configuration::DO_NOT_SAVE_KEY => true
                     ]
                 ]
             ],
@@ -177,7 +179,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                     'transformations' => [
                         10 => [
                             'userFunction' => [
-                                'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                                'class' => Transformation::class,
                                 'method' => 'caseTransformation',
                                 'parameters' => [
                                     'transformation' => 'upper'
@@ -201,12 +203,12 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
      * @param array $expectedAdditionalFieldsConfiguration
      */
     public function findConfigurationObjectReturnsExpectedConfiguration(
-        $table,
+        string $table,
         $index,
-        $expectedReferenceUdiValue,
+        string $expectedReferenceUdiValue,
         $testColumnName,
-        $expectedColumnConfiguration,
-        $expectedAdditionalFieldsConfiguration
+        array $expectedColumnConfiguration,
+        array $expectedAdditionalFieldsConfiguration
     ): void {
         $configuration = $this->subject->findConfigurationObject(
             $table,
@@ -325,7 +327,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                         'transformations' => [
                             10 => [
                                 'userFunction' => [
-                                    'class' => \Cobweb\ExternalimportTest\UserFunction\Transformation::class,
+                                    'class' => Transformation::class,
                                     'method' => 'stripPositionMarker'
                                 ]
                             ]

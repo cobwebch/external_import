@@ -38,12 +38,12 @@ class TransformDataStep extends AbstractStep
     /**
      * @var MappingUtility
      */
-    protected $mappingUtility;
+    protected MappingUtility $mappingUtility;
 
     /**
      * @var array List of transformation properties
      */
-    public static $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
+    public static array $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
 
     public function __construct(MappingUtility $mappingUtility)
     {

@@ -18,6 +18,10 @@ services:
     public: true
     shared: false
 
+  Cobweb\ExternalImport\Domain\Repository\BackendUserRepository:
+    public: true
+    shared: false
+
   Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository:
     public: true
     shared: false

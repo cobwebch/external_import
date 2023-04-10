@@ -31,7 +31,7 @@ class DeleteRecordPreprocessEventTest extends UnitTestCase
     /**
      * @var DeleteRecordsPreprocessEvent
      */
-    protected $subject;
+    protected DeleteRecordsPreprocessEvent $subject;
 
     /**
      * @var Importer

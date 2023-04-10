@@ -20,10 +20,7 @@ namespace Cobweb\ExternalImport\Step;
 use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Utility\CompatibilityUtility;
-use Cobweb\Svconnector\Service\ConnectorBase;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -36,7 +33,7 @@ class ReadDataStep extends AbstractStep
     /**
      * @var EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    protected EventDispatcherInterface $eventDispatcher;
 
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {

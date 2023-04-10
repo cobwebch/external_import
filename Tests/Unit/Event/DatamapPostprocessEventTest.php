@@ -31,7 +31,7 @@ class DatamapPostprocessEventTest extends UnitTestCase
     /**
      * @var DatamapPostprocessEvent
      */
-    protected $subject;
+    protected DatamapPostprocessEvent $subject;
 
     /**
      * @var Importer

@@ -29,7 +29,7 @@ class ValidationResultTest extends UnitTestCase
     /**
      * @var ValidationResult
      */
-    protected $subject;
+    protected ValidationResult $subject;
 
     public function setUp(): void
     {

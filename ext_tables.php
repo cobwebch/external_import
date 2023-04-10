@@ -2,7 +2,11 @@
 
 // TODO: remove when TYPO3 11 compatibility is dropped
 // First register a main module
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+use Cobweb\ExternalImport\Controller\DataModuleController;
+use Cobweb\ExternalImport\Controller\LogModuleController;
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+
+ExtensionUtility::registerModule(
     'ExternalImport',
     // New main module
     'ExternalImport',
@@ -16,7 +20,7 @@
     ]
 );
 // Register the "Data Import" backend module
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+ExtensionUtility::registerModule(
     'ExternalImport',
     // Make it a submodule of 'ExternalImport'
     'ExternalImport',
@@ -25,7 +29,7 @@
     // Position
     '',
     [
-        \Cobweb\ExternalImport\Controller\DataModuleController::class => 'listSynchronizable, listNonSynchronizable, synchronize, preview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
+        DataModuleController::class => 'listSynchronizable, listNonSynchronizable, synchronize, preview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
     ],
     [
         'access' => 'user,group',
@@ -34,7 +38,7 @@
     ]
 );
 // Register the "Log" backend module
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
+ExtensionUtility::registerModule(
     'ExternalImport',
     // Make it a submodule of 'ExternalImport'
     'ExternalImport',
@@ -43,7 +47,7 @@
     // Position
     '',
     [
-        \Cobweb\ExternalImport\Controller\LogModuleController::class => 'list, get'
+        LogModuleController::class => 'list, get'
     ],
     [
         'access' => 'user,group',

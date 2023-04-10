@@ -36,17 +36,17 @@ class ConfigurationKey
     /**
      * @var string External Import configuration key
      */
-    protected $configurationKey = '';
+    protected string $configurationKey = '';
 
     /**
      * @var string Name of the table
      */
-    protected $table = '';
+    protected string $table = '';
 
     /**
      * @var string Configuration index
      */
-    protected $index = '';
+    protected string $index = '';
 
     /**
      * Returns the configuration key.

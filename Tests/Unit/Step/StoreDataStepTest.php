@@ -225,7 +225,7 @@ class StoreDataStepTest extends UnitTestCase
      * @test
      * @dataProvider sortPagesProvider
      */
-    public function sortPagesDataSortsParentAndChildren($input, $expected): void
+    public function sortPagesDataSortsParentAndChildren(array $input, array $expected): void
     {
         $sortedData = $this->subject->sortPagesData($input);
         self::assertSame(

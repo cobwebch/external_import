@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 /*
@@ -28,7 +30,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class LogRepositoryTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
-            'typo3conf/ext/external_import'
+        'typo3conf/ext/external_import'
     ];
 
     /**
@@ -48,14 +50,13 @@ class LogRepositoryTest extends FunctionalTestCase
             $this->subject = GeneralUtility::makeInstance(LogRepository::class);
             $this->queryParameters = GeneralUtility::makeInstance(QueryParameters::class);
             $this->importDataSet(__DIR__ . '/../../Fixtures/Logs.xml');
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             self::markTestSkipped(
-                    sprintf(
-                            'Some initializations could not be performed (Exception: %s [%d])',
-                            $e->getMessage(),
-                            $e->getCode()
-                    )
+                sprintf(
+                    'Some initializations could not be performed (Exception: %s [%d])',
+                    $e->getMessage(),
+                    $e->getCode()
+                )
             );
         }
     }
@@ -63,64 +64,64 @@ class LogRepositoryTest extends FunctionalTestCase
     public function queryDataProvider(): array
     {
         $searchColumns = [
-                0 => [
-                        'searchable' => 'true',
-                        'name' => 'configuration'
-                ],
-                1 => [
-                        'searchable' => 'true',
-                        'name' => 'message'
-                ],
-                2 => [
-                        'searchable' => 'true',
-                        'name' => 'context'
-                ],
-                3 => [
-                        'searchable' => 'false',
-                        'name' => 'crdate'
-                ]
+            0 => [
+                'searchable' => 'true',
+                'name' => 'configuration'
+            ],
+            1 => [
+                'searchable' => 'true',
+                'name' => 'message'
+            ],
+            2 => [
+                'searchable' => 'true',
+                'name' => 'context'
+            ],
+            3 => [
+                'searchable' => 'false',
+                'name' => 'crdate'
+            ]
         ];
         $order = [
-                0 => [
-                        'column' => 3,
-                        'dir' => 'desc'
-                ]
+            0 => [
+                'column' => 3,
+                'dir' => 'desc'
+            ]
         ];
         return [
-                'No search, no limit' => [
-                        [
-                                'search' => [
-                                        'value' => ''
-                                ],
-                                'columns' => $searchColumns,
-                                'order' => $order
-                        ],
-                        4,
-                        4
+            'No search, no limit' => [
+                [
+                    'search' => [
+                        'value' => ''
+                    ],
+                    'columns' => $searchColumns,
+                    'order' => $order
                 ],
-                'No search, limit 2' => [
-                        [
-                                'search' => [
-                                        'value' => ''
-                                ],
-                                'columns' => $searchColumns,
-                                'length' => 2,
-                                'order' => $order
-                        ],
-                        4,
-                        2
+                4,
+                4
+            ],
+            'No search, limit 2' => [
+                [
+                    'search' => [
+                        'value' => ''
+                    ],
+                    'columns' => $searchColumns,
+                    'length' => 2,
+                    'order' => $order
                 ],
-                'Search for "cli"' => [
-                        [
-                                'search' => [
-                                        'value' => 'cli'
-                                ],
-                                'columns' => $searchColumns,
-                                'order' => $order
-                        ],
-                        3,
-                        3
-                ]
+                4,
+                2
+            ],
+            'Search for "cli"' => [
+                [
+                    'search' => [
+                        'value' => 'cli'
+                    ],
+                    'columns' => $searchColumns,
+                    'order' => $order
+                ],
+                3,
+                3
+            ]
         ];
     }
 
@@ -132,14 +133,17 @@ class LogRepositoryTest extends FunctionalTestCase
      * @param int $filteredCount The filtered number of records
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function countBySearchReturnsExpectedNumberOfRecords($parameters, $fullCount, $filteredCount): void
-    {
+    public function countBySearchReturnsExpectedNumberOfRecords(
+        array $parameters,
+        int $fullCount,
+        int $filteredCount
+    ): void {
         $this->queryParameters->setAllParameters($parameters);
         $count = $this->subject->countBySearch($this->queryParameters);
         // Compare with the full count, as limit is not applied to the count query
         self::assertEquals(
-                $fullCount,
-                $count
+            $fullCount,
+            $count
         );
     }
 
@@ -151,21 +155,21 @@ class LogRepositoryTest extends FunctionalTestCase
      * @param int $filteredCount The filtered number of records
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    public function findBySearchReturnsExpectedRecords($parameters, $fullCount, $filteredCount): void
+    public function findBySearchReturnsExpectedRecords(array $parameters, int $fullCount, int $filteredCount): void
     {
         $this->queryParameters->setAllParameters($parameters);
         $records = $this->subject->findBySearch($this->queryParameters);
         self::assertEquals(
-                $filteredCount,
-                $records->count()
+            $filteredCount,
+            $records->count()
         );
         // To go one step further, test ordering (which should be by descending creation date)
         // by accessing the first record and checking the creation timestamp
         /** @var \Cobweb\ExternalImport\Domain\Model\Log $firstRecord */
         $firstRecord = $records->getFirst();
         self::assertEquals(
-                1529789282,
-                $firstRecord->getCrdate()->getTimestamp()
+            1529789282,
+            $firstRecord->getCrdate()->getTimestamp()
         );
     }
 }

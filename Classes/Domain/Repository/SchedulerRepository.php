@@ -40,14 +40,14 @@ class SchedulerRepository implements SingletonInterface
     /**
      * @var string Name of the related task class
      */
-    public static $taskClassName = AutomatedSyncTask::class;
+    public static string $taskClassName = AutomatedSyncTask::class;
 
     /**
      * List of all tasks (stored locally in case the repository is called several times)
      *
      * @var array
      */
-    protected $tasks = [];
+    protected array $tasks = [];
 
     /**
      * Local instance of the scheduler object
@@ -102,7 +102,6 @@ class SchedulerRepository implements SingletonInterface
      */
     public function fetchTaskByUid(int $uid): array
     {
-        $uid = (int)$uid;
         /** @var $taskObject AutomatedSyncTask */
         foreach ($this->tasks as $taskObject) {
             if ($taskObject->getTaskUid() === $uid) {
@@ -199,7 +198,7 @@ class SchedulerRepository implements SingletonInterface
             'startTimestamp' => $startTimestamp,
             'startDate' => empty($startTimestamp) ? '' : date(
                 $editFormat,
-                (int)$taskObject->getExecution()->getStart()
+                $taskObject->getExecution()->getStart()
             )
         ];
     }
@@ -266,7 +265,6 @@ class SchedulerRepository implements SingletonInterface
     public function deleteTask(int $uid): bool
     {
         $result = false;
-        $uid = (int)$uid;
         if ($uid > 0) {
             $task = $this->scheduler->fetchTask($uid);
             // Stop any existing execution(s) and save
@@ -294,10 +292,10 @@ class SchedulerRepository implements SingletonInterface
     ): array {
         // Assemble base data
         $taskData = [
-            'uid' => (int)$uid,
+            'uid' => $uid,
             'table' => $table,
             'index' => $index,
-            'group' => (int)$group,
+            'group' => $group,
             'interval' => 0,
             'croncmd' => ''
         ];

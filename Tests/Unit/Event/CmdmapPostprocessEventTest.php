@@ -31,7 +31,7 @@ class CmdmapPostprocessEventTest extends UnitTestCase
     /**
      * @var CmdmapPostprocessEvent
      */
-    protected $subject;
+    protected CmdmapPostprocessEvent $subject;
 
     /**
      * @var Importer

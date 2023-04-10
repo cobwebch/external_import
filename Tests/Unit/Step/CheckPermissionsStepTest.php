@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Step\CheckPermissionsStep;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -53,7 +54,7 @@ class CheckPermissionsStepTest extends UnitTestCase
      */
     public function setDataSetsDataObject(): void
     {
-        $data = new \Cobweb\ExternalImport\Domain\Model\Data();
+        $data = new Data();
         $this->subject->setData($data);
         self::assertSame(
                 $data,

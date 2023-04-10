@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
  */
 
 
+use Cobweb\ExternalImport\Domain\Model\BackendUser;
 use Cobweb\ExternalImport\Domain\Model\Log;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
@@ -29,7 +30,7 @@ class LogTest extends UnitTestCase
     /**
      * @var Log
      */
-    protected $subject;
+    protected Log $subject;
 
     public function setUp(): void
     {
@@ -96,7 +97,7 @@ class LogTest extends UnitTestCase
      */
     public function setCruserIdSetsCruserId(): void
     {
-        $user = new \Cobweb\ExternalImport\Domain\Model\BackendUser();
+        $user = new BackendUser();
         $user->setUserName('ford.escort');
         $this->subject->setCruserId(
                 $user

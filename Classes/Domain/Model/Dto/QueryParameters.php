@@ -29,44 +29,44 @@ class QueryParameters
     /**
      * @var int Identifier of the DataTables draw request
      */
-    protected $draw = 0;
+    protected int $draw = 0;
 
     /**
      * @var string Search string
      */
-    protected $search = '';
+    protected string $search = '';
 
     /**
      * @var array List of columns in which the search is performed
      */
-    protected $searchColumns = [];
+    protected array $searchColumns = [];
 
     /**
      * @var int Maximum number of records to return
      */
-    protected $limit = 0;
+    protected int $limit = 0;
 
     /**
      * @var int Offset to apply (pagination)
      */
-    protected $offset = 0;
+    protected int $offset = 0;
 
     /**
      * @var string Name of the column to use for ordering
      */
-    protected $order = '';
+    protected string $order = '';
 
     /**
      * @var string Direction of ordering
      */
-    protected $direction = QueryInterface::ORDER_DESCENDING;
+    protected string $direction = QueryInterface::ORDER_DESCENDING;
 
     /**
      * Constructor.
      *
-     * @param array $parameters Query parameters from the AJAX query
+     * @param array|null $parameters Query parameters from the AJAX query
      */
-    public function __construct($parameters = null)
+    public function __construct(array $parameters = null)
     {
         if ($parameters !== null) {
             $this->setAllParameters($parameters);

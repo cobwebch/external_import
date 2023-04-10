@@ -29,12 +29,12 @@ final class ProcessConnectorParametersEvent
     /**
      * @var array Connector parameters
      */
-    protected $parameters = [];
+    protected array $parameters = [];
 
     /**
      * @var Configuration Current External Import configuration
      */
-    protected $externalConfiguration;
+    protected Configuration $externalConfiguration;
 
     public function __construct(array $parameters, Configuration $configuration)
     {

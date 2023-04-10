@@ -33,7 +33,7 @@ class XmlHandler implements DataHandlerInterface
     /**
      * @var EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    protected EventDispatcherInterface $eventDispatcher;
 
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
@@ -346,11 +346,11 @@ class XmlHandler implements DataHandlerInterface
      *
      * @param \DOMXPath $xPathObject Instantiated DOMXPath object
      * @param string $xPath XPath query to evaluate
-     * @param \DOMNode $context Node giving the context of the XPath query (null for root node)
+     * @param \DOMNode|null $context Node giving the context of the XPath query (null for root node)
      * @return \DOMNodeList List of found nodes
      * @throws \Exception
      */
-    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, $context = null): \DOMNodeList
+    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, \DOMNode $context = null): \DOMNodeList
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
         if ($resultNodes->length > 0) {

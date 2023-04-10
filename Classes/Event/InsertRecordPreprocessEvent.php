@@ -29,12 +29,12 @@ final class InsertRecordPreprocessEvent
     /**
      * @var Importer Back-reference to the calling Importer instance
      */
-    protected $importer;
+    protected Importer $importer;
 
     /**
      * @var array The record currently being prepared for insert
      */
-    protected $record = [];
+    protected array $record = [];
 
     public function __construct(array $record, Importer $importer)
     {

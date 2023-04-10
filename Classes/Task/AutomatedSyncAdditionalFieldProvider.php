@@ -33,8 +33,8 @@ use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
 class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInterface
 {
     // Name of the additional fields
-    protected static $itemFieldName = 'syncItem';
-    protected static $storageFieldName = 'syncStorage';
+    protected static string $itemFieldName = 'syncItem';
+    protected static string $storageFieldName = 'syncStorage';
 
     /**
      * This method is used to define new fields for adding or editing a task

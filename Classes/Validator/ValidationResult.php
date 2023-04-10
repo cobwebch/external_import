@@ -29,7 +29,7 @@ class ValidationResult
     /**
      * @var array List of validation results
      */
-    protected $results = [];
+    protected array $results = [];
 
     /**
      * Resets the list of results.
@@ -49,7 +49,7 @@ class ValidationResult
      * @param int $severity
      * @return void
      */
-    public function add(string $property, string $message, $severity = AbstractMessage::WARNING): void
+    public function add(string $property, string $message, int $severity = AbstractMessage::WARNING): void
     {
         if (!isset($this->results[$property])) {
             $this->results[$property] = [];

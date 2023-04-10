@@ -31,19 +31,19 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class UidRepository
 {
     /**
-     * @var Configuration
+     * @var Configuration|null
      */
-    protected $configuration;
+    protected ?Configuration $configuration = null;
 
     /**
-     * @var array List of retrieved UIDs
+     * @var array|null List of retrieved UIDs
      */
-    protected $existingUids;
+    protected ?array $existingUids = null;
 
     /**
-     * @var array List of current PIDs
+     * @var array|null List of current PIDs
      */
-    protected $currentPids;
+    protected ?array $currentPids = null;
 
     /**
      * Sets the Configuration object at run-time.

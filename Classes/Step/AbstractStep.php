@@ -17,7 +17,6 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
@@ -32,19 +31,19 @@ abstract class AbstractStep implements ImporterAwareInterface
     use ImporterAwareTrait;
 
     /**
-     * @var Data Object encapsulating the data being imported/processed
+     * @var Data|null Object encapsulating the data being imported/processed
      */
-    protected $data;
+    protected ?Data $data = null;
 
     /**
      * @var bool The import process is aborted if this flag is set to true during the current step
      */
-    protected $abortFlag = false;
+    protected bool $abortFlag = false;
 
     /**
      * @var array List of parameters specific to the step. NOTE: this is for custom steps. Standard steps never have any parameter.
      */
-    protected $parameters = [];
+    protected array $parameters = [];
 
     /**
      * Performs the actual tasks of the step.

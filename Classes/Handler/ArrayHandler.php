@@ -34,12 +34,12 @@ class ArrayHandler implements DataHandlerInterface
     /**
      * @var EventDispatcherInterface
      */
-    protected $eventDispatcher;
+    protected EventDispatcherInterface $eventDispatcher;
 
     /**
      * @var ExpressionLanguage
      */
-    protected $expressionLanguage;
+    protected ExpressionLanguage $expressionLanguage;
 
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {

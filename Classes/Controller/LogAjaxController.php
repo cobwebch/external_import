@@ -90,7 +90,7 @@ class LogAjaxController
         if ($response === null) {
             $response = GeneralUtility::makeInstance(JsonResponse::class);
         }
-        $response->getBody()->write(json_encode($fullResponse));
+        $response->getBody()->write(json_encode($fullResponse, JSON_THROW_ON_ERROR));
         return $response;
     }
 }

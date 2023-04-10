@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Utility;
 
 /*
@@ -14,14 +17,16 @@ namespace Cobweb\ExternalImport\Tests\Unit\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\BackendUserRepository;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
+use Cobweb\ExternalImport\Step\StoreDataStep;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Test suite for simple methods from the the reporting utility.
+ * Test suite for simple methods from the reporting utility.
  *
  * @package Cobweb\ExternalImport\Tests\Unit\Utility
  */
@@ -36,16 +41,24 @@ class ReportingUtilityTest extends UnitTestCase
     {
         parent::setUp();
         $this->subject = GeneralUtility::makeInstance(
-                ReportingUtility::class,
-                $this->getAccessibleMock(
-                        LogRepository::class,
-                        [],
-                        [],
-                        '',
-                        // Don't call the original constructor to avoid a cascade of dependencies
-                        false
-                ),
-                $this->getAccessibleMock(Context::class)
+            ReportingUtility::class,
+            $this->getAccessibleMock(
+                LogRepository::class,
+                [],
+                [],
+                '',
+                // Don't call the original constructor to avoid a cascade of dependencies
+                false
+            ),
+            $this->getAccessibleMock(Context::class),
+            $this->getAccessibleMock(
+                BackendUserRepository::class,
+                [],
+                [],
+                '',
+                // Don't call the original constructor to avoid a cascade of dependencies
+                false
+            )
         );
     }
 
@@ -64,20 +77,19 @@ class ReportingUtilityTest extends UnitTestCase
     public function getValueForStepReturnsExpectedValue(): void
     {
         $this->subject->setValueForStep(
-                \Cobweb\ExternalImport\Step\StoreDataStep::class,
-                'inserts',
-                10
+            StoreDataStep::class,
+            'inserts',
+            10
         );
         try {
             self::assertEquals(
-                    10,
-                    $this->subject->getValueForStep(
-                            \Cobweb\ExternalImport\Step\StoreDataStep::class,
-                            'inserts'
-                    )
+                10,
+                $this->subject->getValueForStep(
+                    StoreDataStep::class,
+                    'inserts'
+                )
             );
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             self::fail($e->getMessage());
         }
     }

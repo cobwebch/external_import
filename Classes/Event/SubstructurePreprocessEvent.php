@@ -29,7 +29,7 @@ final class SubstructurePreprocessEvent
     /**
      * @var Importer Back-reference to the calling Importer instance
      */
-    protected $importer;
+    protected Importer $importer;
 
     /**
      * @var array|\DOMNodeList The substructure to handle
@@ -39,17 +39,17 @@ final class SubstructurePreprocessEvent
     /**
      * @var array The current substructure configuration
      */
-    protected $substructureConfiguration = [];
+    protected array $substructureConfiguration = [];
 
     /**
      * @var string The name of the column being handled
      */
-    protected $column = '';
+    protected string $column = '';
 
     /**
      * @var string The type of data being handled ("array" or "xml")
      */
-    protected $dataType = '';
+    protected string $dataType = '';
 
     public function __construct($substructure, array $substructureConfiguration, string $column, string $dataType, Importer $importer)
     {

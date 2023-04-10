@@ -26,11 +26,12 @@ use Cobweb\ExternalImport\Step\TransformDataStep;
 use Cobweb\ExternalImport\Step\ValidateConfigurationStep;
 use Cobweb\ExternalImport\Step\ValidateConnectorStep;
 use Cobweb\ExternalImport\Step\ValidateDataStep;
+use Cobweb\ExternalImport\Transformation\ImageTransformation;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use \TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Test suite for the preview feature of the Importer class.
@@ -427,7 +428,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'created' => 1634286540,
                         'name' => 'Long sword (base)',
                         'sku' => '000001',
-                        'pictures' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                        'pictures' => ImageTransformation::$previewMessage,
                         'picture_title' => 'View from the left',
                         'picture_order' => '2'
                     ],
@@ -437,7 +438,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'created' => 1634286540,
                         'name' => 'Long sword (base)',
                         'sku' => '000001',
-                        'pictures' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                        'pictures' => ImageTransformation::$previewMessage,
                         'picture_title' => 'View from above',
                         'picture_order' => '1'
                     ],
@@ -447,7 +448,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'created' => 1634286540,
                         'name' => 'Long sword (base)',
                         'sku' => '000001',
-                        'pictures' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                        'pictures' => ImageTransformation::$previewMessage,
                         'picture_title' => 'View that does not exist'
                     ],
                     [
@@ -601,30 +602,27 @@ class ImporterPreviewTest extends FunctionalTestCase
                         ],
                         'sys_file_reference' => [
                             'NEW2' => [
-                                'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                'uid_local' => ImageTransformation::$previewMessage,
                                 'uid_foreign' => 'NEW1',
                                 'title' => 'View from the left',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'table_local' => 'sys_file',
                                 'pid' => 1
                             ],
                             'NEW3' => [
-                                'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                'uid_local' => ImageTransformation::$previewMessage,
                                 'uid_foreign' => 'NEW1',
                                 'title' => 'View from above',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'table_local' => 'sys_file',
                                 'pid' => 1
                             ],
                             'NEW4' => [
-                                'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                'uid_local' => ImageTransformation::$previewMessage,
                                 'uid_foreign' => 'NEW1',
                                 'title' => 'View that does not exist',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'table_local' => 'sys_file',
                                 'pid' => 1
                             ]
                         ]
@@ -677,7 +675,6 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'title' => 'View from the left',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'table_local' => 'sys_file',
                                 'pid' => 1
                             ],
                             'NEW2' => [
@@ -686,16 +683,14 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'title' => 'View from above',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'table_local' => 'sys_file',
                                 'pid' => 1
                             ],
                             'NEW3' => [
-                                'uid_local' => \Cobweb\ExternalImport\Transformation\ImageTransformation::$previewMessage,
+                                'uid_local' => ImageTransformation::$previewMessage,
                                 'uid_foreign' => 1,
                                 'title' => 'View that does not exist',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'table_local' => 'sys_file',
                                 'pid' => 1
                             ]
                         ]
@@ -916,7 +911,7 @@ class ImporterPreviewTest extends FunctionalTestCase
      * @param int $recordsCount How many records should be in the database
      * @param $result
      */
-    public function runPreviewOnStoreDataStepReturnsStorageDataAndWritesNothingToDatabase($fixtures, $prerequisites, $table, $index, $testDatabase, $recordsCount, $result): void
+    public function runPreviewOnStoreDataStepReturnsStorageDataAndWritesNothingToDatabase(array $fixtures, array $prerequisites, $table, $index, bool $testDatabase, int $recordsCount, $result): void
     {
         // Load designated fixture files
         if (count($fixtures) > 0) {

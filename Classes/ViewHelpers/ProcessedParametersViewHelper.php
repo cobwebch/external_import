@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
@@ -67,7 +68,7 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
 
         $eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
         $event = $eventDispatcher->dispatch(
-            new \Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent(
+            new ProcessConnectorParametersEvent(
                 $configuration->getGeneralConfigurationProperty('parameters'),
                 $configuration
             )

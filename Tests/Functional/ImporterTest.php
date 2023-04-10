@@ -21,8 +21,9 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use \TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Testcase for the External Import importer
@@ -165,7 +166,7 @@ class ImporterTest extends FunctionalTestCase
      */
     public function importBaseProductsWithImporterStoresTwoRecordsAndCreatesRelations(): void
     {
-        $resourceFactory = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Resource\ResourceFactory::class);
+        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         $storage = $resourceFactory->getDefaultStorage();
         if (!$storage->hasFolder('imported_images')) {
             $storage->createFolder('imported_images');
@@ -700,7 +701,7 @@ class ImporterTest extends FunctionalTestCase
      * @test
      * @dataProvider wrongConfigurationNames
      */
-    public function importWithErroneousConfigurationReturnsError($table, $configuration): void
+    public function importWithErroneousConfigurationReturnsError(string $table, string $configuration): void
     {
         $messages = $this->subject->synchronize(
             $table,

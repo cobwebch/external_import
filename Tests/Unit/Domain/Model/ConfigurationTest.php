@@ -16,6 +16,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Step\StoreDataStep;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use Cobweb\SvconnectorFeed\Service\ConnectorFeed;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -136,7 +137,7 @@ class ConfigurationTest extends UnitTestCase
     public function hasParametersForStepInitiallyReturnsFalse(): void
     {
         self::assertFalse(
-                $this->subject->hasParametersForStep(\Cobweb\ExternalImport\Step\StoreDataStep::class)
+                $this->subject->hasParametersForStep(StoreDataStep::class)
         );
     }
 
@@ -147,7 +148,7 @@ class ConfigurationTest extends UnitTestCase
     {
         self::assertSame(
                 [],
-                $this->subject->getParametersForStep(\Cobweb\ExternalImport\Step\StoreDataStep::class)
+                $this->subject->getParametersForStep(StoreDataStep::class)
         );
     }
 
@@ -159,11 +160,11 @@ class ConfigurationTest extends UnitTestCase
         $parameters = ['foo', 'bar' => 'baz'];
         $this->subject->setParametersForStep(
                 $parameters,
-                \Cobweb\ExternalImport\Step\StoreDataStep::class
+                StoreDataStep::class
         );
         self::assertSame(
                 $parameters,
-                $this->subject->getParametersForStep(\Cobweb\ExternalImport\Step\StoreDataStep::class)
+                $this->subject->getParametersForStep(StoreDataStep::class)
         );
     }
 
@@ -207,7 +208,7 @@ class ConfigurationTest extends UnitTestCase
      * @param int $pid
      * @dataProvider ctrlConfigurationProvider
      */
-    public function setGeneralConfigurationSetsGeneralConfigurationAndMore($configuration, $pid): void
+    public function setGeneralConfigurationSetsGeneralConfigurationAndMore(array $configuration, int $pid): void
     {
         $this->subject->setGeneralConfiguration($configuration);
         self::assertSame(
@@ -291,7 +292,7 @@ class ConfigurationTest extends UnitTestCase
      * @param string $columnName
      * @param array $processedConfiguration
      */
-    public function setColumnConfigurationSetsConfigurationAndSortsTransformations($additionalFieldsConfiguration, $columnConfiguration, $columnName, $processedConfiguration): void
+    public function setColumnConfigurationSetsConfigurationAndSortsTransformations(array $additionalFieldsConfiguration, array $columnConfiguration, string $columnName, array $processedConfiguration): void
     {
         if (count($additionalFieldsConfiguration) > 0) {
             $this->subject->setAdditionalFields($additionalFieldsConfiguration);

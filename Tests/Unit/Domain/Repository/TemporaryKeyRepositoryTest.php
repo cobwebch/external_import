@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test suite for the TemporaryKeyRepository class
@@ -33,7 +34,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(TemporaryKeyRepository::class);
+        $this->subject = GeneralUtility::makeInstance(TemporaryKeyRepository::class);
         $this->subject->setTestMode(true);
     }
 

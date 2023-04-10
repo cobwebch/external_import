@@ -17,7 +17,9 @@ namespace Cobweb\ExternalImport\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\BackendUser;
 use Cobweb\ExternalImport\Domain\Model\Log;
+use Cobweb\ExternalImport\Domain\Repository\BackendUserRepository;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use Cobweb\ExternalImport\Exception\UnknownReportingKeyException;
 use Cobweb\ExternalImport\Importer;
@@ -28,7 +30,6 @@ use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * This class performs various reporting actions after a data import has taken place.
@@ -42,32 +43,29 @@ class ReportingUtility implements LoggerAwareInterface
     /**
      * @var Importer Back-reference to the calling instance
      */
-    protected $importer;
+    protected Importer $importer;
 
     /**
      * @var array Extension configuration
      */
-    protected $extensionConfiguration = [];
+    protected array $extensionConfiguration = [];
 
     /**
      * @var array List of arbitrary values reported by different steps in the process
      */
-    protected $reportingValues = [];
+    protected array $reportingValues = [];
 
-    /**
-     * @var LogRepository
-     */
-    protected $logRepository;
+    protected LogRepository $logRepository;
 
-    /**
-     * @var Context
-     */
-    protected $context;
+    protected Context $context;
 
-    public function __construct(LogRepository $logRepository, Context $context)
+    protected BackendUserRepository $userRepository;
+
+    public function __construct(LogRepository $logRepository, Context $context, BackendUserRepository $userRepository)
     {
         $this->logRepository = $logRepository;
         $this->context = $context;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -98,9 +96,12 @@ class ReportingUtility implements LoggerAwareInterface
             $now->setTimestamp((int)$this->context->getPropertyFromAspect('date', 'timestamp'));
 
             try {
-                $currentUser = $this->context->getPropertyFromAspect('backend.user', 'id');
+                /** @var ?BackendUser $currentUser */
+                $currentUser = $this->userRepository->findByUid(
+                    $this->context->getPropertyFromAspect('backend.user', 'id')
+                );
             } catch (AspectNotFoundException $e) {
-                $currentUser = 0;
+                $currentUser = null;
             }
             foreach ($messages as $status => $messageList) {
                 foreach ($messageList as $message) {
@@ -109,7 +110,9 @@ class ReportingUtility implements LoggerAwareInterface
                     $logEntry->setPid((int)$this->extensionConfiguration['logStorage']);
                     $logEntry->setStatus($status);
                     $logEntry->setCrdate($now);
-                    $logEntry->setCruserId($currentUser);
+                    if ($currentUser !== null) {
+                        $logEntry->setCruserId($currentUser);
+                    }
                     $configuration = $this->importer->getExternalConfiguration() ?
                         $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex() :
                         'Invalid configuration';

@@ -32,12 +32,12 @@ class Data
     /**
      * @var array Array available for storing any kind of data that will be passed from step to step
      */
-    protected $extraData = [];
+    protected array $extraData = [];
 
     /**
      * @var array Array of data being imported
      */
-    protected $records = [];
+    protected array $records = [];
 
     /**
      * @return mixed

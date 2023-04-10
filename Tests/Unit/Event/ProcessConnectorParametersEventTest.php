@@ -31,12 +31,12 @@ class ProcessConnectorParametersEventTest extends UnitTestCase
     /**
      * @var ProcessConnectorParametersEvent
      */
-    protected $subject;
+    protected ProcessConnectorParametersEvent $subject;
 
     /**
      * @var Configuration
      */
-    protected $configuration;
+    protected Configuration $configuration;
 
     public function setUp(): void
     {
