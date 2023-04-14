@@ -450,6 +450,7 @@ class StoreDataStepTest extends FunctionalTestCase
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
+        $configuration->processConfiguration();
         $configuration->setTable('foo');
         $this->subject->getData()->setRecords($input);
         $uidRepository = $this->createMock(UidRepository::class);
@@ -461,7 +462,6 @@ class StoreDataStepTest extends FunctionalTestCase
         $temporaryKeyRepository->setTestMode(true);
         $importer->method('getTemporaryKeyRepository')->willReturn($temporaryKeyRepository);
         $this->subject->setImporter($importer);
-        $this->subject->prepareStructuredInformation($columnConfiguration);
 
         self::assertSame(
             $output,
@@ -515,57 +515,13 @@ class StoreDataStepTest extends FunctionalTestCase
         $temporaryKeyRepository = GeneralUtility::makeInstance(TemporaryKeyRepository::class);
         $temporaryKeyRepository->setTestMode(true);
         $importer->method('getTemporaryKeyRepository')->willReturn($temporaryKeyRepository);
+        $importer->method('getExternalConfiguration')->willReturn(
+            GeneralUtility::makeInstance(Configuration::class)
+        );
         $this->subject->setImporter($importer);
         self::assertSame(
             $result,
             $this->subject->prepareChildStructure('foo', $childConfiguration, $parentId, $parentData, [])
-        );
-    }
-
-
-    /**
-     * @test
-     */
-    public function getFieldsExcludedFromInsertsReturnsExcludedFields(): void
-    {
-        $importer = $this->createMock(Importer::class);
-        $this->subject->setImporter($importer);
-        $fakeConfiguration = [
-            'foo' => [
-                'disabledOperations' => 'insert'
-            ],
-            'bar' => [],
-            'baz' => [
-                'disabledOperations' => 'update,insert'
-            ]
-        ];
-        $this->subject->prepareStructuredInformation($fakeConfiguration);
-        self::assertSame(
-            ['foo', 'baz'],
-            $this->subject->getFieldsExcludedFromInserts()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getFieldsExcludedFromUpdatesReturnsExcludedFields(): void
-    {
-        $importer = $this->createMock(Importer::class);
-        $this->subject->setImporter($importer);
-        $fakeConfiguration = [
-            'foo' => [
-                'disabledOperations' => 'update'
-            ],
-            'bar' => [],
-            'baz' => [
-                'disabledOperations' => 'update,insert'
-            ]
-        ];
-        $this->subject->prepareStructuredInformation($fakeConfiguration);
-        self::assertSame(
-            ['foo', 'baz'],
-            $this->subject->getFieldsExcludedFromUpdates()
         );
     }
 }

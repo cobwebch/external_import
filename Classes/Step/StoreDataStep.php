@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
+use Cobweb\ExternalImport\Domain\Model\ProcessedConfiguration;
 use Cobweb\ExternalImport\Domain\Repository\ChildrenRepository;
 use Cobweb\ExternalImport\Event\CmdmapPostprocessEvent;
 use Cobweb\ExternalImport\Event\DatamapPostprocessEvent;
@@ -26,6 +27,7 @@ use Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent;
 use Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent;
 use Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ChildrenSortingUtility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -38,20 +40,7 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class StoreDataStep extends AbstractStep
 {
-    /**
-     * @var array
-     */
-    protected array $fieldsExcludedFromInserts = [];
-
-    /**
-     * @var array
-     */
-    protected array $fieldsExcludedFromUpdates = [];
-
-    /**
-     * @var array List of substructure fields for each column (if any)
-     */
-    protected array $substructureFields = [];
+    protected ProcessedConfiguration $processedConfiguration;
 
     /**
      * @var array Temporary storage for the values that are not saved and that are restored after saving
@@ -62,16 +51,6 @@ class StoreDataStep extends AbstractStep
      * @var array Map of internal id (maybe "NEW***" for new records) to external id (reference uid in the external data)
      */
     protected array $idToExternalIdMap = [];
-
-    /**
-     * @var array List of all columns having a "children" configuration (preloaded to avoid looping on the whole structure everytime)
-     */
-    protected array $childColumns = [];
-
-    /**
-     * @var bool True if at least one column has a "children" configuration (preloaded to avoid looping on the whole structure everytime)
-     */
-    protected bool $hasChildColumns = false;
 
     /**
      * @var array List of records from the main table that need to be deleted
@@ -109,11 +88,19 @@ class StoreDataStep extends AbstractStep
         return self::class;
     }
 
+    public function setImporter(Importer $importer): void
+    {
+        parent::setImporter($importer);
+        $this->processedConfiguration = $this->importer->getExternalConfiguration()->getProcessedConfiguration();
+    }
+
     /**
      * Stores the data to the database using DataHandler.
      *
      * @return void
      * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function run(): void
     {
@@ -128,10 +115,7 @@ class StoreDataStep extends AbstractStep
         $currentPids = $this->importer->getUidRepository()->getCurrentPids() ?? [];
 
         $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
-        $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
         $mainTable = $this->importer->getExternalConfiguration()->getTable();
-        // Extract list of excluded fields
-        $this->prepareStructuredInformation($columnConfiguration);
 
         // Initialize some variables
         $inserts = 0;
@@ -155,6 +139,12 @@ class StoreDataStep extends AbstractStep
         // Prepare the data to store
         $dateToStore = $this->prepareDataToStore();
 
+        $fieldsExcludeFormInserts = $this->processedConfiguration->getFieldsExcludedFromInserts();
+        $hasFieldsExcludeFormInserts = count($fieldsExcludeFormInserts) > 0;
+        $fieldsExcludeFormUpdates = $this->processedConfiguration->getFieldsExcludedFromUpdates();
+        $hasFieldsExcludeFormUpdates = count($fieldsExcludeFormUpdates) > 0;
+        $childColumns = $this->processedConfiguration->getChildColumns();
+        $hasChildColumns = $this->processedConfiguration->hasChildColumns();
         foreach ($dateToStore as $id => $theRecord) {
             $isExistingRecord = strpos((string)$id, 'NEW') === false;
 
@@ -171,9 +161,9 @@ class StoreDataStep extends AbstractStep
             }
 
             // Move child records into their proper position
-            if ($this->hasChildColumns) {
-                foreach ($this->childColumns as $columnName => $columnConfiguration) {
-                    $childTable = $columnConfiguration['table'];
+            if ($hasChildColumns) {
+                foreach ($childColumns as $columnName => $columnConfiguration) {
+                    $childTable = $columnConfiguration->getBaseDataProperty('table');
                     if (!isset($tceData[$childTable])) {
                         $tceData[$childTable] = [];
                         $storedRecords[$childTable] = [];
@@ -233,8 +223,8 @@ class StoreDataStep extends AbstractStep
                 }
 
                 // Remove the fields which must be excluded from updates
-                if (count($this->fieldsExcludedFromUpdates) > 0) {
-                    foreach ($this->fieldsExcludedFromUpdates as $excludedField) {
+                if ($hasFieldsExcludeFormUpdates) {
+                    foreach ($fieldsExcludeFormUpdates as $excludedField) {
                         unset($theRecord[$excludedField]);
                     }
                 }
@@ -277,8 +267,8 @@ class StoreDataStep extends AbstractStep
                 }
 
                 // Remove the fields which must be excluded from inserts
-                if (count($this->fieldsExcludedFromInserts) > 0) {
-                    foreach ($this->fieldsExcludedFromInserts as $excludedField) {
+                if ($hasFieldsExcludeFormInserts) {
+                    foreach ($fieldsExcludeFormInserts as $excludedField) {
                         unset($theRecord[$excludedField]);
                     }
                 }
@@ -614,6 +604,8 @@ class StoreDataStep extends AbstractStep
             $operations,
             'insert'
         );
+        $childColumns = $this->processedConfiguration->getChildColumns();
+        $hasChildColumns = $this->processedConfiguration->hasChildColumns();
 
         // Check if at least one column expects denormalized data
         $denormalizedColumns = [];
@@ -705,13 +697,13 @@ class StoreDataStep extends AbstractStep
                 }
             }
             // Assemble children records, if any
-            if ($this->hasChildColumns) {
+            if ($hasChildColumns) {
                 if (!isset($dataToStore[$id]['__children__'])) {
                     $dataToStore[$id]['__children__'] = [];
                 }
-                foreach ($this->childColumns as $mainColumnName => $childColumnConfiguration) {
-                    $childTable = $childColumnConfiguration['table'];
-                    $childConfiguration = $childColumnConfiguration['columns'];
+                foreach ($childColumns as $mainColumnName => $childColumnConfiguration) {
+                    $childTable = $childColumnConfiguration->getBaseDataProperty('table');
+                    $childConfiguration = $childColumnConfiguration->getBaseDataProperty('columns');
                     // Generate the child structure only if the record has a value for the given column,
                     // else incomplete data will ensue
                     if (isset($record[$mainColumnName])) {
@@ -726,7 +718,7 @@ class StoreDataStep extends AbstractStep
                             $childConfiguration,
                             $id,
                             $record,
-                            $childColumnConfiguration['sorting'] ?? []
+                            $childColumnConfiguration->getSorting()
                         );
                         $dataToStore[$id]['__children__'][$mainColumnName][$childTable][key($childStructure)] = current(
                             $childStructure
@@ -736,6 +728,7 @@ class StoreDataStep extends AbstractStep
                     if (strpos((string)$id, 'NEW') === false) {
                         $this->assembleChildrenDeletionInformation(
                             $mainColumnName,
+                            $childColumnConfiguration->getControlColumnsForDelete(),
                             $id,
                             $record,
                             $childTable,
@@ -830,13 +823,14 @@ class StoreDataStep extends AbstractStep
      * NOTE: this information exists at parent-level, i.e. there's one entry per parent record, not per child record.
      *
      * @param string $parentColumn
+     * @param array $controlColumnsForDelete
      * @param int $parentId
      * @param array $parentData
      * @param string $childTable
      * @param array $childConfiguration
      * @return void
      */
-    public function assembleChildrenDeletionInformation(string $parentColumn, int $parentId, array $parentData, string $childTable, array $childConfiguration): void
+    public function assembleChildrenDeletionInformation(string $parentColumn, array $controlColumnsForDelete, int $parentId, array $parentData, string $childTable, array $childConfiguration): void
     {
         // Ensure proper initialization of reference array
         if (!isset($this->childrenReferenceValues[$parentId])) {
@@ -848,7 +842,7 @@ class StoreDataStep extends AbstractStep
         $this->childrenReferenceValues[$parentId][$parentColumn][$childTable] = [];
         // Assemble the reference values
         foreach ($childConfiguration as $name => $configuration) {
-            if (in_array($name, $this->childColumns[$parentColumn]['controlColumnsForDelete'], true)) {
+            if (in_array($name, $controlColumnsForDelete, true)) {
                 // If it is a value, use it as is
                 if (isset($configuration['value'])) {
                     $this->childrenReferenceValues[$parentId][$parentColumn][$childTable][$name] = $configuration['value'];
@@ -879,6 +873,7 @@ class StoreDataStep extends AbstractStep
         $childrenRepository = GeneralUtility::makeInstance(ChildrenRepository::class);
 
         // Loop on all the data to store
+        $childColumns = $this->processedConfiguration->getChildColumns();
         foreach ($dataToStore as $id => $record) {
             // Act only if the parent record is not new (if it is new, all its child records will be new too)
             // and if it has child records. Otherwise, keep as is.
@@ -889,19 +884,20 @@ class StoreDataStep extends AbstractStep
                     // Reset the children list
                     $newDataToStore[$id]['__children__'] = [];
                     foreach ($record['__children__'] as $column => $childrenListForTable) {
+                        $childColumnConfiguration = $childColumns[$column];
                         foreach ($childrenListForTable as $childTable => $children) {
                             $iterator = 0;
                             $updatedChildren = [];
                             $allExistingChildren = [];
                             foreach ($children as $childId => $childData) {
                                 // If no columns were defined for checking existing records, don't bother and consider the record to be new
-                                if (count($this->childColumns[$column]['controlColumnsForUpdate']) === 0) {
+                                if (count($childColumnConfiguration->getControlColumnsForUpdate()) === 0) {
                                     $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;
                                 } else {
-                                    // If deletion is not disabled, grab existing records
+                                    // If deletion is allowed, grab existing records
                                     // (this is done once, but we need the data from one child record)
-                                    if ($iterator === 0 && !$this->childColumns[$column]['disabledOperations']['delete'] && count(
-                                            $this->childColumns[$column]['controlColumnsForDelete']
+                                    if ($iterator === 0 && $childColumnConfiguration->isDeleteAllowed() && count(
+                                            $childColumnConfiguration->getControlColumnsForDelete()
                                         ) > 0) {
                                         $allExistingChildren = $childrenRepository->findAllExistingRecords(
                                             $childTable,
@@ -913,7 +909,7 @@ class StoreDataStep extends AbstractStep
                                     // Check if the child record already exists
                                     $controlValues = [];
                                     $hasAllControlValues = true;
-                                    foreach ($this->childColumns[$column]['controlColumnsForUpdate'] as $name) {
+                                    foreach ($childColumnConfiguration->getControlColumnsForUpdate() as $name) {
                                         if (isset($childData[$name])) {
                                             $controlValues[$name] = $childData[$name];
                                         } else {
@@ -932,10 +928,10 @@ class StoreDataStep extends AbstractStep
                                             $updatedChildren[] = $existingId;
                                             // If update operation is allowed, keep the child record but replace its "NEW***" temporary key
                                             // so that it gets updated
-                                            if (!$this->childColumns[$column]['disabledOperations']['update']) {
+                                            if ($childColumnConfiguration->isUpdateAllowed()) {
                                                 $newDataToStore[$id]['__children__'][$column][$childTable][$existingId] = $childData;
                                                 // If children need to be sorted later on, replace existing ID in the prepared information
-                                                if (isset($this->childColumns[$column]['sorting'])) {
+                                                if (count($childColumnConfiguration->getSorting()) > 0) {
                                                     $this->childrenSortingInformation->replaceId(
                                                         $childTable,
                                                         $childId,
@@ -945,21 +941,21 @@ class StoreDataStep extends AbstractStep
                                             }
                                         } catch (\Exception $e) {
                                             // The relation does not exist yet, keep record as is, if insert operation is allowed
-                                            if (!$this->childColumns[$column]['disabledOperations']['insert']) {
+                                            if ($childColumnConfiguration->isInsertAllowed()) {
                                                 $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;
                                             }
                                         }
                                     // If a control value was missing, let the record be considered to be new (if inserts are allowed)
                                     // This will probably create a database error at a later point, but the user
                                     // will get to see it in the logs
-                                    } elseif (!$this->childColumns[$column]['disabledOperations']['insert']) {
+                                    } elseif ($childColumnConfiguration->isInsertAllowed()) {
                                         $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;
                                     }
                                 }
                                 $iterator++;
                             }
                             // Mark existing records that were not updated for deletion (if allowed)
-                            if (!$this->childColumns[$column]['disabledOperations']['delete']) {
+                            if ($childColumnConfiguration->isDeleteAllowed()) {
                                 $childrenToDelete = array_diff($allExistingChildren, $updatedChildren);
                                 if (!isset($this->childRecordsToDelete[$childTable])) {
                                     $this->childRecordsToDelete[$childTable] = [];
@@ -978,7 +974,8 @@ class StoreDataStep extends AbstractStep
                 // NOTE: the code is a bit overreaching for now, since multiple children configuration are not supported yet
                 $childrenControlValues = $this->childrenReferenceValues[$id] ?? [];
                 foreach ($childrenControlValues as $column => $childrenControlValuesForColumn) {
-                    if (!$this->childColumns[$column]['disabledOperations']['delete'] && !in_array($column, $childrenColumnsChecked, true)) {
+                    $childColumnConfiguration = $childColumns[$column];
+                    if ($childColumnConfiguration->isDeleteAllowed() && !in_array($column, $childrenColumnsChecked, true)) {
                         foreach ($childrenControlValuesForColumn as $childTable => $childrenControlValuesForTable) {
                             $allExistingChildren = $childrenRepository->findAllExistingRecords(
                                 $childTable,
@@ -996,56 +993,6 @@ class StoreDataStep extends AbstractStep
     }
 
     /**
-     * Parses the column configuration and prepares various lists of properties for better performance.
-     *
-     * @param array $columnConfiguration External Import configuration for the columns
-     */
-    public function prepareStructuredInformation(array $columnConfiguration): void
-    {
-        foreach ($columnConfiguration as $columnName => $columnData) {
-            if (array_key_exists('disabledOperations', $columnData)) {
-                if (GeneralUtility::inList($columnData['disabledOperations'], 'insert')) {
-                    $this->fieldsExcludedFromInserts[] = $columnName;
-                }
-                if (GeneralUtility::inList($columnData['disabledOperations'], 'update')) {
-                    $this->fieldsExcludedFromUpdates[] = $columnName;
-                }
-            }
-            if (array_key_exists('children', $columnData)) {
-                $childrenData = $columnData['children'];
-                // Reformat some information for easier access later
-                $childrenData['controlColumnsForUpdate'] = isset($childrenData['controlColumnsForUpdate']) ?
-                    GeneralUtility::trimExplode(',', $childrenData['controlColumnsForUpdate']) :
-                    [];
-                $childrenData['controlColumnsForDelete'] = isset($childrenData['controlColumnsForDelete']) ?
-                    GeneralUtility::trimExplode(',', $childrenData['controlColumnsForDelete']) :
-                    [];
-                $disabledOperations = [
-                    'insert' => false,
-                    'update' => false,
-                    'delete' => false
-                ];
-                if (isset($childrenData['disabledOperations'])) {
-                    $operations = GeneralUtility::trimExplode(',', $childrenData['disabledOperations']);
-                    foreach ($operations as $operation) {
-                        $disabledOperations[$operation] = true;
-                    }
-                }
-                $childrenData['disabledOperations'] = $disabledOperations;
-                if (array_key_exists('sorting', $columnData)) {
-                    $childrenData['sorting'] = $columnData['sorting'];
-                }
-                // Store the updated information
-                $this->childColumns[$columnName] = $childrenData;
-            }
-            $this->hasChildColumns = count($this->childColumns) > 0;
-            if (array_key_exists('substructureFields', $columnData)) {
-                $this->substructureFields[$columnName] = array_keys($columnData['substructureFields']);
-            }
-        }
-    }
-
-    /**
      * Reports about errors that happened during DataHandler operations.
      *
      * NOTE: this is rather approximate, as there's no way to know for sure
@@ -1053,6 +1000,8 @@ class StoreDataStep extends AbstractStep
      *
      * @param array $errorLog
      * @return void
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     protected function reportTceErrors(array $errorLog): void
     {
@@ -1236,25 +1185,5 @@ class StoreDataStep extends AbstractStep
                 $e->getTraceAsString()
             ]
         );
-    }
-
-    /**
-     * Returns the list of fields excluded from the insert operation.
-     *
-     * @return array
-     */
-    public function getFieldsExcludedFromInserts(): array
-    {
-        return $this->fieldsExcludedFromInserts;
-    }
-
-    /**
-     * Returns the list of fields excluded from the update operation.
-     *
-     * @return array
-     */
-    public function getFieldsExcludedFromUpdates(): array
-    {
-        return $this->fieldsExcludedFromUpdates;
     }
 }

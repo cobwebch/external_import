@@ -55,28 +55,6 @@ class StoreDataStepTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
-    public function getFieldsExcludedFromInsertsInitiallyReturnsEmptyArray(): void
-    {
-        self::assertSame(
-                [],
-                $this->subject->getFieldsExcludedFromInserts()
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function getFieldsExcludedFromUpdatesInitiallyReturnsEmptyArray(): void
-    {
-        self::assertSame(
-                [],
-                $this->subject->getFieldsExcludedFromUpdates()
-        );
-    }
-
     public function sortPagesProvider(): array
     {
         return [

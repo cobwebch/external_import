@@ -1,5 +1,6 @@
 <?php
-namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
+
+declare(strict_types=1);
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -13,6 +14,8 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
+namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Importer;

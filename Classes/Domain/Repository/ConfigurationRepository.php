@@ -230,6 +230,10 @@ class ConfigurationRepository
             $configuration->setAdditionalFields($externalConfiguration['additionalFields']);
         }
         $configuration->setColumnConfiguration($externalConfiguration['columns']);
+
+        // Once all values are set, restructure configuration for later use
+        $configuration->processConfiguration();
+
         return $configuration;
     }
 
@@ -244,7 +248,6 @@ class ConfigurationRepository
      */
     public function findBySync(bool $isSynchronizable): array
     {
-        $isSynchronizable = $isSynchronizable;
         $configurations = [];
 
         // Get a list of all external import Scheduler tasks

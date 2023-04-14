@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace Cobweb\ExternalImport\Domain\Model;
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -16,6 +14,8 @@ namespace Cobweb\ExternalImport\Domain\Model;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
+namespace Cobweb\ExternalImport\Domain\Model;
 
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\StepUtility;
@@ -91,9 +91,61 @@ class Configuration
      */
     protected ?ConnectorBase $connector = null;
 
+    protected ProcessedConfiguration $processedConfiguration;
+
+    public function __construct()
+    {
+        $this->processedConfiguration = GeneralUtility::makeInstance(ProcessedConfiguration::class);
+    }
+
     public function __toString()
     {
         return self::class;
+    }
+
+    /**
+     * Restructures part of the configuration for easier use during the import process.
+     *
+     *
+     * @return void
+     */
+    public function processConfiguration(): void
+    {
+        foreach ($this->columnConfiguration as $columnName => $columnData) {
+            // Process disabled operations for columns
+            if (array_key_exists('disabledOperations', $columnData)) {
+                if (GeneralUtility::inList($columnData['disabledOperations'], 'insert')) {
+                    $this->processedConfiguration->addFieldExcludedFromInserts($columnName);
+                }
+                if (GeneralUtility::inList($columnData['disabledOperations'], 'update')) {
+                    $this->processedConfiguration->addFieldExcludedFromUpdates($columnName);
+                }
+            }
+            // Process children configurations
+            if (array_key_exists('children', $columnData)) {
+                $childrenData = $columnData['children'];
+
+                $childConfiguration = GeneralUtility::makeInstance(ChildrenConfiguration::class);
+                $childConfiguration->setBaseData($childrenData);
+                $childConfiguration->setControlColumnsForUpdate(
+                    isset($childrenData['controlColumnsForUpdate']) ? GeneralUtility::trimExplode(',', $childrenData['controlColumnsForUpdate']) : []
+                );
+                $childConfiguration->setControlColumnsForDelete(
+                    isset($childrenData['controlColumnsForDelete']) ? GeneralUtility::trimExplode(',', $childrenData['controlColumnsForDelete']) : []
+                );
+                if (isset($childrenData['disabledOperations'])) {
+                    $operations = GeneralUtility::trimExplode(',', $childrenData['disabledOperations']);
+                    foreach ($operations as $operation) {
+                        $childConfiguration->setAllowedOperation($operation, false);
+                    }
+                }
+                if (array_key_exists('sorting', $childrenData)) {
+                    $childConfiguration->setSorting($childrenData['sorting']);
+                }
+
+                $this->processedConfiguration->addChildColumn($columnName, $childConfiguration);
+            }
+        }
     }
 
     /**
@@ -225,6 +277,16 @@ class Configuration
     public function getConfigurationForColumn(string $column): array
     {
         return $this->columnConfiguration[$column] ?? [];
+    }
+
+    /**
+     * Returns the processed configuration
+     *
+     * @return ProcessedConfiguration
+     */
+    public function getProcessedConfiguration(): ProcessedConfiguration
+    {
+        return $this->processedConfiguration;
     }
 
     /**
