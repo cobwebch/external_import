@@ -1,3 +1,7 @@
+2023-04-24 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Introduce reaction, resolves #278
+
 2023-04-14 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Introduce processed configuration, resolves #281

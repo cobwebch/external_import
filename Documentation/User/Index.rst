@@ -16,6 +16,7 @@ User manual
    BackendModule/Index
    Scheduler/Index
    Command/Index
+   Reaction/Index
    MappingData/Index
    Cache/Index
    Debugging/Index

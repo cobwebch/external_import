@@ -17,4 +17,8 @@ return [
         'provider' => TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
         'source' => 'EXT:external_import/Resources/Public/Icons/Log.svg'
     ],
+    'tx_external_import-reaction-import' => [
+        'provider' => TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+        'source' => 'EXT:external_import/Resources/Public/Icons/Reaction.svg'
+    ],
 ];

@@ -1,7 +1,5 @@
 <?php
 
-namespace Cobweb\ExternalImport\Exception;
-
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -15,14 +13,12 @@ namespace Cobweb\ExternalImport\Exception;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Exception;
+namespace Cobweb\ExternalImport\Exception;
 
 /**
- * Exception for invalid step given for preview.
- *
- * @package Cobweb\ExternalImport\Exception
+ * Exception to be thrown when the payload sent for import is not correct
  */
-class InvalidPreviewStepException extends Exception
+class InvalidPayloadException extends \RuntimeException
 {
 
 }

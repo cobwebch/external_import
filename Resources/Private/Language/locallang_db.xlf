@@ -26,6 +26,25 @@
 			<trans-unit id="tx_externalimport_domain_model_log.duration" xml:space="preserve">
 				<source>Duration (seconds)</source>
 			</trans-unit>
+
+			<trans-unit id="sys_reaction.reaction_type.import_external_data" xml:space="preserve">
+				<source>Import external data</source>
+			</trans-unit>
+			<trans-unit id="sys_reaction.external_import_configuration" xml:space="preserve">
+				<source>External Import configuration</source>
+			</trans-unit>
+			<trans-unit id="sys_reaction.external_import_configuration.description" xml:space="preserve">
+				<source>Choose a configuration to restrict this reaction to handling only this particular configuration. Leave empty to allow all configurations to be handled by the reaction.</source>
+			</trans-unit>
+			<trans-unit id="sys_reaction.external_import_configuration.synchronizable_tables" xml:space="preserve">
+				<source>Synchronizable tables</source>
+			</trans-unit>
+			<trans-unit id="sys_reaction.external_import_configuration.nonsynchronizable_tables" xml:space="preserve">
+				<source>Non-synchronizable tables</source>
+			</trans-unit>
+			<trans-unit id="sys_reaction.palette.additional" xml:space="preserve">
+				<source>Additional configuration</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
