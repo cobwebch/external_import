@@ -87,31 +87,21 @@ class ImportReaction implements ReactionInterface
                 return $this->jsonResponse(
                     [
                         'success' => false,
-                        'error' => sprintf(
-                            'One or more errors occurred : %s',
-                            implode(' // ', $messages[AbstractMessage::ERROR])
-                        )
+                        'errors' => $messages[AbstractMessage::ERROR],
                     ],
                     400
                 );
             }
             // If import completed successfully, report about success and possible warnings
-            $resultMessage = sprintf(
-                'Process completed successfully: %s',
-                implode(' // ', $messages[AbstractMessage::OK])
-            );
+            $responseBody = [
+                'success' => true,
+                'messages' => $messages[AbstractMessage::OK]
+            ];
             if (count($messages[AbstractMessage::WARNING]) > 0) {
-                $resultMessage .= sprintf(
-                    ' with some warnings: %s',
-                    implode(' // ', $messages[AbstractMessage::WARNING])
-                );
+                $responseBody['warnings'] .= $messages[AbstractMessage::WARNING];
             }
-            return $this->jsonResponse(
-                [
-                    'success' => true,
-                    'message' => $resultMessage
-                ],
-            );
+            return $this->jsonResponse($responseBody);
+
         } catch (InvalidPayloadException $e) {
             return $this->jsonResponse(
                 [
