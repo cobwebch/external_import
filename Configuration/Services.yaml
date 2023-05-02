@@ -70,6 +70,10 @@ services:
     public: true
     shared: false
 
+  Cobweb\ExternalImport\Step\ReportStep:
+    public: true
+    shared: false
+
   Cobweb\ExternalImport\Step\ValidateConfigurationStep:
     public: true
     shared: false

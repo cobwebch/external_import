@@ -140,7 +140,8 @@ class Importer implements LoggerAwareInterface
             Step\TransformDataStep::class,
             Step\StoreDataStep::class,
             Step\ClearCacheStep::class,
-            Step\ConnectorCallbackStep::class
+            Step\ConnectorCallbackStep::class,
+            Step\ReportStep::class,
     ];
 
     /**
@@ -153,7 +154,8 @@ class Importer implements LoggerAwareInterface
             Step\ValidateDataStep::class,
             Step\TransformDataStep::class,
             Step\StoreDataStep::class,
-            Step\ClearCacheStep::class
+            Step\ClearCacheStep::class,
+            Step\ReportStep::class,
     ];
 
     /**
@@ -283,8 +285,6 @@ class Importer implements LoggerAwareInterface
                 )
             );
         }
-        // Log results
-        $this->reportingUtility->writeToLog();
 
         return $this->messages;
     }
@@ -349,8 +349,7 @@ class Importer implements LoggerAwareInterface
                 )
             );
         }
-        // Log results
-        $this->reportingUtility->writeToLog();
+
         return $this->messages;
     }
 

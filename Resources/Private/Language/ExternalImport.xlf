@@ -227,6 +227,9 @@
 			<trans-unit id="bemodulePermissions.scheduler.description" xml:space="preserve">
 				<source>Allow the user to create, modify and delete Scheduler tasks in the Backend module.</source>
 			</trans-unit>
+			<trans-unit id="webhook.after_import" xml:space="preserve">
+				<source>... when an External Import run is completed</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

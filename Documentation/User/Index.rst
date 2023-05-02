@@ -17,6 +17,7 @@ User manual
    Scheduler/Index
    Command/Index
    Reaction/Index
+   Webhook/Index
    MappingData/Index
    Cache/Index
    Debugging/Index

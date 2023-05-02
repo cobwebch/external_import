@@ -1,3 +1,7 @@
+2023-05-02 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Introduce webhook in new Report step, resolves #279
+
 2023-04-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Introduce reaction, resolves #278
