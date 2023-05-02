@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Utility;
 
 /*
@@ -44,92 +47,96 @@ class StepUtilityTest extends UnitTestCase
     public function customStepsGoodConfigurationProvider(): array
     {
         return [
-                'insert step before first step' => [
-                        // Current steps
-                        Importer::SYNCHRONYZE_DATA_STEPS,
-                        // New step configuration
-                        [
-                                'class' => Step\HandleDataStep::class,
-                                'position' => 'before:' . Step\CheckPermissionsStep::class
-                        ],
-                        // Resulting steps
-                        [
-                                Step\HandleDataStep::class,
-                                Step\CheckPermissionsStep::class,
-                                Step\ValidateConfigurationStep::class,
-                                Step\ValidateConnectorStep::class,
-                                Step\ReadDataStep::class,
-                                Step\HandleDataStep::class,
-                                Step\ValidateDataStep::class,
-                                Step\TransformDataStep::class,
-                                Step\StoreDataStep::class,
-                                Step\ClearCacheStep::class,
-                                Step\ConnectorCallbackStep::class
-                        ]
+            'insert step before first step' => [
+                // Current steps
+                Importer::SYNCHRONYZE_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => Step\HandleDataStep::class,
+                    'position' => 'before:' . Step\CheckPermissionsStep::class
                 ],
-                'insert step after transform data' => [
-                        // Current steps
-                        Importer::SYNCHRONYZE_DATA_STEPS,
-                        // New step configuration
-                        [
-                                'class' => Step\HandleDataStep::class,
-                                'position' => 'after:' . Step\TransformDataStep::class
-                        ],
-                        // Resulting steps
-                        [
-                                Step\CheckPermissionsStep::class,
-                                Step\ValidateConfigurationStep::class,
-                                Step\ValidateConnectorStep::class,
-                                Step\ReadDataStep::class,
-                                Step\HandleDataStep::class,
-                                Step\ValidateDataStep::class,
-                                Step\TransformDataStep::class,
-                                Step\HandleDataStep::class,
-                                Step\StoreDataStep::class,
-                                Step\ClearCacheStep::class,
-                                Step\ConnectorCallbackStep::class
-                        ]
-                ],
-                'insert step before validate data step' => [
-                        Importer::IMPORT_DATA_STEPS,
-                        [
-                                'class' => Step\HandleDataStep::class,
-                                'position' => 'before:' . Step\ValidateDataStep::class
-                        ],
-                        [
-                                Step\CheckPermissionsStep::class,
-                                Step\ValidateConfigurationStep::class,
-                                Step\HandleDataStep::class,
-                                Step\HandleDataStep::class,
-                                Step\ValidateDataStep::class,
-                                Step\TransformDataStep::class,
-                                Step\StoreDataStep::class,
-                                Step\ClearCacheStep::class
-                        ]
-                ],
-                'insert step after last step' => [
-                        // Current steps
-                        Importer::SYNCHRONYZE_DATA_STEPS,
-                        // New step configuration
-                        [
-                                'class' => Step\HandleDataStep::class,
-                                'position' => 'after:' . Step\ConnectorCallbackStep::class
-                        ],
-                        // Resulting steps
-                        [
-                                Step\CheckPermissionsStep::class,
-                                Step\ValidateConfigurationStep::class,
-                                Step\ValidateConnectorStep::class,
-                                Step\ReadDataStep::class,
-                                Step\HandleDataStep::class,
-                                Step\ValidateDataStep::class,
-                                Step\TransformDataStep::class,
-                                Step\StoreDataStep::class,
-                                Step\ClearCacheStep::class,
-                                Step\ConnectorCallbackStep::class,
-                                Step\HandleDataStep::class
-                        ]
+                // Resulting steps
+                [
+                    Step\HandleDataStep::class,
+                    Step\CheckPermissionsStep::class,
+                    Step\ValidateConfigurationStep::class,
+                    Step\ValidateConnectorStep::class,
+                    Step\ReadDataStep::class,
+                    Step\HandleDataStep::class,
+                    Step\ValidateDataStep::class,
+                    Step\TransformDataStep::class,
+                    Step\StoreDataStep::class,
+                    Step\ClearCacheStep::class,
+                    Step\ConnectorCallbackStep::class,
+                    Step\ReportStep::class,
                 ]
+            ],
+            'insert step after transform data' => [
+                // Current steps
+                Importer::SYNCHRONYZE_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => Step\HandleDataStep::class,
+                    'position' => 'after:' . Step\TransformDataStep::class
+                ],
+                // Resulting steps
+                [
+                    Step\CheckPermissionsStep::class,
+                    Step\ValidateConfigurationStep::class,
+                    Step\ValidateConnectorStep::class,
+                    Step\ReadDataStep::class,
+                    Step\HandleDataStep::class,
+                    Step\ValidateDataStep::class,
+                    Step\TransformDataStep::class,
+                    Step\HandleDataStep::class,
+                    Step\StoreDataStep::class,
+                    Step\ClearCacheStep::class,
+                    Step\ConnectorCallbackStep::class,
+                    Step\ReportStep::class,
+                ]
+            ],
+            'insert step before validate data step' => [
+                Importer::IMPORT_DATA_STEPS,
+                [
+                    'class' => Step\HandleDataStep::class,
+                    'position' => 'before:' . Step\ValidateDataStep::class
+                ],
+                [
+                    Step\CheckPermissionsStep::class,
+                    Step\ValidateConfigurationStep::class,
+                    Step\HandleDataStep::class,
+                    Step\HandleDataStep::class,
+                    Step\ValidateDataStep::class,
+                    Step\TransformDataStep::class,
+                    Step\StoreDataStep::class,
+                    Step\ClearCacheStep::class,
+                    Step\ReportStep::class,
+                ]
+            ],
+            'insert step after last step' => [
+                // Current steps
+                Importer::SYNCHRONYZE_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => Step\HandleDataStep::class,
+                    'position' => 'after:' . Step\ReportStep::class
+                ],
+                // Resulting steps
+                [
+                    Step\CheckPermissionsStep::class,
+                    Step\ValidateConfigurationStep::class,
+                    Step\ValidateConnectorStep::class,
+                    Step\ReadDataStep::class,
+                    Step\HandleDataStep::class,
+                    Step\ValidateDataStep::class,
+                    Step\TransformDataStep::class,
+                    Step\StoreDataStep::class,
+                    Step\ClearCacheStep::class,
+                    Step\ConnectorCallbackStep::class,
+                    Step\ReportStep::class,
+                    Step\HandleDataStep::class
+                ]
+            ]
         ];
     }
 
@@ -140,14 +147,17 @@ class StepUtilityTest extends UnitTestCase
      * @param array $configuration
      * @param array $resultingSteps
      */
-    public function insertStepInsertsCustomStepAtCorrectLocation(array $currentSteps, array $configuration, array $resultingSteps): void
-    {
+    public function insertStepInsertsCustomStepAtCorrectLocation(
+        array $currentSteps,
+        array $configuration,
+        array $resultingSteps
+    ): void {
         self::assertSame(
-                $resultingSteps,
-                $this->subject->insertStep(
-                        $currentSteps,
-                        $configuration
-                )
+            $resultingSteps,
+            $this->subject->insertStep(
+                $currentSteps,
+                $configuration
+            )
         );
     }
 
@@ -157,68 +167,68 @@ class StepUtilityTest extends UnitTestCase
     public function customStepsWrongConfigurationProvider(): array
     {
         return [
-                'insert step with missing class information' => [
-                    // Current steps
-                    Importer::SYNCHRONYZE_DATA_STEPS,
-                    // New step configuration
-                    [
-                            'position' => 'after:' . Step\TransformDataStep::class
-                    ]
-                ],
-                'insert step with missing position information' => [
-                    // Current steps
-                    Importer::SYNCHRONYZE_DATA_STEPS,
-                    // New step configuration
-                    [
-                            'class' => Step\HandleDataStep::class
-                    ]
-                ],
-                'insert step with wrong syntax for position' => [
-                    // Current steps
-                    Importer::SYNCHRONYZE_DATA_STEPS,
-                    // New step configuration
-                    [
-                            'class' => Step\HandleDataStep::class,
-                            'position' => Step\TransformDataStep::class
-                    ]
-                ],
-                'insert step with wrong keyword for position' => [
-                    // Current steps
-                    Importer::SYNCHRONYZE_DATA_STEPS,
-                    // New step configuration
-                    [
-                            'class' => Step\HandleDataStep::class,
-                            'position' => 'next:' . Step\TransformDataStep::class
-                    ]
-                ],
-                'insert step with unknown class' => [
-                    // Current steps
-                    Importer::IMPORT_DATA_STEPS,
-                    // New step configuration
-                    [
-                            'class' => 'Foo\\Bar\\Baz',
-                            'position' => 'after:' . Step\TransformDataStep::class
-                    ]
-                ],
-                'insert step after unregistered step' => [
-                    // Current steps
-                    Importer::IMPORT_DATA_STEPS,
-                    // New step configuration
-                    [
-                            'class' => Step\HandleDataStep::class,
-                            'position' => 'after:' . Step\ReadDataStep::class
-                    ]
-                ],
-                'insert step after unknown step' => [
-                    // Current steps
-                    Importer::SYNCHRONYZE_DATA_STEPS,
-                    // New step configuration
-                    [
-                            'class' => Step\HandleDataStep::class,
-                            'position' => 'before:Not\\Known\\Step'
-                    ]
-                ],
-                // TODO: to be complete the instantiation of an improper class should be tested, but this would be a functional test
+            'insert step with missing class information' => [
+                // Current steps
+                Importer::SYNCHRONYZE_DATA_STEPS,
+                // New step configuration
+                [
+                    'position' => 'after:' . Step\TransformDataStep::class
+                ]
+            ],
+            'insert step with missing position information' => [
+                // Current steps
+                Importer::SYNCHRONYZE_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => Step\HandleDataStep::class
+                ]
+            ],
+            'insert step with wrong syntax for position' => [
+                // Current steps
+                Importer::SYNCHRONYZE_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => Step\HandleDataStep::class,
+                    'position' => Step\TransformDataStep::class
+                ]
+            ],
+            'insert step with wrong keyword for position' => [
+                // Current steps
+                Importer::SYNCHRONYZE_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => Step\HandleDataStep::class,
+                    'position' => 'next:' . Step\TransformDataStep::class
+                ]
+            ],
+            'insert step with unknown class' => [
+                // Current steps
+                Importer::IMPORT_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => 'Foo\\Bar\\Baz',
+                    'position' => 'after:' . Step\TransformDataStep::class
+                ]
+            ],
+            'insert step after unregistered step' => [
+                // Current steps
+                Importer::IMPORT_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => Step\HandleDataStep::class,
+                    'position' => 'after:' . Step\ReadDataStep::class
+                ]
+            ],
+            'insert step after unknown step' => [
+                // Current steps
+                Importer::SYNCHRONYZE_DATA_STEPS,
+                // New step configuration
+                [
+                    'class' => Step\HandleDataStep::class,
+                    'position' => 'before:Not\\Known\\Step'
+                ]
+            ],
+            // TODO: to be complete the instantiation of an improper class should be tested, but this would be a functional test
         ];
     }
 
@@ -228,12 +238,14 @@ class StepUtilityTest extends UnitTestCase
      * @param array $currentSteps
      * @param array $configuration
      */
-    public function validateCustomStepConfigurationWithWrongInformationThrowsException(array $currentSteps, array $configuration): void
-    {
+    public function validateCustomStepConfigurationWithWrongInformationThrowsException(
+        array $currentSteps,
+        array $configuration
+    ): void {
         $this->expectException(\Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration::class);
         $this->subject->validateCustomStepConfiguration(
-                $currentSteps,
-                $configuration
+            $currentSteps,
+            $configuration
         );
     }
 
@@ -246,11 +258,11 @@ class StepUtilityTest extends UnitTestCase
     public function insertStepWithWrongInformationReturnsCurrentSteps(array $currentSteps, array $configuration): void
     {
         self::assertSame(
+            $currentSteps,
+            $this->subject->insertStep(
                 $currentSteps,
-                $this->subject->insertStep(
-                        $currentSteps,
-                        $configuration
-                )
+                $configuration
+            )
         );
     }
 }

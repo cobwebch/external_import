@@ -29,8 +29,11 @@ use TYPO3\CMS\Core\Messaging\WebhookMessageInterface;
 )]
 class AfterImportMessage implements WebhookMessageInterface
 {
-    public function __construct(private readonly Importer $importer)
+    protected Importer $importer;
+
+    public function __construct(Importer $importer)
     {
+        $this->importer = $importer;
     }
 
     /**
