@@ -26,6 +26,9 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
  */
 class ConnectorCallbackStep extends AbstractStep
 {
+    public function __construct() {
+        $this->setExecuteDespiteAbort(true);
+    }
 
     /**
      * Evaluates a rough error status and calls back the connector.

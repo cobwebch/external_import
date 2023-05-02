@@ -1,6 +1,7 @@
 2023-05-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Introduce webhook in new Report step, resolves #279
+	* Make it possible to run steps despite process being aborted, resolves #284
 
 2023-04-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 

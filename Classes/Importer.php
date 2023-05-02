@@ -103,6 +103,11 @@ class Importer implements LoggerAwareInterface
     protected bool $verbose = false;
 
     /**
+     * @var bool True if the process has been aborted by one of the steps
+     */
+    protected bool $processAborted = false;
+
+    /**
      * @var string Name of the Step class at which the process should stop when running in preview mode
      */
     protected string $previewStep = '';
@@ -378,32 +383,34 @@ class Importer implements LoggerAwareInterface
             $this->resetPreviewData();
             /** @var AbstractStep $step */
             $step = GeneralUtility::makeInstance($stepClass);
-            $step->setImporter($this);
-            $step->setData($data);
-            if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
-                $step->setParameters($this->externalConfiguration->getParametersForStep($stepClass));
-            }
-            $step->run();
-            // Abort process if step required it
-            if ($step->isAbortFlag()) {
-                // Report about aborting
-                $this->addMessage(
+            if (!$this->isProcessAborted() || ($this->isProcessAborted() && $step->isExecuteDespiteAbort())) {
+                $step->setImporter($this);
+                $step->setData($data);
+                if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
+                    $step->setParameters($this->externalConfiguration->getParametersForStep($stepClass));
+                }
+                $step->run();
+                // Abort process if step required it
+                if ($step->isAbortFlag()) {
+                    $this->setProcessAborted(true);
+                    // Report about aborting
+                    $this->addMessage(
                         LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
-                                'external_import'
+                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
+                            'external_import'
                         ),
                         AbstractMessage::WARNING
-                );
-                break;
+                    );
+                }
+                $data = $step->getData();
+                // We set the end time after each step, so that we still capture a certain duration even if one step crashes unexpectedly
+                $this->setEndTime(time());
             }
             // If preview is on and the step is matched, exit process
             // NOTE: this happens after abort, as aborting means there's an underlying problem, which should be reported no matter what
             if ($this->isPreview() && $this->getPreviewStep() === $stepClass) {
                 break;
             }
-            $data = $step->getData();
-            // We set the end time after each step, so that we still capture a certain duration even if one step crashes unexpectedly
-            $this->setEndTime(time());
         }
     }
 
@@ -669,6 +676,22 @@ class Importer implements LoggerAwareInterface
     public function setVerbose(bool $verbose): void
     {
         $this->verbose = $verbose;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProcessAborted(): bool
+    {
+        return $this->processAborted;
+    }
+
+    /**
+     * @param bool $processAborted
+     */
+    public function setProcessAborted(bool $processAborted): void
+    {
+        $this->processAborted = $processAborted;
     }
 
     /**

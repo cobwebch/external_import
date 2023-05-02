@@ -41,6 +41,11 @@ abstract class AbstractStep implements ImporterAwareInterface
     protected bool $abortFlag = false;
 
     /**
+     * @var bool If set to true, the step is executed even if the process has been aborted
+     */
+    protected bool $executeDespiteAbort = false;
+
+    /**
      * @var array List of parameters specific to the step. NOTE: this is for custom steps. Standard steps never have any parameter.
      */
     protected array $parameters = [];
@@ -95,6 +100,22 @@ abstract class AbstractStep implements ImporterAwareInterface
     public function setAbortFlag(bool $abortFlag): void
     {
         $this->abortFlag = $abortFlag;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isExecuteDespiteAbort(): bool
+    {
+        return $this->executeDespiteAbort;
+    }
+
+    /**
+     * @param bool $executeDespiteAbort
+     */
+    public function setExecuteDespiteAbort(bool $executeDespiteAbort): void
+    {
+        $this->executeDespiteAbort = $executeDespiteAbort;
     }
 
     /**

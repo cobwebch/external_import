@@ -25,7 +25,8 @@ Each step may affect the raw data (the data provided by the external
 source) and the so-called "records" (the data as it is transformed by
 External Import along the various steps). A step can also set an
 "abort" flag, which will interrupt the import process after the step
-has completed.
+has completed. The following steps will not be executed unless specifically
+designed to do so (this is indicated in the list below).
 
 This chapter gives an overview of what each step does:
 
@@ -131,7 +132,13 @@ This chapter gives an overview of what each step does:
 
    **Connector callback**
 
-   In this step the connector is called again in case one wishes to
+   In this step the connector is called again in case one wishes to perform
+   some clean up operations on the source from which the data was imported
+   (for example, mark the source data as having been imported). The
+   :code:`postProcessOperations()` method of the connector API is called.
+
+   This step is called even if the process was aborted, so that error handling
+   can happen with regards to the connector.
 
 .. php:namespace:: Cobweb\ExternalImport\Step
 
@@ -142,6 +149,8 @@ This chapter gives an overview of what each step does:
    This last step on the process performs reporting, essentially writing
    all log entries. It also triggers the :php:`\Cobweb\ExternalImport\Event\ReportEvent`,
    which itself triggers the :ref:`end of run webhook message <user-webhook>`.
+
+   This step is called even if the process was aborted, so that error can be reported.
 
 
 It is possible to add :ref:`custom Step classes <administration-general-tca-properties-customsteps>`

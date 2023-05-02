@@ -56,10 +56,19 @@ within the custom step class:
 .. code-block:: php
 
       $this->getImporter()->addMessage(
-              'Your message here...',
-              FlashMessage::WARNING // or whatever error level
+           'Your message here...',
+           FlashMessage::WARNING // or whatever error level
       );
 
+It is also possible to mark a custom step so that it is executed even if the process
+was aborted by a previous step. This is done by setting the :code:`executeDespiteAbort`
+member variable to :code:`true` in the constructor.
+
+.. code-block:: php
+
+    public function __construct() {
+        $this->setExecuteDespiteAbort(true);
+    }
 
 In general, use the getters and setters to access the member variables.
 

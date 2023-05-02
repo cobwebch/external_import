@@ -31,6 +31,7 @@ class ReportStep extends AbstractStep
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->setExecuteDespiteAbort(true);
     }
 
     public function run(): void
