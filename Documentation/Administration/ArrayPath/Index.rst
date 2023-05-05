@@ -226,7 +226,7 @@ This may not seem very intuitive at first. This is because this feature was desi
 to mimic what you might get from a XML structure with a XPath query. Consider the
 following structure:
 
-.. code:: xml
+.. code-block:: xml
 
    <books>
       <book>
