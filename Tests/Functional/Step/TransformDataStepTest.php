@@ -33,6 +33,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class TransformDataStepTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
+        'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import',
         'typo3conf/ext/externalimport_test'
     ];

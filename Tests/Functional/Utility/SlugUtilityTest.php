@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Functional\Utility;
 
 /*
@@ -28,6 +30,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class SlugUtilityTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
+        'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import',
         'typo3conf/ext/externalimport_test'
     ];

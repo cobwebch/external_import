@@ -30,6 +30,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class LogRepositoryTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
+        'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import'
     ];
 

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Functional\Validator;
 
 /*
@@ -24,7 +27,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ColumnConfigurationValidatorTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
-            'typo3conf/ext/external_import'
+        'typo3conf/ext/svconnector',
+        'typo3conf/ext/external_import'
     ];
 
     /**
@@ -45,172 +49,172 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
     public function validConfigurationProvider(): array
     {
         return [
-                'Data type "array": using property "field" (string)' => [
-                        [
-                                'data' => 'array',
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'foo'
-                                ]
-                        ]
+            'Data type "array": using property "field" (string)' => [
+                [
+                    'data' => 'array',
                 ],
-                'Data type "array": using property "field" (positive integer)' => [
-                        [
-                                'data' => 'array',
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 42
-                                ]
-                        ]
-                ],
-                'Data type "array": using property "field" (zero)' => [
-                        [
-                                'data' => 'array',
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 0
-                                ]
-                        ]
-                ],
-                'Data type "array": using property "value" (number)' => [
-                        [
-                                'data' => 'array',
-                        ],
-                        [
-                                'col' => [
-                                        'transformations' => [
-                                                10 => [
-                                                        'value' => 17
-                                                ]
-                                        ]
-                                ]
-                        ]
-                ],
-                'Data type "array": using property "value" (string)' => [
-                        [
-                                'data' => 'array',
-                        ],
-                        [
-                                'col' => [
-                                        'transformations' => [
-                                                10 => [
-                                                        'value' => 'bar'
-                                                ]
-                                        ]
-                                ]
-                        ]
-                ],
-                'Data type "array": using property "arrayPath"' => [
-                        [
-                                'data' => 'array',
-                        ],
-                        [
-                                'col' => [
-                                        'arrayPath' => 'foo/bar'
-                                ]
-                        ]
-                ],
-                'Data type "xml": using property "field" (string)' => [
-                        [
-                                'data' => 'xml',
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'foo'
-                                ]
-                        ]
-                ],
-                'Data type "xml": using property "value" (number)' => [
-                        [
-                                'data' => 'xml',
-                        ],
-                        [
-                                'col' => [
-                                        'value' => 17
-                                ]
-                        ]
-                ],
-                'Data type "xml": using property "value" (string)' => [
-                        [
-                                'data' => 'xml',
-                        ],
-                        [
-                                'col' => [
-                                        'value' => 'bar'
-                                ]
-                        ]
-                ],
-                'Data type "xml": using property "attribute" (string)' => [
-                        [
-                                'data' => 'xml',
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'baz'
-                                ]
-                        ]
-                ],
-                'Data type "xml": using property "xpath" (string)' => [
-                        [
-                                'data' => 'xml',
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'hello'
-                                ]
-                        ]
-                ],
-                'Children definition' => [
-                        // No need for a general configuration
-                        [],
-                        [
-                                'col' => [
-                                        'children' => [
-                                                'table' => 'foo',
-                                                'columns' => [
-                                                        'column1' => [
-                                                                'value' => 'bar'
-                                                        ],
-                                                        'column2' => [
-                                                                'field' => 'baz'
-                                                        ]
-                                                ]
-                                        ]
-                                ]
-                        ]
-                ],
-                'Substructure fields: valid structure and properties for "array" data type' => [
-                        [
-                                'data' => 'array'
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'foo',
-                                        'substructureFields' => [
-                                                'foo' => [
-                                                        'arrayPath' => 'bar'
-                                                ]
-                                        ]
-                                ]
-                        ]
-                ],
-                'Substructure fields: valid structure and properties for "xml" data type' => [
-                        [
-                                'data' => 'xml'
-                        ],
-                        [
-                                'col' => [
-                                        'substructureFields' => [
-                                                'foo' => [
-                                                        'xpath' => 'bar'
-                                                ]
-                                        ]
-                                ]
-                        ]
+                [
+                    'col' => [
+                        'field' => 'foo'
+                    ]
                 ]
+            ],
+            'Data type "array": using property "field" (positive integer)' => [
+                [
+                    'data' => 'array',
+                ],
+                [
+                    'col' => [
+                        'field' => 42
+                    ]
+                ]
+            ],
+            'Data type "array": using property "field" (zero)' => [
+                [
+                    'data' => 'array',
+                ],
+                [
+                    'col' => [
+                        'field' => 0
+                    ]
+                ]
+            ],
+            'Data type "array": using property "value" (number)' => [
+                [
+                    'data' => 'array',
+                ],
+                [
+                    'col' => [
+                        'transformations' => [
+                            10 => [
+                                'value' => 17
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'Data type "array": using property "value" (string)' => [
+                [
+                    'data' => 'array',
+                ],
+                [
+                    'col' => [
+                        'transformations' => [
+                            10 => [
+                                'value' => 'bar'
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'Data type "array": using property "arrayPath"' => [
+                [
+                    'data' => 'array',
+                ],
+                [
+                    'col' => [
+                        'arrayPath' => 'foo/bar'
+                    ]
+                ]
+            ],
+            'Data type "xml": using property "field" (string)' => [
+                [
+                    'data' => 'xml',
+                ],
+                [
+                    'col' => [
+                        'field' => 'foo'
+                    ]
+                ]
+            ],
+            'Data type "xml": using property "value" (number)' => [
+                [
+                    'data' => 'xml',
+                ],
+                [
+                    'col' => [
+                        'value' => 17
+                    ]
+                ]
+            ],
+            'Data type "xml": using property "value" (string)' => [
+                [
+                    'data' => 'xml',
+                ],
+                [
+                    'col' => [
+                        'value' => 'bar'
+                    ]
+                ]
+            ],
+            'Data type "xml": using property "attribute" (string)' => [
+                [
+                    'data' => 'xml',
+                ],
+                [
+                    'col' => [
+                        'field' => 'baz'
+                    ]
+                ]
+            ],
+            'Data type "xml": using property "xpath" (string)' => [
+                [
+                    'data' => 'xml',
+                ],
+                [
+                    'col' => [
+                        'field' => 'hello'
+                    ]
+                ]
+            ],
+            'Children definition' => [
+                // No need for a general configuration
+                [],
+                [
+                    'col' => [
+                        'children' => [
+                            'table' => 'foo',
+                            'columns' => [
+                                'column1' => [
+                                    'value' => 'bar'
+                                ],
+                                'column2' => [
+                                    'field' => 'baz'
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'Substructure fields: valid structure and properties for "array" data type' => [
+                [
+                    'data' => 'array'
+                ],
+                [
+                    'col' => [
+                        'field' => 'foo',
+                        'substructureFields' => [
+                            'foo' => [
+                                'arrayPath' => 'bar'
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'Substructure fields: valid structure and properties for "xml" data type' => [
+                [
+                    'data' => 'xml'
+                ],
+                [
+                    'col' => [
+                        'substructureFields' => [
+                            'foo' => [
+                                'xpath' => 'bar'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ];
     }
 
@@ -220,234 +224,236 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider validConfigurationProvider
      */
-    public function isValidReturnsTrueForValidConfiguration(array $generalConfiguration, array $columnConfiguration): void
-    {
+    public function isValidReturnsTrueForValidConfiguration(
+        array $generalConfiguration,
+        array $columnConfiguration
+    ): void {
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         self::assertTrue(
-                $this->subject->isValid(
-                        $configuration,
-                        'col'
-                ),
-                serialize($this->subject->getResults()->getAll())
+            $this->subject->isValid(
+                $configuration,
+                'col'
+            ),
+            serialize($this->subject->getResults()->getAll())
         );
     }
 
     public function invalidConfigurationProvider(): array
     {
         return [
-                'Data type "array": missing data-setting properties' => [
-                        [
-                                'data' => 'array'
-                        ],
-                        [],
-                        AbstractMessage::ERROR
+            'Data type "array": missing data-setting properties' => [
+                [
+                    'data' => 'array'
                 ],
-                'Data type "xml": missing data-setting properties' => [
-                        [
-                                'data' => 'xml'
-                        ],
-                        [],
-                        AbstractMessage::NOTICE
+                [],
+                AbstractMessage::ERROR
+            ],
+            'Data type "xml": missing data-setting properties' => [
+                [
+                    'data' => 'xml'
                 ],
-                'Data type "array": conflicting data-setting properties' => [
-                        [
-                                'data' => 'array'
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'foo',
-                                        'transformations' => [
-                                                10 => [
-                                                        'value' => 42
-                                                ]
-                                        ]
+                [],
+                AbstractMessage::NOTICE
+            ],
+            'Data type "array": conflicting data-setting properties' => [
+                [
+                    'data' => 'array'
+                ],
+                [
+                    'col' => [
+                        'field' => 'foo',
+                        'transformations' => [
+                            10 => [
+                                'value' => 42
+                            ]
+                        ]
+                    ]
+                ],
+                AbstractMessage::NOTICE
+            ],
+            'Data type "xml": conflicting data-setting properties' => [
+                [
+                    'data' => 'xml'
+                ],
+                [
+                    'col' => [
+                        'xpath' => 'item',
+                        'transformations' => [
+                            10 => [
+                                'value' => 42
+                            ]
+                        ]
+                    ]
+                ],
+                AbstractMessage::NOTICE
+            ],
+            'Children definition: no "table" property' => [
+                // No need for a general configuration
+                [],
+                [
+                    'col' => [
+                        'children' => [
+                            'columns' => [
+                                'column1' => [
+                                    'value' => 'bar'
+                                ],
+                                'column2' => [
+                                    'field' => 'baz'
                                 ]
-                        ],
-                        AbstractMessage::NOTICE
+                            ],
+                            'controlColumnsForUpdate' => 'column1',
+                            'controlColumnsForDelete' => 'column1'
+                        ]
+                    ]
                 ],
-                'Data type "xml": conflicting data-setting properties' => [
-                        [
-                                'data' => 'xml'
-                        ],
-                        [
-                                'col' => [
-                                        'xpath' => 'item',
-                                        'transformations' => [
-                                                10 => [
-                                                        'value' => 42
-                                                ]
-                                        ]
-                                ]
-                        ],
-                        AbstractMessage::NOTICE
+                AbstractMessage::ERROR
+            ],
+            'Children definition: no "columns" property' => [
+                // No need for a general configuration
+                [],
+                [
+                    'col' => [
+                        'children' => [
+                            'table' => 'foo'
+                        ]
+                    ]
                 ],
-                'Children definition: no "table" property' => [
-                        // No need for a general configuration
-                        [],
-                        [
-                                'col' => [
-                                        'children' => [
-                                                'columns' => [
-                                                        'column1' => [
-                                                                'value' => 'bar'
-                                                        ],
-                                                        'column2' => [
-                                                                'field' => 'baz'
-                                                        ]
-                                                ],
-                                                'controlColumnsForUpdate' => 'column1',
-                                                'controlColumnsForDelete' => 'column1'
-                                        ]
-                                ]
-                        ],
-                        AbstractMessage::ERROR
+                AbstractMessage::ERROR
+            ],
+            'Children definition: "columns" sub-property not an array' => [
+                // No need for a general configuration
+                [],
+                [
+                    'col' => [
+                        'children' => [
+                            'table' => 'foo',
+                            'columns' => [
+                                'column1' => 'bar'
+                            ],
+                            'controlColumnsForUpdate' => 'column1',
+                            'controlColumnsForDelete' => 'column1'
+                        ]
+                    ]
                 ],
-                'Children definition: no "columns" property' => [
-                        // No need for a general configuration
-                        [],
-                        [
-                                'col' => [
-                                        'children' => [
-                                                'table' => 'foo'
-                                        ]
+                AbstractMessage::ERROR
+            ],
+            'Children definition: wrong "columns" sub-property' => [
+                // No need for a general configuration
+                [],
+                [
+                    'col' => [
+                        'children' => [
+                            'table' => 'foo',
+                            'columns' => [
+                                'column1' => [
+                                    'bar' => 'baz'
                                 ]
-                        ],
-                        AbstractMessage::ERROR
+                            ],
+                            'controlColumnsForUpdate' => 'column1',
+                            'controlColumnsForDelete' => 'column1'
+                        ]
+                    ]
                 ],
-                'Children definition: "columns" sub-property not an array' => [
-                        // No need for a general configuration
-                        [],
-                        [
-                                'col' => [
-                                        'children' => [
-                                                'table' => 'foo',
-                                                'columns' => [
-                                                        'column1' => 'bar'
-                                                ],
-                                                'controlColumnsForUpdate' => 'column1',
-                                                'controlColumnsForDelete' => 'column1'
-                                        ]
+                AbstractMessage::ERROR
+            ],
+            'Children definition: wrong "controlColumnsForUpdate" sub-property' => [
+                // No need for a general configuration
+                [],
+                [
+                    'col' => [
+                        'children' => [
+                            'table' => 'foo',
+                            'columns' => [
+                                'column1' => [
+                                    'bar' => 'baz'
                                 ]
-                        ],
-                        AbstractMessage::ERROR
+                            ],
+                            'controlColumnsForUpdate' => 'columnX'
+                        ]
+                    ]
                 ],
-                'Children definition: wrong "columns" sub-property' => [
-                        // No need for a general configuration
-                        [],
-                        [
-                                'col' => [
-                                        'children' => [
-                                                'table' => 'foo',
-                                                'columns' => [
-                                                        'column1' => [
-                                                                'bar' => 'baz'
-                                                        ]
-                                                ],
-                                                'controlColumnsForUpdate' => 'column1',
-                                                'controlColumnsForDelete' => 'column1'
-                                        ]
+                AbstractMessage::ERROR
+            ],
+            'Children definition: wrong "controlColumnsForDelete" sub-property' => [
+                // No need for a general configuration
+                [],
+                [
+                    'col' => [
+                        'children' => [
+                            'table' => 'foo',
+                            'columns' => [
+                                'column1' => [
+                                    'bar' => 'baz'
                                 ]
-                        ],
-                        AbstractMessage::ERROR
+                            ],
+                            'controlColumnsForDelete' => 'columnX'
+                        ]
+                    ]
                 ],
-                'Children definition: wrong "controlColumnsForUpdate" sub-property' => [
-                        // No need for a general configuration
-                        [],
-                        [
-                                'col' => [
-                                        'children' => [
-                                                'table' => 'foo',
-                                                'columns' => [
-                                                        'column1' => [
-                                                                'bar' => 'baz'
-                                                        ]
-                                                ],
-                                                'controlColumnsForUpdate' => 'columnX'
-                                        ]
-                                ]
-                        ],
-                        AbstractMessage::ERROR
+                AbstractMessage::ERROR
+            ],
+            'Substructure fields: wrong structure' => [
+                [
+                    'data' => 'array'
                 ],
-                'Children definition: wrong "controlColumnsForDelete" sub-property' => [
-                        // No need for a general configuration
-                        [],
-                        [
-                                'col' => [
-                                        'children' => [
-                                                'table' => 'foo',
-                                                'columns' => [
-                                                        'column1' => [
-                                                                'bar' => 'baz'
-                                                        ]
-                                                ],
-                                                'controlColumnsForDelete' => 'columnX'
-                                        ]
-                                ]
-                        ],
-                        AbstractMessage::ERROR
+                [
+                    'col' => [
+                        'field' => 'foo',
+                        'substructureFields' => [
+                            'field' => 'foo'
+                        ]
+                    ]
                 ],
-                'Substructure fields: wrong structure' => [
-                        [
-                                'data' => 'array'
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'foo',
-                                        'substructureFields' => [
-                                                'field' => 'foo'
-                                        ]
-                                ]
-                        ],
-                        AbstractMessage::ERROR
+                AbstractMessage::ERROR
+            ],
+            'Substructure fields: empty configuration for "array" data type' => [
+                [
+                    'data' => 'array'
                 ],
-                'Substructure fields: empty configuration for "array" data type' => [
-                        [
-                                'data' => 'array'
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'foo',
-                                        'substructureFields' => [
-                                                'foo' => []
-                                        ]
-                                ]
-                        ],
-                        AbstractMessage::ERROR
+                [
+                    'col' => [
+                        'field' => 'foo',
+                        'substructureFields' => [
+                            'foo' => []
+                        ]
+                    ]
                 ],
-                'Substructure fields: invalid properties for "array" data type' => [
-                        [
-                                'data' => 'array'
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'foo',
-                                        'substructureFields' => [
-                                                'foo' => [
-                                                        'xpath' => 'bar'
-                                                ]
-                                        ]
-                                ]
-                        ],
-                        AbstractMessage::ERROR
+                AbstractMessage::ERROR
+            ],
+            'Substructure fields: invalid properties for "array" data type' => [
+                [
+                    'data' => 'array'
                 ],
-                'Substructure fields: invalid properties for "xml" data type' => [
-                        [
-                                'data' => 'xml'
-                        ],
-                        [
-                                'col' => [
-                                        'field' => 'foo',
-                                        'substructureFields' => [
-                                                'foo' => [
-                                                        'arrayPath' => 'bar'
-                                                ]
-                                        ]
-                                ]
-                        ],
-                        AbstractMessage::ERROR
-                ]
+                [
+                    'col' => [
+                        'field' => 'foo',
+                        'substructureFields' => [
+                            'foo' => [
+                                'xpath' => 'bar'
+                            ]
+                        ]
+                    ]
+                ],
+                AbstractMessage::ERROR
+            ],
+            'Substructure fields: invalid properties for "xml" data type' => [
+                [
+                    'data' => 'xml'
+                ],
+                [
+                    'col' => [
+                        'field' => 'foo',
+                        'substructureFields' => [
+                            'foo' => [
+                                'arrayPath' => 'bar'
+                            ]
+                        ]
+                    ]
+                ],
+                AbstractMessage::ERROR
+            ]
         ];
     }
 
@@ -458,20 +464,23 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
      * @test
      * @dataProvider invalidConfigurationProvider
      */
-    public function isValidRaisesMessageForInvalidConfiguration(array $generalConfiguration, array $columnConfiguration, int $severity): void
-    {
+    public function isValidRaisesMessageForInvalidConfiguration(
+        array $generalConfiguration,
+        array $columnConfiguration,
+        int $severity
+    ): void {
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         $this->subject->isValid(
-                $configuration,
-                'col'
+            $configuration,
+            'col'
         );
         $results = $this->subject->getResults()->getForPropertyAndSeverity('field', $severity);
         self::assertGreaterThan(
-                0,
-                count($results),
-                serialize($this->subject->getResults()->getAll())
+            0,
+            count($results),
+            serialize($this->subject->getResults()->getAll())
         );
     }
 }

@@ -36,6 +36,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     ];
 
     protected $testExtensionsToLoad = [
+        'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import',
         'typo3conf/ext/externalimport_test'
     ];
