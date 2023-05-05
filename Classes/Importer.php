@@ -245,6 +245,8 @@ class Importer implements LoggerAwareInterface
     {
         // Initialize message array
         $this->resetMessages();
+        // Reset abort status
+        $this->setProcessAborted(false);
         try {
             $this->initialize(
                 $table,
@@ -306,6 +308,8 @@ class Importer implements LoggerAwareInterface
     {
         // Initialize message array
         $this->resetMessages();
+        // Reset abort status
+        $this->setProcessAborted(false);
         // Set context to API no matter what
         $this->setContext('api');
         try {

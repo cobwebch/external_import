@@ -2,6 +2,7 @@
 
 	* Improve event page and add missing Report event, references #279
 	* Drop support for old-style Connector Services, resolves #285
+	* Reset abort process flag upon each synchronization, references #284
 
 2023-05-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
