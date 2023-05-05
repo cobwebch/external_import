@@ -19,7 +19,7 @@ namespace Cobweb\ExternalImport\Step;
 
 use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
+use Cobweb\Svconnector\Registry\ConnectorRegistry;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -30,13 +30,12 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class ReadDataStep extends AbstractStep
 {
-    /**
-     * @var EventDispatcherInterface
-     */
+    protected ConnectorRegistry $connectorRegistry;
     protected EventDispatcherInterface $eventDispatcher;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(ConnectorRegistry $connectorRegistry, EventDispatcherInterface $eventDispatcher)
     {
+        $this->connectorRegistry = $connectorRegistry;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -50,7 +49,22 @@ class ReadDataStep extends AbstractStep
         $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         // Check if there are any services of the given type
         try {
-            $connector = CompatibilityUtility::getConnectorService($generalConfiguration['connector']);
+            $connector = $this->connectorRegistry->getServiceForType(
+                $generalConfiguration['connector']
+            );
+            if (!$connector->isAvailable()) {
+                $this->setAbortFlag(true);
+                $this->importer->addMessage(
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:service_not_available',
+                        'external_import',
+                        [
+                            $generalConfiguration['connector'],
+                        ],
+                    )
+                );
+                return;
+            }
         } catch (\Exception $e) {
             $this->setAbortFlag(true);
             $this->importer->addMessage(
@@ -61,7 +75,7 @@ class ReadDataStep extends AbstractStep
                         $generalConfiguration['connector'],
                         $e->getMessage(),
                         $e->getCode(),
-                    ]
+                    ],
                 )
             );
             return;

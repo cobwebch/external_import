@@ -1,6 +1,7 @@
 2023-05-05 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve event page and add missing Report event, references #279
+	* Drop support for old-style Connector Services, resolves #285
 
 2023-05-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 

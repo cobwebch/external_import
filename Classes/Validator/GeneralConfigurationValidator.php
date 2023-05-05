@@ -23,6 +23,7 @@ use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\StepUtility;
+use Cobweb\Svconnector\Registry\ConnectorRegistry;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -42,20 +43,15 @@ class GeneralConfigurationValidator
      */
     protected string $table;
 
-    /**
-     * @var ValidationResult
-     */
     protected ValidationResult $results;
-
-    /**
-     * @var StepUtility
-     */
     protected StepUtility $stepUtility;
+    protected ConnectorRegistry $connectorRegistry;
 
-    public function __construct(ValidationResult $result, StepUtility $stepUtility)
+    public function __construct(ValidationResult $result, StepUtility $stepUtility, ConnectorRegistry $connectorRegistry)
     {
         $this->results = $result;
         $this->stepUtility = $stepUtility;
+        $this->connectorRegistry = $connectorRegistry;
     }
 
     /**
@@ -155,7 +151,10 @@ class GeneralConfigurationValidator
     {
         if (!empty($property)) {
             try {
-                CompatibilityUtility::getConnectorService($property);
+                // NOTE: we do not check connector availability as this is a runtime issue. Here we just check the configuration.
+                $this->connectorRegistry->getServiceForType(
+                    $property
+                );
             } catch (\Exception $e) {
                 $this->results->add(
                     'connector',
@@ -179,7 +178,7 @@ class GeneralConfigurationValidator
     public function validateConnectorConfigurationProperty(string $connector, array $property): void
     {
         try {
-            $connectorService = CompatibilityUtility::getConnectorService($connector);
+            $connectorService = $this->connectorRegistry->getServiceForType($connector);
         } catch (\Exception $e) {
             // NOTE: we do not report if connector was not found, because this is the task of validateConnectorProperty()
             return;
