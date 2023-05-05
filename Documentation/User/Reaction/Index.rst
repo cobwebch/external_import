@@ -71,7 +71,7 @@ pid (optional)
 
 Here is how it could look like (example made with Postman):
 
-.. figure:: ../../Images/ReactionRequestHeader.png
+.. figure:: ../../Images/ReactionRequestHeaders.png
 	:alt: Request headers
 
 	The header with the URI, the accepted content type and the secret key

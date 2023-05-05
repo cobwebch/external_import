@@ -11,7 +11,7 @@ need to extend the TCA definition of some tables with the appropriate
 syntax and create specific connectors for the application you want to
 connect to.
 
-TYPO3 CMS 10 or 11 is required, as well as the "scheduler" system extension.
+TYPO3 CMS 11 or 12 is required, as well as the "scheduler" system extension.
 
 
 .. _installation-compatibility:
@@ -33,6 +33,13 @@ across TYPO3 versions).
 All hooks were removed. If you were still using hooks, please refer to the
 :ref:`archived page about hooks <appendix-hooks>`
 to find replacement instructions.
+
+A new :php:`ReportStep` has been introduced, which triggers a webhook reporting about
+the just finished import run. In order for this step to run (and do the reporting) even
+when the process is aborted, a new possibility has been added for steps to run despite
+the interruption. This actually fixes a bug with the :php:`ConnectorCallbackStep` which
+was never called when the process was aborted. If you use such a post-processing,
+you can now report about failed imports if needed.
 
 
 .. _installation-upgrade-630:

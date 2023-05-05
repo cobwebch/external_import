@@ -288,3 +288,11 @@ option. The "excludedOperations" is preserved for now and will log an
 entry into the deprecation log. You are advised to change the naming
 of this configuration if you use it, support will be dropped at some
 point in the future.
+
+
+.. toctree::
+   :maxdepth: 5
+   :titlesonly:
+   :glob:
+
+   Hooks/Index

@@ -4,8 +4,8 @@
 .. _appendix-hooks:
 .. _developer-hooks:
 
-Hooks
-^^^^^
+Migrating hooks
+^^^^^^^^^^^^^^^
 
 .. warning::
 
@@ -34,9 +34,9 @@ processParameters
 
   .. code-block:: php
 
-		'parameters' => array(
+		'parameters' => [
 			'filename' => 'fileadmin/imports/data-%Y.csv'
-		)
+		]
 
   Inside the hook, you could run :code:`strftime()` on the
   :code:`filename` parameter in order to replace "%Y" with the

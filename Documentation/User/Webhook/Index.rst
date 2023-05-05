@@ -14,7 +14,7 @@ a message that can be sent to some third-party endpoint.
 Defining the webhook
 """"""""""""""""""""
 
-A reaction must be defined using the "Webhooks" module in the TYPO3 backend,
+A webhook must be defined using the "Webhooks" module in the TYPO3 backend,
 choosing the "... when an External Import run is completed" trigger. You can
 define several webhooks with the same trigger. Defining the webhook is
 essentially about setting the target URL and generating the "secret" using

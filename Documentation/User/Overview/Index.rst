@@ -28,7 +28,7 @@ External Import along the various steps). A step can also set an
 has completed. The following steps will not be executed unless specifically
 designed to do so (this is indicated in the list below).
 
-This chapter gives an overview of what each step does:
+The following is an overview of what each step does:
 
 .. php:namespace:: Cobweb\ExternalImport\Step
 
