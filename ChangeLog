@@ -1,3 +1,7 @@
+2023-05-05 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+	* Improve event page and add missing Report event, references #279
+
 2023-05-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Introduce webhook in new Report step, resolves #279

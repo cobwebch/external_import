@@ -24,27 +24,32 @@ For usage, see the :ref:`core documentation about PSR-14 events <t3api:EventDisp
 Process connector parameters
 """"""""""""""""""""""""""""
 
-Class: :php:`\Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent`
+.. php:namespace:: Cobweb\ExternalImport\Event
 
-This allows for dynamic manipulation of the
-:ref:`parameters <administration-general-tca-properties-parameters>`
-array before it is passed to the connector. The event has the following API:
+.. php:class:: ProcessConnectorParametersEvent
 
-getParameters
-  Returns the connector parameters.
+   This allows for dynamic manipulation of the
+   :ref:`parameters <administration-general-tca-properties-parameters>`
+   array before it is passed to the connector.
 
-setParameters
-  Sets the (modified) connector parameters.
+   .. note::
 
-getExternalConfiguration
-  Instance of :php:`\Cobweb\ExternalImport\Domain\Model\Configuration`
-  with the current import configuration.
+      This event is also triggered when displaying the configuration in the
+      BE module. This way the user can see how the processed parameters
+      look like.
 
-.. note::
+   .. php:method:: getParameters()
 
-   This event is also triggered when displaying the configuration in the
-   BE module. This way the user can see how the processed parameters
-   look like.
+      Returns the connector parameters.
+
+   .. php:method:: setParameters(array $parameters)
+
+      Sets the (modified) connector parameters.
+
+   .. php:method:: getExternalConfiguration()
+
+      Instance of :php:`\Cobweb\ExternalImport\Domain\Model\Configuration`
+      with the current import configuration.
 
 
 .. _developer-events-substructure-preprocess:
@@ -52,68 +57,73 @@ getExternalConfiguration
 Substructure Preprocess
 """""""""""""""""""""""
 
-Class: :php:`\Cobweb\ExternalImport\Event\SubstructurePreprocessEvent`
+.. php:namespace:: Cobweb\ExternalImport\Event
 
-This event is triggered whenever a data structure is going to be handled by the
-:ref:`substructureFields <administration-columns-properties-substructure-fields>`
-property. It is fired just before the directives defined in the :code:`substructureFields`
-property are applied and makes it possible to change the substructure.
-The event has the following API:
+.. php:class:: SubstructurePreprocessEvent
 
-getSubstructureConfiguration
-  Returns the corresponding :code:`substructureFields` configuration.
+   This event is triggered whenever a data structure is going to be handled by the
+   :ref:`substructureFields <administration-columns-properties-substructure-fields>`
+   property. It is fired just before the directives defined in the :code:`substructureFields`
+   property are applied and makes it possible to change the substructure.
 
-getColumn
-  Returns the name of the column being handled.
+   .. php:method:: getSubstructureConfiguration()
 
-getDataType
-  **(since version 6.2.0)** Returns the type of data being handled ("array" or "xml").
+      Returns the corresponding :code:`substructureFields` configuration.
 
-getStructure
-  Returns the structure being handled.
+   .. php:method:: getColumn()
 
-setStructure
-  Sets the (modified) structure. **(since version 6.2.0)** This must be an array for array-type data or
-  a :code:`\DomNodeList` for XML-type data.
+      Returns the name of the column being handled.
 
-getImporter
-  Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+   .. php:method:: getDataType()
 
-.. important::
+      Returns the type of data being handled ("array" or "xml").
 
-   Since version 6.2.0, this event is fired for both array-type and XML-type data
-   (previously, only for array-type data). To know which type of data is being handled,
-   a new :code:`getDataType()` method is available. The type of structure that must be returned
-   after modfication (by calling :code:`setStructure()` must be either an array or a :code:`\DomNodeList`,
-   as opposed to just an array in older versions.
+   .. php:method:: getStructure()
+
+      Returns the structure being handled.
+
+   .. php:method:: setStructure(mixed $structure)
+
+      Sets the (modified) structure. This must be an array for array-type data or
+      a :code:`\DomNodeList` for XML-type data. Check the incoming type using the
+      :php:`getDataType()` method.
+
+   .. php:method:: getImporter
+
+      Current instance of :php:`\Cobweb\ExternalImport\Importer`.
 
 .. _developer-events-update-record-preprocess:
 
 Update Record Preprocess
 """"""""""""""""""""""""
 
-Class: :php:`\Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent`
+.. php:namespace:: Cobweb\ExternalImport\Event
 
-This event is triggered just before a record is registered for update
-in the database. It is triggered for each record individually.
-The event has the following API:
+.. php:class:: UpdateRecordPreprocessEvent
 
-getUid
-  Returns the primary of the record (since we are talking about an update operation,
-  the record exists in the database and thus has a valid primary key).
+   This event is triggered just before a record is registered for update
+   in the database. It is triggered for each record individually.
 
-getRecord
-  Returns the record being handled.
+   .. note::
 
-setRecord
-  Sets the (modified) record.
+      This event listener receives records only from the main table, not from any child table.
 
-getImporter
-  Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+   .. php:method:: getUid()
 
-.. note::
+      Returns the primary key of the record (since we are talking about an update operation,
+      the record exists in the database and thus has a valid primary key).
 
-   This event listener receives records only from the main table, not from any child table.
+   .. php:method:: getRecord()
+
+      Returns the record being handled.
+
+   .. php:method:: setRecord(array $record)
+
+      Sets the (modified) record.
+
+   .. php:method:: getImporter()
+
+      Current instance of :php:`\Cobweb\ExternalImport\Importer`.
 
 
 .. _developer-events-insert-record-preprocess:
@@ -121,14 +131,15 @@ getImporter
 Insert Record Preprocess
 """"""""""""""""""""""""
 
-Class: :php:`\Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent`
+.. php:namespace:: Cobweb\ExternalImport\Event
 
-Similar to the "Update Record Preprocess" event, but for
-the insert operation.
+.. php:class:: InsertRecordPreprocessEvent
 
-.. note::
+   Similar to the "Update Record Preprocess" event, but for the insert operation.
 
-   This event listener receives records only from the main table, not from any child table.
+   .. note::
+
+      This event listener receives records only from the main table, not from any child table.
 
 
 .. _developer-events-delete-record-preprocess:
@@ -136,28 +147,31 @@ the insert operation.
 Delete Record Preprocess
 """"""""""""""""""""""""
 
-Class: :php:`\Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent`
+.. php:namespace:: Cobweb\ExternalImport\Event
 
-This event is triggered just before any record is deleted. It can manipulate
-the list of primary keys of records that will eventually be deleted.
+.. php:class:: DeleteRecordsPreprocessEvent
 
-Note that even if this event throws the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`,
-the data to update or insert will already have been saved.
+   This event is triggered just before any record is deleted. It can manipulate
+   the list of primary keys of records that will eventually be deleted.
 
-The event has the following API:
+   Note that even if this event throws the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`,
+   the data to update or insert will already have been saved.
 
-getRecords
-  Returns the list of records to be deleted (primary keys).
+   .. php:method:: getRecords()
 
-  .. note::
+      Returns the list of records to be deleted (primary keys).
 
-     This list of contains only records from the main table, not from any child table.
+      .. note::
 
-setRecords
-  Sets the (modified) list of records.
+         This list of contains only records from the main table, not from any child table.
 
-getImporter
-  Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+   .. php:method:: setRecords(array $records)
+
+      Sets the (modified) list of records.
+
+   .. php:method:: getImporter()
+
+      Current instance of :php:`\Cobweb\ExternalImport\Importer`.
 
 
 .. _developer-events-datamap-postprocess:
@@ -165,26 +179,30 @@ getImporter
 Datamap Postprocess
 """""""""""""""""""
 
-Class: :php:`\Cobweb\ExternalImport\Event\DatamapPostprocessEvent`
+.. php:namespace:: Cobweb\ExternalImport\Event
 
-This event is triggered after all records have been updated or inserted using the TYPO3 Core Engine.
-It can be used for any follow-up operation. The event has the following API:
+.. php:class:: DatamapPostprocessEvent
 
-getData
-  Returns the list of records keyed to their primary keys (including the new primary keys
-  for the inserted records). Each record contains an additional field called
-  :code:`tx_externalimport:status` with a value of either "insert" or "update"
-  depending on which operation was performed on the record.
+   This event is triggered after all records have been updated or inserted using the TYPO3 Core Engine.
+   It can be used for any follow-up operation. The event has the following API:
 
-getImporter
-  Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+   Note that even if this event throws the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`,
+   the data to update or insert will already have been saved.
 
-Note that even if this event throws the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`,
-the data to update or insert will already have been saved.
+   .. note::
 
-.. note::
+      This event is not triggered in preview mode.
 
-   This event is not triggered in preview mode.
+   .. php:method:: getData()
+
+      Returns the list of records keyed to their primary keys (including the new primary keys
+      for the inserted records). Each record contains an additional field called
+      :code:`tx_externalimport:status` with a value of either "insert" or "update"
+      depending on which operation was performed on the record.
+
+   .. php:method:: getImporter()
+
+      Current instance of :php:`\Cobweb\ExternalImport\Importer`.
 
 
 .. _developer-events-cmdmap-postprocess:
@@ -192,21 +210,41 @@ the data to update or insert will already have been saved.
 Cmdmap Postprocess
 """"""""""""""""""
 
-Class: :php:`\Cobweb\ExternalImport\Event\CmdmapPostprocessEvent`
+.. php:namespace:: Cobweb\ExternalImport\Event
 
-This event is triggered after all records have been deleted using the TYPO3 Core Engine.
-The event has the following API:
+.. php:class:: CmdmapPostprocessEvent
 
-getData
-  Returns the list of primary keys of the deleted records.
+   This event is triggered after all records have been deleted using the TYPO3 Core Engine.
+   The event has the following API:
 
-getImporter
-  Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+   Note that even if this event throws the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`,
+   the records will already have been deleted.
 
-Note that even if this event throws the :php:`\Cobweb\ExternalImport\Exception\CriticalFailureException`,
-the records will already have been deleted.
+   .. note::
 
-.. note::
+      This event is not triggered in preview mode.
 
-   This event is not triggered in preview mode.
+   .. php:method:: getData()
 
+      Returns the list of primary keys of the deleted records.
+
+   .. php:method:: getImporter()
+
+      Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+
+
+.. _developer-events-report:
+
+Report
+""""""
+
+.. php:namespace:: Cobweb\ExternalImport\Event
+
+.. php:class:: ReportEvent
+
+   This event is triggered in the :php:`ReportEvent` step. It allows for custom reporting.
+   It also triggers the :ref:`reporting webhook <user-webhook>`.
+
+   .. php:method:: getImporter()
+
+      Current instance of :php:`\Cobweb\ExternalImport\Importer`.
