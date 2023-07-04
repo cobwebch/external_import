@@ -70,7 +70,6 @@ class AutomatedSyncTask extends AbstractTask
         // Synchronize all tables
         $globalStatus = 'OK';
         $errorCount = 0;
-        $warningCount = 0;
         if ($this->table === 'all' || strpos($this->table, 'group:') === 0) {
             if ($this->table === 'all') {
                 $configurations = $importer->getConfigurationRepository()->findOrderedConfigurations();
@@ -99,7 +98,6 @@ class AutomatedSyncTask extends AbstractTask
                             $messages
                         );
                         $errorCount += count($messages[AbstractMessage::ERROR]);
-                        $warningCount += count($messages[AbstractMessage::WARNING]);
                     }
                 }
             }
@@ -107,8 +105,6 @@ class AutomatedSyncTask extends AbstractTask
             if (!empty($extensionConfiguration['reportEmail'])) {
                 if ($errorCount > 0) {
                     $globalStatus = 'ERROR';
-                } elseif ($warningCount > 0) {
-                    $globalStatus = 'WARNING';
                 }
                 // Assemble the subject and send the mail
                 $subject = empty($extensionConfiguration['reportSubject']) ? '' : $extensionConfiguration['reportSubject'];
