@@ -148,4 +148,19 @@ abstract class AbstractStep implements ImporterAwareInterface
     {
         return $this->parameters[$key] ?? null;
     }
+
+    /**
+     * Defines whether the data to import - as processed by the step - is in a format
+     * that makes sense to download or not.
+     *
+     * The download is a feature from the preview mode in the BE module.
+     *
+     * Override to return true in specific steps.
+     *
+     * @return bool
+     */
+    public function hasDownloadableData(): bool
+    {
+        return false;
+    }
 }

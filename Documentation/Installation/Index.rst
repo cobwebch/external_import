@@ -21,6 +21,15 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-710:
+
+Upgrade to 7.1.0
+""""""""""""""""
+
+When running the preview mode from the backend module, some steps now provide
+a download button, to retrieve the data being handled in its current state.
+
+
 .. _installation-upgrade-700:
 
 Upgrade to 7.0.0

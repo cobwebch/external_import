@@ -20,11 +20,13 @@ namespace Cobweb\ExternalImport\Controller;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Utility\CsvUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Localization\LanguageService;
@@ -199,6 +201,7 @@ class DataModuleController extends ActionController
         // Load the configuration
         $stepList = [];
         $previewData = null;
+        $downloadable = false;
         try {
             $configuration = $this->configurationRepository->findConfigurationObject(
                 $table,
@@ -213,6 +216,7 @@ class DataModuleController extends ActionController
                 $messages = $importer->synchronize($table, $index);
                 $this->prepareMessages($messages, false);
                 $previewData = $importer->getPreviewData();
+                $downloadable = $importer->getCurrentData()->isDownloadable();
             }
             // The step list should use the class names also as keys
             $steps = $configuration->getSteps();
@@ -239,12 +243,85 @@ class DataModuleController extends ActionController
                 'index' => $index,
                 'steps' => $stepList,
                 'stepClass' => $stepClass,
-                'previewData' => $previewData
+                'previewData' => $previewData,
+                'downloadable' => $downloadable
             ]
         );
 
         $this->moduleTemplate->setContent($this->view->render());
         return $this->htmlResponse($this->moduleTemplate->renderContent());
+    }
+
+    /**
+     * Download as CSV the list of records contained by the preview step
+     *
+     * @param string $table
+     * @param string $index
+     * @param string $stepClass
+     * @return ResponseInterface
+     * @throws PropagateResponseException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     */
+    public function downloadPreviewAction(string $table, string $index, string $stepClass): ResponseInterface
+    {
+        try {
+            // Synchronize the chosen configuration in preview mode
+            $importer = GeneralUtility::makeInstance(Importer::class);
+            $importer->setContext('manual');
+            $importer->setPreviewStep($stepClass);
+            $importer->synchronize($table, $index);
+            // If the data is not supposed to be downloaded, throw an exception
+            if (!$importer->getCurrentData()->isDownloadable()) {
+                throw new \InvalidArgumentException(
+                    sprintf(
+                        'Data from step %s is not available for download',
+                        $stepClass
+                    ),
+                    1688997541
+                );
+            }
+            // Get the data and prepare it for output as CSV
+            $data = $importer->getCurrentData()->getRecords();
+        } catch (\Exception $e) {
+            $this->addFlashMessage(
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurred',
+                    'external_import',
+                    [
+                        $e->getMessage(),
+                        $e->getCode(),
+                    ]
+                ),
+                '',
+                AbstractMessage::ERROR
+            );
+            return $this->redirect(
+                'preview',
+                null,
+                null,
+                [
+                    'table' => $table,
+                    'index' => $index,
+                    'stepClass' => $stepClass,
+                ]
+            );
+        }
+        // If no error occurred, send the data as download
+        $filename = sprintf(
+            'ExternalImportPreview-%s-%s.csv',
+            $table,
+            $index
+        );
+        $csvUtility = GeneralUtility::makeInstance(CsvUtility::class);
+        $response = $this->responseFactory->createResponse()
+            ->withHeader('Content-Type', 'text/csv; charset=utf-8')
+            ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->withBody(
+                $this->streamFactory->createStream(
+                    $csvUtility->prepareCsvData($data)
+                )
+            );
+        throw new PropagateResponseException($response, 200);
     }
 
     /**
@@ -617,6 +694,27 @@ class DataModuleController extends ActionController
                 }
             }
         }
+    }
+
+    /**
+     * Return the given array as a CSV-structured line
+     *
+     * @param array $array
+     * @return string
+     */
+    protected function prepareCsvLine(array $array): string
+    {
+        $file = fopen('php://memory', 'rb+');
+        if (fputcsv($file, $array, ';') === false) {
+            throw new \RuntimeException(
+                'Could not transform given array to CSV. Line skipped.',
+                1688990967
+            );
+        }
+        rewind($file);
+        $csvLine = stream_get_contents($file);
+        fclose($file);
+        return rtrim($csvLine);
     }
 
     /**

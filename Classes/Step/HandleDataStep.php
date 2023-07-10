@@ -99,4 +99,14 @@ class HandleDataStep extends AbstractStep
         $this->getData()->setRecords($records);
         $this->setPreviewData($records);
     }
+
+    /**
+     * Define the data as being downloadable
+     *
+     * @return bool
+     */
+    public function hasDownloadableData(): bool
+    {
+        return true;
+    }
 }

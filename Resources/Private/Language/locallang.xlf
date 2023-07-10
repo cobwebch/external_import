@@ -42,6 +42,9 @@
 			<trans-unit id="choose_preview_step" xml:space="preserve">
 				<source>Choose process step to preview</source>
 			</trans-unit>
+			<trans-unit id="download" xml:space="preserve">
+				<source>Download</source>
+			</trans-unit>
 			<trans-unit id="preview" xml:space="preserve">
 				<source>Preview</source>
 			</trans-unit>

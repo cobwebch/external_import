@@ -384,4 +384,14 @@ class TransformDataStep extends AbstractStep
         // Compact the array in case some records were unset
         return array_values($records);
     }
+
+    /**
+     * Define the data as being downloadable
+     *
+     * @return bool
+     */
+    public function hasDownloadableData(): bool
+    {
+        return true;
+    }
 }

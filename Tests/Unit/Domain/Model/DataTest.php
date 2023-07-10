@@ -115,4 +115,25 @@ class DataTest extends UnitTestCase
                 $this->subject->getRecords()
         );
     }
+
+    /**
+     * @test
+     */
+    public function getDownloadableInitiallyReturnsFalse(): void
+    {
+        self::assertFalse(
+            $this->subject->isDownloadable()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setDownloadableSetsBooleanValue(): void
+    {
+        $this->subject->setDownloadable(true);
+        self::assertTrue(
+            $this->subject->isDownloadable()
+        );
+    }
 }

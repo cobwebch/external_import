@@ -95,7 +95,12 @@ Clicking on the preview button leads to the preview feature.
 For running a preview your first need to select a specific
 :ref:`step from the process <user-overview>`. The synchronization
 will run up to that step and stop. Preview data gets displayed
-if available (this depends on the step).
+if available. This depends on the step.
+
+Again depending on the step, a download button may appear or not. If it does,
+you can use it to retrieve a CSV file of the records being imported, in their state
+at the end of the previewed step. This makes it easier to explore the data
+when there is a lot of it.
 
 Most importantly nothing permanent happens in preview mode.
 For example, data is not stored into the database.

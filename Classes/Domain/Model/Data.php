@@ -39,6 +39,10 @@ class Data
      */
     protected array $records = [];
 
+    // Indicates whether the records array is downloadable or not
+    // It is up to each step to define this, the default being "not"
+    protected bool $downloadable = false;
+
     /**
      * @return mixed
      */
@@ -94,5 +98,21 @@ class Data
     public function setRecords(array $records): void
     {
         $this->records = $records;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDownloadable(): bool
+    {
+        return $this->downloadable;
+    }
+
+    /**
+     * @param bool $downloadable
+     */
+    public function setDownloadable(bool $downloadable): void
+    {
+        $this->downloadable = $downloadable;
     }
 }

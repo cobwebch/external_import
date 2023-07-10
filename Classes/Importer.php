@@ -117,6 +117,9 @@ class Importer implements LoggerAwareInterface
      */
     protected $previewData;
 
+    // Data object from the current step
+    protected ?Data $currentData = null;
+
     /**
      * @var bool Set to true to trigger testing mode (used only for unit testing)
      */
@@ -254,8 +257,8 @@ class Importer implements LoggerAwareInterface
                 self::SYNCHRONYZE_DATA_STEPS
             );
 
-            $data = GeneralUtility::makeInstance(Data::class);
-            $this->runSteps($data);
+            $this->currentData = GeneralUtility::makeInstance(Data::class);
+            $this->runSteps();
         } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
                 LocalizationUtility::translate(
@@ -320,9 +323,9 @@ class Importer implements LoggerAwareInterface
             );
 
             // Initialize the Data object with the raw data
-            $data = GeneralUtility::makeInstance(Data::class);
-            $data->setRawData($rawData);
-            $this->runSteps($data);
+            $this->currentData = GeneralUtility::makeInstance(Data::class);
+            $this->currentData->setRawData($rawData);
+            $this->runSteps();
         } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
                 LocalizationUtility::translate(
@@ -365,11 +368,10 @@ class Importer implements LoggerAwareInterface
     /**
      * Runs the process through the defined steps.
      *
-     * @param Data $data Initialized data object
      * @return void
      * @throws Exception\InvalidPreviewStepException
      */
-    public function runSteps(Data $data): void
+    public function runSteps(): void
     {
         $this->setStartTime(time());
         // Get the process steps
@@ -389,7 +391,7 @@ class Importer implements LoggerAwareInterface
             $step = GeneralUtility::makeInstance($stepClass);
             if (!$this->isProcessAborted() || ($this->isProcessAborted() && $step->isExecuteDespiteAbort())) {
                 $step->setImporter($this);
-                $step->setData($data);
+                $step->setData($this->currentData);
                 if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
                     $step->setParameters($this->externalConfiguration->getParametersForStep($stepClass));
                 }
@@ -406,13 +408,16 @@ class Importer implements LoggerAwareInterface
                         AbstractMessage::WARNING
                     );
                 }
-                $data = $step->getData();
+                $this->currentData = $step->getData();
                 // We set the end time after each step, so that we still capture a certain duration even if one step crashes unexpectedly
                 $this->setEndTime(time());
             }
             // If preview is on and the step is matched, exit process
             // NOTE: this happens after abort, as aborting means there's an underlying problem, which should be reported no matter what
             if ($this->isPreview() && $this->getPreviewStep() === $stepClass) {
+                if ($step->hasDownloadableData()) {
+                    $this->currentData->setDownloadable(true);
+                }
                 break;
             }
         }
@@ -736,6 +741,16 @@ class Importer implements LoggerAwareInterface
     public function getPreviewData()
     {
         return $this->previewData;
+    }
+
+    /**
+     * Return the current value of the data object
+     *
+     * @return Data|null
+     */
+    public function getCurrentData(): ?Data
+    {
+        return $this->currentData;
     }
 
     /**

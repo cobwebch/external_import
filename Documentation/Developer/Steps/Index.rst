@@ -147,6 +147,11 @@ This has two implications:
 
 		$this->getImporter()->isPreview();
 
+#. Indicate that the :code:`records` of the :code:`Data` object are downloadable
+   if it makes sense (see the :ref:`Data model API <developer-api-data-model>`).
+   This is done by overriding the :code:`hasDownloadableData()` method
+   of the :php:`\Cobweb\ExternalImport\Step\AbstractStep` class to return :code:`true`.
+
 
 .. _developer-steps-example:
 
@@ -198,7 +203,18 @@ In this example, the "name" field of every record is used to filter acceptable e
            }
            $records = array_values($records);
            $this->getData()->setRecords($records);
+           $this->getData()->isDownloadable(true);
            // Set the filtered records as preview data
            $this->importer->setPreviewData($records);
+       }
+
+       /**
+        * Define the data as being downloadable
+        *
+        * @return bool
+        */
+       public function hasDownloadableData(): bool
+       {
+           return true;
        }
    }

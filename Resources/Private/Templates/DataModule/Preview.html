@@ -1,5 +1,6 @@
 <html data-namespace-typo3-fluid="true"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
 	<f:flashMessages />
 
@@ -31,7 +32,19 @@
 		</f:form>
 		<f:if condition="{stepClass}">
 			<hr>
-			<h2><f:translate id="preview_data_for_step" arguments="{0: stepClass}" /></h2>
+			<div class="row">
+				<div class="col-sm-10">
+					<h2><f:translate id="preview_data_for_step" arguments="{0: stepClass}" /></h2>
+				</div>
+				<div class="col-sm-2">
+					<f:if condition="{downloadable}">
+						<f:link.action action="downloadPreview" arguments="{table: table, index: index, stepClass: stepClass}" class="btn btn-default mt-3 pull-right">
+							<core:icon identifier="actions-download" size="small" />
+							<f:translate id="download" />
+						</f:link.action>
+					</f:if>
+				</div>
+			</div>
 			<f:debug inline="true">{previewData}</f:debug>
 		</f:if>
 	</div>

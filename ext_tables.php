@@ -29,7 +29,7 @@ ExtensionUtility::registerModule(
     // Position
     '',
     [
-        DataModuleController::class => 'listSynchronizable, listNonSynchronizable, synchronize, preview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
+        DataModuleController::class => 'listSynchronizable, listNonSynchronizable, synchronize, preview, downloadPreview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
     ],
     [
         'access' => 'user,group',

@@ -73,6 +73,11 @@ extraData
 records
   The data as structured by External Import, step after step.
 
+downloadable
+  Indicates whether the records variable contains data that is appropriate for
+  downloading as CSV. The download feature is available in the
+  :ref:`preview mode of the backend module <user-backend-module-synchronizable-preview>`.
+
 There are getters and setters for each of these.
 
 

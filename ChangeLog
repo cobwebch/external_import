@@ -1,3 +1,11 @@
+2023-07-10 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Make it possible ot download imported data during preview runs, resolves #289
+
+2023-07-04 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Let Scheduler task succeed on warnings for all/grouped tables (thanks to Mathias Brodala)
+
 2023-05-05 Francois Suter (Idéative)  <typo3@ideative.ch>
 
 	* Improve event page and add missing Report event, references #279
