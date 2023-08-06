@@ -277,7 +277,7 @@ class ArrayHandler implements DataHandlerInterface
                     $result = preg_match('/(.*){(.*)}/', $segment, $matches);
                     if ($result) {
                         $key = $matches[1];
-                        $condition = $matches[2];
+                        $condition = $matches[2] ?? '';
                     }
                 }
                 // Look for a new value using the segment only if the current value is an array
@@ -288,7 +288,12 @@ class ArrayHandler implements DataHandlerInterface
                         $nextSegment = current($segments);
                         foreach ($value as $itemValue) {
                             // Apply condition on each item, if defined
-                            $result = $this->applyCondition($condition, $itemValue);
+                            // No condition is equivalent to being always true
+                            if ($condition === '') {
+                                $result = true;
+                            } else {
+                                $result = $this->applyCondition($condition, $itemValue);
+                            }
                             if ($result) {
                                 // Apply leftover segments on each item
                                 $resultingItems = $this->getArrayPathStructure(

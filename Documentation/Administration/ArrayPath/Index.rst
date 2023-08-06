@@ -139,7 +139,7 @@ be achieved with a configuration like:
 With the above data, the result will be "Hitchiker's Guide to the Galaxy", but for a book
 whose state is "used", the result would be :code:`null`.
 
-Such usage of conditions may seem a bit far-fetched at first, but can quite interesting
+Such usage of conditions may seem a bit far-fetched at first, but can be quite interesting
 when combined (at a later stage in the import process) with the
 :ref:`isEmpty property <administration-transformations-properties-isempty>`. However
 conditions are much more interesting for looping on substructures and filtering them,
@@ -153,9 +153,9 @@ Looping and filtering
 
 The special segment :code:`*` can be included in the path. It indicates that all values
 selected up to that point should be looped on and the condition following the :code:`*`
-applied to each of them (using :code:`*` without a condition is meaningless). This will
-effectively filter the currently selected elements. Further segments in the path are
-applied only to that resulting set.
+applied to each of them (the :code:`*` without a condition is useful when wanting to loop
+on an array with numerical indices). This will effectively filter the currently selected elements.
+Further segments in the path are applied only to that resulting set.
 
 .. note::
 

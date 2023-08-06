@@ -334,9 +334,139 @@ class ArrayHandlerTest extends UnitTestCase
                     ],
                     2 => [
                         'name' => 'them'
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
+            'array path with wildcard without condition on array with numerical indices' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            [
+                                'name' => 'me',
+                                'location' => 'Tanelorn',
+                            ],
+                            [
+                                'name' => 'you',
+                                'location' => 'Ulqoma',
+                            ],
+                            [
+                                'name' => 'them',
+                                'location' => 'Bas-Lag',
+                            ],
+                        ],
+                    ],
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*/name'
+                ],
+                'result' => [
+                    0 => 'me',
+                    1 => 'you',
+                    2 => 'them',
+                ],
+            ],
+            'array path with wildcard without condition on array with numerical indices, wildcard on final segment' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            [
+                                'name' => 'me',
+                            ],
+                            [
+                                'name' => 'you',
+                            ],
+                            [
+                                'name' => 'them',
+                            ],
+                        ],
+                    ],
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*'
+                ],
+                'result' => [
+                    0 => 'me',
+                    1 => 'you',
+                    2 => 'them',
+                ],
+            ],
+            'array path with wildcard without condition on array with numerical indices, wildcard on final segment, keeping the structure' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            [
+                                'name' => 'me',
+                            ],
+                            [
+                                'name' => 'you',
+                            ],
+                            [
+                                'name' => 'them',
+                            ],
+                        ],
+                    ],
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*/.'
+                ],
+                'result' => [
+                    0 => [
+                        'name' => 'me',
+                    ],
+                    1 => [
+                        'name' => 'you',
+                    ],
+                    2 => [
+                        'name' => 'them',
+                    ],
+                ],
+            ],
+            'array path with wildcard without condition on array with numerical indices and sub-arrays, keeping the structure' => [
+                'record' => [
+                    'test' => [
+                        'data' => [
+                            0 => [
+                                'person' => [
+                                    'name' => 'me'
+                                ],
+                                'thing' => [
+                                    'name' => 'wheel',
+                                ],
+                            ],
+                            1 => [
+                                'person' => [
+                                    'name' => 'you'
+                                ],
+                                'thing' => [
+                                    'name' => 'brake',
+                                ],
+                            ],
+                            2 => [
+                                'person' => [
+                                    'name' => 'them'
+                                ],
+                                'thing' => [
+                                    'name' => 'bumper',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                'configuration' => [
+                    'arrayPath' => 'test/data/*/./person',
+                ],
+                'result' => [
+                    0 => [
+                        'name' => 'me'
+                    ],
+                    1 => [
+                        'name' => 'you'
+                    ],
+                    2 => [
+                        'name' => 'them'
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -356,7 +486,7 @@ class ArrayHandlerTest extends UnitTestCase
         );
     }
 
-    public function getValueFailWithInvalidArgumentExceptionProvider(): array
+    public function getValueFailsWithInvalidArgumentExceptionProvider(): array
     {
         return [
             'direct simple value' => [
@@ -440,7 +570,7 @@ class ArrayHandlerTest extends UnitTestCase
 
     /**
      * @test
-     * @dataProvider getValueFailWithInvalidArgumentExceptionProvider
+     * @dataProvider getValueFailsWithInvalidArgumentExceptionProvider
      * @param array $record
      * @param array $configuration
      */
