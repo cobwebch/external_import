@@ -195,7 +195,7 @@ class ArrayHandler implements DataHandlerInterface
      */
     public function getValue(array $record, array $columnConfiguration)
     {
-        if (isset($columnConfiguration['arrayPath']) && !empty($columnConfiguration['arrayPath'])) {
+        if (!empty($columnConfiguration['arrayPath'] ?? '')) {
             // Extract parts of the path
             $segments = str_getcsv(
                 (string)$columnConfiguration['arrayPath'],
@@ -215,6 +215,8 @@ class ArrayHandler implements DataHandlerInterface
             }
         } elseif (isset($columnConfiguration['field'], $record[$columnConfiguration['field']])) {
             $value = $record[$columnConfiguration['field']];
+        } elseif (isset($columnConfiguration['value'])) {
+            $value = $columnConfiguration['value'];
         } else {
             throw new \InvalidArgumentException(
                 'No value found',

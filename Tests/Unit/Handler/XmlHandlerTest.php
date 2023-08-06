@@ -44,6 +44,34 @@ class XmlHandlerTest extends UnitTestCase
     public function getValueSuccessProvider(): array
     {
         return [
+            'fixed value - number zero' => [
+                'structure' => '<item>foo</item>',
+                'configuration' => [
+                    'value' => 0
+                ],
+                'result' => 0
+            ],
+            'fixed value - number non-zero' => [
+                'structure' => '<item>foo</item>',
+                'configuration' => [
+                    'value' => 12
+                ],
+                'result' => 12
+            ],
+            'fixed value - string empty' => [
+                'structure' => '<item>foo</item>',
+                'configuration' => [
+                    'value' => ''
+                ],
+                'result' => ''
+            ],
+            'fixed value - string not empty' => [
+                'structure' => '<item>foo</item>',
+                'configuration' => [
+                    'value' => 'hey'
+                ],
+                'result' => 'hey'
+            ],
             'direct simple value' => [
                 'structure' => '<item>foo</item>',
                 'configuration' => [

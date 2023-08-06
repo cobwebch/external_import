@@ -177,8 +177,11 @@ class XmlHandler implements DataHandlerInterface
      */
     public function getValue(\DOMNode $record, array $columnConfiguration, \DOMXPath $xPathObject)
     {
+        if (isset($columnConfiguration['value'])) {
+            $value = $columnConfiguration['value'];
+
         // If a "field" is defined, refine the selection to get the correct node
-        if (isset($columnConfiguration['field'])) {
+        } elseif (isset($columnConfiguration['field'])) {
             // Use namespace or not
             if (empty($columnConfiguration['fieldNS'])) {
                 $nodeList = $record->getElementsByTagName($columnConfiguration['field']);

@@ -20,7 +20,7 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
- * Test case for the Step utility.
+ * Test case for the ValidationResult class.
  *
  * @package Cobweb\ExternalImport\Tests\Unit
  */

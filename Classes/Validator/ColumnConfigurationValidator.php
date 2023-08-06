@@ -422,13 +422,16 @@ class ColumnConfigurationValidator
     }
 
     /**
-     * Checks if the "transformations" properties contains the "value" property.
+     * Checks if the value property is set or if the "transformations" properties contain the "value" property.
      *
      * @param array $columnConfiguration
      * @return bool
      */
     public function hasValueProperty(array $columnConfiguration): bool
     {
+        if (isset($columnConfiguration['value'])) {
+            return true;
+        }
         if (isset($columnConfiguration['transformations'])) {
             foreach ($columnConfiguration['transformations'] as $transformation) {
                 if (array_key_exists('value', $transformation)) {

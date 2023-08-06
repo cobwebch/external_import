@@ -79,7 +79,17 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                     ]
                 ]
             ],
-            'Data type "array": using property "value" (number)' => [
+            'Data type "array": using column property "value" (number)' => [
+                [
+                    'data' => 'array',
+                ],
+                [
+                    'col' => [
+                        'value' => 17
+                    ],
+                ],
+            ],
+            'Data type "array": using transformations property "value" (number)' => [
                 [
                     'data' => 'array',
                 ],
@@ -88,12 +98,22 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         'transformations' => [
                             10 => [
                                 'value' => 17
-                            ]
-                        ]
-                    ]
-                ]
+                            ],
+                        ],
+                    ],
+                ],
             ],
-            'Data type "array": using property "value" (string)' => [
+            'Data type "array": using column property "value" (string)' => [
+                [
+                    'data' => 'array',
+                ],
+                [
+                    'col' => [
+                        'value' => 'bar'
+                    ],
+                ],
+            ],
+            'Data type "array": using transformations property "value" (string)' => [
                 [
                     'data' => 'array',
                 ],
@@ -102,10 +122,10 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         'transformations' => [
                             10 => [
                                 'value' => 'bar'
-                            ]
-                        ]
-                    ]
-                ]
+                            ],
+                        ],
+                    ],
+                ],
             ],
             'Data type "array": using property "arrayPath"' => [
                 [
@@ -127,7 +147,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                     ]
                 ]
             ],
-            'Data type "xml": using property "value" (number)' => [
+            'Data type "xml": using column property "value" (number)' => [
                 [
                     'data' => 'xml',
                 ],
@@ -137,15 +157,43 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                     ]
                 ]
             ],
-            'Data type "xml": using property "value" (string)' => [
+            'Data type "xml": using transformations property "value" (number)' => [
+                [
+                    'data' => 'xml',
+                ],
+                [
+                    'col' => [
+                        'transformations' => [
+                            10 => [
+                                'value' => 17
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'Data type "xml": using column property "value" (string)' => [
                 [
                     'data' => 'xml',
                 ],
                 [
                     'col' => [
                         'value' => 'bar'
-                    ]
-                ]
+                    ],
+                ],
+            ],
+            'Data type "xml": using transformations property "value" (string)' => [
+                [
+                    'data' => 'xml',
+                ],
+                [
+                    'col' => [
+                        'transformations' => [
+                            10 => [
+                                'value' => 'bar'
+                            ],
+                        ],
+                    ],
+                ],
             ],
             'Data type "xml": using property "attribute" (string)' => [
                 [

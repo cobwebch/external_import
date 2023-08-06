@@ -2,6 +2,7 @@
 
     * Hint at the possibility of combining additional fields and substructure fields for transformations, resolves #292
     * Allow for wildcard without condition in arrayPath property, resolves #291
+    * Allow to set fixed value at column configuration-level, resolves #293
 
 2023-07-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 

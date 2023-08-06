@@ -111,6 +111,42 @@ class ArrayHandlerTest extends UnitTestCase
         ];
 
         return [
+            'fixed value - number zero' => [
+                'record' => [
+                    'foo' => 'bar'
+                ],
+                'configuration' => [
+                    'value' => 0
+                ],
+                'result' => 0
+            ],
+            'fixed value - number non-zero' => [
+                'record' => [
+                    'foo' => 'bar'
+                ],
+                'configuration' => [
+                    'value' => 12
+                ],
+                'result' => 12
+            ],
+            'fixed value - string empty' => [
+                'record' => [
+                    'foo' => 'bar'
+                ],
+                'configuration' => [
+                    'value' => ''
+                ],
+                'result' => ''
+            ],
+            'fixed value - string not empty' => [
+                'record' => [
+                    'foo' => 'bar'
+                ],
+                'configuration' => [
+                    'value' => 'hey'
+                ],
+                'result' => 'hey'
+            ],
             'direct simple value' => [
                 'record' => [
                     'foo' => 'bar'

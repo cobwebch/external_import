@@ -29,6 +29,9 @@ Upgrade to 7.1.0
 When running the preview mode from the backend module, some steps now provide
 a download button, to retrieve the data being handled in its current state.
 
+When setting a fixed value, the new :ref:`column configuration property <administration-columns-properties-value>`
+should be preferred over the historical :ref:`transformation property <administration-transformations-properties-value>`.
+
 
 .. _installation-upgrade-700:
 

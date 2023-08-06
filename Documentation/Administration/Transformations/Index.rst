@@ -26,7 +26,7 @@ Properties
    rteEnabled_               boolean                                               Transform data
    trim_                     boolean                                               Transform data
    userFunction_             array                                                 Transform data
-   value_                    simple type (string, integer, boolean)                Transform data
+   value_                    simple type (string, integer, float, boolean)         Transform data
    ========================= ===================================================== =================
 
 
@@ -56,12 +56,19 @@ value
 ~~~~~
 
 Type
-  Simple type (string, integer, boolean)
+  Simple type (string, integer, float, boolean)
 
 Description
   With this property, it is possible to set a fixed value for a given
   field. For example, this might be used to set a flag for all imported
   records. Or you might want to use different types for different import sources.
+
+  .. note::
+
+     Since External Import 7.1, the column property :ref:`value <administration-columns-properties-value>`
+     should be used instead, as it makes more sense. Since there could be scenarios where this
+     transformation property also makes sense, it is not deprecated, but its usage
+     should be avoided.
 
   **Example**:
 

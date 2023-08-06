@@ -68,9 +68,29 @@ Properties
    multipleSorting_          string                                                                 Store data
    substructureFields_       array                                                                  Handle data
    transformations_          :ref:`Transformations configuration <administration-transformations>`  Transform data
+   value_                    Simple type (string, integer, float, boolean)                          Handle data
    xmlValue_                 boolean                                                                Handle data (XML)
    xpath_                    string                                                                 Handle data (XML)
    ========================= ====================================================================== ===================
+
+
+.. _administration-columns-properties-value:
+
+value
+~~~~~
+
+Type
+  Simple type (string, integer, float, boolean)
+
+Description
+  Sets a fixed value, independent of the data being imported.
+  For example, this might be used to set a flag for all imported
+  records. Or you might want to use different types for different import sources.
+
+  This can be used for both array-type and XML-type data.
+
+Scope
+  Handle data
 
 
 .. _administration-columns-properties-field:
