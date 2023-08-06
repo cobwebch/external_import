@@ -1,3 +1,7 @@
+2023-08-06 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Hint at the possibility of combining additional fields and substructure fields for transformations, resolves #292
+
 2023-07-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Make it possible ot download imported data during preview runs, resolves #289

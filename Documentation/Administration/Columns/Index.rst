@@ -39,7 +39,7 @@ The properties for the columns configuration are described below.
    :ref:`Datamap Postprocess event <developer-events-datamap-postprocess>` or the
    :ref:`Cmdmap Postprocess event <developer-events-cmdmap-postprocess>`
    which are triggered after :php:`DataHandler` operations.
-   
+
 .. hint::
 
    You can set static values by using the :ref:`transformation > value <administration-columns-properties-value>`.
@@ -403,6 +403,15 @@ Description
       In such scenarios you will generally want to have one of the nested fields "take the main role",
       i.e. have its value fill a column bearing the name of TYPO3 column which contains the substructure
       configuration. In the above example, the `product` field is matched to the "products" column name.
+      In such a case, this nested field will go through any :ref:`transformations <administration-transformations>`
+      defined for the column.
+
+      If you need to apply :ref:`transformations <administration-transformations>` to other substructure fields,
+      map them to :ref:`additional fields <administration-additionalfields>`. In order for this to work, you need
+      to write some value into each additional field, otherwise it will result in a configuration error. So you
+      need to set some dummy value, that is overridden by the values pointed to by the `substructureFields`
+      configuration, but take care that if such a value is missing, the dummy value will remain and may produce
+      unwanted results, depending on the rest of your configuration.
 
 Scope
   Handle data
