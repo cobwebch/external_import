@@ -1081,7 +1081,7 @@ class StoreDataStep extends AbstractStep
      * Sorts the TCE data for pages, so that parent pages come before child pages.
      *
      * If this is not done, insertion of new pages into the database will fail as pids may be unresolved.
-     * Also, this needs to be done "in reverse", as DataHandler we later request DataHandler to reverse order
+     * Also, this needs to be done "in reverse", as we later request DataHandler to reverse order
      * for tables with a sorting field.
      *
      * @param array $data
@@ -1094,7 +1094,7 @@ class StoreDataStep extends AbstractStep
         $sortedData = [];
         // Extract pages which don't have a "NEW" pid
         foreach ($data as $id => $fields) {
-            if (strpos((string)$fields['pid'], 'NEW') === false) {
+            if (strpos((string)($fields['pid'] ?? ''), 'NEW') === false) {
                 $levelPages[] = (strpos((string)$id, 'NEW') === 0) ? $id : (int)$id;
                 $sortedData[$id] = $fields;
                 unset($data[$id]);
