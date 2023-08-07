@@ -24,6 +24,7 @@ return [
                 'viewConfiguration',
                 'synchronize',
                 'preview',
+                'downloadPreview',
                 'newTask',
                 'createTask',
                 'updateTask',
