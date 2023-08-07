@@ -267,7 +267,7 @@ Description
     **invalidate** takes precedence over **default**.
 
   default
-    *(mixed)* If the **expression** (or :code:`empty()`) evaluate to :code:`true`, this
+    *(mixed)* If the **expression** (or :code:`empty()`) evaluates to :code:`true`, this
     value will be set in the record instead of the empty value.
 
   **Example**
