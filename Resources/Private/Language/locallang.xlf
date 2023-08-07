@@ -129,6 +129,9 @@
 			<trans-unit id="columnIndex" xml:space="preserve">
 				<source>Alternate column index</source>
 			</trans-unit>
+			<trans-unit id="columnsOrder" xml:space="preserve">
+				<source>Specific columns order</source>
+			</trans-unit>
 			<trans-unit id="customSteps" xml:space="preserve">
 				<source>Custom process steps</source>
 			</trans-unit>

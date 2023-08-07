@@ -32,6 +32,8 @@ a download button, to retrieve the data being handled in its current state.
 When setting a fixed value, the new :ref:`column configuration property <administration-columns-properties-value>`
 should be preferred over the historical :ref:`transformation property <administration-transformations-properties-value>`.
 
+It is now possible to define explicitly :ref:`the order in which columns are processed <administration-general-tca-properties-columnsorder>`.
+
 
 .. _installation-upgrade-700:
 

@@ -406,4 +406,104 @@ class ConfigurationTest extends UnitTestCase
                 $this->subject->getTable()
         );
     }
+
+    public function sortColumnsProvider(): array
+    {
+        return [
+            'No sorting - output ordered by key, as per default' => [
+                'columns' => [
+                    'aa' => 'bar',
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'dd' => 'foo2',
+                ],
+                'sorting' => '',
+                'orderedColumns' => [
+                    'aa' => 'bar',
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'dd' => 'foo2',
+                ],
+            ],
+            'Sorting - all columns ordered specifically' => [
+                'columns' => [
+                    'aa' => 'bar',
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'dd' => 'foo2',
+                ],
+                'sorting' => 'dd, aa, bb, cc',
+                'orderedColumns' => [
+                    'dd' => 'foo2',
+                    'aa' => 'bar',
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                ],
+            ],
+            'Sorting - only some columns ordered' => [
+                'columns' => [
+                    'aa' => 'bar',
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'dd' => 'foo2',
+                ],
+                'sorting' => 'bb, cc',
+                'orderedColumns' => [
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'aa' => 'bar',
+                    'dd' => 'foo2',
+                ],
+            ],
+            'Sorting - invalid columns are ignored' => [
+                'columns' => [
+                    'aa' => 'bar',
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'dd' => 'foo2',
+                ],
+                'sorting' => 'bb, ff, cc',
+                'orderedColumns' => [
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'aa' => 'bar',
+                    'dd' => 'foo2',
+                ],
+            ],
+            'Sorting - duplicate columns are ignored, first occurrence is considered' => [
+                'columns' => [
+                    'aa' => 'bar',
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'dd' => 'foo2',
+                ],
+                'sorting' => 'bb, cc, bb',
+                'orderedColumns' => [
+                    'bb' => 'foo',
+                    'cc' => 'baz',
+                    'aa' => 'bar',
+                    'dd' => 'foo2',
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider sortColumnsProvider
+     * @param array $columns
+     * @param string $order
+     * @param array $orderedColumns
+     * @return void
+     */
+    public function sortColumnsSortsColumns(array $columns, string $order, array $orderedColumns): void
+    {
+        self::assertSame(
+            $this->subject->sortColumns(
+                $columns,
+                $order
+            ),
+            $orderedColumns
+        );
+    }
 }

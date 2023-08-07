@@ -264,7 +264,10 @@ class Configuration
         if (count($this->additionalFields) > 0) {
             $columnConfiguration = array_merge($columnConfiguration, $this->additionalFields);
         }
-        $this->columnConfiguration = $columnConfiguration;
+        $this->columnConfiguration = $this->sortColumns(
+            $columnConfiguration,
+            $this->generalConfiguration['columnsOrder'] ?? ''
+        );
         $this->sortTransformationProperties();
     }
 
@@ -475,6 +478,28 @@ class Configuration
     public function setConnector(ConnectorBase $connector): void
     {
         $this->connector = $connector;
+    }
+
+    public function sortColumns(array $columns, string $sorting = ''): array
+    {
+        if (empty($sorting)) {
+            return $columns;
+        }
+
+        $orderedColumns = [];
+        // Handle all columns that are explicitly sorted
+        $sortingArray = GeneralUtility::trimExplode(',', $sorting, true);
+        foreach ($sortingArray as $key) {
+            if (array_key_exists($key, $columns)) {
+                $orderedColumns[$key] = $columns[$key];
+                unset($columns[$key]);
+            }
+        }
+        // Append any remaining columns in their original order
+        foreach ($columns as $key => $column) {
+            $orderedColumns[$key] = $column;
+        }
+        return $orderedColumns;
     }
 
     /**

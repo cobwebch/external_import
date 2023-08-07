@@ -385,18 +385,46 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     }
 
     /**
+     * @test
+     */
+    public function validateColumnsOrderPropertyWithDuplicateValuesRaisesNotice(): void
+    {
+        $this->subject->isValid(
+            $this->prepareConfigurationObject(
+                'tt_content',
+                [
+                    'columnsOrder' => 'bb, aa, aa'
+                ],
+                [
+                    'aa' => [
+                        'foo' => 'bar',
+                    ],
+                    'bb' => [
+                        'foo' => 'bar',
+                    ],
+                ]
+            )
+        );
+        $results = $this->subject->getResults()->getForProperty('columnsOrder');
+        self::assertSame(
+            AbstractMessage::NOTICE,
+            $results[0]['severity']
+        );
+    }
+
+    /**
      * Prepares a configuration object with the usual parameters used in this test suite.
      *
      * @param string $table
      * @param array $configuration
      * @return Configuration
      */
-    protected function prepareConfigurationObject(string $table, array $configuration): Configuration
+    protected function prepareConfigurationObject(string $table, array $configuration, array $columnConfiguration = []): Configuration
     {
         $configurationObject = GeneralUtility::makeInstance(Configuration::class);
         $configurationObject->setTable($table);
         $configurationObject->setGeneralConfiguration($configuration);
-        $configurationObject->setColumnConfiguration([]);
+        $configurationObject->setColumnConfiguration($columnConfiguration);
         return $configurationObject;
     }
 }

@@ -82,6 +82,10 @@ class GeneralConfigurationValidator
             $generalConfiguration['useColumnIndex'] ?? null,
             $configuration->getColumnConfiguration()
         );
+        $this->validateColumnsOrderProperty(
+            $generalConfiguration['columnsOrder'] ?? '',
+            $configuration->getColumnConfiguration()
+        );
         $this->validateCustomStepsProperty(
             $generalConfiguration['customSteps'] ?? null,
             $generalConfiguration
@@ -387,6 +391,54 @@ class GeneralConfigurationValidator
                     ]
                 ),
                 AbstractMessage::ERROR
+            );
+        }
+    }
+
+    /**
+     * Validates the "columnsOrder" property.
+     *
+     * @param mixed $property Property value
+     * @param array $columns List of column configurations
+     * @return void
+     */
+    public function validateColumnsOrderProperty(string $property, array $columns): void
+    {
+        $columnKeys = GeneralUtility::trimExplode(',', $property, true);
+        // Check if some columns are duplicated in the configuration
+        $filteredColumnKeys = array_unique($columnKeys);
+        $difference = array_diff_assoc($columnKeys, $filteredColumnKeys);
+        if (count($difference) > 0) {
+            $this->results->add(
+                'columnsOrder',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:duplicateKeysInColumnsOrderProperty',
+                    null,
+                    [
+                        implode(', ', $difference),
+                    ]
+                ),
+                AbstractMessage::NOTICE
+            );
+        }
+        // Check if some columns do not exist in the configuration
+        $invalidColumns = [];
+        foreach ($columnKeys as $key) {
+            if (!array_key_exists($key, $columns)) {
+                $invalidColumns[] = $key;
+            }
+        }
+        if (count($invalidColumns) > 0) {
+            $this->results->add(
+                'columnsOrder',
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidColumnsInColumnsOrderProperty',
+                    null,
+                    [
+                        implode(', ', $invalidColumns),
+                    ]
+                ),
+                AbstractMessage::NOTICE
             );
         }
     }

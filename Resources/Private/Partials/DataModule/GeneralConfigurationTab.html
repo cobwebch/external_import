@@ -265,6 +265,22 @@
 					</td>
 				</tr>
 				<tr>
+					<td><f:translate id="columnsOrder" /></td>
+					<td>
+						<f:if condition="{generalConfiguration.columnsOrder}">
+							<f:then>
+								{generalConfiguration.columnsOrder}
+								<f:if condition="{results.columnsOrder}">
+									<ex:displayValidationResult result="{results.columnsOrder}" />
+								</f:if>
+							</f:then>
+							<f:else>
+								<f:translate id="undefined" />
+							</f:else>
+						</f:if>
+					</td>
+				</tr>
+				<tr>
 					<td><f:translate id="customSteps" /></td>
 					<td>
 						<f:if condition="{generalConfiguration.customSteps}">

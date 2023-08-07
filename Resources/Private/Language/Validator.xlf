@@ -47,6 +47,12 @@
 			<trans-unit id="wrongUseColumnIndexProperty" xml:space="preserve">
 				<source>Property "useColumnIndex" is set to %1$s, but no matching configuration exists for table %2$s.</source>
 			</trans-unit>
+			<trans-unit id="duplicateKeysInColumnsOrderProperty" xml:space="preserve">
+				<source>One or more columns are declared multiple times in property "columnsOrder": %s.</source>
+			</trans-unit>
+			<trans-unit id="invalidColumnsInColumnsOrderProperty" xml:space="preserve">
+				<source>One or more columns are declared in property "columnsOrder", but do not exist: %s.</source>
+			</trans-unit>
 			<trans-unit id="obsoleteAdditionalFieldsProperty" xml:space="preserve">
 				<source>Property "additionalFields" still uses a comma-separated syntax. It should be moved to the new syntax (see documentation). Backwards-compatibility will be dropped in the future.</source>
 			</trans-unit>

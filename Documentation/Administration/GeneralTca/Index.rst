@@ -58,6 +58,7 @@ Properties
    arrayPathFlatten_                     bool              Handle data (array)
    arrayPathSeparator_                   string            Handle data (array)
    clearCache_                           string            Clear cache
+   columnsOrder_                         string            Transform data
    connector_                            string            Read data
    customSteps_                          array             Any step
    data_                                 string            Read data
@@ -485,6 +486,30 @@ Description
 
 Scope
   Configuration
+
+
+.. _administration-general-tca-properties-columnsorder:
+
+columnsOrder
+~~~~~~~~~~~~
+
+Type
+  string
+
+Description
+  By default, columns (regular columns or additional fields) are handled in alphabetical
+  order whenever a loop is performed on all columns (typically in the :php:`\Cobweb\ExternalImport\Step\TransformDataStep`
+  class). This can be an issue when you need a specific column to be handled before
+  another one.
+
+  With this property, you can define a comma-separated list of columns, that will
+  be handled in that specific order. It is not necessary to define an order for all columns.
+  If only some columns are explicitly ordered, the rest will be handled after the ordered
+  ones, in alphabetical order. The order is visually reflected in the backend module,
+  when viewing the :ref:`configuration details <user-backend-module-synchronizable-details>`.
+
+Scope
+  Transform data (essentially)
 
 
 .. _administration-general-tca-properties-customsteps:
