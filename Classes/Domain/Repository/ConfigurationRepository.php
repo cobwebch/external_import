@@ -79,6 +79,7 @@ class ConfigurationRepository
                 $GLOBALS['TCA'][$table]['external']['general'][$index]
             );
         // Check for legacy general configuration
+        // TODO: remove in version 8.0
         } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
             $configuration['general'] = $this->processGeneralConfiguration(
                 $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
