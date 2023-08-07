@@ -26,6 +26,8 @@ Upgrading and what's new
 Upgrade to 7.1.0
 """"""""""""""""
 
+External Import now supports PHP 8.2.
+
 When running the preview mode from the backend module, some steps now provide
 a download button, to retrieve the data being handled in its current state.
 

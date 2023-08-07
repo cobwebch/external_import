@@ -1,6 +1,7 @@
 2023-08-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Allow explicit ordering of columns for processing, resolves #255
+    * Verify compatibility with PHP 8.2
 
 2023-08-06 Francois Suter (Idéative)  <typo3@ideative.ch>
 
