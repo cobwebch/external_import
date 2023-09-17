@@ -48,7 +48,7 @@ A typical command will look like:
 
 .. code-block:: text
 
-	path/to/php path/to/bin/typo3 externalimport:sync --table=foo --index=bar --preview='Cobweb\ExternalImport\Step\TransformDataStep'
+	path/to/php path/to/bin/typo3 externalimport:sync --table=foo --index=bar --preview='Cobweb\\ExternalImport\\Step\\TransformDataStep'
 
 This will stop the process after the :code:`TransformDataStep` and dump the transformed
 data in the standard output. Mind the correct syntax for defining the :code:`Step` class
