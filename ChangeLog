@@ -1,3 +1,7 @@
+2023-09-17 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Fix compatibility with PHP 7.4, resolves #296
+
 2023-08-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Allow explicit ordering of columns for processing, resolves #255

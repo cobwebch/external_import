@@ -23,10 +23,7 @@ use TYPO3\CMS\Core\Attribute\WebhookMessage;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\WebhookMessageInterface;
 
-#[WebhookMessage(
-    identifier: 'externalimport/after-import',
-    description: 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:webhook.after_import'
-)]
+#[WebhookMessage(identifier: 'externalimport/after-import', description: 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:webhook.after_import')]
 class AfterImportMessage implements WebhookMessageInterface
 {
     protected Importer $importer;
