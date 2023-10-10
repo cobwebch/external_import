@@ -58,10 +58,10 @@ class TableTitleViewHelper extends AbstractViewHelper
                 ''
             );
             if ($title === null) {
-                $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title']??'Unkown';
+                $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title']??$arguments['table']??'Unkown';
             }
         } catch (\Exception $e) {
-            $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title']??'Unkown';
+            $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title']??$arguments['table']??'Unkown';
         }
         return $title;
     }
