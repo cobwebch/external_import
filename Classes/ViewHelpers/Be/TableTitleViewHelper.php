@@ -54,14 +54,14 @@ class TableTitleViewHelper extends AbstractViewHelper
     ): string {
         try {
             $title = LocalizationUtility::translate(
-                $GLOBALS['TCA'][$arguments['table']]['ctrl']['title'],
+                $GLOBALS['TCA'][$arguments['table']]['ctrl']['title']??'',
                 ''
             );
             if ($title === null) {
-                $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title'];
+                $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title']??'Unkown';
             }
         } catch (\Exception $e) {
-            $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title'];
+            $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title']??'Unkown';
         }
         return $title;
     }
