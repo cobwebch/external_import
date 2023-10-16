@@ -57,6 +57,16 @@ set this option to 100. If fewer items than this are present in the
 external data, the import process will be aborted and nothing will get deleted.
 
 
+.. _user-backend-troubleshooting-unrelated-deleted:
+
+Data on unrelated pages was deleted
+"""""""""""""""""""""""""""""""""""
+
+If all imported data should only be syncronized in a certain page, use
+:php:`'enforcePid' => 1` to prevent the import from altering or deleting 
+data on pages with a different page ID.
+
+
 .. _user-backend-troubleshooting-single-entry:
 
 Only a single entry was imported
