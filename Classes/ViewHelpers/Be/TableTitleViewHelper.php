@@ -53,15 +53,16 @@ class TableTitleViewHelper extends AbstractViewHelper
         RenderingContextInterface $renderingContext
     ): string {
         try {
+            $tcaTitle = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title'] ?? 'Unknown';
             $title = LocalizationUtility::translate(
-                $GLOBALS['TCA'][$arguments['table']]['ctrl']['title'],
+                $tcaTitle,
                 ''
             );
             if ($title === null) {
-                $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title'];
+                $title = $tcaTitle;
             }
         } catch (\Exception $e) {
-            $title = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title'];
+            $title = $tcaTitle;
         }
         return $title;
     }
