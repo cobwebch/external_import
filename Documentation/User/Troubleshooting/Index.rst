@@ -62,9 +62,9 @@ external data, the import process will be aborted and nothing will get deleted.
 Data on unrelated pages was deleted
 """""""""""""""""""""""""""""""""""
 
-If all imported data should only be syncronized in a certain page, use
-:php:`'enforcePid' => 1` to prevent the import from altering or deleting 
-data on pages with a different page ID.
+If all imported data should only be syncronized in a certain page, set the
+:ref:`enforcePid <administration-general-tca-properties-enforcepid>` to :php:`1`
+to prevent the import from altering or deleting data on pages with a different page ID.
 
 
 .. _user-backend-troubleshooting-single-entry:
