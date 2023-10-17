@@ -13,7 +13,7 @@ The same keys need to be used again in the :ref:`column configuration <administr
 
 .. code-block:: php
 
-	$GLOBALS['TCA']['tx_externalimporttest_tag'] = [
+	$GLOBALS['TCA']['tx_externalimporttest_tag'] = array_merge_recursive( $GLOBALS['TCA']['tx_externalimporttest_tag'], [
         'external' => [
              'general' => [
                   0 => [
@@ -37,7 +37,7 @@ The same keys need to be used again in the :ref:`column configuration <administr
                   ]
              ]
         ],
-	];
+	]);
 
 
 All available properties are described below.
