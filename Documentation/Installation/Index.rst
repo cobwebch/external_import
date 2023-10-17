@@ -13,6 +13,10 @@ connect to.
 
 TYPO3 CMS 11 or 12 is required, as well as the "scheduler" system extension.
 
+For TYPO3 CMS 12, extension "reactions" is also required. It needs to be required "manually".
+It is not declared in External Import's `composer.json` manifest in order to preserve
+compatibility with TYPO3 11.
+
 
 .. _installation-compatibility:
 .. _installation-upgrading:
