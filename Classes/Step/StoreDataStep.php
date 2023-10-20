@@ -606,6 +606,7 @@ class StoreDataStep extends AbstractStep
         );
         $childColumns = $this->processedConfiguration->getChildColumns();
         $hasChildColumns = $this->processedConfiguration->hasChildColumns();
+        $nullableColumns = $this->processedConfiguration->getNullableColumns();
 
         // Check if at least one column expects denormalized data
         $denormalizedColumns = [];
@@ -663,8 +664,12 @@ class StoreDataStep extends AbstractStep
                     // The values that are excluded are temporarily stored for later restoration
                     if (array_key_exists(Configuration::DO_NOT_SAVE_KEY, $configuration) && array_key_exists($name, $record)) {
                         $this->valuesExcludedFromSaving[$id][$name] = $record[$name];
-                        // Make sure a value actually exists
-                    } elseif (isset($record[$name])) {
+                    // Make sure a value actually exists
+                    } elseif (array_key_exists($name, $record)) {
+                        // Skip the value if it is null and the column does not accept null as a valid value
+                        if ($record[$name] === null && !in_array($name, $nullableColumns, true)) {
+                            continue;
+                        }
                         $dataToStore[$id][$name] = $record[$name];
                     }
                 }

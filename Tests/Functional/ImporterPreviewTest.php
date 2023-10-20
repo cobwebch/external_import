@@ -249,7 +249,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'picture_title' => 'View that does not exist'
                     ],
                     [
-                        'attributes' => "\n\t\t\t<quality>Not too cumbersome</quality>\n\t\t\t<quality>Lets the air flow</quality>\n\t\t",
+                        'attributes' => '',
                         'categories' => 'USEFUL',
                         'created' => '2021-08-26 12:43:00',
                         'name' => 'Chain mail',
@@ -452,7 +452,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'picture_title' => 'View that does not exist'
                     ],
                     [
-                        'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
+                        'attributes' => null,
                         'categories' => '',
                         'created' => 1629981780,
                         'name' => 'Chain mail (base)',
@@ -590,7 +590,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'pid' => 1
                             ],
                             'NEW5' => [
-                                'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
+                                'attributes' => null,
                                 'categories' => '',
                                 'created' => 1629981780,
                                 'name' => 'Chain mail (base)',
@@ -657,7 +657,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'sku' => '000001'
                             ],
                             '2' => [
-                                'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Not too cumbersome</li>\n\t\t\t<li>Lets the air flow</li>\n\t\t</ul>",
+                                'attributes' => null,
                                 'categories' => '',
                                 'created' => 1629981780,
                                 'name' => 'Chain mail (base)',

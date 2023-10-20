@@ -1,3 +1,7 @@
+2023-10-20 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Allow nullable values to be stored as null, resolves #302
+
 2023-10-17 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Harden table title view helper against missing table title, resolves #299

@@ -194,4 +194,58 @@ class ProcessedConfigurationTest extends UnitTestCase
             $this->subject->hasChildColumns()
         );
     }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function getNullableColumnsInitiallyReturnsEmptyArray(): void
+    {
+        self::assertSame(
+            [],
+            $this->subject->getNullableColumns()
+        );
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function setNullableColumnsSetsColumnsList(): void
+    {
+        $this->subject->setNullableColumns(['foo', 'bar']);
+        self::assertSame(
+            ['foo', 'bar'],
+            $this->subject->getNullableColumns()
+        );
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function addNullableColumnAddsColumnToList(): void
+    {
+        $this->subject->setNullableColumns(['foo']);
+        $this->subject->addNullableColumn('bar');
+        self::assertSame(
+            ['foo', 'bar'],
+            $this->subject->getNullableColumns()
+        );
+    }
+
+    /**
+     * @test
+     * @return void
+     */
+    public function isNullableColumnReturnsBoolean(): void
+    {
+        $this->subject->setNullableColumns(['foo', 'bar']);
+        self::assertTrue(
+            $this->subject->isNullableColumn('foo')
+        );
+        self::assertFalse(
+            $this->subject->isNullableColumn('baz')
+        );
+    }
 }

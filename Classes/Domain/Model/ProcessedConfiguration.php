@@ -35,6 +35,11 @@ class ProcessedConfiguration
     protected array $childColumns = [];
 
     /**
+     * @var array List of columns for which a NULL value can be accepted
+     */
+    protected array $nullableColumns = [];
+
+    /**
      * @return array
      */
     public function getFieldsExcludedFromInserts(): array
@@ -115,5 +120,27 @@ class ProcessedConfiguration
     public function hasChildColumns(): bool
     {
         return count($this->childColumns) > 0;
+    }
+
+    public function getNullableColumns(): array
+    {
+        return $this->nullableColumns;
+    }
+
+    public function setNullableColumns(array $nullableColumns): void
+    {
+        $this->nullableColumns = $nullableColumns;
+    }
+
+    public function addNullableColumn(string $name): void
+    {
+        if (!in_array($name, $this->nullableColumns, true)) {
+            $this->nullableColumns[] = $name;
+        }
+    }
+
+    public function isNullableColumn(string $name): bool
+    {
+        return in_array($name, $this->nullableColumns, true);
     }
 }

@@ -106,7 +106,6 @@ class Configuration
     /**
      * Restructures part of the configuration for easier use during the import process.
      *
-     *
      * @return void
      */
     public function processConfiguration(): void
@@ -120,6 +119,10 @@ class Configuration
                 if (GeneralUtility::inList($columnData['disabledOperations'], 'update')) {
                     $this->processedConfiguration->addFieldExcludedFromUpdates($columnName);
                 }
+            }
+            // Check for nullable property
+            if ($this->isNullable($columnName)) {
+                $this->processedConfiguration->addNullableColumn($columnName);
             }
             // Process children configurations
             if (array_key_exists('children', $columnData)) {
@@ -516,5 +519,26 @@ class Configuration
                 $this->columnConfiguration[$name]['transformations'] = $transformations;
             }
         }
+    }
+
+    /**
+     * Check in the TCA if the column definition indicates that a NULL value can be accepted
+     * as a valid value to store in the database
+     *
+     * @param string $name
+     * @return bool
+     */
+    protected function isNullable(string $name): bool
+    {
+        $nullable = false;
+        $columnTca = $GLOBALS['TCA'][$this->table]['columns'][$name]['config'] ?? [];
+        // Check for explicit nullable property (TYPO3 12+)
+        if (array_key_exists('nullable', $columnTca)) {
+            $nullable = $columnTca['nullable'];
+        // If not defined, try for "null" evaluation (TYPO3 11)
+        } elseif (array_key_exists('eval', $columnTca)) {
+            $nullable = GeneralUtility::inList($columnTca['eval'], 'null');
+        }
+        return $nullable;
     }
 }
