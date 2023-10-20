@@ -1036,13 +1036,18 @@ class StoreDataStep extends AbstractStep
                 while ($row = $result->fetchAssociative()) {
                     // Check if there's a label for the message
                     $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
-                    $label = LocalizationUtility::translate(
-                        'LLL:EXT:belog/mod/locallang.xml:' . $labelCode,
-                        'belog'
-                    );
                     // If not, use details field
-                    if (empty($label)) {
-                        $label = $row['details'];
+                    $dataArray = json_decode( $row['log_data'], true);
+                    if ($dataArray !== null) {
+                        $dataArray = json_decode( $row['log_data'], true);
+                        $label = LocalizationUtility::translate(
+                            'LLL:EXT:belog/Resources/Private/Language/locallang.xlf:' . $labelCode,
+                            'belog',
+                            [$dataArray['reason']??'unknown', ($dataArray['table']??'unknown table') . ': ' . $dataArray['uid']??'0']
+                        );
+                    }
+                    if ($label === null) {
+                        $label = $dataArray['reason'] ?? $dataArray['details'] ?? 'Unkown Reason';
                     }
                     // Substitute the first 5 items of extra data into the error message
                     $message = $label;
