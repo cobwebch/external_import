@@ -1051,7 +1051,7 @@ class StoreDataStep extends AbstractStep
                             [$dataArray['reason']??'unknown', ($dataArray['table']??'unknown table') . ': ' . $dataArray['uid']??'0']
                         );
                     }
-                    if ($label === null) {
+                    if (empty($label)) {
                         $label = $dataArray['reason'] ?? $dataArray['details'] ?? 'Unkown Reason';
                     }
                     // Substitute the first 5 items of extra data into the error message
