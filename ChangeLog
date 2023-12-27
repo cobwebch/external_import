@@ -1,3 +1,7 @@
+2023-12-27 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Improve look of backend modules in TYPO3 12
+
 2023-10-20 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Allow nullable values to be stored as null, resolves #302
