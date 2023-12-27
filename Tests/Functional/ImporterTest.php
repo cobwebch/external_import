@@ -667,10 +667,19 @@ class ImporterTest extends FunctionalTestCase
             $movedProducts,
             serialize($messages)
         );
-        // That product should have an updated slug
+        // That product should have an updated name and slug
         self::assertSame(
             'Long sword (updated)',
             $movedProducts[0]['name']
+        );
+        $movedProducts = $this->getDatabaseConnection()->select(
+            'path_segment',
+            'tx_externalimporttest_product',
+            'pid = 2'
+        )->fetchAll();
+        self::assertSame(
+            'long-sword-updated',
+            $movedProducts[0]['path_segment']
         );
     }
 
