@@ -2,7 +2,7 @@
 
 return [
     'ExternalImport' => [
-        'access' => 'user',
+        'access' => '',
         'workspaces' => 'live',
         'iconIdentifier' => 'tx_externalimport-main-module',
         'path' => '/module/externalimport',
