@@ -104,6 +104,9 @@ Update Record Preprocess
    This event is triggered just before a record is registered for update
    in the database. It is triggered for each record individually.
 
+   The event may throw the special exception :php:`\Cobweb\ExternalImport\Exception\InvalidRecordException`,
+   in which case the record will be removed from the dataset to be saved.
+
    .. note::
 
       This event listener receives records only from the main table, not from any child table.
@@ -135,7 +138,8 @@ Insert Record Preprocess
 
 .. php:class:: InsertRecordPreprocessEvent
 
-   Similar to the "Update Record Preprocess" event, but for the insert operation.
+   Similar to the "Update Record Preprocess" event above, but for the insert operation.
+   It may also throw :php:`\Cobweb\ExternalImport\Exception\InvalidRecordException`.
 
    .. note::
 

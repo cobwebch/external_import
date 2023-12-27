@@ -2,6 +2,7 @@
 
     * Improve look of backend modules in TYPO3 12
     * Remove access restriction on main module, resolves #308
+    * Allow skipping records in StoreDataStep, resolves #310
 
 2023-10-20 Francois Suter (Idéative)  <typo3@ideative.ch>
 

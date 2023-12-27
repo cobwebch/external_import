@@ -27,6 +27,7 @@ use Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent;
 use Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent;
 use Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Exception\InvalidRecordException;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ChildrenSortingUtility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
@@ -210,6 +211,8 @@ class StoreDataStep extends AbstractStep
                 } catch (CriticalFailureException $e) {
                     $this->abortFlag = true;
                     return;
+                } catch (InvalidRecordException $e) {
+                    continue;
                 } catch (\Exception $e) {
                     $this->importer->debug(
                         sprintf(
@@ -254,6 +257,8 @@ class StoreDataStep extends AbstractStep
                 } catch (CriticalFailureException $e) {
                     $this->abortFlag = true;
                     return;
+                } catch (InvalidRecordException $e) {
+                    continue;
                 } catch (\Exception $e) {
                     $this->importer->debug(
                         sprintf(
