@@ -764,6 +764,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'bundle_code' => 'JOY01',
                                 'maker' => 'Doctor Strange',
                                 'name' => 'Bundle of joy',
+                                'notes' => 'This will make you very happy',
                                 'products' => '3,4',
                                 'pid' => 1
                             ],
@@ -771,6 +772,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'bundle_code' => 'PAIN01',
                                 'maker' => 'Loki',
                                 'name' => 'Bundle of pain',
+                                'notes' => 'Maybe you don\'t want this bundle at all',
                                 'products' => '1,2',
                                 'pid' => 1
                             ],
@@ -778,6 +780,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'bundle_code' => 'PAIN02',
                                 'maker' => 'Mad Max',
                                 'name' => 'Bundle of extra pain',
+                                'notes' => null,
                                 'products' => '6,1,5,2',
                                 'pid' => 1
                             ]

@@ -156,6 +156,15 @@ class ArrayHandlerTest extends UnitTestCase
                 ],
                 'result' => 'bar'
             ],
+            'direct simple value - null' => [
+                'record' => [
+                    'foo' => null
+                ],
+                'configuration' => [
+                    'field' => 'foo'
+                ],
+                'result' => null
+            ],
             'direct array value' => [
                 'record' => [
                     'test' => [

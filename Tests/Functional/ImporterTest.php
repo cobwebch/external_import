@@ -437,6 +437,39 @@ class ImporterTest extends FunctionalTestCase
     }
 
     /**
+     * Imports the bundles with one bundle already existing in the database.
+     * The notes field of that bundle are expected to be nulled.
+     *
+     * @test
+     * @return void
+     */
+    public function importBundlesWithImporterOnExistingBundleSetNull(): void
+    {
+        try {
+            $this->importDataSet(__DIR__ . '/Fixtures/Bundles.xml');
+        } catch (\Exception $e) {
+            self::markTestSkipped(
+                sprintf(
+                    'Orders fixture could not be loaded (Exception: %s [%d])',
+                    $e->getMessage(),
+                    $e->getCode()
+                )
+            );
+        }
+        $messages = $this->subject->synchronize(
+            'tx_externalimporttest_bundle',
+            0
+        );
+        $updatedBundle = $this->getDatabaseConnection()->select(
+            'notes',
+            'tx_externalimporttest_bundle',
+            'bundle_code = \'PAIN02\''
+        )
+        ->fetch();
+        self::assertNull($updatedBundle['notes'], serialize($messages));
+    }
+
+    /**
      * Imports the "orders" and checks whether we have the right count or not
      * (2 expected = 2 imported and 1 existing deleted). Also checks relations between products and orders,
      * including the "quantity" additional field.

@@ -25,6 +25,19 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-720:
+
+Upgrade to 7.2.0
+""""""""""""""""
+
+The :php:`HandleDataStep` process now keeps :code:`null` values found in the imported data.
+This is an important change, but is has a concrete effect only if the target field is nullable
+(i.e. it has an :code:`eval` property including :code:`null` or has property :code:`nullable`
+set to :code:`true` in its TCA configuration). In such cases, existing values will be set to
+:code:`null` where they would have been left untouched before. It may also affect user functions
+in transformations where a :code:`null` value was not expected to be found until now.
+
+
 .. _installation-upgrade-710:
 
 Upgrade to 7.1.0

@@ -360,6 +360,14 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                             ]
                         ]
                     ],
+                    'notes' => [
+                        'field' => 'notes',
+                        'transformations' => [
+                            10 => [
+                                'trim' => true
+                            ]
+                        ]
+                    ],
                     'products' => [
                         'field' => 'product',
                         'multipleRows' => true,

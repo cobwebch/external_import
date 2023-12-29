@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataset>
+	<!-- This item will be updated (notes set to null) -->
+	<tx_externalimporttest_bundle>
+		<uid>1</uid>
+		<pid>1</pid>
+		<bundle_code>PAIN02</bundle_code>
+		<maker>Mad Max</maker>
+		<name>Bundle of extra pain</name>
+		<notes>Some random notes that will disappear anyway.</notes>
+	</tx_externalimporttest_bundle>
+</dataset>

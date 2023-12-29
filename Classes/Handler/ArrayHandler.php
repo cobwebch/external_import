@@ -213,7 +213,7 @@ class ArrayHandler implements DataHandlerInterface
                     1534149806
                 );
             }
-        } elseif (isset($columnConfiguration['field'], $record[$columnConfiguration['field']])) {
+        } elseif (isset($columnConfiguration['field']) && array_key_exists($columnConfiguration['field'], $record)) {
             $value = $record[$columnConfiguration['field']];
         } elseif (isset($columnConfiguration['value'])) {
             $value = $columnConfiguration['value'];
