@@ -1194,7 +1194,11 @@ class StoreDataStep extends AbstractStep
         );
         // Send the call trail to the debut output
         $this->importer->debug(
-            'Stack trace',
+            sprintf(
+                '%s [%d] + Stack trace',
+                $e->getMessage(),
+                $e->getCode()
+            ),
             3,
             [
                 $e->getTraceAsString()

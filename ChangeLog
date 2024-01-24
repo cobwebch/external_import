@@ -1,3 +1,7 @@
+2024-01-24 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Log exception message and code on top of stack trace in store data step
+
 2023-12-29 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Allow reading of null values in array-type data, resolves #309
