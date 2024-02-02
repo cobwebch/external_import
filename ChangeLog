@@ -1,3 +1,7 @@
+2024-02-02 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Fix handling of hidden child records, resolves #311
+
 2024-01-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Log exception message and code on top of stack trace in store data step

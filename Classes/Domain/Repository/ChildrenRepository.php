@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -83,6 +84,13 @@ class ChildrenRepository
     {
         $constraints = [];
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder->getRestrictions()
+            ->removeAll()
+            ->add(
+                GeneralUtility::makeInstance(
+                    DeletedRestriction::class
+                )
+            );
         foreach ($conditions as $field => $value) {
             $constraints[] = $queryBuilder->expr()->eq(
                 $field,
