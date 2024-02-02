@@ -1,6 +1,7 @@
 2024-02-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Fix handling of hidden child records, resolves #311
+    * Release version 7.2.1
 
 2024-01-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 
