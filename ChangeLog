@@ -1,3 +1,7 @@
+2024-02-06 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Fix handling of disabled operations properties, resolves #312
+
 2024-02-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Fix handling of hidden child records, resolves #311

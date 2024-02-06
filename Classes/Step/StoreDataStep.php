@@ -140,6 +140,11 @@ class StoreDataStep extends AbstractStep
         // Prepare the data to store
         $dateToStore = $this->prepareDataToStore();
 
+        $disabledOperations = GeneralUtility::trimExplode(
+            ',',
+            $generalConfiguration['disabledOperations'] ?? '',
+            true
+        );
         $fieldsExcludeFormInserts = $this->processedConfiguration->getFieldsExcludedFromInserts();
         $hasFieldsExcludeFormInserts = count($fieldsExcludeFormInserts) > 0;
         $fieldsExcludeFormUpdates = $this->processedConfiguration->getFieldsExcludedFromUpdates();
@@ -420,8 +425,7 @@ class StoreDataStep extends AbstractStep
         // Now for the main table, mark as deleted those records with existing uids that were not in the import data anymore
         // (if automatic delete is activated)
         $absentUids = [];
-        $operations = $generalConfiguration['disabledOperations'] ?? '';
-        if (!GeneralUtility::inList($operations, 'delete')) {
+        if (!in_array('delete', $disabledOperations, true)) {
             $absentUids = $this->mainRecordsToDelete;
             // Call a pre-processing event
             try {
@@ -600,15 +604,13 @@ class StoreDataStep extends AbstractStep
         $referenceUid = $generalConfiguration['referenceUid'];
         $columnConfiguration = $this->importer->getExternalConfiguration()->getColumnConfiguration();
         $table = $this->importer->getExternalConfiguration()->getTable();
-        $operations = $generalConfiguration['disabledOperations'] ?? '';
-        $isUpdateAllowed = !GeneralUtility::inList(
-            $operations,
-            'update'
+        $disabledOperations = GeneralUtility::trimExplode(
+            ',',
+            $generalConfiguration['disabledOperations'] ?? '',
+            true
         );
-        $isInsertAllowed = !GeneralUtility::inList(
-            $operations,
-            'insert'
-        );
+        $isUpdateAllowed = !in_array('update', $disabledOperations, true);
+        $isInsertAllowed = !in_array('insert', $disabledOperations, true);
         $childColumns = $this->processedConfiguration->getChildColumns();
         $hasChildColumns = $this->processedConfiguration->hasChildColumns();
         $nullableColumns = $this->processedConfiguration->getNullableColumns();

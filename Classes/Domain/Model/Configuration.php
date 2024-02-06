@@ -113,10 +113,11 @@ class Configuration
         foreach ($this->columnConfiguration as $columnName => $columnData) {
             // Process disabled operations for columns
             if (array_key_exists('disabledOperations', $columnData)) {
-                if (GeneralUtility::inList($columnData['disabledOperations'], 'insert')) {
+                $disabledOperations = GeneralUtility::trimExplode(',', $columnData['disabledOperations'], true);
+                if (in_array('insert', $disabledOperations, true)) {
                     $this->processedConfiguration->addFieldExcludedFromInserts($columnName);
                 }
-                if (GeneralUtility::inList($columnData['disabledOperations'], 'update')) {
+                if (in_array('update', $disabledOperations, true)) {
                     $this->processedConfiguration->addFieldExcludedFromUpdates($columnName);
                 }
             }
