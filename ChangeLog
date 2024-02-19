@@ -1,3 +1,7 @@
+2024-02-19 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Fix regression in backend module access for TYPO3 11, resolves #315
+
 2024-02-06 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Fix handling of disabled operations properties, resolves #312

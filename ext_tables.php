@@ -14,7 +14,7 @@ ExtensionUtility::registerModule(
     '',
     [],
     [
-        'access' => '',
+        'access' => 'user,group',
         'icon' => 'EXT:external_import/Resources/Public/Icons/MainModuleIcon.svg',
         'labels' => 'LLL:EXT:external_import/Resources/Private/Language/MainModule.xlf'
     ]
