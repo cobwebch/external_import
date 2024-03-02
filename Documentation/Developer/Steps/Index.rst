@@ -87,10 +87,10 @@ processed. To read the data, use:
 
 .. code-block:: php
 
-	// Read the raw data or...
-	$rawData = $this->getData()->getRawData();
-	// Read the processed data
-	$records = $this->getData()->getRecords();
+    // Read the raw data or...
+    $rawData = $this->getData()->getRawData();
+    // Read the processed data
+    $records = $this->getData()->getRecords();
 
 .. note::
 
@@ -101,10 +101,10 @@ If you manipulate the data, you need to store it explicitely:
 
 .. code-block:: php
 
-	// Store the raw data or...
-	$this->getData()->setRawData();
-	// Store the processed data
-	$this->getData()->setRecords();
+    // Store the raw data or...
+    $this->getData()->setRawData();
+    // Store the processed data
+    $this->getData()->setRecords();
 
 Another typical usage would be to interrupt the process entirely
 by setting the :code:`abortFlag` variable to :code:`true`, as mentioned
@@ -135,7 +135,7 @@ This has two implications:
 
    .. code-block:: php
 
-		$this->getImporter()->setPreviewData(...);
+        $this->getImporter()->setPreviewData(...);
 
    The preview data can be of any type.
 
@@ -145,7 +145,7 @@ This has two implications:
 
    .. code-block:: php
 
-		$this->getImporter()->isPreview();
+        $this->getImporter()->isPreview();
 
 #. Indicate that the :code:`records` of the :code:`Data` object are downloadable
    if it makes sense (see the :ref:`Data model API <developer-api-data-model>`).

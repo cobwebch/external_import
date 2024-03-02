@@ -27,9 +27,9 @@ allowing a user to run synchronizations from the BE module and to define
 Scheduler tasks. This is found at the bottom of the "Access Lists" tab.
 
 .. figure:: ../../Images/UserPermissions.png
-	:alt: Specific user permissions
+    :alt: Specific user permissions
 
-	Setting specific permissions for the BE module
+    Setting specific permissions for the BE module
 
 
 DB mount points are not checked at this point, so the user may be

@@ -201,9 +201,9 @@ Description
   .. note::
 
      This property does nothing when used in combination with the
-     :ref:`MM property <administration-mm>`, because we expect normalized
+     MM property, because we expect normalized
      data with one and denormalized data with the other. The chapter about
-     :ref:`mapping data <user-mapping-data-mm>` hopefully helps understand this.
+     :ref:`mapping data <user-mapping-data>` hopefully helps understand this.
 
 Scope
   Transform data
@@ -280,15 +280,15 @@ Here's an example TCA configuration.
 
 .. code-block:: php
 
-	$GLOBALS['TCA']['fe_users']['columns']['tx_externalimporttut_department']['external'] = [
-		0 => [
-			'field' => 'department',
-			'mapping' => [
-				'table' => 'tx_externalimporttut_departments',
-				'referenceField' => 'code'
-			]
-		]
-	];
+    $GLOBALS['TCA']['fe_users']['columns']['tx_externalimporttut_department']['external'] = [
+        0 => [
+            'field' => 'department',
+            'mapping' => [
+                'table' => 'tx_externalimporttut_departments',
+                'referenceField' => 'code'
+            ]
+        ]
+    ];
 
 The value found in the "department" field of the external data
 will be matched to the "code" field of the "tx_externalimporttut_departments" table,
@@ -309,26 +309,26 @@ The incoming data looks like:
 
 .. code-block:: xml
 
-	<catalogue>
-		<products type="current">
-			<item sku="000001">Long sword</item>
-			<tags>attack,metal</tags>
-		</products>
-		<products type="obsolete">
-			<item index="000002">Solar cream</item>
-		</products>
-		<products type="current">
-			<item sku="000005">Chain mail</item>
-			<tags>defense,metal</tags>
-		</products>
-		<item sku="000014" type="current">Out of structure</item>
-	</catalogue>
+    <catalogue>
+        <products type="current">
+            <item sku="000001">Long sword</item>
+            <tags>attack,metal</tags>
+        </products>
+        <products type="obsolete">
+            <item index="000002">Solar cream</item>
+        </products>
+        <products type="current">
+            <item sku="000005">Chain mail</item>
+            <tags>defense,metal</tags>
+        </products>
+        <item sku="000014" type="current">Out of structure</item>
+    </catalogue>
 
 and the external import configuration like:
 
 .. code-block:: php
 
-	$GLOBALS['TCA']['tx_externalimporttest_product']['columns']['tags']['external'] = [
+    $GLOBALS['TCA']['tx_externalimporttest_product']['columns']['tags']['external'] = [
       'base' => [
           'xpath' => './self::*[@type="current"]/tags',
           'transformations' => [
@@ -341,7 +341,7 @@ and the external import configuration like:
                ]
           ]
       ]
-	];
+    ];
 
 The values in the :code:`<tags>` nodes will be split on the
 comma and each will be matched to a tag from "tx_externalimporttest_tag"

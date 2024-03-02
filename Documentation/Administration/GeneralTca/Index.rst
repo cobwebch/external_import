@@ -13,7 +13,7 @@ The same keys need to be used again in the :ref:`column configuration <administr
 
 .. code-block:: php
 
-	$GLOBALS['TCA']['tx_externalimporttest_tag'] = array_merge_recursive( $GLOBALS['TCA']['tx_externalimporttest_tag'], [
+    $GLOBALS['TCA']['tx_externalimporttest_tag'] = array_merge_recursive( $GLOBALS['TCA']['tx_externalimporttest_tag'], [
         'external' => [
              'general' => [
                   0 => [
@@ -37,7 +37,7 @@ The same keys need to be used again in the :ref:`column configuration <administr
                   ]
              ]
         ],
-	]);
+    ]);
 
 
 All available properties are described below.
@@ -244,7 +244,7 @@ Type
   bool
 
 Description
-  When the special :code:`*` segment is used in an :ref:`arrayPath <administration-general-tca-properties-array-path>`,
+  When the special :code:`*` segment is used in an :ref:`arrayPath <administration-general-tca-properties-arraypath>`,
   the resulting structure is always an array. If the :code:`arrayPath` target is
   actually a single value, this may not be desirable. When :code:`arrayPathFlatten`
   is set to :code:`true`, the result is preserved as a simple type.

@@ -23,7 +23,7 @@ understand which part of the process it impacts. The names of the
 steps correspond to the :ref:`process steps <user-overview>`.
 
 There are some code examples throughout this chapter. They are
-taken either from the :ref:`External Import Tutorial <tut:start>`
+taken either from the :ref:`External Import Tutorial <cobweb/externalimport_tut:start>`
 or from the test extension: https://github.com/fsuter/externalimport_test.
 You are encouraged to refer to them for more examples and more details about
 each example (in the Tutorial).

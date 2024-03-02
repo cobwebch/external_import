@@ -48,7 +48,7 @@ one record in the TYPO3 database, possibly after some transformations. This is
 what this image tries to convey:
 
 .. figure:: ../../Images/ImportScenarios/SimplestScenario.svg
-	:alt: The simplest import scenario
+    :alt: The simplest import scenario
 
 
 One line of external data is read (red), it goes through some transformations (grey)
@@ -69,7 +69,7 @@ and concatenates again (with a comma), all the values that were mapped.
 This is can be represented as:
 
 .. figure:: ../../Images/ImportScenarios/MultipleValuesSeparatorScenario.svg
-	:alt: Import scenario with multiple values separator
+    :alt: Import scenario with multiple values separator
 
 
 The external data (red) contains values that correspond to keys in the TYPO3 database.
@@ -94,7 +94,7 @@ will be imported and the others will simply be discarded. This may not be what y
 want. A schema for this situation could be:
 
 .. figure:: ../../Images/ImportScenarios/DenormalizedNoMultipleRows.svg
-	:alt: Import scenario with denormalized data and no specific configuration
+    :alt: Import scenario with denormalized data and no specific configuration
 
 
 The black key and the white key represent the external keys. Among the four rows,
@@ -121,7 +121,7 @@ as a comma-separated list of values).
 The result can be represented as:
 
 .. figure:: ../../Images/ImportScenarios/DenormalizedWithMultipleRows.svg
-	:alt: Import scenario with denormalized data and multiple rows activated
+    :alt: Import scenario with denormalized data and multiple rows activated
 
 
 Only two records are created but the many-to-many relations are preserved.
@@ -145,7 +145,7 @@ are mutliple values, it will actually trigger an on-the-fly denormalization of
 the external data, as the schema below attempts to portray:
 
 .. figure:: ../../Images/ImportScenarios/SubstructureFieldsWithMultipleRows.svg
-	:alt: Import scenario with substructure fields and multiple rows activated
+    :alt: Import scenario with substructure fields and multiple rows activated
 
 
 The structured nested inside the external data (little yellow squares inside the
@@ -182,7 +182,7 @@ In this case, the denormalized rows are not collapsed but each row is used to cr
 a separate child record:
 
 .. figure:: ../../Images/ImportScenarios/SubstructureFieldsWithChildRecords.svg
-	:alt: Import scenario with substructure fields and child recrods
+    :alt: Import scenario with substructure fields and child recrods
 
 
 Substructure fields may be used to fill children columns.

@@ -122,7 +122,6 @@ Tool for importing data from external sources into the TYPO3 database, using an 
 
    Introduction/Index
    Installation/Index
-   Configuration/Index
    User/Index
    Administration/Index
    Developer/Index

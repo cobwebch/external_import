@@ -54,16 +54,16 @@ Debug
 
   .. code-block:: php
 
-		$GLOBALS['TYPO3_CONF_VARS']['LOG']['Cobweb']['ExternalImport']['Importer']['writerConfiguration'] = [
-			// configuration for ERROR level log entries
-			\TYPO3\CMS\Core\Log\LogLevel::DEBUG => [
-				// add a FileWriter
-				\TYPO3\CMS\Core\Log\Writer\FileWriter::class => [
-					// configuration for the writer
-					'logFile' => 'typo3temp/logs/typo3_import.log'
-				]
-			]
-		];
+        $GLOBALS['TYPO3_CONF_VARS']['LOG']['Cobweb']['ExternalImport']['Importer']['writerConfiguration'] = [
+            // configuration for ERROR level log entries
+            \TYPO3\CMS\Core\Log\LogLevel::DEBUG => [
+                // add a FileWriter
+                \TYPO3\CMS\Core\Log\Writer\FileWriter::class => [
+                    // configuration for the writer
+                    'logFile' => 'typo3temp/logs/typo3_import.log'
+                ]
+            ]
+        ];
 
 Disable logging
   Disables logging by the TYPO3 Core Engine. By default
