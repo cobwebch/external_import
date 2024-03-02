@@ -88,7 +88,7 @@ Substructure Preprocess
       a :code:`\DomNodeList` for XML-type data. Check the incoming type using the
       :php:`getDataType()` method.
 
-   .. php:method:: getImporter
+   .. php:method:: getImporter()
 
       Current instance of :php:`\Cobweb\ExternalImport\Importer`.
 
