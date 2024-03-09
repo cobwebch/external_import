@@ -8,7 +8,7 @@
                project-issues="https://github.com/cobwebch/external_import/issues" edit-on-github-branch="master"
                edit-on-github="cobwebch/external_import"
                typo3-core-preferred="stable"
-               interlink-shortcode="t3tsconfig"
+               interlink-shortcode="cobweb/external_import"
     />
     <project
             title="External Import"
