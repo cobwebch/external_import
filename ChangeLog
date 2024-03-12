@@ -1,6 +1,8 @@
 2024-03-12 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Ensure casting to boolean when checking nullable, resolves #319
+    * Switch to PHP-based documentation rendering (thanks to Lina Wolf)
+    * Release version 7.2.4
 
 2024-02-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
