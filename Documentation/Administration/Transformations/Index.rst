@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _administration-transformations:
@@ -183,7 +183,7 @@ Description
 
   .. code-block:: php
 
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
+        $GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
          0 => [
             'field' => 'start_date',
             'transformations' => [
@@ -195,7 +195,7 @@ Description
                ]
             ]
          ]
-		];
+        ];
 
   The definition of a user function takes three parameters:
 

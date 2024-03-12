@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _user-overview:
@@ -9,9 +9,9 @@ Process overview
 The schema below provides an overview of the external import process:
 
 .. figure:: ../../Images/ExternalImportProcess.svg
-	:alt: Import process overview
+    :alt: Import process overview
 
-	The various steps of the external import process
+    The various steps of the external import process
 
 
 The process is comprised of steps, each of which corresponds to a

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<guides xmlns="https://www.phpdoc.org/guides" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://www.phpdoc.org/guides ../vendor/phpdocumentor/guides-cli/resources/schema/guides.xsd"
+        links-are-relative="true">
+    <extension class="\T3Docs\Typo3DocsTheme\DependencyInjection\Typo3DocsThemeExtension"
+               project-home="https://github.com/cobwebch/external_import"
+               project-repository="https://github.com/cobwebch/external_import"
+               project-issues="https://github.com/cobwebch/external_import/issues" edit-on-github-branch="master"
+               edit-on-github="cobwebch/external_import"
+               typo3-core-preferred="stable"
+               interlink-shortcode="cobweb/external_import"
+    />
+    <project
+            title="External Import"
+            release="7.2.3"
+            copyright="2007-2024"
+    />
+</guides>

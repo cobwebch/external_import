@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _user-webhook:
@@ -21,9 +21,9 @@ essentially about setting the target URL and generating the "secret" using
 the field provided by TYPO3.
 
 .. figure:: ../../Images/Webhook.png
-	:alt: Defining a webhook
+    :alt: Defining a webhook
 
-	Defining a webhook in the dedicated backend module
+    Defining a webhook in the dedicated backend module
 
 
 The message is sent right after an import has completed, in the :php:`ReportStep`

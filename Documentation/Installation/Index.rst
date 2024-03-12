@@ -1,4 +1,4 @@
-﻿.. include:: ../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _installation:
@@ -61,7 +61,7 @@ Upgrade to 7.0.0
 
 Support for old-style Connector services was droppped (i.e. connectors registered
 as TYPO3 Core Services). If you use custom connector services, make sure to update
-them (see the :ref:`update instructions <svconnector:installation-updating-500>`
+them (see the :ref:`update instructions <cobweb/svconnector:installation-updating-500>`
 provided by extension "svconnector").
 
 When editing Scheduler tasks in the External Import backend module, it is no longer

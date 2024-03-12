@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _user-reaction:
@@ -19,9 +19,9 @@ There can be more than one External Import reaction depending on your needs.
 Having several reactions allows you to distribute secret keys to different people.
 
 .. figure:: ../../Images/Reaction.png
-	:alt: Defining a reaction
+    :alt: Defining a reaction
 
-	Defining a reaction in the dedicated backend module
+    Defining a reaction in the dedicated backend module
 
 
 Choosing a configuration is optional. If one is chosen, the reaction will only
@@ -72,12 +72,12 @@ pid (optional)
 Here is how it could look like (example made with Postman):
 
 .. figure:: ../../Images/ReactionRequestHeaders.png
-	:alt: Request headers
+    :alt: Request headers
 
-	The header with the URI, the accepted content type and the secret key
+    The header with the URI, the accepted content type and the secret key
 
 
 .. figure:: ../../Images/ReactionRequestBody.png
-	:alt: Request body
+    :alt: Request body
 
-	The body of the payload with the table name, configuration index and data to import
+    The body of the payload with the table name, configuration index and data to import

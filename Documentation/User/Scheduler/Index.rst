@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _user-scheduler:
@@ -13,9 +13,9 @@ or directly from the Scheduler backend module.
 The taks provides two specific options:
 
 .. figure:: ../../Images/SchedulerTask.png
-	:alt: View of the External Import Scheduler task options
+    :alt: View of the External Import Scheduler task options
 
-	The options of the External Import Scheduler task
+    The options of the External Import Scheduler task
 
 Item to synchronize
   Choose which import configuration to automate. If you choose "all", all configurations will be synchronized

@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _user-general:
@@ -17,7 +17,7 @@ receive data from any kind of script using the provided API. Fetching
 data from an external source goes through a standardized process.
 
 Connecting to an external source is achieved using connector services
-(:ref:`see extension svconnector <svconnector:start>`), that return the fetched data to
+(:ref:`see extension svconnector <cobweb/svconnector:start>`), that return the fetched data to
 the external import in either XML format or as a PHP array. Currently, the
 following connectors exist:
 
@@ -26,7 +26,7 @@ following connectors exist:
 - **svconnector_json** for JSON source files
 - **svconnector_sql** for connecting to another database
 
-It is quite easy to develop a :ref:`custom connector <svconnector:developers-api>`,
+It is quite easy to develop a :ref:`custom connector <cobweb/svconnector:developers-api>`,
 should that be needed.
 
 The external data is mapped to one or more TYPO3 CMS tables

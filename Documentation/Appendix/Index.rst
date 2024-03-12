@@ -1,4 +1,4 @@
-﻿.. include:: ../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _appendix:
@@ -262,7 +262,7 @@ Scheduler tasks need to be updated. An upgrade wizard is provided in the
 Install Tool. It will automatically migrate existing old tasks.
 
 .. figure:: ../Images/UpdateWizard.png
-	:alt: The update wizard shows that there are tasks to update
+    :alt: The update wizard shows that there are tasks to update
 
 If there are no tasks to migrate, the External Import wizard will simply not show up.
 Otherwise just click on the "Execute" button and follow the instructions.

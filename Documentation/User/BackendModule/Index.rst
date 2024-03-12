@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _user-backend-module:
@@ -22,10 +22,10 @@ synchronization" – displays a list of all synchronizable tables. The
 various features are summarized in the picture below.
 
 .. figure:: ../../Images/SynchronizableTablesOverview.png
-	:alt: BE module overview for synchronizable tables
+    :alt: BE module overview for synchronizable tables
 
-	Overview of the synchronizable tables view with all available
-	functions
+    Overview of the synchronizable tables view with all available
+    functions
 
 
 .. note::
@@ -49,18 +49,18 @@ and the third one displays the list of :ref:`steps that the process will go thro
 including any :ref:`custom steps <developer-steps>`.
 
 .. figure:: ../../Images/InformationInspector.png
-	:alt: Inspecting TCA properties
+    :alt: Inspecting TCA properties
 
-	Viewing the details of the TCA properties for External Import
+    Viewing the details of the TCA properties for External Import
 
 
 If the configuration contains errors, they will be displayed in this
 detailed view.
 
 .. figure:: ../../Images/InformationInspectorWithErrors.png
-	:alt: Raised errors about wrong configuration
+    :alt: Raised errors about wrong configuration
 
-	Viewing errors in the External Import configuration
+    Viewing errors in the External Import configuration
 
 .. note::
 
@@ -81,9 +81,9 @@ module during that time, the process will abort. At the end of
 the process, flash messages will appear with the results:
 
 .. figure:: ../../Images/SynchronizationResults.png
-	:alt: Results of synchronization
+    :alt: Results of synchronization
 
-	Flash messages show the results of the synchronization
+    Flash messages show the results of the synchronization
 
 
 .. _user-backend-module-synchronizable-preview:
@@ -106,9 +106,9 @@ Most importantly nothing permanent happens in preview mode.
 For example, data is not stored into the database.
 
 .. figure:: ../../Images/BackendPreview.png
-	:alt: Preview of a synchronization
+    :alt: Preview of a synchronization
 
-	The synchronization is run up to the Transform Data step and preview data is dumped to the screen
+    The synchronization is run up to the Transform Data step and preview data is dumped to the screen
 
 
 .. _user-backend-module-automation:
@@ -137,9 +137,9 @@ as a number of seconds or using the same syntax as for cron jobs.
 
 
 .. figure:: ../../Images/AutomationDialog.png
-	:alt: Automation input form
+    :alt: Automation input form
 
-	Input form for setting automated synchronization parameters
+    Input form for setting automated synchronization parameters
 
 
 Clicking on the trash can icon cancels the automatic
@@ -150,9 +150,9 @@ schedule for **all** tables. This means that all imports will be
 executed one after the other, in the order of priority.
 
 .. figure:: ../../Images/FullAutomation.png
-	:alt: Automating all tables
+    :alt: Automating all tables
 
-	Setting automated synchronization for all tables
+    Setting automated synchronization for all tables
 
 
 The same input form appears as for individual automation settings.
@@ -175,9 +175,9 @@ view is purely informative as no action can be taken for these tables.
 Only the detailed configuration information can be accessed.
 
 .. figure:: ../../Images/NonSynchronizableTablesOverview.png
-	:alt: BE module overview for non-synchronizable tables
+    :alt: BE module overview for non-synchronizable tables
 
-	Overview for non-synchronizable tables, with just the information icon
+    Overview for non-synchronizable tables, with just the information icon
 
 
 .. _user-backend-module-logs:
@@ -199,9 +199,9 @@ to the same run.
 There is not much more to it for now. It may gain new features in the future.
 
 .. figure:: ../../Images/LogModule.png
-	:alt: BE module overview for non-synchronizable tables
+    :alt: BE module overview for non-synchronizable tables
 
-	List of import log entries
+    List of import log entries
 
 .. note::
 

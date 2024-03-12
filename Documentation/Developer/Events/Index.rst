@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _developer-events:
@@ -16,7 +16,7 @@ This will cause their "parent" step to abort. More details in the chapter about
 :ref:`critical exceptions <developer-critical-exceptions>`. Any other exception
 will just be logged (depending on your logging configuration).
 
-For usage, see the :ref:`core documentation about PSR-14 events <t3api:EventDispatcher>`.
+For usage, see the :ref:`core documentation about PSR-14 events <t3coreapi:EventDispatcher>`.
 
 
 .. _developer-events-process-connector-parameters:
@@ -88,7 +88,7 @@ Substructure Preprocess
       a :code:`\DomNodeList` for XML-type data. Check the incoming type using the
       :php:`getDataType()` method.
 
-   .. php:method:: getImporter
+   .. php:method:: getImporter()
 
       Current instance of :php:`\Cobweb\ExternalImport\Importer`.
 

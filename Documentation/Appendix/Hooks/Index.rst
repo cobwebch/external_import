@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _appendix-hooks:
@@ -34,9 +34,9 @@ processParameters
 
   .. code-block:: php
 
-		'parameters' => [
-			'filename' => 'fileadmin/imports/data-%Y.csv'
-		]
+        'parameters' => [
+            'filename' => 'fileadmin/imports/data-%Y.csv'
+        ]
 
   Inside the hook, you could run :code:`strftime()` on the
   :code:`filename` parameter in order to replace "%Y" with the

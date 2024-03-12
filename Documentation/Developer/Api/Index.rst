@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _developer-api:
@@ -27,8 +27,8 @@ instance of class :php:`\Cobweb\ExternalImport\Importer` and a single call.
 
 .. code-block:: php
 
-	$importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Cobweb\ExternalImport\Importer::class);
-	$messages = $importer->import($table, $index, $rawData);
+    $importer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\Cobweb\ExternalImport\Importer::class);
+    $messages = $importer->import($table, $index, $rawData);
 
 
 The call parameters are as follows:

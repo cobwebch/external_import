@@ -1,4 +1,4 @@
-﻿.. include:: ../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _introduction:
@@ -21,7 +21,7 @@ is to be able to use TYPO3 CMS standard functions on that data
 
 Connection to external applications is handled by a class of services
 called "connectors", the base of which is available as a separate extension
-(:ref:`svconnector <svconnector:start>`).
+(:ref:`svconnector <cobweb/svconnector:start>`).
 
 Data from several external sources can be stored into the same table
 allowing data aggregation.
@@ -40,7 +40,7 @@ is in a "palatable" format. If the external data requires a lot of processing,
 it is probably better to put it through an ETL or ESB tool first,
 and then import it into TYPO3 CMS.
 
-Please also check extension :ref:`externalimport_tut <tut:start>`
+Please also check extension :ref:`externalimport_tut <cobweb/externalimport_tut:start>`
 which provides a tutorial to this extension.
 
 More examples can be found in extension "externalimport_test", which is used

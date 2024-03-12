@@ -1,4 +1,4 @@
-﻿.. include:: ../../Includes.txt
+﻿.. include:: /Includes.rst.txt
 
 
 .. _administration-columns:
@@ -14,21 +14,21 @@ In its simplest form this is just a reference to the external data's name:
 
 .. code-block:: php
 
-	'code' => [
-		'exclude' => 0,
-		'label' => 'LLL:EXT:externalimport_tut/locallang_db.xml:tx_externalimporttut_departments.code',
-		'config' => [
-			'type' => 'input',
-			'size' => 10,
-			'max' => 4,
-			'eval' => 'required,trim',
-		],
-		'external' => [
-			0 => [
-				'field' => 'code'
-			]
-		]
-	],
+    'code' => [
+        'exclude' => 0,
+        'label' => 'LLL:EXT:externalimport_tut/locallang_db.xml:tx_externalimporttut_departments.code',
+        'config' => [
+            'type' => 'input',
+            'size' => 10,
+            'max' => 4,
+            'eval' => 'required,trim',
+        ],
+        'external' => [
+            0 => [
+                'field' => 'code'
+            ]
+        ]
+    ],
 
 The properties for the columns configuration are described below.
 
@@ -244,29 +244,29 @@ Description
 
    .. code-block:: xml
 
-		<?xml version="1.0" encoding="UTF-8"?>
-		<Invoice xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
-			<InvoiceLine>
-				<cbc:ID>A1</cbc:ID>
-				<cbc:LineExtensionAmount currencyID="USD">100.00</cbc:LineExtensionAmount>
-				<cac:OrderReference>
-					<cbc:ID>000001</cbc:ID>
-				</cac:OrderReference>
-			</InvoiceLine>
-			...
-		</Invoice>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <Invoice xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
+            <InvoiceLine>
+                <cbc:ID>A1</cbc:ID>
+                <cbc:LineExtensionAmount currencyID="USD">100.00</cbc:LineExtensionAmount>
+                <cac:OrderReference>
+                    <cbc:ID>000001</cbc:ID>
+                </cac:OrderReference>
+            </InvoiceLine>
+            ...
+        </Invoice>
 
    getting the value in the :code:`<cbc:LineExtensionAmount>` tag would require
    the following configuration:
 
    .. code-block:: php
 
-		'external' => [
-			0 => [
-				'fieldNS' => 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
-				'field' => 'LineExtensionAmount'
-			]
-		]
+        'external' => [
+            0 => [
+                'fieldNS' => 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
+                'field' => 'LineExtensionAmount'
+            ]
+        ]
 
 Scope
   Handle data (XML)
@@ -303,57 +303,57 @@ Description
 
    .. code:: json
 
-		[
-		  {
-			"order": "000001",
-			"date": "2014-08-07",
-			"customer": "Conan the Barbarian",
-			"products": [
-			  {
-				"product": "000001",
-				"qty": 3
-			  },
-			  {
-				"product": "000005",
-				"qty": 1
-			  },
-			  {
-				"product": "000101",
-				"qty": 10
-			  },
-			  {
-				"product": "000102",
-				"qty": 2
-			  }
-			]
-		  },
-		  {
-			"order": "000002",
-			"date": "2014-08-08",
-			"customer": "Sonja the Red",
-			"products": [
-			  {
-				"product": "000001",
-				"qty": 1
-			  },
-			  {
-				"product": "000005",
-				"qty": 2
-			  },
-			  {
-				"product": "000202",
-				"qty": 1
-			  }
-			]
-		  }
-		]
+        [
+          {
+            "order": "000001",
+            "date": "2014-08-07",
+            "customer": "Conan the Barbarian",
+            "products": [
+              {
+                "product": "000001",
+                "qty": 3
+              },
+              {
+                "product": "000005",
+                "qty": 1
+              },
+              {
+                "product": "000101",
+                "qty": 10
+              },
+              {
+                "product": "000102",
+                "qty": 2
+              }
+            ]
+          },
+          {
+            "order": "000002",
+            "date": "2014-08-08",
+            "customer": "Sonja the Red",
+            "products": [
+              {
+                "product": "000001",
+                "qty": 1
+              },
+              {
+                "product": "000005",
+                "qty": 2
+              },
+              {
+                "product": "000202",
+                "qty": 1
+              }
+            ]
+          }
+        ]
 
    The "products" field is actually a nested structure, from which we want to fetch the values
    from both `product` and `qty`. This can be achieved with the following configuration:
 
    .. code:: php
 
-		'products' => [
+        'products' => [
          'exclude' => 0,
          'label' => 'Products',
          'config' => [
@@ -373,7 +373,7 @@ Description
                ...
             ]
          ]
-		]
+        ]
 
    The keys to the configuration array correspond to the names of the columns where the values will be
    stored. The configuration for each element can use all the existing properties for retrieving data:
@@ -518,7 +518,7 @@ Description
 
   .. code-block:: php
 
-		$GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
+        $GLOBALS['TCA']['fe_users']['columns']['starttime']['external'] = [
          0 => [
             'field' => 'start_date',
             'transformations' => [
@@ -533,7 +533,7 @@ Description
                ]
             ]
          ]
-		];
+        ];
 
   The "userFunction" will be executed first (:code:`10`) and the "trim" next (:code:`20`).
 
