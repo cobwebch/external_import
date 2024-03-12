@@ -535,7 +535,7 @@ class Configuration
         $columnTca = $GLOBALS['TCA'][$this->table]['columns'][$name]['config'] ?? [];
         // Check for explicit nullable property (TYPO3 12+)
         if (array_key_exists('nullable', $columnTca)) {
-            $nullable = $columnTca['nullable'];
+            $nullable = (bool)$columnTca['nullable'];
         // If not defined, try for "null" evaluation (TYPO3 11)
         } elseif (array_key_exists('eval', $columnTca)) {
             $nullable = GeneralUtility::inList($columnTca['eval'], 'null');

@@ -1,3 +1,7 @@
+2024-03-12 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Ensure casting to boolean when checking nullable, resolves #319
+
 2024-02-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Fix regression in backend module access for TYPO3 11, resolves #315
