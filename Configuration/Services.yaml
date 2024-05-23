@@ -14,6 +14,11 @@ services:
         description: 'Run External Import synchronisations from the command line.'
         schedulable: true
 
+  Cobweb\ExternalImport\EventListener\DatabaseSchemaEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'externalimport-reactions'
+
   Cobweb\ExternalImport\Importer:
     public: true
     shared: false

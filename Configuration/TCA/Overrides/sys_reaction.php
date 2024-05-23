@@ -1,10 +1,9 @@
 <?php
 
 use Cobweb\ExternalImport\Reaction\ImportReaction;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
-if (CompatibilityUtility::isV12()) {
+if (ExtensionManagementUtility::isLoaded('reactions')) {
     ExtensionManagementUtility::addTcaSelectItem(
         'sys_reaction',
         'reaction_type',

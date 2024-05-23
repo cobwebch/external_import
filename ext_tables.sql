@@ -10,7 +10,3 @@ CREATE TABLE tx_externalimport_domain_model_log (
 	duration int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (uid)
 );
-
-CREATE TABLE sys_reaction (
-    external_import_configuration  varchar(255) default '' not null
-);

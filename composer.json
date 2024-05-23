@@ -28,6 +28,9 @@
 		"typo3/cms-scheduler": "^11.5 || ^12.4",
 		"cobweb/svconnector": "^5.0"
 	},
+	"suggest": {
+		"typo3/cms-reactions": "^12.4"
+	},
 	"extra": {
 		"typo3/cms": {
 			"extension-key": "external_import"
