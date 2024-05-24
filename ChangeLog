@@ -1,6 +1,7 @@
 2024-05-23 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Improve compatibility with both TYPO3 11 and 12, resolves #298
+    * Ensure compatibility with PHP 8.3, resolves #324
 
 2024-03-12 Francois Suter (Idéative)  <typo3@ideative.ch>
 

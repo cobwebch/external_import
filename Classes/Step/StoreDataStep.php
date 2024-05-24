@@ -1055,7 +1055,10 @@ class StoreDataStep extends AbstractStep
                         $label = LocalizationUtility::translate(
                             'LLL:EXT:belog/Resources/Private/Language/locallang.xlf:' . $labelCode,
                             'belog',
-                            [$dataArray['reason']??'unknown', ($dataArray['table']??'unknown table') . ': ' . $dataArray['uid']??'0']
+                            [
+                                $dataArray['reason'] ?? 'unknown',
+                                ($dataArray['table'] ?? 'unknown table') . ': ' . ($dataArray['uid'] ?? '0'),
+                            ]
                         );
                     }
                     if (empty($label)) {
