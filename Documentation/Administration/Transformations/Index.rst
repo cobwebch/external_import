@@ -30,7 +30,6 @@ Properties
    ========================= ===================================================== =================
 
 
-.. _administration-columns-properties-mapping:
 .. _administration-transformations-properties-mapping:
 
 mapping
@@ -49,7 +48,6 @@ Scope
   Transform data
 
 
-.. _administration-columns-properties-value:
 .. _administration-transformations-properties-value:
 
 value
@@ -108,7 +106,6 @@ Scope
   Transform data
 
 
-.. _administration-columns-properties-trim:
 .. _administration-transformations-properties-trim:
 
 trim
@@ -136,7 +133,6 @@ Scope
   Transform data
 
 
-.. _administration-columns-properties-rteenabled:
 .. _administration-transformations-properties-rteenabled:
 
 rteEnabled
@@ -162,7 +158,6 @@ Scope
   Transform data
 
 
-.. _administration-columns-properties-userfunc:
 .. _administration-transformations-properties-userfunc:
 .. _administration-transformations-properties-userfunction:
 
