@@ -1,0 +1,51 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to static method getRecord\\(\\) on an unknown class TYPO3\\\\CMS\\\\Backend\\\\Utility\\\\BackendUtility\\.$#"
+			count: 1
+			path: ../../Classes/Controller/DataModuleController.php
+
+		-
+			message: "#^Parameter \\$moduleTemplateFactory of method Cobweb\\\\ExternalImport\\\\Controller\\\\DataModuleController\\:\\:__construct\\(\\) has invalid type TYPO3\\\\CMS\\\\Backend\\\\Template\\\\ModuleTemplateFactory\\.$#"
+			count: 1
+			path: ../../Classes/Controller/DataModuleController.php
+
+		-
+			message: "#^Property Cobweb\\\\ExternalImport\\\\Controller\\\\DataModuleController\\:\\:\\$moduleTemplate has unknown class TYPO3\\\\CMS\\\\Backend\\\\Template\\\\ModuleTemplate as its type\\.$#"
+			count: 1
+			path: ../../Classes/Controller/DataModuleController.php
+
+		-
+			message: "#^Property Cobweb\\\\ExternalImport\\\\Controller\\\\DataModuleController\\:\\:\\$moduleTemplateFactory has unknown class TYPO3\\\\CMS\\\\Backend\\\\Template\\\\ModuleTemplateFactory as its type\\.$#"
+			count: 1
+			path: ../../Classes/Controller/DataModuleController.php
+
+		-
+			message: "#^Parameter \\$moduleTemplateFactory of method Cobweb\\\\ExternalImport\\\\Controller\\\\LogModuleController\\:\\:__construct\\(\\) has invalid type TYPO3\\\\CMS\\\\Backend\\\\Template\\\\ModuleTemplateFactory\\.$#"
+			count: 1
+			path: ../../Classes/Controller/LogModuleController.php
+
+		-
+			message: "#^Property Cobweb\\\\ExternalImport\\\\Controller\\\\LogModuleController\\:\\:\\$moduleTemplate has unknown class TYPO3\\\\CMS\\\\Backend\\\\Template\\\\ModuleTemplate as its type\\.$#"
+			count: 1
+			path: ../../Classes/Controller/LogModuleController.php
+
+		-
+			message: "#^Property Cobweb\\\\ExternalImport\\\\Controller\\\\LogModuleController\\:\\:\\$moduleTemplateFactory has unknown class TYPO3\\\\CMS\\\\Backend\\\\Template\\\\ModuleTemplateFactory as its type\\.$#"
+			count: 1
+			path: ../../Classes/Controller/LogModuleController.php
+
+		-
+			message: "#^Attribute class TYPO3\\\\CMS\\\\Core\\\\Attribute\\\\WebhookMessage does not exist\\.$#"
+			count: 1
+			path: ../../Classes/Message/AfterImportMessage.php
+
+		-
+			message: "#^Parameter \\$reaction of method Cobweb\\\\ExternalImport\\\\Reaction\\\\ImportReaction\\:\\:react\\(\\) has invalid type TYPO3\\\\CMS\\\\Reactions\\\\Model\\\\ReactionInstruction\\.$#"
+			count: 1
+			path: ../../Classes/Reaction/ImportReaction.php
+
+		-
+			message: "#^Variable \\$tceDeleteCommands on left side of \\?\\? always exists and is not nullable\\.$#"
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php

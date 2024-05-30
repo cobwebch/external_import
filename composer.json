@@ -25,18 +25,35 @@
 	"require": {
 		"php": "^7.4 || ^8.0 || ^8.1 || ^8.2 || ^8.3",
 		"typo3/cms-core": "^11.5 || ^12.4",
+		"typo3/cms-extbase": "*",
 		"typo3/cms-scheduler": "^11.5 || ^12.4",
 		"cobweb/svconnector": "^5.0"
+	},
+	"require-dev": {
+		"ergebnis/composer-normalize": "~2.42.0",
+		"friendsofphp/php-cs-fixer": "^3.52",
+		"phpstan/phpstan": "^1.10"
 	},
 	"suggest": {
 		"typo3/cms-reactions": "^12.4"
 	},
 	"extra": {
+		"branch-alias": {
+			"dev-main": "7.2.x-dev"
+		},
 		"typo3/cms": {
-			"extension-key": "external_import"
+			"extension-key": "external_import",
+			"web-dir": ".Build/web"
 		}
 	},
-	"replace": {
-		"typo3-ter/external_import": "self.version"
+	"config": {
+		"allow-plugins": {
+			"typo3/cms-composer-installers": true,
+			"typo3/class-alias-loader": true,
+			"ergebnis/composer-normalize": true
+		},
+		"bin-dir": ".Build/bin",
+		"sort-packages": true,
+		"vendor-dir": ".Build/vendor"
 	}
 }
