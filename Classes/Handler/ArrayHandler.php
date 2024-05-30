@@ -26,8 +26,6 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Remaps data from a "raw" PHP array to an array mapped to TCA columns.
- *
- * @package Cobweb\ExternalImport\Handler
  */
 class ArrayHandler implements DataHandlerInterface
 {
@@ -309,13 +307,13 @@ class ArrayHandler implements DataHandlerInterface
                                     if ($nextSegment === '.') {
                                         $newValue[] = $resultingItems;
 
-                                    // Otherwise, we want to create a list of all elements inside the resulting items
-                                    // (this emulates the selection of sub-nodes with XPath, consider a structure like:
-                                    // <books><book><title>Foo</title><authors><author>A</author><author>B</author></authors></book>
-                                    // <book><title>Bar</title><authors><author>C</author></authors></book></books>
-                                    // With an XPath like "//author" I expect to have a list of all authors, one after the other
-                                    // no matter which book they belong to. I don't expect to have a first array with A and C
-                                    // and a second array with C.
+                                        // Otherwise, we want to create a list of all elements inside the resulting items
+                                        // (this emulates the selection of sub-nodes with XPath, consider a structure like:
+                                        // <books><book><title>Foo</title><authors><author>A</author><author>B</author></authors></book>
+                                        // <book><title>Bar</title><authors><author>C</author></authors></book></books>
+                                        // With an XPath like "//author" I expect to have a list of all authors, one after the other
+                                        // no matter which book they belong to. I don't expect to have a first array with A and C
+                                        // and a second array with C.
                                     } else {
                                         foreach ($resultingItems as $resultingItem) {
                                             $newValue[] = $resultingItem;
@@ -329,7 +327,7 @@ class ArrayHandler implements DataHandlerInterface
                         // Set result depending on number of matches
                         if (count($newValue) === 0) {
                             $value = null;
-                        // There's a single result and it should not be made into an array
+                            // There's a single result and it should not be made into an array
                         } elseif ($flattenResults && count($newValue) === 1) {
                             $value = array_shift($newValue);
                         } else {
@@ -339,7 +337,7 @@ class ArrayHandler implements DataHandlerInterface
                         // Leftover segments have been used on child item, they must not be used on the resulting value anymore
                         $segments = [];
 
-                    // Consider the next value along the path
+                        // Consider the next value along the path
                     } elseif (array_key_exists($key, $value)) {
                         // If an item was found and a condition is defined, try to match it
                         if ($condition !== '') {
@@ -381,7 +379,7 @@ class ArrayHandler implements DataHandlerInterface
             $testValue = $value;
         } else {
             $testValue = [
-                'value' => $value
+                'value' => $value,
             ];
         }
         return (bool)$this->expressionLanguage->evaluate(

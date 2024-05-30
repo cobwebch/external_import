@@ -24,15 +24,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test class for the SlugUtility.
- *
- * @package Cobweb\ExternalImport\Tests\Functional\Utility
  */
 class SlugUtilityTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
         'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/externalimport_test',
     ];
 
     /**

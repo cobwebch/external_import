@@ -43,12 +43,12 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
         parent::setUp();
         // Localized validation messages need a global LanguageService object
         $GLOBALS['LANG'] = $this->getAccessibleMock(
-                LanguageService::class,
-                [],
-                [],
-                '',
-                // Don't call the original constructor to avoid a cascade of dependencies
-                false
+            LanguageService::class,
+            [],
+            [],
+            '',
+            // Don't call the original constructor to avoid a cascade of dependencies
+            false
         );
 
         $this->subject = GeneralUtility::makeInstance(GeneralConfigurationValidator::class);
@@ -61,25 +61,25 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
                 [
                     'data' => 'array',
                     'referenceUid' => 'external_id',
-                    'pid' => 12
-                ]
+                    'pid' => 12,
+                ],
             ],
             'Typical configuration for xml type (nodetype)' => [
                 [
                     'data' => 'xml',
                     'nodetype' => 'foo',
                     'referenceUid' => 'external_id',
-                    'pid' => 12
-                ]
+                    'pid' => 12,
+                ],
             ],
             'Typical configuration for xml type (nodepath)' => [
                 [
                     'data' => 'xml',
                     'nodepath' => '//foo',
                     'referenceUid' => 'external_id',
-                    'pid' => 12
-                ]
-            ]
+                    'pid' => 12,
+                ],
+            ],
         ];
     }
 
@@ -105,27 +105,27 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
         return [
             'Missing data property' => [
                 [
-                    'reference_uid' => 'external_id'
-                ]
+                    'reference_uid' => 'external_id',
+                ],
             ],
             'Invalid data property' => [
                 [
                     'data' => 'foo',
-                    'reference_uid' => 'external_id'
-                ]
+                    'reference_uid' => 'external_id',
+                ],
             ],
             'Invalid connector property' => [
                 [
                     'data' => 'array',
                     'reference_uid' => 'external_id',
-                    'connector' => uniqid('', true)
-                ]
+                    'connector' => uniqid('', true),
+                ],
             ],
             'Missing reference_uid property' => [
                 [
-                    'data' => 'array'
-                ]
-            ]
+                    'data' => 'array',
+                ],
+            ],
         ];
     }
 
@@ -150,13 +150,13 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
     {
         return [
             'Missing data property' => [
-                []
+                [],
             ],
             'Invalid data property' => [
                 [
-                    'data' => 'foo'
-                ]
-            ]
+                    'data' => 'foo',
+                ],
+            ],
         ];
     }
 
@@ -190,7 +190,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
                 'tt_content',
                 [
                     // Some random connector name
-                    'connector' => uniqid('', true)
+                    'connector' => uniqid('', true),
                 ]
             )
         );
@@ -206,14 +206,14 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
         return [
             'Not existing class' => [
                 [
-                    'dataHandler' => 'Cobweb\\ExternalImport\\' . time()
-                ]
+                    'dataHandler' => 'Cobweb\\ExternalImport\\' . time(),
+                ],
             ],
             'Class not implementing proper interface' => [
                 [
-                    'dataHandler' => Importer::class
-                ]
-            ]
+                    'dataHandler' => Importer::class,
+                ],
+            ],
         ];
     }
 
@@ -246,7 +246,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
             $this->prepareConfigurationObject(
                 'tt_content',
                 [
-                    'data' => 'xml'
+                    'data' => 'xml',
                 ]
             )
         );
@@ -284,7 +284,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
             $this->prepareConfigurationObject(
                 'tt_content',
                 [
-                    'connector' => 'foo'
+                    'connector' => 'foo',
                 ]
             )
         );
@@ -306,7 +306,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
                 [
                     // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
                     // be set to 0 if missing from configuration
-                    'pid' => 0
+                    'pid' => 0,
                 ]
             )
         );
@@ -325,21 +325,21 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
                 [
                     // NOTE: normally, configuration is parsed by the ConfigurationRepository and pid would
                     // be set to 0 if missing from configuration
-                    'pid' => 0
-                ]
+                    'pid' => 0,
+                ],
             ],
             'Negative pid' => [
                 'tt_content',
                 [
-                    'pid' => -12
-                ]
+                    'pid' => -12,
+                ],
             ],
             'Positive pid, root table' => [
                 'be_users',
                 [
-                    'pid' => 12
-                ]
-            ]
+                    'pid' => 12,
+                ],
+            ],
         ];
     }
 
@@ -373,7 +373,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
             $this->prepareConfigurationObject(
                 'tt_content',
                 [
-                    'useColumnIndex' => 'foo'
+                    'useColumnIndex' => 'foo',
                 ]
             )
         );
@@ -393,7 +393,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCase
             $this->prepareConfigurationObject(
                 'tt_content',
                 [
-                    'columnsOrder' => 'bb, aa, aa'
+                    'columnsOrder' => 'bb, aa, aa',
                 ],
                 [
                     'aa' => [

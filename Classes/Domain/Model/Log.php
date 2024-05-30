@@ -22,8 +22,6 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
  * Model for the log table.
- *
- * @package Cobweb\ExternalImport\Domain\Model
  */
 class Log extends AbstractEntity
 {

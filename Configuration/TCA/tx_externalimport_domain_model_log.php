@@ -10,8 +10,8 @@ return [
         'default_sortby' => 'ORDER BY crdate DESC',
         'searchFields' => 'configuration',
         'typeicon_classes' => [
-            'default' => 'tx_external_import-log'
-        ]
+            'default' => 'tx_external_import-log',
+        ],
     ],
     'columns' => [
         'status' => [
@@ -23,7 +23,7 @@ return [
                 'size' => 10,
                 'max' => 5,
                 'eval' => 'int',
-            ]
+            ],
         ],
         'crdate' => [
             'exclude' => 0,
@@ -34,7 +34,7 @@ return [
                 'renderType' => 'inputDateTime',
                 'size' => 20,
                 'eval' => 'datetime',
-            ]
+            ],
         ],
         'cruser_id' => [
             'exclude' => 0,
@@ -45,8 +45,8 @@ return [
                 'renderType' => 'selectSingle',
                 'size' => 1,
                 'foreign_table' => 'be_users',
-                'maxitems' => 1
-            ]
+                'maxitems' => 1,
+            ],
         ],
         'configuration' => [
             'exclude' => 0,
@@ -54,8 +54,8 @@ return [
             'config' => [
                 'readOnly' => true,
                 'type' => 'input',
-                'eval' => 'trim, required'
-            ]
+                'eval' => 'trim, required',
+            ],
         ],
         'context' => [
             'exclude' => 0,
@@ -64,8 +64,8 @@ return [
                 'readOnly' => true,
                 'type' => 'input',
                 'max' => 50,
-                'eval' => 'trim, required'
-            ]
+                'eval' => 'trim, required',
+            ],
         ],
         'message' => [
             'exclude' => 0,
@@ -73,7 +73,7 @@ return [
             'config' => [
                 'readOnly' => true,
                 'type' => 'text',
-            ]
+            ],
         ],
         'duration' => [
             'exclude' => 0,
@@ -82,13 +82,13 @@ return [
                 'readOnly' => true,
                 'type' => 'input',
                 'max' => 20,
-                'eval' => 'int'
-            ]
-        ]
+                'eval' => 'int',
+            ],
+        ],
     ],
     'types' => [
         '0' => [
-            'showitem' => 'status, crdate, cruser_id, configuration, context, message, duration'
-        ]
-    ]
+            'showitem' => 'status, crdate, cruser_id, configuration, context, message, duration',
+        ],
+    ],
 ];

@@ -22,8 +22,6 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
  * Test case for the QueryParameters model object.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Utility
  */
 class QueryParametersTest extends UnitTestCase
 {
@@ -44,8 +42,8 @@ class QueryParametersTest extends UnitTestCase
     public function getDrawInitiallyReturnsZero(): void
     {
         self::assertSame(
-                0,
-                $this->subject->getDraw()
+            0,
+            $this->subject->getDraw()
         );
     }
 
@@ -55,8 +53,8 @@ class QueryParametersTest extends UnitTestCase
     public function getSearchInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
-                '',
-                $this->subject->getSearch()
+            '',
+            $this->subject->getSearch()
         );
     }
 
@@ -66,8 +64,8 @@ class QueryParametersTest extends UnitTestCase
     public function getSearchColumnsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getSearchColumns()
+            [],
+            $this->subject->getSearchColumns()
         );
     }
 
@@ -77,8 +75,8 @@ class QueryParametersTest extends UnitTestCase
     public function getLimitInitiallyReturnsZero(): void
     {
         self::assertSame(
-                0,
-                $this->subject->getLimit()
+            0,
+            $this->subject->getLimit()
         );
     }
 
@@ -88,8 +86,8 @@ class QueryParametersTest extends UnitTestCase
     public function getOffsetInitiallyReturnsZero(): void
     {
         self::assertSame(
-                0,
-                $this->subject->getOffset()
+            0,
+            $this->subject->getOffset()
         );
     }
 
@@ -99,8 +97,8 @@ class QueryParametersTest extends UnitTestCase
     public function getOrderInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
-                '',
-                $this->subject->getOrder()
+            '',
+            $this->subject->getOrder()
         );
     }
 
@@ -110,8 +108,8 @@ class QueryParametersTest extends UnitTestCase
     public function getDirectionInitiallyReturnsDesc(): void
     {
         self::assertSame(
-                QueryInterface::ORDER_DESCENDING,
-                $this->subject->getDirection()
+            QueryInterface::ORDER_DESCENDING,
+            $this->subject->getDirection()
         );
     }
 
@@ -122,8 +120,8 @@ class QueryParametersTest extends UnitTestCase
     {
         $this->subject->setDraw(2);
         self::assertSame(
-                2,
-                $this->subject->getDraw()
+            2,
+            $this->subject->getDraw()
         );
     }
 
@@ -134,8 +132,8 @@ class QueryParametersTest extends UnitTestCase
     {
         $this->subject->setSearch('foo');
         self::assertSame(
-                'foo',
-                $this->subject->getSearch()
+            'foo',
+            $this->subject->getSearch()
         );
     }
 
@@ -145,24 +143,24 @@ class QueryParametersTest extends UnitTestCase
     public function setSearchColumnsKeepsOnlySearchableColumns(): void
     {
         $this->subject->setSearchColumns(
-                [
-                        [
-                                'searchable' => 'true',
-                                'name' => 'foo'
-                        ],
-                        [
-                                'searchable' => 'false',
-                                'name' => 'not me'
-                        ],
-                        [
-                                'searchable' => 'true',
-                                'name' => 'bar'
-                        ]
-                ]
+            [
+                    [
+                            'searchable' => 'true',
+                            'name' => 'foo',
+                    ],
+                    [
+                            'searchable' => 'false',
+                            'name' => 'not me',
+                    ],
+                    [
+                            'searchable' => 'true',
+                            'name' => 'bar',
+                    ],
+            ]
         );
         self::assertSame(
-                ['foo', 'bar'],
-                $this->subject->getSearchColumns()
+            ['foo', 'bar'],
+            $this->subject->getSearchColumns()
         );
     }
 
@@ -173,8 +171,8 @@ class QueryParametersTest extends UnitTestCase
     {
         $this->subject->setLimit(2);
         self::assertSame(
-                2,
-                $this->subject->getLimit()
+            2,
+            $this->subject->getLimit()
         );
     }
 
@@ -185,8 +183,8 @@ class QueryParametersTest extends UnitTestCase
     {
         $this->subject->setOffset(2);
         self::assertSame(
-                2,
-                $this->subject->getOffset()
+            2,
+            $this->subject->getOffset()
         );
     }
 
@@ -197,8 +195,8 @@ class QueryParametersTest extends UnitTestCase
     {
         $this->subject->setOrder('foo');
         self::assertSame(
-                'foo',
-                $this->subject->getOrder()
+            'foo',
+            $this->subject->getOrder()
         );
     }
 
@@ -207,20 +205,20 @@ class QueryParametersTest extends UnitTestCase
         return [
                 'ASC is ASC' => [
                         'ASC',
-                        QueryInterface::ORDER_ASCENDING
+                        QueryInterface::ORDER_ASCENDING,
                 ],
                 'DESC is DESC' => [
                         'DESC',
-                        QueryInterface::ORDER_DESCENDING
+                        QueryInterface::ORDER_DESCENDING,
                 ],
                 'asc is DESC' => [
                         'asc',
-                        QueryInterface::ORDER_DESCENDING
+                        QueryInterface::ORDER_DESCENDING,
                 ],
                 'wathever is DESC' => [
                         'foo',
-                        QueryInterface::ORDER_DESCENDING
-                ]
+                        QueryInterface::ORDER_DESCENDING,
+                ],
         ];
     }
 
@@ -234,8 +232,8 @@ class QueryParametersTest extends UnitTestCase
     {
         $this->subject->setDirection($value);
         self::assertSame(
-                $expected,
-                $this->subject->getDirection()
+            $expected,
+            $this->subject->getDirection()
         );
     }
 }

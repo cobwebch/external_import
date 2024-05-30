@@ -27,8 +27,6 @@ use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
 
 /**
  * Additional fields provider class for the Scheduler.
- *
- * @package Cobweb\ExternalImport\Task
  */
 class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInterface
 {
@@ -126,7 +124,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             'code' => $fieldCode,
             'label' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:field.syncItem',
             'cshKey' => '_MOD_user_txexternalimportM1',
-            'cshLabel' => $fieldID
+            'cshLabel' => $fieldID,
         ];
 
         // Add field for storage page override
@@ -168,7 +166,6 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *
      * @param array $submittedData Array containing the data submitted by the user
      * @param AbstractTask $task Reference to the current task object
-     * @return void
      */
     public function saveAdditionalFields(array $submittedData, AbstractTask $task): void
     {

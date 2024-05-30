@@ -19,8 +19,6 @@ namespace Cobweb\ExternalImport\Domain\Model;
 
 /**
  * Pseudo-domain model for the data being handled by the import process.
- *
- * @package Cobweb\ExternalImport\Domain\Model
  */
 class Data
 {

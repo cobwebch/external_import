@@ -42,7 +42,6 @@ class ChildrenSortingUtility
      * Executes the sorting of the child records based on the given sorting information
      *
      * @param ChildrenSorting $sortingInformation
-     * @return void
      */
     public function sortChildRecords(ChildrenSorting $sortingInformation): void
     {
@@ -84,7 +83,6 @@ class ChildrenSortingUtility
      * @param string $table Name of the affected table
      * @param string $field Name of the sorting field
      * @param array $sorting List of records to update (uid - value pairs)
-     * @return void
      */
     protected function updateChildrenSortingField(string $table, string $field, array $sorting): void
     {

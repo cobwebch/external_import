@@ -24,8 +24,6 @@ use TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand;
 /**
  * Validator for a scheduler frequency, which can be a simple number of seconds
  * or a cron format.
- *
- * @package Cobweb\ExternalImport\Validator
  */
 class FrequencyValidator extends AbstractValidator
 {
@@ -41,7 +39,6 @@ class FrequencyValidator extends AbstractValidator
      * Validates the frequency as a number of seconds or a cron syntax.
      *
      * @param string $value The frequency to validate
-     * @return void
      */
     public function isValid($value): void
     {
@@ -69,9 +66,9 @@ class FrequencyValidator extends AbstractValidator
                     LocalizationUtility::translate(
                         'error_wrong_frequency',
                         'external_import',
-                        array(
-                            $e->getMessage()
-                        )
+                        [
+                            $e->getMessage(),
+                        ]
                     ),
                     1463495019
                 );

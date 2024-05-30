@@ -29,8 +29,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * during an import process. Use as is or as an inspiration for your own needs.
  *
  * The critical part is that the function is expected to return the uid of a sys_file record.
- *
- * @package Cobweb\ExternalImport\Transformation
  */
 class ImageTransformation implements SingletonInterface, ImporterAwareInterface
 {

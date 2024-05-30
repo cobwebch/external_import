@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 /*
@@ -14,14 +15,11 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 
 /**
  * Test suite for the Data model class.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Domain\Model
  */
 class DataTest extends UnitTestCase
 {
@@ -51,8 +49,8 @@ class DataTest extends UnitTestCase
     {
         $this->subject->setRawData('foo');
         self::assertSame(
-                'foo',
-                $this->subject->getRawData()
+            'foo',
+            $this->subject->getRawData()
         );
     }
 
@@ -62,8 +60,8 @@ class DataTest extends UnitTestCase
     public function getExtraDataInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getExtraData()
+            [],
+            $this->subject->getExtraData()
         );
     }
 
@@ -75,8 +73,8 @@ class DataTest extends UnitTestCase
         $this->subject->setExtraData(['foo']);
         $this->subject->setExtraData(['bar']);
         self::assertSame(
-                ['bar'],
-                $this->subject->getExtraData()
+            ['bar'],
+            $this->subject->getExtraData()
         );
     }
 
@@ -88,8 +86,8 @@ class DataTest extends UnitTestCase
         $this->subject->addExtraData('entry1', 'foo');
         $this->subject->addExtraData('entry2', 'bar');
         self::assertSame(
-                ['entry1' => 'foo', 'entry2' => 'bar'],
-                $this->subject->getExtraData()
+            ['entry1' => 'foo', 'entry2' => 'bar'],
+            $this->subject->getExtraData()
         );
     }
 
@@ -99,8 +97,8 @@ class DataTest extends UnitTestCase
     public function getRecordsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getRecords()
+            [],
+            $this->subject->getRecords()
         );
     }
 
@@ -111,8 +109,8 @@ class DataTest extends UnitTestCase
     {
         $this->subject->setRecords([1, 2]);
         self::assertSame(
-                [1, 2],
-                $this->subject->getRecords()
+            [1, 2],
+            $this->subject->getRecords()
         );
     }
 

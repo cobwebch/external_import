@@ -27,8 +27,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test suite for simple methods from the reporting utility.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Utility
  */
 class ReportingUtilityTest extends UnitTestCase
 {

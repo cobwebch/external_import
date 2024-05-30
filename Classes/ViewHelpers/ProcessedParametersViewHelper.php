@@ -27,8 +27,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 /**
  * Processes the connector parameters of an external import configuration
  * and makes them available variable.
- *
- * @package Cobweb\ExternalImport\ViewHelpers
  */
 class ProcessedParametersViewHelper extends AbstractViewHelper
 {
@@ -41,8 +39,6 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
 
     /**
      * Initializes the arguments of the ViewHelper.
-     *
-     * @return void
      */
     public function initializeArguments(): void
     {
@@ -84,5 +80,4 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
 
         return $output;
     }
-
 }

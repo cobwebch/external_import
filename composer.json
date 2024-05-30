@@ -27,6 +27,7 @@
 		"typo3/cms-core": "^11.5 || ^12.4",
 		"typo3/cms-extbase": "*",
 		"typo3/cms-scheduler": "^11.5 || ^12.4",
+		"typo3/coding-standards": "*",
 		"cobweb/svconnector": "^5.0"
 	},
 	"require-dev": {

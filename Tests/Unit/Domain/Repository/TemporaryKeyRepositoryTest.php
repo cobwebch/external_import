@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Repository;
 
 /*
@@ -14,15 +15,12 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Repository;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test suite for the TemporaryKeyRepository class
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Domain\Repository
  */
 class TemporaryKeyRepositoryTest extends UnitTestCase
 {
@@ -44,7 +42,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
     public function hasTemporaryKeyInitiallyReturnsFalse(): void
     {
         self::assertFalse(
-                $this->subject->hasTemporaryKey('foo', 'bar')
+            $this->subject->hasTemporaryKey('foo', 'bar')
         );
     }
 
@@ -54,12 +52,12 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
     public function hasTemporaryKeyReturnsTrueIfKeyExists(): void
     {
         $this->subject->addTemporaryKey(
-                'foo',
-                $this->subject->generateTemporaryKey(),
-                'bar'
+            'foo',
+            $this->subject->generateTemporaryKey(),
+            'bar'
         );
         self::assertTrue(
-                $this->subject->hasTemporaryKey('foo', 'bar')
+            $this->subject->hasTemporaryKey('foo', 'bar')
         );
     }
 
@@ -69,8 +67,8 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
     public function getTemporaryKeysInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getTemporaryKeys()
+            [],
+            $this->subject->getTemporaryKeys()
         );
     }
 
@@ -81,25 +79,25 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
     {
         $this->subject->resetForcedTemporaryKeySerial();
         $this->subject->addTemporaryKey(
-                1,
-                $this->subject->generateTemporaryKey(),
-                'foo'
+            1,
+            $this->subject->generateTemporaryKey(),
+            'foo'
         );
         $this->subject->addTemporaryKey(
-                2,
-                $this->subject->generateTemporaryKey(),
-                'bar'
+            2,
+            $this->subject->generateTemporaryKey(),
+            'bar'
         );
         self::assertSame(
-                [
-                        'foo' => [
-                                1 => 'NEW1'
-                        ],
-                        'bar' => [
-                                2 => 'NEW2'
-                        ]
-                ],
-                $this->subject->getTemporaryKeys()
+            [
+                    'foo' => [
+                            1 => 'NEW1',
+                    ],
+                    'bar' => [
+                            2 => 'NEW2',
+                    ],
+            ],
+            $this->subject->getTemporaryKeys()
         );
     }
 
@@ -110,12 +108,12 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
     {
         $this->subject->resetForcedTemporaryKeySerial();
         self::assertEquals(
-                'NEW1',
-                $this->subject->generateTemporaryKey()
+            'NEW1',
+            $this->subject->generateTemporaryKey()
         );
         self::assertEquals(
-                'NEW2',
-                $this->subject->generateTemporaryKey()
+            'NEW2',
+            $this->subject->generateTemporaryKey()
         );
     }
 
@@ -125,7 +123,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
     public function getTemporaryKeyForValueInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getTemporaryKeyForValue('foo', 'bar')
+            $this->subject->getTemporaryKeyForValue('foo', 'bar')
         );
     }
 
@@ -136,22 +134,22 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
     {
         $this->subject->resetForcedTemporaryKeySerial();
         $this->subject->addTemporaryKey(
-                1,
-                $this->subject->generateTemporaryKey(),
-                'foo'
+            1,
+            $this->subject->generateTemporaryKey(),
+            'foo'
         );
         $this->subject->addTemporaryKey(
-                2,
-                $this->subject->generateTemporaryKey(),
-                'bar'
+            2,
+            $this->subject->generateTemporaryKey(),
+            'bar'
         );
         self::assertEquals(
-                'NEW1',
-                $this->subject->getTemporaryKeyForValue(1, 'foo')
+            'NEW1',
+            $this->subject->getTemporaryKeyForValue(1, 'foo')
         );
         self::assertEquals(
-                'NEW2',
-                $this->subject->getTemporaryKeyForValue(2, 'bar')
+            'NEW2',
+            $this->subject->getTemporaryKeyForValue(2, 'bar')
         );
     }
 }

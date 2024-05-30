@@ -23,8 +23,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Dumps an array in a formatted way.
- *
- * @package Cobweb\ExternalImport\ViewHelpers
  */
 class DumpViewHelper extends AbstractViewHelper
 {
@@ -37,8 +35,6 @@ class DumpViewHelper extends AbstractViewHelper
 
     /**
      * Initializes the arguments of the ViewHelper.
-     *
-     * @return void
      */
     public function initializeArguments(): void
     {

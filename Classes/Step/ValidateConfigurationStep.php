@@ -23,8 +23,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Validation of the External Import configuration before starting the import process.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class ValidateConfigurationStep extends AbstractStep
 {
@@ -48,8 +46,6 @@ class ValidateConfigurationStep extends AbstractStep
 
     /**
      * Validates the External Import configuration.
-     *
-     * @return void
      */
     public function run(): void
     {

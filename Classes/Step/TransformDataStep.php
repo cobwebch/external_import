@@ -20,8 +20,8 @@ namespace Cobweb\ExternalImport\Step;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Exception\InvalidRecordException;
 use Cobweb\ExternalImport\Importer;
-use Cobweb\ExternalImport\Utility\MappingUtility;
 use Cobweb\ExternalImport\ImporterAwareInterface;
+use Cobweb\ExternalImport\Utility\MappingUtility;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
@@ -30,8 +30,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * This step takes the structured data and transforms the values it contains according to whatever
  * relevant properties were defined, bringing the data to a near final state, ready for saving
  * to the database.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class TransformDataStep extends AbstractStep
 {
@@ -69,8 +67,6 @@ class TransformDataStep extends AbstractStep
     /**
      * Applies all transformation properties to the existing data set, like mapping to foreign tables,
      * forcing constant values, running user-defined functions, etc.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -262,13 +258,13 @@ class TransformDataStep extends AbstractStep
                             'external_import',
                             [
                                 $e->getMessage(),
-                                $e->getCode()
+                                $e->getCode(),
                             ]
                         ),
                         3,
                         [
                             'user function' => $configuration,
-                            'record' => $record
+                            'record' => $record,
                         ]
                     );
                 } catch (\Exception $e) {
@@ -280,13 +276,13 @@ class TransformDataStep extends AbstractStep
                             'external_import',
                             [
                                 $e->getMessage(),
-                                $e->getCode()
+                                $e->getCode(),
                             ]
                         ),
                         3,
                         [
                             'user function' => $configuration,
-                            'record' => $record
+                            'record' => $record,
                         ]
                     );
                 }
@@ -334,10 +330,10 @@ class TransformDataStep extends AbstractStep
                         $configuration['expression'],
                         $record
                     );
-                // If an exception is thrown, consider that this is equivalent to the expression being evaluated to true,
-                // because the main source of exceptions is when a value used in the expression is not present (hence "empty").
-                // An exception could also happen because the expression's syntax is invalid. Unfortunately the Expression Language
-                // does not distinguish between the two scenarios. The event is logged for further inspection.
+                    // If an exception is thrown, consider that this is equivalent to the expression being evaluated to true,
+                    // because the main source of exceptions is when a value used in the expression is not present (hence "empty").
+                    // An exception could also happen because the expression's syntax is invalid. Unfortunately the Expression Language
+                    // does not distinguish between the two scenarios. The event is logged for further inspection.
                 } catch (\Exception $e) {
                     $isEmpty = true;
                     $this->importer->debug(
@@ -367,12 +363,12 @@ class TransformDataStep extends AbstractStep
                             'external_import',
                             [
                                 $index,
-                                $name
+                                $name,
                             ]
                         ),
                         3,
                         [
-                            'record' => $record
+                            'record' => $record,
                         ]
                     );
                 } elseif (array_key_exists('default', $configuration)) {

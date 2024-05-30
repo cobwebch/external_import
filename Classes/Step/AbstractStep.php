@@ -23,8 +23,6 @@ use Cobweb\ExternalImport\ImporterAwareTrait;
 
 /**
  * Abstract class from which all External Import process steps **must** inherit.
- *
- * @package Cobweb\ExternalImport\Step
  */
 abstract class AbstractStep implements ImporterAwareInterface
 {
@@ -52,8 +50,6 @@ abstract class AbstractStep implements ImporterAwareInterface
 
     /**
      * Performs the actual tasks of the step.
-     *
-     * @return void
      */
     abstract public function run(): void;
 
@@ -61,7 +57,6 @@ abstract class AbstractStep implements ImporterAwareInterface
      * Sets the preview data for the Importer class.
      *
      * @param mixed $data
-     * @return void
      */
     public function setPreviewData($data): void
     {

@@ -22,12 +22,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class for managing the generation and storage of temporary keys
- *
- * @package Cobweb\ExternalImport\Domain\Repository
  */
 class TemporaryKeyRepository
 {
-
     /**
      * @var int Incremental number to be used for temporary keys during test mode (used for unit testing)
      */
@@ -137,7 +134,6 @@ class TemporaryKeyRepository
      * This is meant for unit testing only.
      *
      * @param bool $mode Set to true for test mode
-     * @return void
      */
     public function setTestMode(bool $mode): void
     {
@@ -153,5 +149,4 @@ class TemporaryKeyRepository
     {
         return $this->testMode;
     }
-
 }

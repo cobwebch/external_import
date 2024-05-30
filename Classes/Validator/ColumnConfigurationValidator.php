@@ -27,8 +27,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * and reports errors and other glitches.
  *
  * NOTE: this is not a strict Extbase Validator.
- *
- * @package Cobweb\ExternalImport\Validator
  */
 class ColumnConfigurationValidator
 {
@@ -46,7 +44,7 @@ class ColumnConfigurationValidator
         'attribute',
         'attributeNS',
         'xpath',
-        'xmlValue'
+        'xmlValue',
     ];
 
     /**
@@ -259,7 +257,7 @@ class ColumnConfigurationValidator
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForUpdateContainsInvalidColumns',
                             'external_import',
                             [
-                                implode(', ', $missingColumns)
+                                implode(', ', $missingColumns),
                             ]
                         ),
                         AbstractMessage::ERROR
@@ -297,7 +295,7 @@ class ColumnConfigurationValidator
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForDeleteContainsInvalidColumns',
                             'external_import',
                             [
-                                implode(', ', $missingColumns)
+                                implode(', ', $missingColumns),
                             ]
                         ),
                         AbstractMessage::ERROR
@@ -352,7 +350,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:substructureFieldsPropertyNotAnArrayForField',
                         'external_import',
                         [
-                            $field
+                            $field,
                         ]
                     ),
                     AbstractMessage::ERROR
@@ -370,7 +368,7 @@ class ColumnConfigurationValidator
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:substructureFieldsPropertyWithEmptyConfigurationForArrayTypeData',
                             'external_import',
                             [
-                                $field
+                                $field,
                             ]
                         ),
                         AbstractMessage::ERROR
@@ -387,7 +385,7 @@ class ColumnConfigurationValidator
                                 'external_import',
                                 [
                                     implode(', ', $wrongKeys),
-                                    implode(', ', self::$substructurePropertiesForArrayType)
+                                    implode(', ', self::$substructurePropertiesForArrayType),
                                 ]
                             ),
                             AbstractMessage::ERROR
@@ -410,7 +408,7 @@ class ColumnConfigurationValidator
                                 'external_import',
                                 [
                                     implode(', ', $wrongKeys),
-                                    implode(', ', self::$substructurePropertiesForXmlType)
+                                    implode(', ', self::$substructurePropertiesForXmlType),
                                 ]
                             ),
                             AbstractMessage::ERROR
@@ -451,5 +449,4 @@ class ColumnConfigurationValidator
     {
         return $this->results;
     }
-
 }

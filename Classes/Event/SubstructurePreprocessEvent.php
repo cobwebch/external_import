@@ -21,8 +21,6 @@ use Cobweb\ExternalImport\Importer;
 
 /**
  * Event for manipulating a single substructure before it is accessed with the keys defined with the "substructureFields" property.
- *
- * @package Cobweb\ExternalImport\Event
  */
 final class SubstructurePreprocessEvent
 {
@@ -107,5 +105,4 @@ final class SubstructurePreprocessEvent
     {
         $this->substructure = $substructure;
     }
-
 }

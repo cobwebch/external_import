@@ -33,7 +33,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function getBaseDataInitiallyReturnsEmptyArray(): void
     {
@@ -45,7 +44,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setBaseDataSetsDataArray(): void
     {
@@ -62,21 +60,21 @@ class ChildrenConfigurationTest extends UnitTestCase
             'empty base data' => [
                 'baseData' => [],
                 'property' => 'table',
-                'result' => null
+                'result' => null,
             ],
             'matching base data' => [
                 'baseData' => [
-                    'table' => 'foo'
+                    'table' => 'foo',
                 ],
                 'property' => 'table',
-                'result' => 'foo'
+                'result' => 'foo',
             ],
             'non-matching base data' => [
                 'baseData' => [
-                    'table' => 'foo'
+                    'table' => 'foo',
                 ],
                 'property' => 'bar',
-                'result' => null
+                'result' => null,
             ],
         ];
     }
@@ -87,7 +85,6 @@ class ChildrenConfigurationTest extends UnitTestCase
      * @param array $baseData
      * @param string $property
      * @param $result
-     * @return void
      */
     public function getBaseDataPropertyReturnsValueOrNull(array $baseData, string $property, $result): void
     {
@@ -100,7 +97,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function getControlColumnsForDeleteInitiallyReturnsEmptyArray(): void
     {
@@ -112,7 +108,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setControlColumnsForDeleteSetsArray(): void
     {
@@ -125,7 +120,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function getControlColumnsForUpdateInitiallyReturnsEmptyArray(): void
     {
@@ -137,7 +131,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setControlColumnsForUpdateSetsArray(): void
     {
@@ -150,7 +143,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function isDeleteAllowedInitiallyReturnsTrue(): void
     {
@@ -161,7 +153,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setDeleteAllowedInitiallySetsBoolean(): void
     {
@@ -173,7 +164,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function isInsertAllowedInitiallyReturnsTrue(): void
     {
@@ -184,7 +174,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setInsertAllowedInitiallySetsBoolean(): void
     {
@@ -196,7 +185,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function isUpdateAllowedInitiallyReturnsTrue(): void
     {
@@ -207,7 +195,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setUpdateAllowedInitiallySetsBoolean(): void
     {
@@ -240,7 +227,6 @@ class ChildrenConfigurationTest extends UnitTestCase
      * @dataProvider allowedOperationsProvider
      * @param string $operation
      * @param bool $flag
-     * @return void
      */
     public function setAllowedOperationSetExpectedFlag(string $operation, bool $flag): void
     {
@@ -264,7 +250,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function getSortingInitiallyReturnsEmptyArray(): void
     {
@@ -276,7 +261,6 @@ class ChildrenConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setSortingSetsArray(): void
     {

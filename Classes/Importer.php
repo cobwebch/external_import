@@ -36,8 +36,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This class drives the import process by moving from step to step, aborting when necessary and triggering the reporting.
- *
- * @package Cobweb\ExternalImport
  */
 class Importer implements LoggerAwareInterface
 {
@@ -214,7 +212,6 @@ class Importer implements LoggerAwareInterface
      * @param string $table Name of the table to synchronise
      * @param mixed $index Index of the synchronisation configuration to use
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
-     * @return void
      * @throws NoConfigurationException
      */
     protected function initialize(string $table, $index, array $defaultSteps = null): void
@@ -224,9 +221,9 @@ class Importer implements LoggerAwareInterface
 
         // Fetch the requested configuration
         $this->externalConfiguration = $this->configurationRepository->findConfigurationObject(
-                $table,
-                $index,
-                $defaultSteps
+            $table,
+            $index,
+            $defaultSteps
         );
         if ($this->forcedStoragePid !== null) {
             $this->externalConfiguration->setStoragePid($this->forcedStoragePid);
@@ -265,7 +262,7 @@ class Importer implements LoggerAwareInterface
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
                     'external_import',
                     [
-                        $e->getMessage()
+                        $e->getMessage(),
                     ]
                 ),
                 AbstractMessage::WARNING
@@ -279,7 +276,7 @@ class Importer implements LoggerAwareInterface
                         $table,
                         $index,
                         $e->getMessage(),
-                        $e->getCode()
+                        $e->getCode(),
                     ]
                 )
             );
@@ -290,7 +287,7 @@ class Importer implements LoggerAwareInterface
                     'external_import',
                     [
                         $e->getMessage(),
-                        $e->getCode()
+                        $e->getCode(),
                     ]
                 )
             );
@@ -332,7 +329,7 @@ class Importer implements LoggerAwareInterface
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
                     'external_import',
                     [
-                        $e->getMessage()
+                        $e->getMessage(),
                     ]
                 )
             );
@@ -345,7 +342,7 @@ class Importer implements LoggerAwareInterface
                         $table,
                         $index,
                         $e->getMessage(),
-                        $e->getCode()
+                        $e->getCode(),
                     ]
                 )
             );
@@ -356,7 +353,7 @@ class Importer implements LoggerAwareInterface
                     'external_import',
                     [
                         $e->getMessage(),
-                        $e->getCode()
+                        $e->getCode(),
                     ]
                 )
             );
@@ -368,7 +365,6 @@ class Importer implements LoggerAwareInterface
     /**
      * Runs the process through the defined steps.
      *
-     * @return void
      * @throws Exception\InvalidPreviewStepException
      */
     public function runSteps(): void
@@ -380,8 +376,8 @@ class Importer implements LoggerAwareInterface
         // NOTE: this cannot be checked during a setPreviewStep() call as the configuration is not yet loaded
         if ($this->isPreview() && !in_array($this->getPreviewStep(), $steps, true)) {
             throw new InvalidPreviewStepException(
-                    $this->getPreviewStep(),
-                    1532072718
+                $this->getPreviewStep(),
+                1532072718
             );
         }
         // Loop on all the process steps
@@ -477,7 +473,6 @@ class Importer implements LoggerAwareInterface
      * @param string $message The debug message
      * @param int $severity The severity of the issue
      * @param null $data Data associated with the debugging information
-     * @return void
      */
     public function debug(string $message, int $severity = 0, $data = null): void
     {
@@ -538,7 +533,6 @@ class Importer implements LoggerAwareInterface
      *
      * @param string $text The message itself
      * @param int $status Status of the message. Expected is "success", "warning" or "error"
-     * @return void
      */
     public function addMessage(string $text, int $status = AbstractMessage::ERROR): void
     {
@@ -559,15 +553,13 @@ class Importer implements LoggerAwareInterface
 
     /**
      * Empties the internal message queue.
-     *
-     * @return void
      */
     public function resetMessages(): void
     {
         $this->messages = [
                 AbstractMessage::ERROR => [],
                 AbstractMessage::WARNING => [],
-                AbstractMessage::OK => []
+                AbstractMessage::OK => [],
         ];
     }
 
@@ -765,8 +757,6 @@ class Importer implements LoggerAwareInterface
 
     /**
      * Resets the preview data to null.
-     *
-     * @return void
      */
     public function resetPreviewData(): void
     {
@@ -820,7 +810,6 @@ class Importer implements LoggerAwareInterface
      * This is meant for unit testing only.
      *
      * @param bool $mode Set to true for test mode
-     * @return void
      */
     public function setTestMode(bool $mode): void
     {

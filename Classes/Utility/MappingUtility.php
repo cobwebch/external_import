@@ -25,8 +25,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Tools for mapping imported data to existing database relations.
- *
- * @package Cobweb\ExternalImport\Utility
  */
 class MappingUtility implements ImporterAwareInterface
 {

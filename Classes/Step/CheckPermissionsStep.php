@@ -25,15 +25,11 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This class ensure that permissions are enough to allow the import process to run.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class CheckPermissionsStep extends AbstractStep
 {
     /**
      * Checks that the current user has enough permissions to run the import process to the end.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -50,7 +46,7 @@ class CheckPermissionsStep extends AbstractStep
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_rights_for_sync',
                     'external_import',
-                    array($userName, $table)
+                    [$userName, $table]
                 )
             );
         }

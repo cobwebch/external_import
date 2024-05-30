@@ -23,8 +23,6 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 
 /**
  * Test suite for the ProcessConnectorParametersEvent class
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Event
  */
 class ProcessConnectorParametersEventTest extends UnitTestCase
 {
@@ -51,7 +49,7 @@ class ProcessConnectorParametersEventTest extends UnitTestCase
     /**
      * @test
      */
-    public function getParametersInitiallyReturnsEmptyArray() :void
+    public function getParametersInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
             [],

@@ -10,7 +10,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][AutomatedSyncTas
     'extension' => 'external_import',
     'title' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:scheduler.title',
     'description' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:scheduler.description',
-    'additionalFields' => AutomatedSyncAdditionalFieldProvider::class
+    'additionalFields' => AutomatedSyncAdditionalFieldProvider::class,
 ];
 
 // Set up garbage collection
@@ -31,14 +31,14 @@ ArrayUtility::mergeRecursiveWithOverrule(
                 'sync' => [
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:bemodulePermissions.runSync',
                     'actions-refresh',
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:bemodulePermissions.runSync.description'
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:bemodulePermissions.runSync.description',
                 ],
                 'scheduler' => [
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:bemodulePermissions.scheduler',
                     'mimetypes-x-tx_scheduler_task_group',
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:bemodulePermissions.scheduler.description'
-                ]
-            ]
-        ]
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:bemodulePermissions.scheduler.description',
+                ],
+            ],
+        ],
     ]
 );

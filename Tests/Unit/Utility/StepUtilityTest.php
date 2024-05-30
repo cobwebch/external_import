@@ -18,15 +18,13 @@ namespace Cobweb\ExternalImport\Tests\Unit\Utility;
  */
 
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Step;
 use Cobweb\ExternalImport\Utility\StepUtility;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use Cobweb\ExternalImport\Step;
 
 /**
  * Test case for the Step utility.
- *
- * @package Cobweb\ExternalImport\Tests\Unit
  */
 class StepUtilityTest extends UnitTestCase
 {
@@ -53,7 +51,7 @@ class StepUtilityTest extends UnitTestCase
                 // New step configuration
                 [
                     'class' => Step\HandleDataStep::class,
-                    'position' => 'before:' . Step\CheckPermissionsStep::class
+                    'position' => 'before:' . Step\CheckPermissionsStep::class,
                 ],
                 // Resulting steps
                 [
@@ -69,7 +67,7 @@ class StepUtilityTest extends UnitTestCase
                     Step\ClearCacheStep::class,
                     Step\ConnectorCallbackStep::class,
                     Step\ReportStep::class,
-                ]
+                ],
             ],
             'insert step after transform data' => [
                 // Current steps
@@ -77,7 +75,7 @@ class StepUtilityTest extends UnitTestCase
                 // New step configuration
                 [
                     'class' => Step\HandleDataStep::class,
-                    'position' => 'after:' . Step\TransformDataStep::class
+                    'position' => 'after:' . Step\TransformDataStep::class,
                 ],
                 // Resulting steps
                 [
@@ -93,13 +91,13 @@ class StepUtilityTest extends UnitTestCase
                     Step\ClearCacheStep::class,
                     Step\ConnectorCallbackStep::class,
                     Step\ReportStep::class,
-                ]
+                ],
             ],
             'insert step before validate data step' => [
                 Importer::IMPORT_DATA_STEPS,
                 [
                     'class' => Step\HandleDataStep::class,
-                    'position' => 'before:' . Step\ValidateDataStep::class
+                    'position' => 'before:' . Step\ValidateDataStep::class,
                 ],
                 [
                     Step\CheckPermissionsStep::class,
@@ -111,7 +109,7 @@ class StepUtilityTest extends UnitTestCase
                     Step\StoreDataStep::class,
                     Step\ClearCacheStep::class,
                     Step\ReportStep::class,
-                ]
+                ],
             ],
             'insert step after last step' => [
                 // Current steps
@@ -119,7 +117,7 @@ class StepUtilityTest extends UnitTestCase
                 // New step configuration
                 [
                     'class' => Step\HandleDataStep::class,
-                    'position' => 'after:' . Step\ReportStep::class
+                    'position' => 'after:' . Step\ReportStep::class,
                 ],
                 // Resulting steps
                 [
@@ -134,9 +132,9 @@ class StepUtilityTest extends UnitTestCase
                     Step\ClearCacheStep::class,
                     Step\ConnectorCallbackStep::class,
                     Step\ReportStep::class,
-                    Step\HandleDataStep::class
-                ]
-            ]
+                    Step\HandleDataStep::class,
+                ],
+            ],
         ];
     }
 
@@ -172,16 +170,16 @@ class StepUtilityTest extends UnitTestCase
                 Importer::SYNCHRONYZE_DATA_STEPS,
                 // New step configuration
                 [
-                    'position' => 'after:' . Step\TransformDataStep::class
-                ]
+                    'position' => 'after:' . Step\TransformDataStep::class,
+                ],
             ],
             'insert step with missing position information' => [
                 // Current steps
                 Importer::SYNCHRONYZE_DATA_STEPS,
                 // New step configuration
                 [
-                    'class' => Step\HandleDataStep::class
-                ]
+                    'class' => Step\HandleDataStep::class,
+                ],
             ],
             'insert step with wrong syntax for position' => [
                 // Current steps
@@ -189,8 +187,8 @@ class StepUtilityTest extends UnitTestCase
                 // New step configuration
                 [
                     'class' => Step\HandleDataStep::class,
-                    'position' => Step\TransformDataStep::class
-                ]
+                    'position' => Step\TransformDataStep::class,
+                ],
             ],
             'insert step with wrong keyword for position' => [
                 // Current steps
@@ -198,8 +196,8 @@ class StepUtilityTest extends UnitTestCase
                 // New step configuration
                 [
                     'class' => Step\HandleDataStep::class,
-                    'position' => 'next:' . Step\TransformDataStep::class
-                ]
+                    'position' => 'next:' . Step\TransformDataStep::class,
+                ],
             ],
             'insert step with unknown class' => [
                 // Current steps
@@ -207,8 +205,8 @@ class StepUtilityTest extends UnitTestCase
                 // New step configuration
                 [
                     'class' => 'Foo\\Bar\\Baz',
-                    'position' => 'after:' . Step\TransformDataStep::class
-                ]
+                    'position' => 'after:' . Step\TransformDataStep::class,
+                ],
             ],
             'insert step after unregistered step' => [
                 // Current steps
@@ -216,8 +214,8 @@ class StepUtilityTest extends UnitTestCase
                 // New step configuration
                 [
                     'class' => Step\HandleDataStep::class,
-                    'position' => 'after:' . Step\ReadDataStep::class
-                ]
+                    'position' => 'after:' . Step\ReadDataStep::class,
+                ],
             ],
             'insert step after unknown step' => [
                 // Current steps
@@ -225,8 +223,8 @@ class StepUtilityTest extends UnitTestCase
                 // New step configuration
                 [
                     'class' => Step\HandleDataStep::class,
-                    'position' => 'before:Not\\Known\\Step'
-                ]
+                    'position' => 'before:Not\\Known\\Step',
+                ],
             ],
             // TODO: to be complete the instantiation of an improper class should be tested, but this would be a functional test
         ];

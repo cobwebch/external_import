@@ -25,8 +25,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class used for retrieving UIDs according to external configuration.
- *
- * @package Cobweb\ExternalImport\Domain\Repository
  */
 class UidRepository
 {
@@ -62,7 +60,6 @@ class UidRepository
      * PIDs are also retrieved. This method is internal, its usage is triggered when using the getter
      * methods.
      *
-     * @return void
      * @throws MissingConfigurationException
      */
     protected function retrieveExistingUids(): void
@@ -128,8 +125,6 @@ class UidRepository
 
     /**
      * Resets the list of primary keys.
-     *
-     * @return void
      */
     public function resetExistingUids(): void
     {
@@ -153,8 +148,6 @@ class UidRepository
 
     /**
      * Resets the list of storage PIDs.
-     *
-     * @return void
      */
     public function resetCurrentPids(): void
     {

@@ -21,8 +21,6 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 
 /**
  * Event for manipulating connector parameters.
- *
- * @package Cobweb\ExternalImport\Event
  */
 final class ProcessConnectorParametersEvent
 {

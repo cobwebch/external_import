@@ -33,8 +33,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * This class performs various reporting actions after a data import has taken place.
- *
- * @package Cobweb\ExternalImport\Utility
  */
 class ReportingUtility implements LoggerAwareInterface
 {
@@ -72,7 +70,6 @@ class ReportingUtility implements LoggerAwareInterface
      * Sets a back-reference to the Importer object.
      *
      * @param Importer $importer
-     * @return void
      */
     public function setImporter(Importer $importer): void
     {
@@ -83,7 +80,6 @@ class ReportingUtility implements LoggerAwareInterface
     /**
      * Stores the messages to the external_import log.
      *
-     * @return void
      * @throws AspectNotFoundException
      */
     public function writeToLog(): void
@@ -147,20 +143,20 @@ class ReportingUtility implements LoggerAwareInterface
     {
         $languageObject = $this->getLanguageObject();
         $report = sprintf(
-                $languageObject->sL(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:synchronizeTableX'
-                ),
-                $table,
-                $index
-            ) . "\n";
+            $languageObject->sL(
+                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:synchronizeTableX'
+            ),
+            $table,
+            $index
+        ) . "\n";
         foreach ($messages as $type => $messageList) {
             $report .= $languageObject->sL(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:label.' . $type
-                ) . "\n";
+                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:label.' . $type
+            ) . "\n";
             if (count($messageList) === 0) {
                 $report .= "\t" . $languageObject->sL(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no.' . $type
-                    ) . "\n";
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no.' . $type
+                ) . "\n";
             } else {
                 foreach ($messageList as $aMessage) {
                     $report .= "\t- " . $aMessage . "\n";
@@ -176,7 +172,6 @@ class ReportingUtility implements LoggerAwareInterface
      *
      * @param string $subject Subject of the mail
      * @param string $body Text body of the mail
-     * @return void
      */
     public function sendMail(string $subject, string $body): void
     {
@@ -198,7 +193,7 @@ class ReportingUtility implements LoggerAwareInterface
             $mailObject = GeneralUtility::makeInstance(MailMessage::class);
             try {
                 $sender = [
-                    $senderMail => $senderName
+                    $senderMail => $senderName,
                 ];
                 $mailObject->setFrom($sender);
                 $mailObject->setReplyTo($sender);
@@ -229,7 +224,6 @@ class ReportingUtility implements LoggerAwareInterface
      * @param string $step Name of the step (class)
      * @param string $key Name of the key
      * @param mixed $value Value to store
-     * @return void
      */
     public function setValueForStep(string $step, string $key, $value): void
     {
@@ -259,7 +253,6 @@ class ReportingUtility implements LoggerAwareInterface
                 $key
             ),
             1530635849
-
         );
     }
 

@@ -19,8 +19,6 @@ namespace Cobweb\ExternalImport\Utility;
 
 /**
  * Class with some utilities for dumping an array as a HTML table.
- *
- * @package Cobweb\ExternalImport\Utility
  */
 class DebugUtility
 {
@@ -70,7 +68,7 @@ class DebugUtility
             if (is_array($value)) {
                 $table .= self::dumpTwinArrays(
                     $value,
-                    array_key_exists($key, $copyArray) ? $copyArray[$key] : array()
+                    array_key_exists($key, $copyArray) ? $copyArray[$key] : []
                 );
             } else {
                 $cellContent = htmlspecialchars((string)$value);
@@ -86,5 +84,4 @@ class DebugUtility
         $table .= '</table>';
         return $table;
     }
-
 }

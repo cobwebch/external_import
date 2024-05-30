@@ -28,7 +28,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
         'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import'
+        'typo3conf/ext/external_import',
     ];
 
     /**
@@ -55,9 +55,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'field' => 'foo'
-                    ]
-                ]
+                        'field' => 'foo',
+                    ],
+                ],
             ],
             'Data type "array": using property "field" (positive integer)' => [
                 [
@@ -65,9 +65,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'field' => 42
-                    ]
-                ]
+                        'field' => 42,
+                    ],
+                ],
             ],
             'Data type "array": using property "field" (zero)' => [
                 [
@@ -75,9 +75,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'field' => 0
-                    ]
-                ]
+                        'field' => 0,
+                    ],
+                ],
             ],
             'Data type "array": using column property "value" (number)' => [
                 [
@@ -85,7 +85,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'value' => 17
+                        'value' => 17,
                     ],
                 ],
             ],
@@ -97,7 +97,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                     'col' => [
                         'transformations' => [
                             10 => [
-                                'value' => 17
+                                'value' => 17,
                             ],
                         ],
                     ],
@@ -109,7 +109,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'value' => 'bar'
+                        'value' => 'bar',
                     ],
                 ],
             ],
@@ -121,7 +121,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                     'col' => [
                         'transformations' => [
                             10 => [
-                                'value' => 'bar'
+                                'value' => 'bar',
                             ],
                         ],
                     ],
@@ -133,9 +133,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'arrayPath' => 'foo/bar'
-                    ]
-                ]
+                        'arrayPath' => 'foo/bar',
+                    ],
+                ],
             ],
             'Data type "xml": using property "field" (string)' => [
                 [
@@ -143,9 +143,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'field' => 'foo'
-                    ]
-                ]
+                        'field' => 'foo',
+                    ],
+                ],
             ],
             'Data type "xml": using column property "value" (number)' => [
                 [
@@ -153,9 +153,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'value' => 17
-                    ]
-                ]
+                        'value' => 17,
+                    ],
+                ],
             ],
             'Data type "xml": using transformations property "value" (number)' => [
                 [
@@ -165,7 +165,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                     'col' => [
                         'transformations' => [
                             10 => [
-                                'value' => 17
+                                'value' => 17,
                             ],
                         ],
                     ],
@@ -177,7 +177,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'value' => 'bar'
+                        'value' => 'bar',
                     ],
                 ],
             ],
@@ -189,7 +189,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                     'col' => [
                         'transformations' => [
                             10 => [
-                                'value' => 'bar'
+                                'value' => 'bar',
                             ],
                         ],
                     ],
@@ -201,9 +201,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'field' => 'baz'
-                    ]
-                ]
+                        'field' => 'baz',
+                    ],
+                ],
             ],
             'Data type "xml": using property "xpath" (string)' => [
                 [
@@ -211,9 +211,9 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
                 [
                     'col' => [
-                        'field' => 'hello'
-                    ]
-                ]
+                        'field' => 'hello',
+                    ],
+                ],
             ],
             'Children definition' => [
                 // No need for a general configuration
@@ -224,45 +224,45 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                             'table' => 'foo',
                             'columns' => [
                                 'column1' => [
-                                    'value' => 'bar'
+                                    'value' => 'bar',
                                 ],
                                 'column2' => [
-                                    'field' => 'baz'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                    'field' => 'baz',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
             'Substructure fields: valid structure and properties for "array" data type' => [
                 [
-                    'data' => 'array'
+                    'data' => 'array',
                 ],
                 [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
                             'foo' => [
-                                'arrayPath' => 'bar'
-                            ]
-                        ]
-                    ]
-                ]
+                                'arrayPath' => 'bar',
+                            ],
+                        ],
+                    ],
+                ],
             ],
             'Substructure fields: valid structure and properties for "xml" data type' => [
                 [
-                    'data' => 'xml'
+                    'data' => 'xml',
                 ],
                 [
                     'col' => [
                         'substructureFields' => [
                             'foo' => [
-                                'xpath' => 'bar'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                'xpath' => 'bar',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -293,49 +293,49 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         return [
             'Data type "array": missing data-setting properties' => [
                 [
-                    'data' => 'array'
+                    'data' => 'array',
                 ],
                 [],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Data type "xml": missing data-setting properties' => [
                 [
-                    'data' => 'xml'
+                    'data' => 'xml',
                 ],
                 [],
-                AbstractMessage::NOTICE
+                AbstractMessage::NOTICE,
             ],
             'Data type "array": conflicting data-setting properties' => [
                 [
-                    'data' => 'array'
+                    'data' => 'array',
                 ],
                 [
                     'col' => [
                         'field' => 'foo',
                         'transformations' => [
                             10 => [
-                                'value' => 42
-                            ]
-                        ]
-                    ]
+                                'value' => 42,
+                            ],
+                        ],
+                    ],
                 ],
-                AbstractMessage::NOTICE
+                AbstractMessage::NOTICE,
             ],
             'Data type "xml": conflicting data-setting properties' => [
                 [
-                    'data' => 'xml'
+                    'data' => 'xml',
                 ],
                 [
                     'col' => [
                         'xpath' => 'item',
                         'transformations' => [
                             10 => [
-                                'value' => 42
-                            ]
-                        ]
-                    ]
+                                'value' => 42,
+                            ],
+                        ],
+                    ],
                 ],
-                AbstractMessage::NOTICE
+                AbstractMessage::NOTICE,
             ],
             'Children definition: no "table" property' => [
                 // No need for a general configuration
@@ -345,18 +345,18 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         'children' => [
                             'columns' => [
                                 'column1' => [
-                                    'value' => 'bar'
+                                    'value' => 'bar',
                                 ],
                                 'column2' => [
-                                    'field' => 'baz'
-                                ]
+                                    'field' => 'baz',
+                                ],
                             ],
                             'controlColumnsForUpdate' => 'column1',
-                            'controlColumnsForDelete' => 'column1'
-                        ]
-                    ]
+                            'controlColumnsForDelete' => 'column1',
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Children definition: no "columns" property' => [
                 // No need for a general configuration
@@ -364,11 +364,11 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 [
                     'col' => [
                         'children' => [
-                            'table' => 'foo'
-                        ]
-                    ]
+                            'table' => 'foo',
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Children definition: "columns" sub-property not an array' => [
                 // No need for a general configuration
@@ -378,14 +378,14 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         'children' => [
                             'table' => 'foo',
                             'columns' => [
-                                'column1' => 'bar'
+                                'column1' => 'bar',
                             ],
                             'controlColumnsForUpdate' => 'column1',
-                            'controlColumnsForDelete' => 'column1'
-                        ]
-                    ]
+                            'controlColumnsForDelete' => 'column1',
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Children definition: wrong "columns" sub-property' => [
                 // No need for a general configuration
@@ -396,15 +396,15 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                             'table' => 'foo',
                             'columns' => [
                                 'column1' => [
-                                    'bar' => 'baz'
-                                ]
+                                    'bar' => 'baz',
+                                ],
                             ],
                             'controlColumnsForUpdate' => 'column1',
-                            'controlColumnsForDelete' => 'column1'
-                        ]
-                    ]
+                            'controlColumnsForDelete' => 'column1',
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Children definition: wrong "controlColumnsForUpdate" sub-property' => [
                 // No need for a general configuration
@@ -415,14 +415,14 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                             'table' => 'foo',
                             'columns' => [
                                 'column1' => [
-                                    'bar' => 'baz'
-                                ]
+                                    'bar' => 'baz',
+                                ],
                             ],
-                            'controlColumnsForUpdate' => 'columnX'
-                        ]
-                    ]
+                            'controlColumnsForUpdate' => 'columnX',
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Children definition: wrong "controlColumnsForDelete" sub-property' => [
                 // No need for a general configuration
@@ -433,75 +433,75 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                             'table' => 'foo',
                             'columns' => [
                                 'column1' => [
-                                    'bar' => 'baz'
-                                ]
+                                    'bar' => 'baz',
+                                ],
                             ],
-                            'controlColumnsForDelete' => 'columnX'
-                        ]
-                    ]
+                            'controlColumnsForDelete' => 'columnX',
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Substructure fields: wrong structure' => [
                 [
-                    'data' => 'array'
+                    'data' => 'array',
                 ],
                 [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
-                            'field' => 'foo'
-                        ]
-                    ]
+                            'field' => 'foo',
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Substructure fields: empty configuration for "array" data type' => [
                 [
-                    'data' => 'array'
+                    'data' => 'array',
                 ],
                 [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
-                            'foo' => []
-                        ]
-                    ]
+                            'foo' => [],
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Substructure fields: invalid properties for "array" data type' => [
                 [
-                    'data' => 'array'
+                    'data' => 'array',
                 ],
                 [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
                             'foo' => [
-                                'xpath' => 'bar'
-                            ]
-                        ]
-                    ]
+                                'xpath' => 'bar',
+                            ],
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
+                AbstractMessage::ERROR,
             ],
             'Substructure fields: invalid properties for "xml" data type' => [
                 [
-                    'data' => 'xml'
+                    'data' => 'xml',
                 ],
                 [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
                             'foo' => [
-                                'arrayPath' => 'bar'
-                            ]
-                        ]
-                    ]
+                                'arrayPath' => 'bar',
+                            ],
+                        ],
+                    ],
                 ],
-                AbstractMessage::ERROR
-            ]
+                AbstractMessage::ERROR,
+            ],
         ];
     }
 

@@ -25,8 +25,6 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Remaps data from an XML structure to an array mapped to TCA columns.
- *
- * @package Cobweb\ExternalImport\Handler
  */
 class XmlHandler implements DataHandlerInterface
 {
@@ -180,7 +178,7 @@ class XmlHandler implements DataHandlerInterface
         if (isset($columnConfiguration['value'])) {
             $value = $columnConfiguration['value'];
 
-        // If a "field" is defined, refine the selection to get the correct node
+            // If a "field" is defined, refine the selection to get the correct node
         } elseif (isset($columnConfiguration['field'])) {
             // Use namespace or not
             if (empty($columnConfiguration['fieldNS'])) {

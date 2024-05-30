@@ -21,8 +21,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test case for the External Import mapping utility.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Utility
  */
 class MappingUtilityTest extends UnitTestCase
 {
@@ -51,14 +49,14 @@ class MappingUtilityTest extends UnitTestCase
                         'inputData' => 'Australia',
                         'mappingTable' => [
                                 'Commonwealth of Australia' => 'AU',
-                                'Kingdom of Spain' => 'ES'
+                                'Kingdom of Spain' => 'ES',
                         ],
                         'mappingConfiguration' => [
                                 'matchMethod' => 'strpos',
-                                'matchSymmetric' => false
+                                'matchSymmetric' => false,
                         ],
-                        'result' => 'AU'
-                ]
+                        'result' => 'AU',
+                ],
         ];
     }
 
@@ -91,14 +89,14 @@ class MappingUtilityTest extends UnitTestCase
                         'inputData' => 'Commonwealth of Australia',
                         'mappingTable' => [
                                 'Australia' => 'AU',
-                                'Spain' => 'ES'
+                                'Spain' => 'ES',
                         ],
                         'mappingConfiguration' => [
                                 'matchMethod' => 'strpos',
-                                'matchSymmetric' => true
+                                'matchSymmetric' => true,
                         ],
-                        'result' => 'AU'
-                ]
+                        'result' => 'AU',
+                ],
         ];
     }
 
@@ -131,24 +129,24 @@ class MappingUtilityTest extends UnitTestCase
                     'inputData' => 'australia',
                     'mappingTable' => [
                             'Commonwealth of Australia' => 'AU',
-                            'Kingdom of Spain' => 'ES'
+                            'Kingdom of Spain' => 'ES',
                     ],
                     'mappingConfiguration' => [
                             'matchMethod' => 'strpos',
-                            'matchSymmetric' => false
-                    ]
+                            'matchSymmetric' => false,
+                    ],
             ],
             'no matching data' => [
                     'inputData' => 'Swaziland',
                     'mappingTable' => [
                             'Commonwealth of Australia' => 'AU',
-                            'Kingdom of Spain' => 'ES'
+                            'Kingdom of Spain' => 'ES',
                     ],
                     'mappingConfiguration' => [
                             'matchMethod' => 'strpos',
-                            'matchSymmetric' => false
-                    ]
-            ]
+                            'matchSymmetric' => false,
+                    ],
+            ],
         ];
     }
 
@@ -177,14 +175,14 @@ class MappingUtilityTest extends UnitTestCase
                         'inputData' => 'australia',
                         'mappingTable' => [
                                 'Commonwealth of Australia' => 'AU',
-                                'Kingdom of Spain' => 'ES'
+                                'Kingdom of Spain' => 'ES',
                         ],
                         'mappingConfiguration' => [
                                 'matchMethod' => 'stripos',
-                                'matchSymmetric' => false
+                                'matchSymmetric' => false,
                         ],
-                        'result' => 'AU'
-                ]
+                        'result' => 'AU',
+                ],
         ];
         return $data;
     }
@@ -219,13 +217,13 @@ class MappingUtilityTest extends UnitTestCase
                     'inputData' => 'Swaziland',
                     'mappingTable' => [
                             'Commonwealth of Australia' => 'AU',
-                            'Kingdom of Spain' => 'ES'
+                            'Kingdom of Spain' => 'ES',
                     ],
                     'mappingConfiguration' => [
                             'matchMethod' => 'strpos',
-                            'matchSymmetric' => false
-                    ]
-            ]
+                            'matchSymmetric' => false,
+                    ],
+            ],
         ];
     }
 

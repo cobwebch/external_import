@@ -34,7 +34,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function getFieldsExcludedFromInsertsInitiallyReturnsEmptyArray(): void
     {
@@ -46,7 +45,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function addFieldExcludedFromInsertsAddsColumn(): void
     {
@@ -64,7 +62,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setFieldsExcludedFromInsertsSetsArray(): void
     {
@@ -77,7 +74,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function getFieldsExcludedFromUpdatesInitiallyReturnsEmptyArray(): void
     {
@@ -89,7 +85,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function addFieldExcludedFromUpdatesAddsColumn(): void
     {
@@ -107,7 +102,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setFieldsExcludedFromUpdatesSetsArray(): void
     {
@@ -120,7 +114,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function getChildColumnsInitiallyReturnsEmptyArray(): void
     {
@@ -132,7 +125,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function addChildColumnAddsChildrenConfigurationObject(): void
     {
@@ -154,7 +146,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setChildColumnsSetsChildrenConfigurationArrayt(): void
     {
@@ -171,7 +162,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function hasChildColumnsInitiallyReturnsFalse(): void
     {
@@ -182,7 +172,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function hasChildColumnsReturnsTrueAfterAddingColumn(): void
     {
@@ -197,7 +186,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function getNullableColumnsInitiallyReturnsEmptyArray(): void
     {
@@ -209,7 +197,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function setNullableColumnsSetsColumnsList(): void
     {
@@ -222,7 +209,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function addNullableColumnAddsColumnToList(): void
     {
@@ -236,7 +222,6 @@ class ProcessedConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     * @return void
      */
     public function isNullableColumnReturnsBoolean(): void
     {

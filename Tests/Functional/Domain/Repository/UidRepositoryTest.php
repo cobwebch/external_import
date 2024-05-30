@@ -24,11 +24,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test class for the UidRepository
- * @package Cobweb\ExternalImport\Tests\Domain\Repository
  */
 class UidRepositoryTest extends FunctionalTestCase
 {
-
     /**
      * @var UidRepository
      */
@@ -50,67 +48,67 @@ class UidRepositoryTest extends FunctionalTestCase
         return [
             'No special configuration, no pid restriction' => [
                 [
-                    'referenceUid' => 'tstamp'
+                    'referenceUid' => 'tstamp',
                 ],
                 [
                     1520788063 => 2,
-                    1520788087 => 3
+                    1520788087 => 3,
                 ],
                 [
                     1520788063 => 1,
-                    1520788087 => 2
-                ]
+                    1520788087 => 2,
+                ],
             ],
             'Pid restriction true' => [
                 [
                     'referenceUid' => 'tstamp',
-                    'enforcePid' => true
+                    'enforcePid' => true,
                 ],
                 [
-                    1520788063 => 2
+                    1520788063 => 2,
                 ],
                 [
-                    1520788063 => 1
-                ]
+                    1520788063 => 1,
+                ],
             ],
             'Pid restriction true-ish' => [
                 [
                     'referenceUid' => 'tstamp',
-                    'enforcePid' => 1
+                    'enforcePid' => 1,
                 ],
                 [
-                    1520788063 => 2
+                    1520788063 => 2,
                 ],
                 [
-                    1520788063 => 1
-                ]
+                    1520788063 => 1,
+                ],
             ],
             'Pid restriction other than true' => [
                 [
                     'referenceUid' => 'tstamp',
-                    'enforcePid' => false
+                    'enforcePid' => false,
                 ],
                 [
                     1520788063 => 2,
-                    1520788087 => 3
+                    1520788087 => 3,
                 ],
                 [
                     1520788063 => 1,
-                    1520788087 => 2
-                ]
+                    1520788087 => 2,
+                ],
             ],
             'Where clause' => [
                 [
                     'referenceUid' => 'tstamp',
-                    'whereClause' => 'header like \'%deleted%\''
+                    'whereClause' => 'header like \'%deleted%\'',
                 ],
                 [
-                    1520788087 => 3
+                    1520788087 => 3,
                 ],
                 [
-                    1520788087 => 2
-                ]
-            ]
+                    1520788087 => 2,
+                ],
+            ],
         ];
     }
 

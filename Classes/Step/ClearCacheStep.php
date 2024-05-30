@@ -22,16 +22,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Handles cache clearing operations.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class ClearCacheStep extends AbstractStep
 {
-
     /**
      * Performs whatever cache clearing has been defined.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -39,7 +34,7 @@ class ClearCacheStep extends AbstractStep
         if (empty($configuration['clearCache'])) {
             $this->importer->setPreviewData(
                 [
-                    'caches' => []
+                    'caches' => [],
                 ]
             );
         } else {
@@ -51,7 +46,7 @@ class ClearCacheStep extends AbstractStep
             );
             $this->importer->setPreviewData(
                 [
-                    'caches' => $caches
+                    'caches' => $caches,
                 ]
             );
             // Use DataHandler to clear the designated caches, if not in preview mode

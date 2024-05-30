@@ -20,5 +20,4 @@ namespace Cobweb\ExternalImport\Exception;
  */
 class InvalidPayloadException extends \RuntimeException
 {
-
 }

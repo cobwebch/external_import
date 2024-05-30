@@ -21,8 +21,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * This is a concrete implementation of the call context for the CLI context.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class CommandLineCallContext extends AbstractCallContext
 {
@@ -47,7 +45,6 @@ class CommandLineCallContext extends AbstractCallContext
      * @param string $message Message to display
      * @param int $severity Degree of severity
      * @param mixed $data Additional data to display
-     * @return void
      */
     public function outputDebug(string $message, int $severity, $data): void
     {

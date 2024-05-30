@@ -21,12 +21,11 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Calls on the Connector at the end of the synchronize process.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class ConnectorCallbackStep extends AbstractStep
 {
-    public function __construct() {
+    public function __construct()
+    {
         $this->setExecuteDespiteAbort(true);
     }
 
@@ -34,8 +33,6 @@ class ConnectorCallbackStep extends AbstractStep
      * Evaluates a rough error status and calls back the connector.
      *
      * NOTE: this step does absolutely nothing with the data.
-     *
-     * @return void
      */
     public function run(): void
     {

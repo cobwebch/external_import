@@ -21,8 +21,6 @@ use Cobweb\ExternalImport\Importer;
 
 /**
  * Event for reacting to the list of records that were removed from the database.
- *
- * @package Cobweb\ExternalImport\Event
  */
 final class CmdmapPostprocessEvent
 {

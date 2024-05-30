@@ -25,8 +25,6 @@ use Cobweb\ExternalImport\Importer;
  * Call contexts are used to react to some output from the Importer class which needs some special handling
  * depending on the context in which the call happens (command-line, scheduler, etc.). This offloads the
  * responsibility of all these contexts from the Importer class itself.
- *
- * @package Cobweb\ExternalImport\Step
  */
 abstract class AbstractCallContext
 {
@@ -46,7 +44,6 @@ abstract class AbstractCallContext
      * @param string $message Message to display
      * @param int $severity Degree of severity
      * @param mixed $data Additional data to display
-     * @return void
      */
     abstract public function outputDebug(string $message, int $severity, $data): void;
 }

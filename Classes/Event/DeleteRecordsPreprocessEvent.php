@@ -21,8 +21,6 @@ use Cobweb\ExternalImport\Importer;
 
 /**
  * Event for manipulating the list of records that will be removed from the database.
- *
- * @package Cobweb\ExternalImport\Event
  */
 final class DeleteRecordsPreprocessEvent
 {
@@ -65,5 +63,4 @@ final class DeleteRecordsPreprocessEvent
     {
         $this->records = $records;
     }
-
 }

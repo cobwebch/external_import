@@ -25,8 +25,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Validates the "column" part of a configuration and loads the validation results as a container variable.
- *
- * @package Cobweb\ExternalImport\ViewHelpers
  */
 class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
 {
@@ -39,8 +37,6 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
 
     /**
      * Initializes the arguments of the ViewHelper.
-     *
-     * @return void
      */
     public function initializeArguments(): void
     {

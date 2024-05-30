@@ -32,8 +32,6 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
  * Pseudo-repository class for Scheduler tasks
  *
  * This is not a true repository from an Extbase point of view. It implements only a few features of a complete repository.
- *
- * @package Cobweb\ExternalImport\Domain\Repository
  */
 class SchedulerRepository implements SingletonInterface
 {
@@ -144,7 +142,7 @@ class SchedulerRepository implements SingletonInterface
     public function fetchAllGroups(): array
     {
         $groups = [
-            0 => ''
+            0 => '',
         ];
         try {
             $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
@@ -199,7 +197,7 @@ class SchedulerRepository implements SingletonInterface
             'startDate' => empty($startTimestamp) ? '' : date(
                 $editFormat,
                 $taskObject->getExecution()->getStart()
-            )
+            ),
         ];
     }
 
@@ -209,7 +207,6 @@ class SchedulerRepository implements SingletonInterface
      * If no uid is given, a new task is created.
      *
      * @param array $taskData List of fields to save. Must include "uid" for an existing registered task
-     * @return void
      * @throws \Cobweb\ExternalImport\Exception\SchedulerRepositoryException
      */
     public function saveTask(array $taskData): void
@@ -297,7 +294,7 @@ class SchedulerRepository implements SingletonInterface
             'index' => $index,
             'group' => $group,
             'interval' => 0,
-            'croncmd' => ''
+            'croncmd' => '',
         ];
         // Handle frequency, which may be a simple number of seconds or a cron command
         // Try interpreting the frequency as a cron command

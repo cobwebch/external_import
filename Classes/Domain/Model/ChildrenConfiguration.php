@@ -111,7 +111,6 @@ class ChildrenConfiguration
      *
      * @param string $operation
      * @param bool $flag
-     * @return void
      */
     public function setAllowedOperation(string $operation, bool $flag): void
     {

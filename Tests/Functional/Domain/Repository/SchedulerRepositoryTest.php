@@ -21,12 +21,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test class for SchedulerRepository
- * @package Cobweb\ExternalImport\Tests\Domain\Repository
  */
 class SchedulerRepositoryTest extends FunctionalTestCase
 {
     protected $coreExtensionsToLoad = [
-            'scheduler'
+            'scheduler',
     ];
 
     /**
@@ -49,13 +48,13 @@ class SchedulerRepositoryTest extends FunctionalTestCase
         $this->importDataSet(__DIR__ . '/../../Fixtures/Scheduler.xml');
         $groups = $this->subject->fetchAllGroups();
         self::assertSame(
-                [
-                        0 => '',
-                        5 => 'Group 0',
-                        1 => 'Group 1',
-                        3 => 'Group 3'
-                ],
-                $groups
+            [
+                    0 => '',
+                    5 => 'Group 0',
+                    1 => 'Group 1',
+                    3 => 'Group 3',
+            ],
+            $groups
         );
     }
 }

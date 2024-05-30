@@ -19,8 +19,6 @@ namespace Cobweb\ExternalImport;
 
 /**
  * Implements the ImporterAware interface.
- *
- * @package Cobweb\ExternalImport
  */
 trait ImporterAwareTrait
 {

@@ -98,7 +98,6 @@ class StoreDataStep extends AbstractStep
     /**
      * Stores the data to the database using DataHandler.
      *
-     * @return void
      * @throws \Cobweb\ExternalImport\Exception\MissingConfigurationException
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\DBAL\Driver\Exception
@@ -124,13 +123,13 @@ class StoreDataStep extends AbstractStep
         $moves = 0;
         $updatedUids = [];
         $tceData = [
-            $mainTable => []
+            $mainTable => [],
         ];
         $tceCommands = [
-            $mainTable => []
+            $mainTable => [],
         ];
         $storedRecords = [
-            $mainTable => []
+            $mainTable => [],
         ];
 
         // Prepare some data before the loop
@@ -241,7 +240,7 @@ class StoreDataStep extends AbstractStep
                 // Check if some records have a changed "pid", in which case a "move" action is also needed
                 if (array_key_exists('pid', $theRecord) && (int)$theRecord['pid'] !== $currentPids[$externalUid]) {
                     $tceCommands[$mainTable][$id] = [
-                        'move' => (int)$theRecord['pid']
+                        'move' => (int)$theRecord['pid'],
                     ];
                     $moves++;
                 }
@@ -413,11 +412,11 @@ class StoreDataStep extends AbstractStep
         // Register all child records marked for deletion
         foreach ($this->childRecordsToDelete as $childTable => $childList) {
             $tceDeleteCommands = [
-                $childTable => []
+                $childTable => [],
             ];
             foreach ($childList as $child) {
                 $tceDeleteCommands[$childTable][$child] = [
-                    'delete' => 1
+                    'delete' => 1,
                 ];
                 $deletes++;
             }
@@ -455,7 +454,7 @@ class StoreDataStep extends AbstractStep
                 $tceDeleteCommands[$mainTable] = [];
                 foreach ($absentUids as $id) {
                     $tceDeleteCommands[$mainTable][$id] = [
-                        'delete' => 1
+                        'delete' => 1,
                     ];
                     $deletes++;
                 }
@@ -579,7 +578,7 @@ class StoreDataStep extends AbstractStep
             [
                 'data' => $tceData,
                 'commands-delete' => $tceDeleteCommands ?? [],
-                'commands-move' => $tceCommands
+                'commands-move' => $tceCommands,
             ]
         );
 
@@ -671,7 +670,7 @@ class StoreDataStep extends AbstractStep
                     // The values that are excluded are temporarily stored for later restoration
                     if (array_key_exists(Configuration::DO_NOT_SAVE_KEY, $configuration) && array_key_exists($name, $record)) {
                         $this->valuesExcludedFromSaving[$id][$name] = $record[$name];
-                    // Make sure a value actually exists
+                        // Make sure a value actually exists
                     } elseif (array_key_exists($name, $record)) {
                         // Skip the value if it is null and the column does not accept null as a valid value
                         if ($record[$name] === null && !in_array($name, $nullableColumns, true)) {
@@ -700,7 +699,7 @@ class StoreDataStep extends AbstractStep
                     if (isset($denormalizedSorting[$name])) {
                         $multipleEntry = [
                             'value' => $record[$name],
-                            'sorting' => $record[$denormalizedSorting[$name]]
+                            'sorting' => $record[$denormalizedSorting[$name]],
                         ];
                     } else {
                         $multipleEntry = $record[$name];
@@ -801,7 +800,7 @@ class StoreDataStep extends AbstractStep
         // NOTE: all child records are assembled here as if they were new. They are filtered later on.
         $temporaryKey = $this->importer->getTemporaryKeyRepository()->generateTemporaryKey();
         $childStructure = [
-            $temporaryKey => []
+            $temporaryKey => [],
         ];
         foreach ($childConfiguration as $name => $configuration) {
             // If it is a value, use it as is
@@ -840,7 +839,6 @@ class StoreDataStep extends AbstractStep
      * @param array $parentData
      * @param string $childTable
      * @param array $childConfiguration
-     * @return void
      */
     public function assembleChildrenDeletionInformation(string $parentColumn, array $controlColumnsForDelete, int $parentId, array $parentData, string $childTable, array $childConfiguration): void
     {
@@ -859,8 +857,8 @@ class StoreDataStep extends AbstractStep
                 if (isset($configuration['value'])) {
                     $this->childrenReferenceValues[$parentId][$parentColumn][$childTable][$name] = $configuration['value'];
 
-                // If it is a field, get the value from the field, if defined
-                // (if it's the special value "__parent.id__", use the parent record's id)
+                    // If it is a field, get the value from the field, if defined
+                    // (if it's the special value "__parent.id__", use the parent record's id)
                 } elseif (isset($configuration['field'])) {
                     if ($configuration['field'] === '__parent.id__') {
                         $this->childrenReferenceValues[$parentId][$parentColumn][$childTable][$name] = $parentId;
@@ -909,8 +907,8 @@ class StoreDataStep extends AbstractStep
                                     // If deletion is allowed, grab existing records
                                     // (this is done once, but we need the data from one child record)
                                     if ($iterator === 0 && $childColumnConfiguration->isDeleteAllowed() && count(
-                                            $childColumnConfiguration->getControlColumnsForDelete()
-                                        ) > 0) {
+                                        $childColumnConfiguration->getControlColumnsForDelete()
+                                    ) > 0) {
                                         $allExistingChildren = $childrenRepository->findAllExistingRecords(
                                             $childTable,
                                             $this->childrenReferenceValues[$id][$column][$childTable]
@@ -957,9 +955,9 @@ class StoreDataStep extends AbstractStep
                                                 $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;
                                             }
                                         }
-                                    // If a control value was missing, let the record be considered to be new (if inserts are allowed)
-                                    // This will probably create a database error at a later point, but the user
-                                    // will get to see it in the logs
+                                        // If a control value was missing, let the record be considered to be new (if inserts are allowed)
+                                        // This will probably create a database error at a later point, but the user
+                                        // will get to see it in the logs
                                     } elseif ($childColumnConfiguration->isInsertAllowed()) {
                                         $newDataToStore[$id]['__children__'][$column][$childTable][$childId] = $childData;
                                     }
@@ -978,7 +976,6 @@ class StoreDataStep extends AbstractStep
                             }
                         }
                     }
-
                 }
                 // Loop on all children columns which were not checked in order to delete children that don't exist any more
                 // Children columns are not checked either when the record has no children at all, or may have children in
@@ -1011,7 +1008,6 @@ class StoreDataStep extends AbstractStep
      * that we are retrieving the right messages, not to decipher their meaning.
      *
      * @param array $errorLog
-     * @return void
      * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\DBAL\Driver\Exception
      */
@@ -1049,9 +1045,9 @@ class StoreDataStep extends AbstractStep
                     // Check if there's a label for the message
                     $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
                     // If not, use details field
-                    $dataArray = json_decode( $row['log_data'], true);
+                    $dataArray = json_decode($row['log_data'], true);
                     if ($dataArray !== null) {
-                        $dataArray = json_decode( $row['log_data'], true);
+                        $dataArray = json_decode($row['log_data'], true);
                         $label = LocalizationUtility::translate(
                             'LLL:EXT:belog/Resources/Private/Language/locallang.xlf:' . $labelCode,
                             'belog',
@@ -1178,7 +1174,6 @@ class StoreDataStep extends AbstractStep
      * Handles exceptions that happen when using the DataHandler to execute data or command structures.
      *
      * @param \Exception $e
-     * @return void
      */
     protected function handleTceException(\Exception $e): void
     {
@@ -1193,7 +1188,7 @@ class StoreDataStep extends AbstractStep
                     $e->getMessage(),
                     $e->getCode(),
                     $e->getFile(),
-                    $e->getLine()
+                    $e->getLine(),
                 ]
             )
         );
@@ -1206,7 +1201,7 @@ class StoreDataStep extends AbstractStep
             ),
             3,
             [
-                $e->getTraceAsString()
+                $e->getTraceAsString(),
             ]
         );
     }

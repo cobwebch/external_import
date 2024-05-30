@@ -28,15 +28,13 @@ use Cobweb\ExternalImport\Step\ValidateConnectorStep;
 use Cobweb\ExternalImport\Step\ValidateDataStep;
 use Cobweb\ExternalImport\Transformation\ImageTransformation;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Test suite for the preview feature of the Importer class.
- *
- * @package Cobweb\ExternalImport\Tests\Functional
  */
 class ImporterPreviewTest extends FunctionalTestCase
 {
@@ -46,7 +44,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         'typo3conf/ext/svconnector_feed',
         'typo3conf/ext/svconnector_json',
         'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/externalimport_test',
     ];
 
     /**
@@ -148,7 +146,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             'xml-type data' => [
                 'table' => 'tx_externalimporttest_product',
                 'index' => 'base',
-                'result' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Products.xml'
+                'result' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Products.xml',
             ],
             'array-type data' => [
                 'table' => 'tx_externalimporttest_tag',
@@ -156,30 +154,30 @@ class ImporterPreviewTest extends FunctionalTestCase
                 'result' => [
                     [
                         'Code' => 'attack',
-                        'Name' => 'Weapons '
+                        'Name' => 'Weapons ',
                     ],
                     [
                         'Code' => 'defense',
-                        'Name' => 'Armor & Shields'
+                        'Name' => 'Armor & Shields',
                     ],
                     [
                         'Code' => 'rude',
-                        'Name' => 'F**k'
+                        'Name' => 'F**k',
                     ],
                     [
                         'Code' => 'metal',
-                        'Name' => 'Metallic objects'
+                        'Name' => 'Metallic objects',
                     ],
                     [
                         'Code' => 'fun',
-                        'Name' => ' Fun, free time'
+                        'Name' => ' Fun, free time',
                     ],
                     [
                         'Code' => 'food',
-                        'Name' => 'Food & Drinks'
-                    ]
-                ]
-            ]
+                        'Name' => 'Food & Drinks',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -225,7 +223,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'tags' => 'attack,metal',
                         'pictures' => 'https://loremflickr.com/320/240/scotland',
                         'picture_title' => 'View from the left',
-                        'picture_order' => '2'
+                        'picture_order' => '2',
                     ],
                     [
                         'attributes' => "\n\t\t\t<quality>Robust</quality>\n\t\t\t<quality>Stylish</quality>\n\t\t\t<quality>Reliable</quality>\n\t\t",
@@ -236,7 +234,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'tags' => 'attack,metal',
                         'pictures' => 'https://loremflickr.com/320/240/volcano',
                         'picture_title' => 'View from above',
-                        'picture_order' => '1'
+                        'picture_order' => '1',
                     ],
                     [
                         'attributes' => "\n\t\t\t<quality>Robust</quality>\n\t\t\t<quality>Stylish</quality>\n\t\t\t<quality>Reliable</quality>\n\t\t",
@@ -246,7 +244,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'sku' => '000001',
                         'tags' => 'attack,metal',
                         'pictures' => 'https://sdnfjwrthioweorg.gdsg/wtf',
-                        'picture_title' => 'View that does not exist'
+                        'picture_title' => 'View that does not exist',
                     ],
                     [
                         'attributes' => '',
@@ -256,9 +254,9 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'sku' => '000005',
                         'tags' => 'defense,metal',
                         'pictures' => '',
-                        'picture_title' => ''
-                    ]
-                ]
+                        'picture_title' => '',
+                    ],
+                ],
             ],
             'array-type data' => [
                 'table' => 'tx_externalimporttest_tag',
@@ -266,29 +264,29 @@ class ImporterPreviewTest extends FunctionalTestCase
                 'result' => [
                     [
                         'code' => 'attack',
-                        'name' => 'Weapons '
+                        'name' => 'Weapons ',
                     ],
                     [
                         'code' => 'defense',
-                        'name' => 'Armor & Shields'
+                        'name' => 'Armor & Shields',
                     ],
                     [
                         'code' => 'rude',
-                        'name' => 'F**k'
+                        'name' => 'F**k',
                     ],
                     [
                         'code' => 'metal',
-                        'name' => 'Metallic objects'
+                        'name' => 'Metallic objects',
                     ],
                     [
                         'code' => 'fun',
-                        'name' => ' Fun, free time'
+                        'name' => ' Fun, free time',
                     ],
                     [
                         'code' => 'food',
-                        'name' => 'Food & Drinks'
-                    ]
-                ]
+                        'name' => 'Food & Drinks',
+                    ],
+                ],
             ],
             'array-type data with sub-structure and array path' => [
                 'table' => 'tx_externalimporttest_order',
@@ -299,58 +297,58 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'order_date' => '2020-08-07 14:32',
                         'order_id' => '000001',
                         'products' => '000001',
-                        'quantity' => 3
+                        'quantity' => 3,
                     ],
                     [
                         'client_id' => 'Conan the Barbarian',
                         'order_date' => '2020-08-07 14:32',
                         'order_id' => '000001',
                         'products' => '000005',
-                        'quantity' => 1
+                        'quantity' => 1,
                     ],
                     [
                         'client_id' => 'Conan the Barbarian',
                         'order_date' => '2020-08-07 14:32',
                         'order_id' => '000001',
                         'products' => '000101',
-                        'quantity' => 10
+                        'quantity' => 10,
                     ],
                     [
                         'client_id' => 'Conan the Barbarian',
                         'order_date' => '2020-08-07 14:32',
                         'order_id' => '000001',
                         'products' => '000102',
-                        'quantity' => 2
+                        'quantity' => 2,
                     ],
                     [
                         'client_id' => 'Empty basket',
                         'order_date' => '2021-03-07 17:56',
                         'order_id' => '000003',
-                        'products' => null
+                        'products' => null,
                     ],
                     [
                         'client_id' => 'Sonja the Red',
                         'order_date' => '2020-08-08 06:48',
                         'order_id' => '000002',
                         'products' => '000001',
-                        'quantity' => 1
+                        'quantity' => 1,
                     ],
                     [
                         'client_id' => 'Sonja the Red',
                         'order_date' => '2020-08-08 06:48',
                         'order_id' => '000002',
                         'products' => '000005',
-                        'quantity' => 2
+                        'quantity' => 2,
                     ],
                     [
                         'client_id' => 'Sonja the Red',
                         'order_date' => '2020-08-08 06:48',
                         'order_id' => '000002',
                         'products' => '000202',
-                        'quantity' => 1
-                    ]
-                ]
-            ]
+                        'quantity' => 1,
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -398,25 +396,25 @@ class ImporterPreviewTest extends FunctionalTestCase
                 'result' => [
                     [
                         'code' => 'attack',
-                        'name' => 'Weapons'
+                        'name' => 'Weapons',
                     ],
                     [
                         'code' => 'defense',
-                        'name' => 'Armor & Shields'
+                        'name' => 'Armor & Shields',
                     ],
                     [
                         'code' => 'metal',
-                        'name' => 'Metallic objects'
+                        'name' => 'Metallic objects',
                     ],
                     [
                         'code' => 'fun',
-                        'name' => 'Fun, free time'
+                        'name' => 'Fun, free time',
                     ],
                     [
                         'code' => 'food',
-                        'name' => 'Food & Drinks'
-                    ]
-                ]
+                        'name' => 'Food & Drinks',
+                    ],
+                ],
             ],
             'base products' => [
                 'table' => 'tx_externalimporttest_product',
@@ -430,7 +428,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'sku' => '000001',
                         'pictures' => ImageTransformation::$previewMessage,
                         'picture_title' => 'View from the left',
-                        'picture_order' => '2'
+                        'picture_order' => '2',
                     ],
                     [
                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
@@ -440,7 +438,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'sku' => '000001',
                         'pictures' => ImageTransformation::$previewMessage,
                         'picture_title' => 'View from above',
-                        'picture_order' => '1'
+                        'picture_order' => '1',
                     ],
                     [
                         'attributes' => "PREVIEW: <ul>\n\t\t\t<li>Robust</li>\n\t\t\t<li>Stylish</li>\n\t\t\t<li>Reliable</li>\n\t\t</ul>",
@@ -449,7 +447,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'name' => 'Long sword (base)',
                         'sku' => '000001',
                         'pictures' => ImageTransformation::$previewMessage,
-                        'picture_title' => 'View that does not exist'
+                        'picture_title' => 'View that does not exist',
                     ],
                     [
                         'attributes' => null,
@@ -458,10 +456,10 @@ class ImporterPreviewTest extends FunctionalTestCase
                         'name' => 'Chain mail (base)',
                         'sku' => '000005',
                         'pictures' => null,
-                        'picture_title' => ''
-                    ]
-                ]
-            ]
+                        'picture_title' => '',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -490,7 +488,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         return [
             'tags' => [
                 'fixtures' => [
-                    __DIR__ . '/Fixtures/StoreDataStepPreviewTest.xml'
+                    __DIR__ . '/Fixtures/StoreDataStepPreviewTest.xml',
                 ],
                 'prerequisistes' => [],
                 'table' => 'tx_externalimporttest_tag',
@@ -503,45 +501,45 @@ class ImporterPreviewTest extends FunctionalTestCase
                             'NEW1' => [
                                 'code' => 'attack',
                                 'name' => 'Weapons',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW2' => [
                                 'code' => 'defense',
                                 'name' => 'Armor & Shields',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW3' => [
                                 'code' => 'metal',
                                 'name' => 'Metallic objects',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW4' => [
                                 'code' => 'fun',
                                 'name' => 'Fun, free time',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW5' => [
                                 'code' => 'food',
                                 'name' => 'Food & Drinks',
-                                'pid' => 1
-                            ]
-                        ]
+                                'pid' => 1,
+                            ],
+                        ],
                     ],
                     'commands-delete' => [
                         'tx_externalimporttest_tag' => [
                             2 => [
-                                'delete' => 1
-                            ]
-                        ]
+                                'delete' => 1,
+                            ],
+                        ],
                     ],
                     'commands-move' => [
-                        'tx_externalimporttest_tag' => []
-                    ]
-                ]
+                        'tx_externalimporttest_tag' => [],
+                    ],
+                ],
             ],
             'tags (only delete)' => [
                 'fixtures' => [
-                    __DIR__ . '/Fixtures/StoreDataStepPreviewTest.xml'
+                    __DIR__ . '/Fixtures/StoreDataStepPreviewTest.xml',
                 ],
                 'prerequisistes' => [],
                 'table' => 'tx_externalimporttest_tag',
@@ -550,27 +548,27 @@ class ImporterPreviewTest extends FunctionalTestCase
                 'recordsCount' => 1,
                 'result' => [
                     'data' => [
-                        'tx_externalimporttest_tag' => []
+                        'tx_externalimporttest_tag' => [],
                     ],
                     'commands-delete' => [
                         'tx_externalimporttest_tag' => [
                             2 => [
-                                'delete' => 1
-                            ]
-                        ]
+                                'delete' => 1,
+                            ],
+                        ],
                     ],
                     'commands-move' => [
-                        'tx_externalimporttest_tag' => []
-                    ]
-                ]
+                        'tx_externalimporttest_tag' => [],
+                    ],
+                ],
             ],
             'base products (insert)' => [
                 'fixtures' => [],
                 'prerequisistes' => [
                     [
                         'table' => 'tx_externalimporttest_tag',
-                        'index' => 0
-                    ]
+                        'index' => 0,
+                    ],
                 ],
                 'table' => 'tx_externalimporttest_product',
                 'index' => 'base',
@@ -587,7 +585,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'pictures' => 'NEW2,NEW3,NEW4',
                                 'sku' => '000001',
                                 'tags' => '1,3',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW5' => [
                                 'attributes' => null,
@@ -597,8 +595,8 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'sku' => '000005',
                                 'tags' => '2,3',
                                 'pictures' => '',
-                                'pid' => 1
-                            ]
+                                'pid' => 1,
+                            ],
                         ],
                         'sys_file_reference' => [
                             'NEW2' => [
@@ -607,7 +605,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'title' => 'View from the left',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW3' => [
                                 'uid_local' => ImageTransformation::$previewMessage,
@@ -615,7 +613,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'title' => 'View from above',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW4' => [
                                 'uid_local' => ImageTransformation::$previewMessage,
@@ -623,23 +621,23 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'title' => 'View that does not exist',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'pid' => 1
-                            ]
-                        ]
+                                'pid' => 1,
+                            ],
+                        ],
                     ],
                     'commands-delete' => [],
                     'commands-move' => [
-                        'tx_externalimporttest_product' => []
-                    ]
-                ]
+                        'tx_externalimporttest_product' => [],
+                    ],
+                ],
             ],
             'base products (update)' => [
                 'fixtures' => [],
                 'prerequisistes' => [
                     [
                         'table' => 'tx_externalimporttest_product',
-                        'index' => 'base'
-                    ]
+                        'index' => 'base',
+                    ],
                 ],
                 'table' => 'tx_externalimporttest_product',
                 'index' => 'base',
@@ -654,15 +652,15 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'created' => 1634286540,
                                 'name' => 'Long sword (base)',
                                 'pictures' => 'NEW1,NEW2,NEW3',
-                                'sku' => '000001'
+                                'sku' => '000001',
                             ],
                             '2' => [
                                 'attributes' => null,
                                 'categories' => '',
                                 'created' => 1629981780,
                                 'name' => 'Chain mail (base)',
-                                'sku' => '000005'
-                            ]
+                                'sku' => '000005',
+                            ],
                         ],
                         // Normally this should not contain new records, as images have been imported during the prerequisite
                         // import. However, since we are in preview mode, the ImageTransformation class does not
@@ -675,7 +673,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'title' => 'View from the left',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW2' => [
                                 'uid_local' => 'Preview mode. Image not handled, nor saved.',
@@ -683,7 +681,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'title' => 'View from above',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW3' => [
                                 'uid_local' => ImageTransformation::$previewMessage,
@@ -691,27 +689,27 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'title' => 'View that does not exist',
                                 'tablenames' => 'tx_externalimporttest_product',
                                 'fieldname' => 'pictures',
-                                'pid' => 1
-                            ]
-                        ]
+                                'pid' => 1,
+                            ],
+                        ],
                     ],
                     'commands-delete' => [
-                        'sys_file_reference' => []
+                        'sys_file_reference' => [],
                     ],
                     'commands-move' => [
-                        'tx_externalimporttest_product' => []
-                    ]
-                ]
+                        'tx_externalimporttest_product' => [],
+                    ],
+                ],
             ],
             'update products with move' => [
                 'fixtures' => [
-                    __DIR__ . '/Fixtures/ExtraStoragePage.xml'
+                    __DIR__ . '/Fixtures/ExtraStoragePage.xml',
                 ],
                 'prerequisistes' => [
                     [
                         'table' => 'tx_externalimporttest_product',
-                        'index' => 'base'
-                    ]
+                        'index' => 'base',
+                    ],
                 ],
                 'table' => 'tx_externalimporttest_product',
                 'index' => 'updated_products',
@@ -723,35 +721,35 @@ class ImporterPreviewTest extends FunctionalTestCase
                             '1' => [
                                 'name' => 'Long sword (updated)',
                                 'pid' => '2',
-                                'sku' => '000001'
-                            ]
-                        ]
+                                'sku' => '000001',
+                            ],
+                        ],
                     ],
                     'commands-delete' => [],
                     'commands-move' => [
                         'tx_externalimporttest_product' => [
                             '1' => [
-                                'move' => 2
-                            ]
-                        ]
-                    ]
-                ]
+                                'move' => 2,
+                            ],
+                        ],
+                    ],
+                ],
             ],
             'bundles' => [
                 'fixtures' => [],
                 'prerequisites' => [
                     [
                         'table' => 'tx_externalimporttest_product',
-                        'index' => 'base'
+                        'index' => 'base',
                     ],
                     [
                         'table' => 'tx_externalimporttest_product',
-                        'index' => 'more'
+                        'index' => 'more',
                     ],
                     [
                         'table' => 'tx_externalimporttest_product',
-                        'index' => 'stable'
-                    ]
+                        'index' => 'stable',
+                    ],
                 ],
                 'table' => 'tx_externalimporttest_bundle',
                 'index' => 0,
@@ -766,7 +764,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'name' => 'Bundle of joy',
                                 'notes' => 'This will make you very happy',
                                 'products' => '3,4',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW2' => [
                                 'bundle_code' => 'PAIN01',
@@ -774,7 +772,7 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'name' => 'Bundle of pain',
                                 'notes' => 'Maybe you don\'t want this bundle at all',
                                 'products' => '1,2',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW3' => [
                                 'bundle_code' => 'PAIN02',
@@ -782,33 +780,33 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'name' => 'Bundle of extra pain',
                                 'notes' => null,
                                 'products' => '6,1,5,2',
-                                'pid' => 1
-                            ]
-                        ]
+                                'pid' => 1,
+                            ],
+                        ],
                     ],
                     'commands-delete' => [],
                     'commands-move' => [
-                        'tx_externalimporttest_bundle' => []
-                    ]
-                ]
+                        'tx_externalimporttest_bundle' => [],
+                    ],
+                ],
             ],
             'orders' => [
                 'fixtures' => [
-                    __DIR__ . '/Fixtures/Orders.xml'
+                    __DIR__ . '/Fixtures/Orders.xml',
                 ],
                 'prerequisites' => [
                     [
                         'table' => 'tx_externalimporttest_product',
-                        'index' => 'base'
+                        'index' => 'base',
                     ],
                     [
                         'table' => 'tx_externalimporttest_product',
-                        'index' => 'more'
+                        'index' => 'more',
                     ],
                     [
                         'table' => 'tx_externalimporttest_product',
-                        'index' => 'stable'
-                    ]
+                        'index' => 'stable',
+                    ],
                 ],
                 'table' => 'tx_externalimporttest_order',
                 'index' => 0,
@@ -821,85 +819,85 @@ class ImporterPreviewTest extends FunctionalTestCase
                                 'client_id' => 'Conan the Barbarian',
                                 'order_date' => 1596810720,
                                 'order_id' => '000001',
-                                'products' => '1,NEW2,NEW3,NEW4'
+                                'products' => '1,NEW2,NEW3,NEW4',
                             ],
                             'NEW5' => [
                                 'client_id' => 'Empty basket',
                                 'order_date' => 1615139760,
                                 'order_id' => '000003',
                                 'products' => '',
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW6' => [
                                 'client_id' => 'Sonja the Red',
                                 'order_date' => 1596869280,
                                 'order_id' => '000002',
                                 'products' => 'NEW7,NEW8,NEW9',
-                                'pid' => 1
-                            ]
+                                'pid' => 1,
+                            ],
                         ],
                         'tx_externalimporttest_order_items' => [
                             1 => [
                                 'uid_local' => 1,
                                 'uid_foreign' => '1',
                                 'quantity' => 3,
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW2' => [
                                 'uid_local' => 1,
                                 'uid_foreign' => '2',
                                 'quantity' => 1,
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW3' => [
                                 'uid_local' => 1,
                                 'uid_foreign' => '3',
                                 'quantity' => 10,
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW4' => [
                                 'uid_local' => 1,
                                 'uid_foreign' => '4',
                                 'quantity' => 2,
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW7' => [
                                 'uid_local' => 'NEW6',
                                 'uid_foreign' => '1',
                                 'quantity' => 1,
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW8' => [
                                 'uid_local' => 'NEW6',
                                 'uid_foreign' => '2',
                                 'quantity' => 2,
-                                'pid' => 1
+                                'pid' => 1,
                             ],
                             'NEW9' => [
                                 'uid_local' => 'NEW6',
                                 'uid_foreign' => '6',
                                 'quantity' => 1,
-                                'pid' => 1
+                                'pid' => 1,
                             ],
-                        ]
+                        ],
                     ],
                     'commands-delete' => [
                         'tx_externalimporttest_order_items' => [
                             2 => [
-                                'delete' => 1
-                            ]
+                                'delete' => 1,
+                            ],
                         ],
                         'tx_externalimporttest_order' => [
                             12 => [
-                                'delete' => 1
-                            ]
-                        ]
+                                'delete' => 1,
+                            ],
+                        ],
                     ],
                     'commands-move' => [
-                        'tx_externalimporttest_order' => []
-                    ]
-                ]
-            ]
+                        'tx_externalimporttest_order' => [],
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -972,18 +970,18 @@ class ImporterPreviewTest extends FunctionalTestCase
                 'table' => 'tx_externalimporttest_tag',
                 'index' => 0,
                 'result' => [
-                    'caches' => []
-                ]
+                    'caches' => [],
+                ],
             ],
             'product pages' => [
                 'table' => 'pages',
                 'index' => 'product_pages',
                 'result' => [
                     'caches' => [
-                        'pages'
-                    ]
-                ]
-            ]
+                        'pages',
+                    ],
+                ],
+            ],
         ];
     }
 

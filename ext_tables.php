@@ -16,7 +16,7 @@ ExtensionUtility::registerModule(
     [
         'access' => 'user,group',
         'icon' => 'EXT:external_import/Resources/Public/Icons/MainModuleIcon.svg',
-        'labels' => 'LLL:EXT:external_import/Resources/Private/Language/MainModule.xlf'
+        'labels' => 'LLL:EXT:external_import/Resources/Private/Language/MainModule.xlf',
     ]
 );
 // Register the "Data Import" backend module
@@ -29,12 +29,12 @@ ExtensionUtility::registerModule(
     // Position
     '',
     [
-        DataModuleController::class => 'listSynchronizable, listNonSynchronizable, synchronize, preview, downloadPreview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask'
+        DataModuleController::class => 'listSynchronizable, listNonSynchronizable, synchronize, preview, downloadPreview, viewConfiguration, newTask, createTask, editTask, updateTask, deleteTask',
     ],
     [
         'access' => 'user,group',
         'icon' => 'EXT:external_import/Resources/Public/Icons/DataModuleIcon.svg',
-        'labels' => 'LLL:EXT:external_import/Resources/Private/Language/DataModule.xlf'
+        'labels' => 'LLL:EXT:external_import/Resources/Private/Language/DataModule.xlf',
     ]
 );
 // Register the "Log" backend module
@@ -47,11 +47,11 @@ ExtensionUtility::registerModule(
     // Position
     '',
     [
-        LogModuleController::class => 'list, get'
+        LogModuleController::class => 'list, get',
     ],
     [
         'access' => 'user,group',
         'icon' => 'EXT:external_import/Resources/Public/Icons/LogModuleIcon.svg',
-        'labels' => 'LLL:EXT:external_import/Resources/Private/Language/LogModule.xlf'
+        'labels' => 'LLL:EXT:external_import/Resources/Private/Language/LogModule.xlf',
     ]
 );

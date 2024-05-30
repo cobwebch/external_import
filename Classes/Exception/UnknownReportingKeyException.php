@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Exception;
 
 /*
@@ -18,10 +19,7 @@ use TYPO3\CMS\Core\Exception;
 
 /**
  * Exception for invalid key in the reporting utility.
- *
- * @package Cobweb\ExternalImport\Exception
  */
 class UnknownReportingKeyException extends Exception
 {
-
 }

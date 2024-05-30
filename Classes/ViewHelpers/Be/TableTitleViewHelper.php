@@ -23,16 +23,11 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Returns the name of a table, as per its TCA definition
- *
- * @package Cobweb\ExternalImport\ViewHelpers\Be
  */
 class TableTitleViewHelper extends AbstractViewHelper
 {
-
     /**
      * Initializes the arguments of the ViewHelper.
-     *
-     * @return void
      */
     public function initializeArguments(): void
     {
