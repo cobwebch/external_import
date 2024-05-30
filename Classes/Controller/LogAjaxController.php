@@ -26,12 +26,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Controller for the AJAX calls of the "Log" module
- *
- * @package Cobweb\ExternalImport\Controller
  */
 class LogAjaxController
 {
-
     /**
      * Returns the list of all log entries, in JSON format.
      *
@@ -69,7 +66,7 @@ class LogAjaxController
                     'configuration' => $logEntry->getConfiguration(),
                     'context' => $logEntry->getContext(),
                     'message' => $logEntry->getMessage(),
-                    'duration' => $logEntry->getDuration()
+                    'duration' => $logEntry->getDuration(),
                 ];
             }
         } catch (\Exception $e) {
@@ -85,7 +82,7 @@ class LogAjaxController
             'data' => $logs,
             'recordsTotal' => $totalEntries,
             'recordsFiltered' => $logCount,
-            'error' => $error
+            'error' => $error,
         ];
         if ($response === null) {
             $response = GeneralUtility::makeInstance(JsonResponse::class);

@@ -19,8 +19,6 @@ namespace Cobweb\ExternalImport;
 
 /**
  * Describes an Importer-aware class.
- *
- * @package Cobweb\ExternalImport
  */
 interface ImporterAwareInterface
 {

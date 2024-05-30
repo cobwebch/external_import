@@ -23,8 +23,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Manages the insertion of custom steps into the steps array.
- *
- * @package Cobweb\ExternalImport\Utility
  */
 class StepUtility
 {
@@ -167,10 +165,10 @@ class StepUtility
         }
 
         // If everything passed, return validated configuration
-        return array(
+        return [
             'class' => $stepClass,
             'position' => $position,
-            'reference' => $class
-        );
+            'reference' => $class,
+        ];
     }
 }

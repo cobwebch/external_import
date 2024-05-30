@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 /*
@@ -14,7 +15,6 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 use Cobweb\ExternalImport\Domain\Model\BackendUser;
 use Cobweb\ExternalImport\Domain\Model\Log;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -22,8 +22,6 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Test suite for the Log model class.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Domain\Model
  */
 class LogTest extends UnitTestCase
 {
@@ -44,8 +42,8 @@ class LogTest extends UnitTestCase
     public function getStatusInitiallyReturnsNoticeLevel(): void
     {
         self::assertEquals(
-                AbstractMessage::NOTICE,
-                $this->subject->getStatus()
+            AbstractMessage::NOTICE,
+            $this->subject->getStatus()
         );
     }
 
@@ -56,8 +54,8 @@ class LogTest extends UnitTestCase
     {
         $this->subject->setStatus(3);
         self::assertEquals(
-                3,
-                $this->subject->getStatus()
+            3,
+            $this->subject->getStatus()
         );
     }
 
@@ -76,11 +74,11 @@ class LogTest extends UnitTestCase
     {
         $now = new \DateTime();
         $this->subject->setCrdate(
-                $now
+            $now
         );
         self::assertEquals(
-                $now->getTimestamp(),
-                $this->subject->getCrdate()->getTimestamp()
+            $now->getTimestamp(),
+            $this->subject->getCrdate()->getTimestamp()
         );
     }
 
@@ -100,11 +98,11 @@ class LogTest extends UnitTestCase
         $user = new BackendUser();
         $user->setUserName('ford.escort');
         $this->subject->setCruserId(
-                $user
+            $user
         );
         self::assertEquals(
-                'ford.escort',
-                $this->subject->getCruserId()->getUserName()
+            'ford.escort',
+            $this->subject->getCruserId()->getUserName()
         );
     }
 
@@ -114,8 +112,8 @@ class LogTest extends UnitTestCase
     public function getConfigurationInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
-                '',
-                $this->subject->getConfiguration()
+            '',
+            $this->subject->getConfiguration()
         );
     }
 
@@ -126,8 +124,8 @@ class LogTest extends UnitTestCase
     {
         $this->subject->setConfiguration('foo');
         self::assertSame(
-                'foo',
-                $this->subject->getConfiguration()
+            'foo',
+            $this->subject->getConfiguration()
         );
     }
 
@@ -137,8 +135,8 @@ class LogTest extends UnitTestCase
     public function getContextInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
-                '',
-                $this->subject->getContext()
+            '',
+            $this->subject->getContext()
         );
     }
 
@@ -149,8 +147,8 @@ class LogTest extends UnitTestCase
     {
         $this->subject->setContext('foo');
         self::assertSame(
-                'foo',
-                $this->subject->getContext()
+            'foo',
+            $this->subject->getContext()
         );
     }
 
@@ -160,8 +158,8 @@ class LogTest extends UnitTestCase
     public function getMessageInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
-                '',
-                $this->subject->getMessage()
+            '',
+            $this->subject->getMessage()
         );
     }
 
@@ -172,8 +170,8 @@ class LogTest extends UnitTestCase
     {
         $this->subject->setMessage('foo');
         self::assertSame(
-                'foo',
-                $this->subject->getMessage()
+            'foo',
+            $this->subject->getMessage()
         );
     }
 }

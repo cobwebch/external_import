@@ -43,7 +43,7 @@ return [
         'extensionName' => 'external_import',
         'controllerActions' => [
             \Cobweb\ExternalImport\Controller\LogModuleController::class => [
-                'list'
+                'list',
             ],
         ],
     ],

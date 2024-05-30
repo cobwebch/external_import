@@ -50,9 +50,9 @@ class ChildrenSortingTest extends UnitTestCase
         return [
             'one table - empty' => [
                 'structure' => [
-                    'foo' => []
+                    'foo' => [],
                 ],
-                'result' => false
+                'result' => false,
             ],
             'one table - one item' => [
                 'structure' => [
@@ -60,11 +60,11 @@ class ChildrenSortingTest extends UnitTestCase
                         [
                             3,
                             'sorting',
-                            1
-                        ]
-                    ]
+                            1,
+                        ],
+                    ],
                 ],
-                'result' => true
+                'result' => true,
             ],
             'two tables - one empty, one not' => [
                 'structure' => [
@@ -72,13 +72,13 @@ class ChildrenSortingTest extends UnitTestCase
                         [
                             3,
                             'sorting',
-                            1
-                        ]
+                            1,
+                        ],
                     ],
-                    'bar' => []
+                    'bar' => [],
                 ],
-                'result' => true
-            ]
+                'result' => true,
+            ],
         ];
     }
 
@@ -133,9 +133,9 @@ class ChildrenSortingTest extends UnitTestCase
             [
                 'foo' => [
                     2 => [
-                        'sorting' => 1
-                    ]
-                ]
+                        'sorting' => 1,
+                    ],
+                ],
             ],
             $this->subject->getSortingInformation()
         );
@@ -145,12 +145,12 @@ class ChildrenSortingTest extends UnitTestCase
             [
                 'foo' => [
                     2 => [
-                        'sorting' => 1
+                        'sorting' => 1,
                     ],
                     3 => [
-                        'sorting' => 2
-                    ]
-                ]
+                        'sorting' => 2,
+                    ],
+                ],
             ],
             $this->subject->getSortingInformation()
         );
@@ -159,17 +159,17 @@ class ChildrenSortingTest extends UnitTestCase
             [
                 'foo' => [
                     2 => [
-                        'sorting' => 1
+                        'sorting' => 1,
                     ],
                     3 => [
-                        'sorting' => 2
-                    ]
+                        'sorting' => 2,
+                    ],
                 ],
                 'bar' => [
                     1 => [
-                        'sorting' => 1
-                    ]
-                ]
+                        'sorting' => 1,
+                    ],
+                ],
             ],
             $this->subject->getSortingInformation()
         );
@@ -187,12 +187,12 @@ class ChildrenSortingTest extends UnitTestCase
             [
                 'foo' => [
                     3 => [
-                        'sorting' => 2
+                        'sorting' => 2,
                     ],
                     12 => [
-                        'sorting' => 1
-                    ]
-                ]
+                        'sorting' => 1,
+                    ],
+                ],
             ],
             $this->subject->getSortingInformation()
         );
@@ -211,22 +211,22 @@ class ChildrenSortingTest extends UnitTestCase
         $this->subject->addSortingInformation('foo', 3, 'sorting', 2);
         $this->subject->replaceAllNewIds(
             [
-                'NEW123.45' => 17
+                'NEW123.45' => 17,
             ]
         );
         self::assertSame(
             [
                 'foo' => [
                     'tempKey' => [
-                        'sorting' => 4
+                        'sorting' => 4,
                     ],
                     3 => [
-                        'sorting' => 2
+                        'sorting' => 2,
                     ],
                     17 => [
-                        'sorting' => 1
-                    ]
-                ]
+                        'sorting' => 1,
+                    ],
+                ],
             ],
             $this->subject->getSortingInformation()
         );

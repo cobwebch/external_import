@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Event;
@@ -20,8 +21,6 @@ use Cobweb\ExternalImport\Importer;
 
 /**
  * Event called after imported data is stored to the database (updates or inserts).
- *
- * @package Cobweb\ExternalImport\Event
  */
 final class DatamapPostprocessEvent
 {

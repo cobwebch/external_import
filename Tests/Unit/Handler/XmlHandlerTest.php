@@ -23,8 +23,6 @@ use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 
 /**
  * Test suite for the XmlHandler class.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Handler
  */
 class XmlHandlerTest extends UnitTestCase
 {
@@ -47,60 +45,60 @@ class XmlHandlerTest extends UnitTestCase
             'fixed value - number zero' => [
                 'structure' => '<item>foo</item>',
                 'configuration' => [
-                    'value' => 0
+                    'value' => 0,
                 ],
-                'result' => 0
+                'result' => 0,
             ],
             'fixed value - number non-zero' => [
                 'structure' => '<item>foo</item>',
                 'configuration' => [
-                    'value' => 12
+                    'value' => 12,
                 ],
-                'result' => 12
+                'result' => 12,
             ],
             'fixed value - string empty' => [
                 'structure' => '<item>foo</item>',
                 'configuration' => [
-                    'value' => ''
+                    'value' => '',
                 ],
-                'result' => ''
+                'result' => '',
             ],
             'fixed value - string not empty' => [
                 'structure' => '<item>foo</item>',
                 'configuration' => [
-                    'value' => 'hey'
+                    'value' => 'hey',
                 ],
-                'result' => 'hey'
+                'result' => 'hey',
             ],
             'direct simple value' => [
                 'structure' => '<item>foo</item>',
                 'configuration' => [
-                    'field' => 'item'
+                    'field' => 'item',
                 ],
-                'result' => 'foo'
+                'result' => 'foo',
             ],
             'xpath value' => [
                 'structure' => '<item><bar>foo</bar></item>',
                 'configuration' => [
-                    'xpath' => 'item/bar'
+                    'xpath' => 'item/bar',
                 ],
-                'result' => 'foo'
+                'result' => 'foo',
             ],
             'substructure as string' => [
                 'structure' => '<item><foo>me</foo><bar>you</bar></item>',
                 'configuration' => [
-                    'field' => 'item'
+                    'field' => 'item',
                 ],
-                'result' => 'meyou'
+                'result' => 'meyou',
             ],
             'substructure as xml' => [
                 'structure' => '<item><foo>me</foo><bar>you</bar></item>',
                 'configuration' => [
                     'field' => 'item',
-                    'xmlValue' => true
+                    'xmlValue' => true,
                 ],
-                'result' => '<foo>me</foo><bar>you</bar>'
-            ]
+                'result' => '<foo>me</foo><bar>you</bar>',
+            ],
         ];
     }
 
@@ -134,26 +132,26 @@ class XmlHandlerTest extends UnitTestCase
                 'structure' => '<items><item><foo>me</foo><bar><who>you</who></bar><baz>them</baz></item><item><foo>me2</foo><bar><who>you2</who></bar><baz>them2</baz></item></items>',
                 'configuration' => [
                     'first' => [
-                        'field' => 'foo'
+                        'field' => 'foo',
                     ],
                     'second' => [
-                        'xpath' => 'bar/who'
+                        'xpath' => 'bar/who',
                     ],
                     'third' => [
-                        'field' => 'unknown'
-                    ]
+                        'field' => 'unknown',
+                    ],
                 ],
                 'result' => [
                     [
                         'first' => 'me',
-                        'second' => 'you'
+                        'second' => 'you',
                     ],
                     [
                         'first' => 'me2',
-                        'second' => 'you2'
-                    ]
-                ]
-            ]
+                        'second' => 'you2',
+                    ],
+                ],
+            ],
         ];
     }
 

@@ -27,15 +27,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test suite for the TransformDataStep class.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Validator
  */
 class TransformDataStepTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
         'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/externalimport_test',
     ];
 
     /**
@@ -67,39 +65,39 @@ class TransformDataStepTest extends FunctionalTestCase
                 [
                     0 => [
                         'foo' => ' White space all around ',
-                        'bar' => ' Not trimmed '
+                        'bar' => ' Not trimmed ',
                     ],
                     1 => [
                         'foo' => ' White space left',
-                        'bar' => ' Not trimmed '
+                        'bar' => ' Not trimmed ',
                     ],
                     2 => [
                         'foo' => 'White space right ',
-                        'bar' => ' Not trimmed '
+                        'bar' => ' Not trimmed ',
                     ],
                     3 => [
                         'foo' => 'No white space',
-                        'bar' => ' Not trimmed '
-                    ]
+                        'bar' => ' Not trimmed ',
+                    ],
                 ],
                 [
                     0 => [
                         'foo' => 'White space all around',
-                        'bar' => ' Not trimmed '
+                        'bar' => ' Not trimmed ',
                     ],
                     1 => [
                         'foo' => 'White space left',
-                        'bar' => ' Not trimmed '
+                        'bar' => ' Not trimmed ',
                     ],
                     2 => [
                         'foo' => 'White space right',
-                        'bar' => ' Not trimmed '
+                        'bar' => ' Not trimmed ',
                     ],
                     3 => [
                         'foo' => 'No white space',
-                        'bar' => ' Not trimmed '
-                    ]
-                ]
+                        'bar' => ' Not trimmed ',
+                    ],
+                ],
             ],
             'Do not trim data (false)' => [
                 'foo',
@@ -107,56 +105,56 @@ class TransformDataStepTest extends FunctionalTestCase
                 [
                     0 => [
                         'foo' => ' White space all around ',
-                        'bar' => ' Not trimmed '
+                        'bar' => ' Not trimmed ',
                     ],
                     1 => [
                         'foo' => 'No white space',
-                        'bar' => ' Not trimmed '
-                    ]
+                        'bar' => ' Not trimmed ',
+                    ],
                 ],
                 [
                     0 => [
                         'foo' => ' White space all around ',
-                        'bar' => ' Not trimmed '
+                        'bar' => ' Not trimmed ',
                     ],
                     1 => [
                         'foo' => 'No white space',
-                        'bar' => ' Not trimmed '
-                    ]
-                ]
+                        'bar' => ' Not trimmed ',
+                    ],
+                ],
             ],
             'Trim not string data' => [
                 'foo',
                 true,
                 [
                     0 => [
-                        'foo' => ['bar' => 'baz']
+                        'foo' => ['bar' => 'baz'],
                     ],
                     1 => [
-                        'foo' => 2
+                        'foo' => 2,
                     ],
                     2 => [
-                        'foo' => true
+                        'foo' => true,
                     ],
                     3 => [
-                        'bar' => 'baz'
-                    ]
+                        'bar' => 'baz',
+                    ],
                 ],
                 [
                     0 => [
-                        'foo' => ['bar' => 'baz']
+                        'foo' => ['bar' => 'baz'],
                     ],
                     1 => [
-                        'foo' => 2
+                        'foo' => 2,
                     ],
                     2 => [
-                        'foo' => true
+                        'foo' => true,
                     ],
                     3 => [
-                        'bar' => 'baz'
-                    ]
-                ]
-            ]
+                        'bar' => 'baz',
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -188,71 +186,71 @@ class TransformDataStepTest extends FunctionalTestCase
                 [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
-                    'default' => 19
+                    'default' => 19,
                 ],
                 [
                     0 => [
                         'foo' => 'USEFUL',
-                        'bar' => 42
+                        'bar' => 42,
                     ],
                     1 => [
                         'foo' => 'USELESS',
-                        'bar' => 17
+                        'bar' => 17,
                     ],
                     2 => [
                         'foo' => 'UNKNOWN',
-                        'bar' => 24
+                        'bar' => 24,
                     ],
                 ],
                 [
                     0 => [
                         'foo' => '1',
-                        'bar' => 42
+                        'bar' => 42,
                     ],
                     1 => [
                         'foo' => '2',
-                        'bar' => 17
+                        'bar' => 17,
                     ],
                     2 => [
                         'foo' => 19,
-                        'bar' => 24
-                    ]
-                ]
+                        'bar' => 24,
+                    ],
+                ],
             ],
             'Map to sys_category without default value' => [
                 'foo',
                 [
                     'table' => 'sys_category',
-                    'referenceField' => 'external_key'
+                    'referenceField' => 'external_key',
                 ],
                 [
                     0 => [
                         'foo' => 'USEFUL',
-                        'bar' => 42
+                        'bar' => 42,
                     ],
                     1 => [
                         'foo' => 'USELESS',
-                        'bar' => 17
+                        'bar' => 17,
                     ],
                     2 => [
                         'foo' => 'UNKNOWN',
-                        'bar' => 24
+                        'bar' => 24,
                     ],
                 ],
                 [
                     0 => [
                         'foo' => '1',
-                        'bar' => 42
+                        'bar' => 42,
                     ],
                     1 => [
                         'foo' => '2',
-                        'bar' => 17
+                        'bar' => 17,
                     ],
                     2 => [
-                        'bar' => 24
-                    ]
-                ]
-            ]
+                        'bar' => 24,
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -291,24 +289,24 @@ class TransformDataStepTest extends FunctionalTestCase
             [
                 0 => [
                     'foo' => 17,
-                    'bar' => 4
+                    'bar' => 4,
                 ],
                 1 => [
                     'foo' => 23,
-                    'bar' => 8
-                ]
+                    'bar' => 8,
+                ],
             ]
         );
         self::assertSame(
             [
                 0 => [
                     'foo' => 42,
-                    'bar' => 4
+                    'bar' => 4,
                 ],
                 1 => [
                     'foo' => 42,
-                    'bar' => 8
-                ]
+                    'bar' => 8,
+                ],
             ],
             $result
         );
@@ -327,12 +325,12 @@ class TransformDataStepTest extends FunctionalTestCase
             [
                 0 => [
                     'foo' => 17,
-                    'bar' => 4
+                    'bar' => 4,
                 ],
                 1 => [
                     'foo' => 23,
-                    'bar' => 8
-                ]
+                    'bar' => 8,
+                ],
             ]
         );
         self::assertSame(
@@ -340,13 +338,13 @@ class TransformDataStepTest extends FunctionalTestCase
                 0 => [
                     'foo' => 17,
                     'bar' => 4,
-                    '_TRANSFORM_foo' => 'RTE'
+                    '_TRANSFORM_foo' => 'RTE',
                 ],
                 1 => [
                     'foo' => 23,
                     'bar' => 8,
-                    '_TRANSFORM_foo' => 'RTE'
-                ]
+                    '_TRANSFORM_foo' => 'RTE',
+                ],
             ],
             $result
         );
@@ -362,22 +360,22 @@ class TransformDataStepTest extends FunctionalTestCase
                     'method' => 'parseDate',
                     'parameters' => [
                         'function' => 'date',
-                        'format' => 'U'
-                    ]
+                        'format' => 'U',
+                    ],
                 ],
                 [
                     0 => [
                         'foo' => '2017-10-11T18:29:01+02:00',
-                        'bar' => 4
-                    ]
+                        'bar' => 4,
+                    ],
                 ],
                 [
                     0 => [
                         'foo' => '1507739341',
-                        'bar' => 4
-                    ]
-                ]
-            ]
+                        'bar' => 4,
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -406,186 +404,186 @@ class TransformDataStepTest extends FunctionalTestCase
         $emptyArray = [
             0 => [
                 'foo' => 'Hello world',
-                'bar' => 'Foo is not empty'
+                'bar' => 'Foo is not empty',
             ],
             1 => [
-                'bar' => 'Foo is empty'
+                'bar' => 'Foo is empty',
             ],
             2 => [
                 'foo' => '',
-                'bar' => 'Foo is empty'
+                'bar' => 'Foo is empty',
             ],
             3 => [
                 'foo' => 0,
-                'bar' => 'Foo is empty'
+                'bar' => 'Foo is empty',
             ],
             4 => [
                 'foo' => false,
-                'bar' => 'Foo is empty'
+                'bar' => 'Foo is empty',
             ],
             5 => [
                 'foo' => null,
-                'bar' => 'Foo is empty'
-            ]
+                'bar' => 'Foo is empty',
+            ],
         ];
         return [
             'No empty records - no expression - nothing happens' => [
                 'name' => 'foo',
                 'configuration' => [
-                    'invalidate' => true
+                    'invalidate' => true,
                 ],
                 'records' => [
                     0 => [
                         'foo' => 'Hello world',
-                        'bar' => 'Foo is not empty'
+                        'bar' => 'Foo is not empty',
                     ],
                     1 => [
                         'foo' => 'This is me!',
-                        'bar' => 'Foo is not empty'
-                    ]
+                        'bar' => 'Foo is not empty',
+                    ],
                 ],
                 'expected' => [
                     0 => [
                         'foo' => 'Hello world',
-                        'bar' => 'Foo is not empty'
+                        'bar' => 'Foo is not empty',
                     ],
                     1 => [
                         'foo' => 'This is me!',
-                        'bar' => 'Foo is not empty'
-                    ]
-                ]
+                        'bar' => 'Foo is not empty',
+                    ],
+                ],
             ],
             'Empty records - no expression - invalidate' => [
                 'name' => 'foo',
                 'configuration' => [
-                    'invalidate' => true
+                    'invalidate' => true,
                 ],
                 'records' => $emptyArray,
                 'expected' => [
                     0 => [
                         'foo' => 'Hello world',
-                        'bar' => 'Foo is not empty'
-                    ]
-                ]
+                        'bar' => 'Foo is not empty',
+                    ],
+                ],
             ],
             'Empty records - no expression - default value' => [
                 'name' => 'foo',
                 'configuration' => [
-                    'default' => 'Foo is foo'
+                    'default' => 'Foo is foo',
                 ],
                 'records' => $emptyArray,
                 'expected' => [
                     0 => [
                         'foo' => 'Hello world',
-                        'bar' => 'Foo is not empty'
+                        'bar' => 'Foo is not empty',
                     ],
                     1 => [
                         'bar' => 'Foo is empty',
-                        'foo' => 'Foo is foo'
+                        'foo' => 'Foo is foo',
                     ],
                     2 => [
                         'foo' => 'Foo is foo',
-                        'bar' => 'Foo is empty'
+                        'bar' => 'Foo is empty',
                     ],
                     3 => [
                         'foo' => 'Foo is foo',
-                        'bar' => 'Foo is empty'
+                        'bar' => 'Foo is empty',
                     ],
                     4 => [
                         'foo' => 'Foo is foo',
-                        'bar' => 'Foo is empty'
+                        'bar' => 'Foo is empty',
                     ],
                     5 => [
                         'foo' => 'Foo is foo',
-                        'bar' => 'Foo is empty'
-                    ]
-                ]
+                        'bar' => 'Foo is empty',
+                    ],
+                ],
             ],
             'Empty records - expression (null) - invalidate' => [
                 'name' => 'foo',
                 'configuration' => [
                     'expression' => 'foo === null',
-                    'invalidate' => true
+                    'invalidate' => true,
                 ],
                 'records' => [
                     0 => [
                         'foo' => 'Hello world',
-                        'bar' => 'Foo is not empty'
+                        'bar' => 'Foo is not empty',
                     ],
                     1 => [
-                        'bar' => 'Foo is empty'
+                        'bar' => 'Foo is empty',
                     ],
                     2 => [
                         'foo' => 'Me again :-)',
-                        'bar' => 'Foo is not empty'
-                    ]
+                        'bar' => 'Foo is not empty',
+                    ],
                 ],
                 'expected' => [
                     0 => [
                         'foo' => 'Hello world',
-                        'bar' => 'Foo is not empty'
+                        'bar' => 'Foo is not empty',
                     ],
                     1 => [
                         'foo' => 'Me again :-)',
-                        'bar' => 'Foo is not empty'
-                    ]
-                ]
+                        'bar' => 'Foo is not empty',
+                    ],
+                ],
             ],
             'Empty records - expression (empty string) - invalidate' => [
                 'name' => 'foo',
                 'configuration' => [
                     'expression' => 'foo === ""',
-                    'invalidate' => true
+                    'invalidate' => true,
                 ],
                 'records' => [
                     0 => [
                         'foo' => 'Hello world',
-                        'bar' => 'Foo is not empty'
+                        'bar' => 'Foo is not empty',
                     ],
                     1 => [
                         'foo' => '',
-                        'bar' => 'Foo is empty'
+                        'bar' => 'Foo is empty',
                     ],
                     2 => [
                         'foo' => 'Me again :-)',
-                        'bar' => 'Foo is not empty'
-                    ]
+                        'bar' => 'Foo is not empty',
+                    ],
                 ],
                 'expected' => [
                     0 => [
                         'foo' => 'Hello world',
-                        'bar' => 'Foo is not empty'
+                        'bar' => 'Foo is not empty',
                     ],
                     1 => [
                         'foo' => 'Me again :-)',
-                        'bar' => 'Foo is not empty'
-                    ]
-                ]
+                        'bar' => 'Foo is not empty',
+                    ],
+                ],
             ],
             'Expression not testing emptiness' => [
                 'name' => 'foo',
                 'configuration' => [
                     'expression' => 'foo + bar',
-                    'invalidate' => true
+                    'invalidate' => true,
                 ],
                 'records' => [
                     // This first record will be removed, because 2 + 5 = 7, which is equivalent to true when casting to boolean
                     0 => [
                         'foo' => 2,
-                        'bar' => 5
+                        'bar' => 5,
                     ],
                     1 => [
                         'foo' => 1,
-                        'bar' => -1
-                    ]
+                        'bar' => -1,
+                    ],
                 ],
                 'expected' => [
                     0 => [
                         'foo' => 1,
-                        'bar' => -1
-                    ]
-                ]
-            ]
+                        'bar' => -1,
+                    ],
+                ],
+            ],
         ];
     }
 

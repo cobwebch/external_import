@@ -36,7 +36,7 @@ class StoreDataStepTest extends FunctionalTestCase
     protected $testExtensionsToLoad = [
         'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/externalimport_test',
     ];
 
     /**
@@ -61,136 +61,136 @@ class StoreDataStepTest extends FunctionalTestCase
         return [
             'no denormalized data' => [
                 'generalConfiguration' => [
-                    'referenceUid' => 'code'
+                    'referenceUid' => 'code',
                 ],
                 'columnConfiguration' => [
                     'code' => [],
                     'first_name' => [],
                     'last_name' => [],
                     'useless' => [
-                        Configuration::DO_NOT_SAVE_KEY => true
-                    ]
+                        Configuration::DO_NOT_SAVE_KEY => true,
+                    ],
                 ],
                 'input' => [
                     [
                         'code' => 'JP',
                         'first_name' => 'Joey',
                         'last_name' => 'Pechorin',
-                        'useless' => 'Useless information'
+                        'useless' => 'Useless information',
                     ],
                     [
                         'code' => 'AP',
                         'first_name' => 'Amnesia',
                         'last_name' => 'Phreedom',
-                        'useless' => 'Useless information'
-                    ]
+                        'useless' => 'Useless information',
+                    ],
                 ],
                 'output' => [
                     1 => [
                         'code' => 'JP',
                         'first_name' => 'Joey',
-                        'last_name' => 'Pechorin'
+                        'last_name' => 'Pechorin',
                     ],
                     'NEW1' => [
                         'code' => 'AP',
                         'first_name' => 'Amnesia',
-                        'last_name' => 'Phreedom'
-                    ]
+                        'last_name' => 'Phreedom',
+                    ],
                 ],
                 'existingUids' => [
-                    'JP' => 1
-                ]
+                    'JP' => 1,
+                ],
             ],
             'no denormalized data - insert disabled' => [
                 'generalConfiguration' => [
                     'referenceUid' => 'code',
-                    'disabledOperations' => 'insert'
+                    'disabledOperations' => 'insert',
                 ],
                 'columnConfiguration' => [
                     'code' => [],
                     'first_name' => [],
                     'last_name' => [],
                     'useless' => [
-                        Configuration::DO_NOT_SAVE_KEY => true
-                    ]
+                        Configuration::DO_NOT_SAVE_KEY => true,
+                    ],
                 ],
                 'input' => [
                     [
                         'code' => 'JP',
                         'first_name' => 'Joey',
                         'last_name' => 'Pechorin',
-                        'useless' => 'Useless information'
+                        'useless' => 'Useless information',
                     ],
                     [
                         'code' => 'AP',
                         'first_name' => 'Amnesia',
                         'last_name' => 'Phreedom',
-                        'useless' => 'Useless information'
-                    ]
+                        'useless' => 'Useless information',
+                    ],
                 ],
                 'output' => [
                     1 => [
                         'code' => 'JP',
                         'first_name' => 'Joey',
-                        'last_name' => 'Pechorin'
-                    ]
+                        'last_name' => 'Pechorin',
+                    ],
                 ],
                 'existingUids' => [
-                    'JP' => 1
-                ]
+                    'JP' => 1,
+                ],
             ],
             'no denormalized data - update disabled' => [
                 'generalConfiguration' => [
                     'referenceUid' => 'code',
-                    'disabledOperations' => 'update'
+                    'disabledOperations' => 'update',
                 ],
                 'columnConfiguration' => [
                     'code' => [],
                     'first_name' => [],
                     'last_name' => [],
                     'useless' => [
-                        Configuration::DO_NOT_SAVE_KEY => true
-                    ]
+                        Configuration::DO_NOT_SAVE_KEY => true,
+                    ],
                 ],
                 'input' => [
                     [
                         'code' => 'JP',
                         'first_name' => 'Joey',
                         'last_name' => 'Pechorin',
-                        'useless' => 'Useless information'
+                        'useless' => 'Useless information',
                     ],
                     [
                         'code' => 'AP',
                         'first_name' => 'Amnesia',
                         'last_name' => 'Phreedom',
-                        'useless' => 'Useless information'
-                    ]
+                        'useless' => 'Useless information',
+                    ],
                 ],
                 'output' => [
                     'NEW1' => [
                         'code' => 'AP',
                         'first_name' => 'Amnesia',
-                        'last_name' => 'Phreedom'
-                    ]
+                        'last_name' => 'Phreedom',
+                    ],
                 ],
                 'existingUids' => [
-                    'JP' => 1
-                ]
+                    'JP' => 1,
+                ],
             ],
             'single denormalized data' => [
                 'generalConfiguration' => [
-                    'referenceUid' => 'code'
+                    'referenceUid' => 'code',
                 ],
                 'columnConfiguration' => [
                     'code' => [],
                     'first_name' => [],
                     'last_name' => [],
                     'book' => [
-                        'multipleRows' => true
+                        'multipleRows' => true,
                     ],
                     'useless' => [
-                        Configuration::DO_NOT_SAVE_KEY => true
-                    ]
+                        Configuration::DO_NOT_SAVE_KEY => true,
+                    ],
                 ],
                 'input' => [
                     [
@@ -198,99 +198,22 @@ class StoreDataStepTest extends FunctionalTestCase
                         'first_name' => 'Joey',
                         'last_name' => 'Pechorin',
                         'book' => 2,
-                        'useless' => 'Useless information'
+                        'useless' => 'Useless information',
                     ],
                     [
                         'code' => 'AP',
                         'first_name' => 'Amnesia',
                         'last_name' => 'Phreedom',
                         'book' => 1,
-                        'useless' => 'Useless information'
+                        'useless' => 'Useless information',
                     ],
                     [
                         'code' => 'AP',
                         'first_name' => 'Amnesia',
                         'last_name' => 'Phreedom',
                         'book' => 2,
-                        'useless' => 'Useless information'
-                    ]
-                ],
-                'output' => [
-                    1 => [
-                        'code' => 'JP',
-                        'first_name' => 'Joey',
-                        'last_name' => 'Pechorin',
-                        'book' => '2'
+                        'useless' => 'Useless information',
                     ],
-                    'NEW1' => [
-                        'code' => 'AP',
-                        'first_name' => 'Amnesia',
-                        'last_name' => 'Phreedom',
-                        'book' => '1,2'
-                    ]
-                ],
-                'existingUids' => [
-                    'JP' => 1
-                ]
-            ],
-            'multiple denormalized data' => [
-                'generalConfiguration' => [
-                    'referenceUid' => 'code'
-                ],
-                'columnConfiguration' => [
-                    'code' => [],
-                    'first_name' => [],
-                    'last_name' => [],
-                    'book' => [
-                        'multipleRows' => true
-                    ],
-                    'relations' => [
-                        'multipleRows' => true
-                    ]
-                ],
-                'input' => [
-                    [
-                        'code' => 'JP',
-                        'first_name' => 'Joey',
-                        'last_name' => 'Pechorin',
-                        'book' => 2,
-                        'relations' => 'TP'
-                    ],
-                    [
-                        'code' => 'JP',
-                        'first_name' => 'Joey',
-                        'last_name' => 'Pechorin',
-                        'book' => 2,
-                        'relations' => 'JF'
-                    ],
-                    [
-                        'code' => 'AP',
-                        'first_name' => 'Amnesia',
-                        'last_name' => 'Phreedom',
-                        'book' => 1,
-                        'relations' => 'JP'
-                    ],
-                    [
-                        'code' => 'AP',
-                        'first_name' => 'Amnesia',
-                        'last_name' => 'Phreedom',
-                        'book' => 1,
-                        'relations' => 'JF'
-                    ],
-                    [
-                        'code' => 'AP',
-                        'first_name' => 'Amnesia',
-                        'last_name' => 'Phreedom',
-                        'book' => 2,
-                        'relations' => 'JP'
-                    ],
-                    [
-                        'code' => 'AP',
-                        'first_name' => 'Amnesia',
-                        'last_name' => 'Phreedom',
-                        'book' => 2,
-                        'relations' => 'JF'
-                    ]
                 ],
                 'output' => [
                     1 => [
@@ -298,23 +221,100 @@ class StoreDataStepTest extends FunctionalTestCase
                         'first_name' => 'Joey',
                         'last_name' => 'Pechorin',
                         'book' => '2',
-                        'relations' => 'TP,JF'
                     ],
                     'NEW1' => [
                         'code' => 'AP',
                         'first_name' => 'Amnesia',
                         'last_name' => 'Phreedom',
                         'book' => '1,2',
-                        'relations' => 'JP,JF'
-                    ]
+                    ],
                 ],
                 'existingUids' => [
-                    'JP' => 1
-                ]
+                    'JP' => 1,
+                ],
+            ],
+            'multiple denormalized data' => [
+                'generalConfiguration' => [
+                    'referenceUid' => 'code',
+                ],
+                'columnConfiguration' => [
+                    'code' => [],
+                    'first_name' => [],
+                    'last_name' => [],
+                    'book' => [
+                        'multipleRows' => true,
+                    ],
+                    'relations' => [
+                        'multipleRows' => true,
+                    ],
+                ],
+                'input' => [
+                    [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'book' => 2,
+                        'relations' => 'TP',
+                    ],
+                    [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'book' => 2,
+                        'relations' => 'JF',
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 1,
+                        'relations' => 'JP',
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 1,
+                        'relations' => 'JF',
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 2,
+                        'relations' => 'JP',
+                    ],
+                    [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => 2,
+                        'relations' => 'JF',
+                    ],
+                ],
+                'output' => [
+                    1 => [
+                        'code' => 'JP',
+                        'first_name' => 'Joey',
+                        'last_name' => 'Pechorin',
+                        'book' => '2',
+                        'relations' => 'TP,JF',
+                    ],
+                    'NEW1' => [
+                        'code' => 'AP',
+                        'first_name' => 'Amnesia',
+                        'last_name' => 'Phreedom',
+                        'book' => '1,2',
+                        'relations' => 'JP,JF',
+                    ],
+                ],
+                'existingUids' => [
+                    'JP' => 1,
+                ],
             ],
             'children data' => [
                 'generalConfiguration' => [
-                    'referenceUid' => 'order'
+                    'referenceUid' => 'order',
                 ],
                 'columnConfiguration' => [
                     'order' => [],
@@ -330,50 +330,50 @@ class StoreDataStepTest extends FunctionalTestCase
                                     'field' => 'products',
                                 ],
                                 'quantity' => [
-                                    'field' => 'quantity'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'field' => 'quantity',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'input' => [
                     [
                         'order' => '000001',
                         'customer' => 'Conan the Barbarian',
                         'products' => 1,
-                        'quantity' => 3
+                        'quantity' => 3,
                     ],
                     [
                         'order' => '000001',
                         'customer' => 'Conan the Barbarian',
                         'products' => 2,
-                        'quantity' => 5
+                        'quantity' => 5,
                     ],
                     [
                         'order' => '000001',
                         'customer' => 'Conan the Barbarian',
                         'products' => 3,
-                        'quantity' => 10
+                        'quantity' => 10,
                     ],
                     [
                         'order' => '000002',
                         'customer' => 'Sonja the Red',
                         'products' => 1,
-                        'quantity' => 2
+                        'quantity' => 2,
                     ],
                     [
                         'order' => '000002',
                         'customer' => 'Sonja the Red',
                         'products' => 2,
-                        'quantity' => 3
+                        'quantity' => 3,
                     ],
                     [
                         'order' => '000003',
                         'customer' => 'The Black Currant',
                         // Test that no children are generated, because the field is not defined
                         'products' => null,
-                        'quantity' => 3
-                    ]
+                        'quantity' => 3,
+                    ],
                 ],
                 'output' => [
                     1 => [
@@ -386,21 +386,21 @@ class StoreDataStepTest extends FunctionalTestCase
                                     'NEW1' => [
                                         'uid_local' => 1,
                                         'uid_foreign' => 1,
-                                        'quantity' => 3
+                                        'quantity' => 3,
                                     ],
                                     'NEW2' => [
                                         'uid_local' => 1,
                                         'uid_foreign' => 2,
-                                        'quantity' => 5
+                                        'quantity' => 5,
                                     ],
                                     'NEW3' => [
                                         'uid_local' => 1,
                                         'uid_foreign' => 3,
-                                        'quantity' => 10
-                                    ]
-                                ]
-                            ]
-                        ]
+                                        'quantity' => 10,
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                     'NEW4' => [
                         'order' => '000002',
@@ -412,26 +412,26 @@ class StoreDataStepTest extends FunctionalTestCase
                                     'NEW5' => [
                                         'uid_local' => 'NEW4',
                                         'uid_foreign' => 1,
-                                        'quantity' => 2
+                                        'quantity' => 2,
                                     ],
                                     'NEW6' => [
                                         'uid_local' => 'NEW4',
                                         'uid_foreign' => 2,
-                                        'quantity' => 3
-                                    ]
-                                ]
-                            ]
-                        ]
+                                        'quantity' => 3,
+                                    ],
+                                ],
+                            ],
+                        ],
                     ],
                     'NEW7' => [
                         'order' => '000003',
                         'customer' => 'The Black Currant',
-                        '__children__' => []
-                    ]
+                        '__children__' => [],
+                    ],
                 ],
                 'existingUids' => [
-                    '000001' => 1
-                ]
+                    '000001' => 1,
+                ],
             ],
         ];
     }
@@ -482,22 +482,22 @@ class StoreDataStepTest extends FunctionalTestCase
                         'field' => 'products',
                     ],
                     'quantity' => [
-                        'field' => 'quantity'
-                    ]
+                        'field' => 'quantity',
+                    ],
                 ],
                 'parentId' => 'NEW2',
                 'parentData' => [
                     'products' => 1,
-                    'quantity' => 3
+                    'quantity' => 3,
                 ],
                 'result' => [
                     'NEW1' => [
                         'uid_local' => 'NEW2',
                         'uid_foreign' => 1,
-                        'quantity' => 3
-                    ]
-                ]
-            ]
+                        'quantity' => 3,
+                    ],
+                ],
+            ],
         ];
     }
 

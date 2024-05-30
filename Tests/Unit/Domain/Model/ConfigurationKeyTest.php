@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 /*
@@ -19,8 +20,6 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 
 /**
  * Test suite for the ConfigurationKey model
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Domain\Model
  */
 class ConfigurationKeyTest extends UnitTestCase
 {
@@ -65,33 +64,33 @@ class ConfigurationKeyTest extends UnitTestCase
                 'standard table name, numerical index' => [
                         'table' => 'tx_foo',
                         'index' => 1,
-                        'key' => 'tx_foo***1'
+                        'key' => 'tx_foo***1',
                 ],
                 'standard table name, numerical index with value 0' => [
                         'table' => 'tx_foo',
                         'index' => 0,
-                        'key' => 'tx_foo***0'
+                        'key' => 'tx_foo***0',
                 ],
                 'standard table name, string index' => [
                         'table' => 'tx_foo',
                         'index' => 'bar',
-                        'key' => 'tx_foo***bar'
+                        'key' => 'tx_foo***bar',
                 ],
                 'table name with hyphen, string index' => [
                         'table' => 'tx-foo',
                         'index' => 'bar',
-                        'key' => 'tx-foo***bar'
+                        'key' => 'tx-foo***bar',
                 ],
                 'group name' => [
                         'table' => 'group:foo',
                         'index' => '',
-                        'key' => 'group:foo'
+                        'key' => 'group:foo',
                 ],
                 'all tables' => [
                         'table' => 'all',
                         'index' => '',
-                        'key' => 'all'
-                ]
+                        'key' => 'all',
+                ],
         ];
     }
 

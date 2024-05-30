@@ -26,8 +26,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test suite for the ConfigurationRepository class.
- *
- * @package Cobweb\ExternalImport\Tests\Domain\Repository
  */
 class ConfigurationRepositoryTest extends FunctionalTestCase
 {
@@ -38,7 +36,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     protected $testExtensionsToLoad = [
         'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/externalimport_test',
     ];
 
     /**
@@ -88,12 +86,12 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         return [
             'sync is true' => [
                 true,
-                16
+                16,
             ],
             'sync is false' => [
                 false,
-                1
-            ]
+                1,
+            ],
         ];
     }
 
@@ -104,7 +102,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     {
         self::assertSame(
             [
-                'Products'
+                'Products',
             ],
             $this->subject->findAllGroups()
         );
@@ -137,9 +135,9 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                     'field' => 'code',
                     'transformations' => [
                         10 => [
-                            'trim' => true
-                        ]
-                    ]
+                            'trim' => true,
+                        ],
+                    ],
                 ],
                 'additionalFields' => [
                     'position' => [
@@ -148,13 +146,13 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                             10 => [
                                 'userFunction' => [
                                     'class' => Transformation::class,
-                                    'method' => 'stripPositionMarker'
-                                ]
-                            ]
+                                    'method' => 'stripPositionMarker',
+                                ],
+                            ],
                         ],
-                        Configuration::DO_NOT_SAVE_KEY => true
-                    ]
-                ]
+                        Configuration::DO_NOT_SAVE_KEY => true,
+                    ],
+                ],
             ],
             'configuration with useColumnIndex and no specific configuration' => [
                 'table' => 'tx_externalimporttest_product',
@@ -165,9 +163,9 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                 // since the "stable" configuration has the useColumnIndex property pointing to "base" configuration
                 'columnConfiguration' => [
                     'xpath' => './self::*[@type="current"]/item',
-                    'attribute' => 'sku'
+                    'attribute' => 'sku',
                 ],
-                'additionalFields' => []
+                'additionalFields' => [],
             ],
             'configuration with useColumnIndex but specific configuration' => [
                 'table' => 'tx_externalimporttest_product',
@@ -183,14 +181,14 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                                 'class' => Transformation::class,
                                 'method' => 'caseTransformation',
                                 'parameters' => [
-                                    'transformation' => 'upper'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'transformation' => 'upper',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
-                'additionalFields' => []
-            ]
+                'additionalFields' => [],
+            ],
         ];
     }
 
@@ -248,51 +246,51 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
     {
         $expectedList = [
             1000 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'general_configuration_errors', 'group' => '-']
+                ['table' => 'tx_externalimporttest_product', 'index' => 'general_configuration_errors', 'group' => '-'],
             ],
             5000 => [
-                ['table' => 'tx_externalimporttest_tag', 'index' => 0, 'group' => '-']
+                ['table' => 'tx_externalimporttest_tag', 'index' => 0, 'group' => '-'],
             ],
             5050 => [
                 ['table' => 'sys_category', 'index' => 'product_categories', 'group' => '-'],
-                ['table' => 'sys_category', 'index' => 'column_configuration_errors', 'group' => '-']
+                ['table' => 'sys_category', 'index' => 'column_configuration_errors', 'group' => '-'],
             ],
             5080 => [
-                ['table' => 'tx_externalimporttest_designer', 'index' => 0, 'group' => '-']
+                ['table' => 'tx_externalimporttest_designer', 'index' => 0, 'group' => '-'],
             ],
             5100 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'base', 'group' => 'Products']
+                ['table' => 'tx_externalimporttest_product', 'index' => 'base', 'group' => 'Products'],
             ],
             5110 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'more', 'group' => 'Products']
+                ['table' => 'tx_externalimporttest_product', 'index' => 'more', 'group' => 'Products'],
             ],
             5120 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'stable', 'group' => 'Products']
+                ['table' => 'tx_externalimporttest_product', 'index' => 'stable', 'group' => 'Products'],
             ],
             5200 => [
-                ['table' => 'tx_externalimporttest_bundle', 'index' => 0, 'group' => '-']
+                ['table' => 'tx_externalimporttest_bundle', 'index' => 0, 'group' => '-'],
             ],
             5300 => [
-                ['table' => 'tx_externalimporttest_order', 'index' => 0, 'group' => '-']
+                ['table' => 'tx_externalimporttest_order', 'index' => 0, 'group' => '-'],
             ],
             5400 => [
-                ['table' => 'tx_externalimporttest_store', 'index' => 0, 'group' => '-']
+                ['table' => 'tx_externalimporttest_store', 'index' => 0, 'group' => '-'],
             ],
             5410 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'products_for_stores', 'group' => '-']
+                ['table' => 'tx_externalimporttest_product', 'index' => 'products_for_stores', 'group' => '-'],
             ],
             5500 => [
-                ['table' => 'tx_externalimporttest_invoice', 'index' => 0, 'group' => '-']
+                ['table' => 'tx_externalimporttest_invoice', 'index' => 0, 'group' => '-'],
             ],
             5800 => [
-                ['table' => 'pages', 'index' => 'product_pages', 'group' => '-']
+                ['table' => 'pages', 'index' => 'product_pages', 'group' => '-'],
             ],
             5810 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'updated_products', 'group' => '-']
+                ['table' => 'tx_externalimporttest_product', 'index' => 'updated_products', 'group' => '-'],
             ],
             5900 => [
-                ['table' => 'tx_externalimporttest_tag', 'index' => 'only-delete', 'group' => '-']
-            ]
+                ['table' => 'tx_externalimporttest_tag', 'index' => 'only-delete', 'group' => '-'],
+            ],
         ];
         self::assertSame(
             $expectedList,
@@ -314,13 +312,13 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                 'general' => [
                     'connector' => 'json',
                     'parameters' => [
-                        'uri' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Bundles.json'
+                        'uri' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/Bundles.json',
                     ],
                     'data' => 'array',
                     'referenceUid' => 'bundle_code',
                     'priority' => 5200,
                     'description' => 'List of bundles',
-                    'pid' => 0
+                    'pid' => 0,
                 ],
                 'additionalFields' => [
                     'position' => [
@@ -329,44 +327,44 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                             10 => [
                                 'userFunction' => [
                                     'class' => Transformation::class,
-                                    'method' => 'stripPositionMarker'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'method' => 'stripPositionMarker',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'columns' => [
                     'bundle_code' => [
                         'field' => 'code',
                         'transformations' => [
                             10 => [
-                                'trim' => true
-                            ]
-                        ]
+                                'trim' => true,
+                            ],
+                        ],
                     ],
                     'maker' => [
                         'arrayPath' => 'maker/name',
                         'transformations' => [
                             10 => [
-                                'trim' => true
-                            ]
-                        ]
+                                'trim' => true,
+                            ],
+                        ],
                     ],
                     'name' => [
                         'field' => 'name',
                         'transformations' => [
                             10 => [
-                                'trim' => true
-                            ]
-                        ]
+                                'trim' => true,
+                            ],
+                        ],
                     ],
                     'notes' => [
                         'field' => 'notes',
                         'transformations' => [
                             10 => [
-                                'trim' => true
-                            ]
-                        ]
+                                'trim' => true,
+                            ],
+                        ],
                     ],
                     'products' => [
                         'field' => 'product',
@@ -376,12 +374,12 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                             10 => [
                                 'mapping' => [
                                     'table' => 'tx_externalimporttest_product',
-                                    'referenceField' => 'sku'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                    'referenceField' => 'sku',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
             $externalConfiguration
         );

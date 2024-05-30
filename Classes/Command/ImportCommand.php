@@ -32,8 +32,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Runs the External Import process from the command line.
- *
- * @package Cobweb\ExternalImport\Command
  */
 class ImportCommand extends Command
 {
@@ -54,8 +52,6 @@ class ImportCommand extends Command
 
     /**
      * Configures the command by setting its name, description and options.
-     *
-     * @return void
      */
     public function configure()
     {
@@ -185,9 +181,9 @@ class ImportCommand extends Command
                         Importer::DEFAULT_PRIORITY => [
                             [
                                 'table' => $table,
-                                'index' => $index
-                            ]
-                        ]
+                                'index' => $index,
+                            ],
+                        ],
                     ];
                     $this->runSynchronization($configurations);
                 } else {
@@ -212,8 +208,6 @@ class ImportCommand extends Command
 
     /**
      * Prints the list of synchronizable configurations as a table.
-     *
-     * @return void
      */
     protected function printConfigurationList(): void
     {
@@ -225,7 +219,7 @@ class ImportCommand extends Command
                     $priority,
                     $configuration['table'],
                     $configuration['index'],
-                    $configuration['group']
+                    $configuration['group'],
                 ];
             }
         }
@@ -239,7 +233,6 @@ class ImportCommand extends Command
      * Runs the synchronization of the given list of configurations.
      *
      * @param array $configurations List of External Import configurations
-     * @return void
      */
     protected function runSynchronization(array $configurations): void
     {

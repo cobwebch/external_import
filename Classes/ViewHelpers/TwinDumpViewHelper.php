@@ -23,8 +23,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Dumps an array in a formatted way, comparing it with a second, modified array.
- *
- * @package Cobweb\ExternalImport\ViewHelpers
  */
 class TwinDumpViewHelper extends AbstractViewHelper
 {
@@ -37,8 +35,6 @@ class TwinDumpViewHelper extends AbstractViewHelper
 
     /**
      * Initializes the arguments of the ViewHelper.
-     *
-     * @return void
      */
     public function initializeArguments(): void
     {

@@ -51,8 +51,6 @@ class ChildrenSorting
 
     /**
      * Resets the sorting information
-     *
-     * @return void
      */
     public function resetSortingInformation(): void
     {
@@ -66,7 +64,6 @@ class ChildrenSorting
      * @param mixed $id Id of the child record
      * @param string $target Name of the sorting field
      * @param mixed $value Sorting value
-     * @return void
      */
     public function addSortingInformation(string $table, $id, string $target, $value): void
     {
@@ -74,7 +71,7 @@ class ChildrenSorting
             $this->sortingInformation[$table] = [];
         }
         $this->sortingInformation[$table][$id] = [
-            $target => (int)$value
+            $target => (int)$value,
         ];
     }
 
@@ -84,7 +81,6 @@ class ChildrenSorting
      * @param string $table Name of the child table
      * @param mixed $oldId Old id of the child record (could have been a temporary key)
      * @param int $id Final id of the child record
-     * @return void
      */
     public function replaceId(string $table, $oldId, int $id): void
     {
@@ -98,7 +94,6 @@ class ChildrenSorting
      * Replaces temporary keys with final ids, after database storage
      *
      * @param array $replacements Hashmap of old to new ids (normally coming from TCE)
-     * @return void
      */
     public function replaceAllNewIds(array $replacements): void
     {

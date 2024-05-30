@@ -21,8 +21,6 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Test case for the ValidationResult class.
- *
- * @package Cobweb\ExternalImport\Tests\Unit
  */
 class ValidationResultTest extends UnitTestCase
 {
@@ -43,8 +41,8 @@ class ValidationResultTest extends UnitTestCase
     public function getAllInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getAll()
+            [],
+            $this->subject->getAll()
         );
     }
 
@@ -56,8 +54,8 @@ class ValidationResultTest extends UnitTestCase
         $this->subject->add('foo', 'This is a validation result', AbstractMessage::NOTICE);
         $this->subject->reset();
         self::assertSame(
-                [],
-                $this->subject->getAll()
+            [],
+            $this->subject->getAll()
         );
     }
 
@@ -67,7 +65,7 @@ class ValidationResultTest extends UnitTestCase
     public function getForPropertyInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getForProperty('foo')
+            $this->subject->getForProperty('foo')
         );
     }
 
@@ -77,8 +75,8 @@ class ValidationResultTest extends UnitTestCase
     public function getForSeverityInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getForSeverity(AbstractMessage::NOTICE)
+            [],
+            $this->subject->getForSeverity(AbstractMessage::NOTICE)
         );
     }
 
@@ -95,134 +93,134 @@ class ValidationResultTest extends UnitTestCase
                                 [
                                         'property' => 'foo',
                                         'message' => 'This is a validation result',
-                                        'severity' => AbstractMessage::NOTICE
-                                ]
-                        ]
+                                        'severity' => AbstractMessage::NOTICE,
+                                ],
+                        ],
                 ],
                 'single message, not requested property, not requested severity' => [
                         'messages' => [
                                 [
                                         'property' => 'baz',
                                         'message' => 'This is a baz validation result',
-                                        'severity' => AbstractMessage::ERROR
-                                ]
-                        ]
+                                        'severity' => AbstractMessage::ERROR,
+                                ],
+                        ],
                 ],
                 'two messages, same property, same severity' => [
                         'messages' => [
                                 [
                                         'property' => 'foo',
                                         'message' => 'This is a validation result',
-                                        'severity' => AbstractMessage::NOTICE
+                                        'severity' => AbstractMessage::NOTICE,
                                 ],
                                 [
                                         'property' => 'foo',
                                         'message' => 'This is a second validation result',
-                                        'severity' => AbstractMessage::NOTICE
-                                ]
-                        ]
+                                        'severity' => AbstractMessage::NOTICE,
+                                ],
+                        ],
                 ],
                 'two messages, same property, different severity' => [
                         'messages' => [
                                 [
                                         'property' => 'foo',
                                         'message' => 'This is a notice validation result',
-                                        'severity' => AbstractMessage::NOTICE
+                                        'severity' => AbstractMessage::NOTICE,
                                 ],
                                 [
                                         'property' => 'foo',
                                         'message' => 'This is a warning validation result',
-                                        'severity' => AbstractMessage::WARNING
-                                ]
-                        ]
+                                        'severity' => AbstractMessage::WARNING,
+                                ],
+                        ],
                 ],
                 'two messages, different property, same severity' => [
                         'messages' => [
                                 [
                                         'property' => 'foo',
                                         'message' => 'This is a foo validation result',
-                                        'severity' => AbstractMessage::NOTICE
+                                        'severity' => AbstractMessage::NOTICE,
                                 ],
                                 [
                                         'property' => 'bar',
                                         'message' => 'This is a bar validation result',
-                                        'severity' => AbstractMessage::NOTICE
-                                ]
-                        ]
-                ]
+                                        'severity' => AbstractMessage::NOTICE,
+                                ],
+                        ],
+                ],
         ];
     }
 
     public function allResultsProvider(): array
     {
         return array_merge_recursive(
-                $this->getSampleMessages(),
-                [
-                        'single message' => [
-                                'expected' => [
-                                        'foo' => [
-                                                [
-                                                        'severity' => AbstractMessage::NOTICE,
-                                                        'message' => 'This is a validation result'
-                                                ]
-                                        ]
-                                ]
-                        ],
-                        'single message, not requested property, not requested severity' => [
-                                'expected' => [
-                                        'baz' => [
-                                                [
-                                                        'severity' => AbstractMessage::ERROR,
-                                                        'message' => 'This is a baz validation result'
-                                                ]
-                                        ]
-                                ]
-                        ],
-                        'two messages, same property, same severity' => [
-                                'expected' => [
-                                        'foo' => [
-                                                [
-                                                        'severity' => AbstractMessage::NOTICE,
-                                                        'message' => 'This is a validation result'
-                                                ],
-                                                [
-                                                        'severity' => AbstractMessage::NOTICE,
-                                                        'message' => 'This is a second validation result'
-                                                ]
-                                        ]
-                                ]
-                        ],
-                        'two messages, same property, different severity' => [
-                                'expected' => [
-                                        'foo' => [
-                                                [
-                                                        'severity' => AbstractMessage::WARNING,
-                                                        'message' => 'This is a warning validation result'
-                                                ],
-                                                [
-                                                        'severity' => AbstractMessage::NOTICE,
-                                                        'message' => 'This is a notice validation result'
-                                                ]
-                                        ]
-                                ]
-                        ],
-                        'two messages, different property, same severity' => [
-                                'expected' => [
-                                        'foo' => [
-                                                [
-                                                        'severity' => AbstractMessage::NOTICE,
-                                                        'message' => 'This is a foo validation result'
-                                                ],
-                                        ],
-                                        'bar' => [
-                                                [
-                                                        'severity' => AbstractMessage::NOTICE,
-                                                        'message' => 'This is a bar validation result'
-                                                ]
-                                        ]
-                                ]
-                        ]
-                ]
+            $this->getSampleMessages(),
+            [
+                    'single message' => [
+                            'expected' => [
+                                    'foo' => [
+                                            [
+                                                    'severity' => AbstractMessage::NOTICE,
+                                                    'message' => 'This is a validation result',
+                                            ],
+                                    ],
+                            ],
+                    ],
+                    'single message, not requested property, not requested severity' => [
+                            'expected' => [
+                                    'baz' => [
+                                            [
+                                                    'severity' => AbstractMessage::ERROR,
+                                                    'message' => 'This is a baz validation result',
+                                            ],
+                                    ],
+                            ],
+                    ],
+                    'two messages, same property, same severity' => [
+                            'expected' => [
+                                    'foo' => [
+                                            [
+                                                    'severity' => AbstractMessage::NOTICE,
+                                                    'message' => 'This is a validation result',
+                                            ],
+                                            [
+                                                    'severity' => AbstractMessage::NOTICE,
+                                                    'message' => 'This is a second validation result',
+                                            ],
+                                    ],
+                            ],
+                    ],
+                    'two messages, same property, different severity' => [
+                            'expected' => [
+                                    'foo' => [
+                                            [
+                                                    'severity' => AbstractMessage::WARNING,
+                                                    'message' => 'This is a warning validation result',
+                                            ],
+                                            [
+                                                    'severity' => AbstractMessage::NOTICE,
+                                                    'message' => 'This is a notice validation result',
+                                            ],
+                                    ],
+                            ],
+                    ],
+                    'two messages, different property, same severity' => [
+                            'expected' => [
+                                    'foo' => [
+                                            [
+                                                    'severity' => AbstractMessage::NOTICE,
+                                                    'message' => 'This is a foo validation result',
+                                            ],
+                                    ],
+                                    'bar' => [
+                                            [
+                                                    'severity' => AbstractMessage::NOTICE,
+                                                    'message' => 'This is a bar validation result',
+                                            ],
+                                    ],
+                            ],
+                    ],
+            ]
         );
     }
 
@@ -236,8 +234,8 @@ class ValidationResultTest extends UnitTestCase
     {
         $this->loadMessages($messages);
         self::assertSame(
-                $expectedStructure,
-                $this->subject->getAll()
+            $expectedStructure,
+            $this->subject->getAll()
         );
     }
 
@@ -254,65 +252,65 @@ class ValidationResultTest extends UnitTestCase
     {
         $this->loadMessages($messages);
         self::assertSame(
-                $expectedStructure,
-                $this->subject->getAll()
+            $expectedStructure,
+            $this->subject->getAll()
         );
     }
 
     public function forPropertyProvider(): array
     {
         return array_merge_recursive(
-                $this->getSampleMessages(),
-                [
-                        'single message' => [
-                                'property' => 'foo',
-                                'expected' => [
-                                        [
-                                                'severity' => AbstractMessage::NOTICE,
-                                                'message' => 'This is a validation result'
-                                        ]
-                                ]
-                        ],
-                        'single message, not requested property, not requested severity' => [
-                                'property' => 'foo',
-                                'expected' => null
-                        ],
-                        'two messages, same property, same severity' => [
-                                'property' => 'foo',
-                                'expected' => [
-                                        [
-                                                'severity' => AbstractMessage::NOTICE,
-                                                'message' => 'This is a validation result'
-                                        ],
-                                        [
-                                                'severity' => AbstractMessage::NOTICE,
-                                                'message' => 'This is a second validation result'
-                                        ]
-                                ]
-                        ],
-                        'two messages, same property, different severity' => [
-                                'property' => 'foo',
-                                'expected' => [
-                                        [
-                                                'severity' => AbstractMessage::WARNING,
-                                                'message' => 'This is a warning validation result'
-                                        ],
-                                        [
-                                                'severity' => AbstractMessage::NOTICE,
-                                                'message' => 'This is a notice validation result'
-                                        ]
-                                ]
-                        ],
-                        'two messages, different property, same severity' => [
-                                'property' => 'foo',
-                                'expected' => [
-                                        [
-                                                'severity' => AbstractMessage::NOTICE,
-                                                'message' => 'This is a foo validation result'
-                                        ]
-                                ]
-                        ]
-                ]
+            $this->getSampleMessages(),
+            [
+                    'single message' => [
+                            'property' => 'foo',
+                            'expected' => [
+                                    [
+                                            'severity' => AbstractMessage::NOTICE,
+                                            'message' => 'This is a validation result',
+                                    ],
+                            ],
+                    ],
+                    'single message, not requested property, not requested severity' => [
+                            'property' => 'foo',
+                            'expected' => null,
+                    ],
+                    'two messages, same property, same severity' => [
+                            'property' => 'foo',
+                            'expected' => [
+                                    [
+                                            'severity' => AbstractMessage::NOTICE,
+                                            'message' => 'This is a validation result',
+                                    ],
+                                    [
+                                            'severity' => AbstractMessage::NOTICE,
+                                            'message' => 'This is a second validation result',
+                                    ],
+                            ],
+                    ],
+                    'two messages, same property, different severity' => [
+                            'property' => 'foo',
+                            'expected' => [
+                                    [
+                                            'severity' => AbstractMessage::WARNING,
+                                            'message' => 'This is a warning validation result',
+                                    ],
+                                    [
+                                            'severity' => AbstractMessage::NOTICE,
+                                            'message' => 'This is a notice validation result',
+                                    ],
+                            ],
+                    ],
+                    'two messages, different property, same severity' => [
+                            'property' => 'foo',
+                            'expected' => [
+                                    [
+                                            'severity' => AbstractMessage::NOTICE,
+                                            'message' => 'This is a foo validation result',
+                                    ],
+                            ],
+                    ],
+            ]
         );
     }
 
@@ -327,59 +325,59 @@ class ValidationResultTest extends UnitTestCase
     {
         $this->loadMessages($messages);
         self::assertSame(
-                $expectedStructure,
-                $this->subject->getForProperty($property)
+            $expectedStructure,
+            $this->subject->getForProperty($property)
         );
     }
 
     public function forSeverityProvider(): array
     {
         return array_merge_recursive(
-                $this->getSampleMessages(),
-                [
-                        'single message' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => [
-                                        'foo' => [
-                                                'This is a validation result'
-                                        ]
-                                ]
-                        ],
-                        'single message, not requested property, not requested severity' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => [
-                                        'baz' => []
-                                ]
-                        ],
-                        'two messages, same property, same severity' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => [
-                                        'foo' => [
-                                                'This is a validation result',
-                                                'This is a second validation result'
-                                        ]
-                                ]
-                        ],
-                        'two messages, same property, different severity' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => [
-                                        'foo' => [
-                                                'This is a notice validation result'
-                                        ]
-                                ]
-                        ],
-                        'two messages, different property, same severity' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => [
-                                        'foo' => [
-                                                'This is a foo validation result'
-                                        ],
-                                        'bar' => [
-                                                'This is a bar validation result'
-                                        ]
-                                ]
-                        ]
-                ]
+            $this->getSampleMessages(),
+            [
+                    'single message' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => [
+                                    'foo' => [
+                                            'This is a validation result',
+                                    ],
+                            ],
+                    ],
+                    'single message, not requested property, not requested severity' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => [
+                                    'baz' => [],
+                            ],
+                    ],
+                    'two messages, same property, same severity' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => [
+                                    'foo' => [
+                                            'This is a validation result',
+                                            'This is a second validation result',
+                                    ],
+                            ],
+                    ],
+                    'two messages, same property, different severity' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => [
+                                    'foo' => [
+                                            'This is a notice validation result',
+                                    ],
+                            ],
+                    ],
+                    'two messages, different property, same severity' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => [
+                                    'foo' => [
+                                            'This is a foo validation result',
+                                    ],
+                                    'bar' => [
+                                            'This is a bar validation result',
+                                    ],
+                            ],
+                    ],
+            ]
         );
     }
 
@@ -394,37 +392,37 @@ class ValidationResultTest extends UnitTestCase
     {
         $this->loadMessages($messages);
         self::assertSame(
-                $expectedStructure,
-                $this->subject->getForSeverity($severity)
+            $expectedStructure,
+            $this->subject->getForSeverity($severity)
         );
     }
 
     public function countForPropertyProvider(): array
     {
         return array_merge_recursive(
-                $this->getSampleMessages(),
-                [
-                        'single message' => [
-                                'property' => 'foo',
-                                'expected' => 1
-                        ],
-                        'single message, not requested property, not requested severity' => [
-                                'property' => 'foo',
-                                'expected' => 0
-                        ],
-                        'two messages, same property, same severity' => [
-                                'property' => 'foo',
-                                'expected' => 2
-                        ],
-                        'two messages, same property, different severity' => [
-                                'property' => 'foo',
-                                'expected' => 2
-                        ],
-                        'two messages, different property, same severity' => [
-                                'property' => 'foo',
-                                'expected' => 1
-                        ]
-                ]
+            $this->getSampleMessages(),
+            [
+                    'single message' => [
+                            'property' => 'foo',
+                            'expected' => 1,
+                    ],
+                    'single message, not requested property, not requested severity' => [
+                            'property' => 'foo',
+                            'expected' => 0,
+                    ],
+                    'two messages, same property, same severity' => [
+                            'property' => 'foo',
+                            'expected' => 2,
+                    ],
+                    'two messages, same property, different severity' => [
+                            'property' => 'foo',
+                            'expected' => 2,
+                    ],
+                    'two messages, different property, same severity' => [
+                            'property' => 'foo',
+                            'expected' => 1,
+                    ],
+            ]
         );
     }
 
@@ -439,37 +437,37 @@ class ValidationResultTest extends UnitTestCase
     {
         $this->loadMessages($messages);
         self::assertSame(
-                $expectedTotal,
-                $this->subject->countForProperty($property)
+            $expectedTotal,
+            $this->subject->countForProperty($property)
         );
     }
 
     public function countForSeverityProvider(): array
     {
         return array_merge_recursive(
-                $this->getSampleMessages(),
-                [
-                        'single message' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => 1
-                        ],
-                        'single message, not requested property, not requested severity' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => 0
-                        ],
-                        'two messages, same property, same severity' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => 2
-                        ],
-                        'two messages, same property, different severity' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => 1
-                        ],
-                        'two messages, different property, same severity' => [
-                                'severity' => AbstractMessage::NOTICE,
-                                'expected' => 2
-                        ]
-                ]
+            $this->getSampleMessages(),
+            [
+                    'single message' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => 1,
+                    ],
+                    'single message, not requested property, not requested severity' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => 0,
+                    ],
+                    'two messages, same property, same severity' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => 2,
+                    ],
+                    'two messages, same property, different severity' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => 1,
+                    ],
+                    'two messages, different property, same severity' => [
+                            'severity' => AbstractMessage::NOTICE,
+                            'expected' => 2,
+                    ],
+            ]
         );
     }
 
@@ -484,42 +482,42 @@ class ValidationResultTest extends UnitTestCase
     {
         $this->loadMessages($messages);
         self::assertSame(
-                $expectedTotal,
-                $this->subject->countForSeverity($severity)
+            $expectedTotal,
+            $this->subject->countForSeverity($severity)
         );
     }
 
     public function getForPropertyAndSeverityProvider(): array
     {
         return array_merge_recursive(
-                $this->getSampleMessages(),
-                [
-                        'single message' => [
-                                'property' => 'foo',
-                                'severity' => AbstractMessage::NOTICE,
-                                'count' => 1
-                        ],
-                        'single message, not requested property, not requested severity' => [
-                                'property' => 'foo',
-                                'severity' => AbstractMessage::NOTICE,
-                                'count' => 0
-                        ],
-                        'two messages, same property, same severity' => [
-                                'property' => 'foo',
-                                'severity' => AbstractMessage::NOTICE,
-                                'count' => 2
-                        ],
-                        'two messages, same property, different severity' => [
-                                'property' => 'foo',
-                                'severity' => AbstractMessage::NOTICE,
-                                'count' => 1
-                        ],
-                        'two messages, different property, same severity' => [
-                                'property' => 'foo',
-                                'severity' => AbstractMessage::NOTICE,
-                                'count' => 1
-                        ]
-                ]
+            $this->getSampleMessages(),
+            [
+                    'single message' => [
+                            'property' => 'foo',
+                            'severity' => AbstractMessage::NOTICE,
+                            'count' => 1,
+                    ],
+                    'single message, not requested property, not requested severity' => [
+                            'property' => 'foo',
+                            'severity' => AbstractMessage::NOTICE,
+                            'count' => 0,
+                    ],
+                    'two messages, same property, same severity' => [
+                            'property' => 'foo',
+                            'severity' => AbstractMessage::NOTICE,
+                            'count' => 2,
+                    ],
+                    'two messages, same property, different severity' => [
+                            'property' => 'foo',
+                            'severity' => AbstractMessage::NOTICE,
+                            'count' => 1,
+                    ],
+                    'two messages, different property, same severity' => [
+                            'property' => 'foo',
+                            'severity' => AbstractMessage::NOTICE,
+                            'count' => 1,
+                    ],
+            ]
         );
     }
 
@@ -535,8 +533,8 @@ class ValidationResultTest extends UnitTestCase
     {
         $this->loadMessages($messages);
         self::assertCount(
-                $count,
-                $this->subject->getForPropertyAndSeverity($property, $severity)
+            $count,
+            $this->subject->getForPropertyAndSeverity($property, $severity)
         );
     }
 
@@ -549,9 +547,9 @@ class ValidationResultTest extends UnitTestCase
     {
         foreach ($messages as $message) {
             $this->subject->add(
-                    $message['property'],
-                    $message['message'],
-                    $message['severity']
+                $message['property'],
+                $message['message'],
+                $message['severity']
             );
         }
     }

@@ -27,8 +27,6 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 /**
  * This class executes Scheduler events for automatic synchronisations of external data
- *
- * @package Cobweb\ExternalImport\Task
  */
 class AutomatedSyncTask extends AbstractTask
 {

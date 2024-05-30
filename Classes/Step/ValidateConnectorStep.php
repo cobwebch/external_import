@@ -21,16 +21,11 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Validation of the External Import configuration specifically for synchronize processes.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class ValidateConnectorStep extends AbstractStep
 {
-
     /**
      * Validates that the External Import configuration for a "synchronize" operation has a connector.
-     *
-     * @return void
      */
     public function run(): void
     {

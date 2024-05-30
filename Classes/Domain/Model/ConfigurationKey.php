@@ -26,8 +26,6 @@ namespace Cobweb\ExternalImport\Domain\Model;
  * will fail.
  *
  * Not an Extbase model.
- *
- * @package Cobweb\ExternalImport\Domain\Model
  */
 class ConfigurationKey
 {

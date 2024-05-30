@@ -23,8 +23,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Unit test suite for the Store Data step class.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Step
  */
 class StoreDataStepTest extends UnitTestCase
 {
@@ -62,21 +60,21 @@ class StoreDataStepTest extends UnitTestCase
                         [
                                 34 => [
                                         'title' => 'Foo',
-                                        'pid' => 23
+                                        'pid' => 23,
                                 ],
                                 42 => [
                                         'title' => 'Bar',
-                                        'pid' => 34
+                                        'pid' => 34,
                                 ],
                         ],
                         [
                                 34 => [
                                         'title' => 'Foo',
-                                        'pid' => 23
+                                        'pid' => 23,
                                 ],
                                 42 => [
                                         'title' => 'Bar',
-                                        'pid' => 34
+                                        'pid' => 34,
                                 ],
                         ],
                 ],
@@ -84,116 +82,116 @@ class StoreDataStepTest extends UnitTestCase
                         [
                                 'NEW1' => [
                                         'title' => 'Parent 1',
-                                        'pid' => 4
+                                        'pid' => 4,
                                 ],
                                 'NEW2' => [
                                         'title' => 'Parent 2',
-                                        'pid' => 4
+                                        'pid' => 4,
                                 ],
                                 'NEW3' => [
                                         'title' => 'Parent 3',
-                                        'pid' => 10
+                                        'pid' => 10,
                                 ],
                         ],
                         [
                                 'NEW1' => [
                                         'title' => 'Parent 1',
-                                        'pid' => 4
+                                        'pid' => 4,
                                 ],
                                 'NEW2' => [
                                         'title' => 'Parent 2',
-                                        'pid' => 4
+                                        'pid' => 4,
                                 ],
                                 'NEW3' => [
                                         'title' => 'Parent 3',
-                                        'pid' => 10
+                                        'pid' => 10,
                                 ],
-                        ]
+                        ],
                 ],
                 'New pages, nested' => [
                         [
                                 'NEW1' => [
                                         'title' => 'Parent 1',
-                                        'pid' => 0
+                                        'pid' => 0,
                                 ],
                                 'NEW2' => [
                                         'title' => 'Child 1.1',
-                                        'pid' => 'NEW1'
+                                        'pid' => 'NEW1',
                                 ],
                                 'NEW3' => [
                                         'title' => 'Child 1.2',
-                                        'pid' => 'NEW1'
+                                        'pid' => 'NEW1',
                                 ],
                                 'NEW4' => [
                                         'title' => 'Parent 2',
-                                        'pid' => 0
+                                        'pid' => 0,
                                 ],
                                 'NEW5' => [
                                         'title' => 'Child 2.1',
-                                        'pid' => 'NEW4'
+                                        'pid' => 'NEW4',
                                 ],
                                 'NEW6' => [
                                         'title' => 'Child 2.1.1',
-                                        'pid' => 'NEW5'
+                                        'pid' => 'NEW5',
                                 ],
                                 'NEW7' => [
                                         'title' => 'Child 2.2',
-                                        'pid' => 'NEW4'
+                                        'pid' => 'NEW4',
                                 ],
                         ],
                         [
                                 'NEW6' => [
                                         'title' => 'Child 2.1.1',
-                                        'pid' => 'NEW5'
+                                        'pid' => 'NEW5',
                                 ],
                                 'NEW2' => [
                                         'title' => 'Child 1.1',
-                                        'pid' => 'NEW1'
+                                        'pid' => 'NEW1',
                                 ],
                                 'NEW3' => [
                                         'title' => 'Child 1.2',
-                                        'pid' => 'NEW1'
+                                        'pid' => 'NEW1',
                                 ],
                                 'NEW5' => [
                                         'title' => 'Child 2.1',
-                                        'pid' => 'NEW4'
+                                        'pid' => 'NEW4',
                                 ],
                                 'NEW7' => [
                                         'title' => 'Child 2.2',
-                                        'pid' => 'NEW4'
+                                        'pid' => 'NEW4',
                                 ],
                                 'NEW1' => [
                                         'title' => 'Parent 1',
-                                        'pid' => 0
+                                        'pid' => 0,
                                 ],
                                 'NEW4' => [
                                         'title' => 'Parent 2',
-                                        'pid' => 0
+                                        'pid' => 0,
                                 ],
-                        ]
+                        ],
                 ],
                 'Page updated to new parent' => [
                         [
                                 24 => [
                                         'title' => 'Existing page',
-                                        'pid' => 'NEW1'
+                                        'pid' => 'NEW1',
                                 ],
                                 'NEW1' => [
                                         'title' => 'Parent 1',
-                                        'pid' => 0
-                                ]
+                                        'pid' => 0,
+                                ],
                         ],
                         [
                                 24 => [
                                         'title' => 'Existing page',
-                                        'pid' => 'NEW1'
+                                        'pid' => 'NEW1',
                                 ],
                                 'NEW1' => [
                                         'title' => 'Parent 1',
-                                        'pid' => 0
-                                ]
-                        ]
-                ]
+                                        'pid' => 0,
+                                ],
+                        ],
+                ],
         ];
     }
 
@@ -207,8 +205,8 @@ class StoreDataStepTest extends UnitTestCase
     {
         $sortedData = $this->subject->sortPagesData($input);
         self::assertSame(
-                $sortedData,
-                $expected
+            $sortedData,
+            $expected
         );
     }
 }

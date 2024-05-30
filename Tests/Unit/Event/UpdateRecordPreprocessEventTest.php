@@ -23,8 +23,6 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 
 /**
  * Test suite for the UpdateRecordPreprocessEvent class
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Event
  */
 class UpdateRecordPreprocessEventTest extends UnitTestCase
 {
@@ -58,7 +56,7 @@ class UpdateRecordPreprocessEventTest extends UnitTestCase
     /**
      * @test
      */
-    public function getUidInitiallyReturnsInteger() :void
+    public function getUidInitiallyReturnsInteger(): void
     {
         self::assertSame(
             42,
@@ -69,7 +67,7 @@ class UpdateRecordPreprocessEventTest extends UnitTestCase
     /**
      * @test
      */
-    public function getRecordInitiallyReturnsEmptyArray() :void
+    public function getRecordInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
             [],

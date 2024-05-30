@@ -19,10 +19,7 @@ use TYPO3\CMS\Core\Exception;
 
 /**
  * Exception for invalid step given for preview.
- *
- * @package Cobweb\ExternalImport\Exception
  */
 class InvalidPreviewStepException extends Exception
 {
-
 }

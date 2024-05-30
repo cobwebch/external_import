@@ -23,8 +23,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Displays the validation result for the current property.
- *
- * @package Cobweb\ExternalImport\ViewHelpers
  */
 class DisplayValidationResultViewHelper extends AbstractViewHelper
 {
@@ -37,8 +35,6 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
 
     /**
      * Initializes the arguments of the ViewHelper.
-     *
-     * @return void
      */
     public function initializeArguments(): void
     {
@@ -63,7 +59,7 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
             AbstractMessage::INFO => 'alert-info',
             AbstractMessage::NOTICE => 'alert-notice',
             AbstractMessage::WARNING => 'alert-warning',
-            AbstractMessage::ERROR => 'alert-danger'
+            AbstractMessage::ERROR => 'alert-danger',
         ];
         $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert %1$s">%2$s</li></ul></div>';
         $output = '';

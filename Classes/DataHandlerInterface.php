@@ -21,7 +21,6 @@ namespace Cobweb\ExternalImport;
  * Interface which defines the method to implement when creating a custom data handler for External Import
  *
  * Interface DataHandlerInterface
- * @package Cobweb\ExternalImport
  */
 interface DataHandlerInterface
 {

@@ -37,5 +37,4 @@ class ReportEvent
     {
         return $this->importer;
     }
-
 }

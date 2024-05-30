@@ -1,4 +1,5 @@
 <?php
+
 namespace Cobweb\ExternalImport\Exception;
 
 /*
@@ -18,10 +19,7 @@ use TYPO3\CMS\Core\Exception;
 
 /**
  * Exception when a searched for record is not found in the database.
- *
- * @package Cobweb\ExternalImport\Exception
  */
 class NoSuchRecordException extends Exception
 {
-
 }

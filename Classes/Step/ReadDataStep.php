@@ -25,8 +25,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This step reads the data from the external source.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class ReadDataStep extends AbstractStep
 {
@@ -41,8 +39,6 @@ class ReadDataStep extends AbstractStep
 
     /**
      * Reads the data from the external source.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -107,7 +103,7 @@ class ReadDataStep extends AbstractStep
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
                             'external_import',
                             [
-                                $e->getMessage()
+                                $e->getMessage(),
                             ]
                         )
                     );
@@ -124,14 +120,14 @@ class ReadDataStep extends AbstractStep
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
                             'external_import',
                             [
-                                $e->getMessage()
+                                $e->getMessage(),
                             ]
                         )
                     );
                 }
                 break;
 
-            // If the data type is not defined, issue error and abort process
+                // If the data type is not defined, issue error and abort process
             default:
                 $this->abortFlag = true;
                 $this->importer->addMessage(

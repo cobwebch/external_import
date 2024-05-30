@@ -23,15 +23,11 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * Validates the data after it has been mapped to TCA columns.
  *
  * This step does not transform data. It may only interrupt the process, if data does not validate.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class ValidateDataStep extends AbstractStep
 {
     /**
      * Performs the data validation.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -48,10 +44,10 @@ class ValidateDataStep extends AbstractStep
                     LocalizationUtility::translate(
                         'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:notEnoughRecords',
                         'external_import',
-                        array(
+                        [
                             $countRecords,
-                            $generalConfiguration['minimumRecords']
-                        )
+                            $generalConfiguration['minimumRecords'],
+                        ]
                     )
                 );
             }

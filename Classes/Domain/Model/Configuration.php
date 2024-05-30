@@ -24,8 +24,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Pseudo-domain model for a single External Import configuration.
- *
- * @package Cobweb\ExternalImport\Domain\Model
  */
 class Configuration
 {
@@ -105,8 +103,6 @@ class Configuration
 
     /**
      * Restructures part of the configuration for easier use during the import process.
-     *
-     * @return void
      */
     public function processConfiguration(): void
     {
@@ -200,7 +196,6 @@ class Configuration
      *
      * @param array $generalConfiguration
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the repository)
-     * @return void
      */
     public function setGeneralConfiguration(array $generalConfiguration, array $defaultSteps = null): void
     {
@@ -508,8 +503,6 @@ class Configuration
 
     /**
      * Makes sure that the transformation properties are sorted.
-     *
-     * @return void
      */
     protected function sortTransformationProperties(): void
     {
@@ -536,7 +529,7 @@ class Configuration
         // Check for explicit nullable property (TYPO3 12+)
         if (array_key_exists('nullable', $columnTca)) {
             $nullable = (bool)$columnTca['nullable'];
-        // If not defined, try for "null" evaluation (TYPO3 11)
+            // If not defined, try for "null" evaluation (TYPO3 11)
         } elseif (array_key_exists('eval', $columnTca)) {
             $nullable = GeneralUtility::inList($columnTca['eval'], 'null');
         }

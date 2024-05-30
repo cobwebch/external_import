@@ -23,8 +23,6 @@ use Nimut\TestingFramework\TestCase\UnitTestCase;
 
 /**
  * Test suite for the InsertRecordPreprocessEvent class
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Event
  */
 class DatamapPostprocessEventTest extends UnitTestCase
 {
@@ -57,7 +55,7 @@ class DatamapPostprocessEventTest extends UnitTestCase
     /**
      * @test
      */
-    public function getDataInitiallyReturnsEmptyArray() :void
+    public function getDataInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
             [],

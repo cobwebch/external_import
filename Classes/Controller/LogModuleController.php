@@ -33,7 +33,6 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class LogModuleController extends ActionController
 {
-
     protected ModuleTemplateFactory $moduleTemplateFactory;
 
     protected ?ModuleTemplate $moduleTemplate = null;
@@ -63,8 +62,6 @@ class LogModuleController extends ActionController
 
     /**
      * Loads the resources (JS, CSS) needed by some action views.
-     *
-     * @return void
      */
     protected function loadResources(): void
     {
@@ -80,7 +77,7 @@ class LogModuleController extends ActionController
             [
                 'paths' => [
                     'datatables' => $publicResourcesPath . 'JavaScript/Contrib/datatables',
-                ]
+                ],
             ]
         );
         // TODO: remove and replace with Luxon when compatibility with v11 is dropped
@@ -89,8 +86,8 @@ class LogModuleController extends ActionController
             $this->pageRenderer->addRequireJsConfiguration(
                 [
                     'paths' => [
-                        'moment' => $publicResourcesPath . 'JavaScript/Contrib/moment'
-                    ]
+                        'moment' => $publicResourcesPath . 'JavaScript/Contrib/moment',
+                    ],
                 ]
             );
         }

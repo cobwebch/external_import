@@ -21,7 +21,6 @@ use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\StepUtility;
 use Cobweb\Svconnector\Registry\ConnectorRegistry;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
@@ -33,8 +32,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  * and reports errors and other glitches.
  *
  * NOTE: this is not a strict Extbase Validator.
- *
- * @package Cobweb\ExternalImport\Validator
  */
 class GeneralConfigurationValidator
 {
@@ -119,7 +116,6 @@ class GeneralConfigurationValidator
      * Validates the "data" property.
      *
      * @param string $property Property value
-     * @return void
      */
     public function validateDataProperty(string $property): void
     {
@@ -149,7 +145,6 @@ class GeneralConfigurationValidator
      * (of course, this may be wrong, but we have no way to guess the user's intent ;-) ).
      *
      * @param string $property Property value
-     * @return void
      */
     public function validateConnectorProperty(string $property): void
     {
@@ -176,7 +171,6 @@ class GeneralConfigurationValidator
      *
      * @param string $connector Type of connector
      * @param array $property Parameters for the connector
-     * @return void
      * @see \Cobweb\ExternalImport\Validator\GeneralConfigurationValidator::validateConnectorProperty
      */
     public function validateConnectorConfigurationProperty(string $connector, array $property): void
@@ -203,7 +197,6 @@ class GeneralConfigurationValidator
      * Validates the "dataHandler" property.
      *
      * @param string|null $property Property value
-     * @return void
      */
     public function validateDataHandlerProperty(?string $property): void
     {
@@ -246,7 +239,6 @@ class GeneralConfigurationValidator
      *
      * @param string $nodetype Nodetype property value
      * @param string $nodepath Nodepath property value
-     * @return void
      */
     public function validateNodeProperty(string $nodetype = '', string $nodepath = ''): void
     {
@@ -266,7 +258,6 @@ class GeneralConfigurationValidator
      * Validates the "referenceUid" property.
      *
      * @param string $property Property value
-     * @return void
      */
     public function validateReferenceUidProperty(string $property): void
     {
@@ -285,7 +276,6 @@ class GeneralConfigurationValidator
      * Validates the "priority" property.
      *
      * @param int $property Property value
-     * @return void
      */
     public function validatePriorityProperty(int $property): void
     {
@@ -296,7 +286,7 @@ class GeneralConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:defaultPriorityValue',
                     null,
                     [
-                        Importer::DEFAULT_PRIORITY
+                        Importer::DEFAULT_PRIORITY,
                     ]
                 ),
                 AbstractMessage::NOTICE
@@ -308,7 +298,6 @@ class GeneralConfigurationValidator
      * Validates the "pid" property.
      *
      * @param mixed $property Property value
-     * @return void
      */
     public function validatePidProperty($property): void
     {
@@ -336,7 +325,7 @@ class GeneralConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPageNotAllowed',
                         null,
                         [
-                            $this->table
+                            $this->table,
                         ]
                     ),
                     AbstractMessage::ERROR
@@ -360,7 +349,7 @@ class GeneralConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidPidPropertyOnlyRoot',
                     null,
                     [
-                        $this->table
+                        $this->table,
                     ]
                 ),
                 AbstractMessage::ERROR
@@ -373,7 +362,6 @@ class GeneralConfigurationValidator
      *
      * @param mixed $property Property value
      * @param array $columns List of column configurations
-     * @return void
      */
     public function validateUseColumnIndexProperty($property, array $columns): void
     {
@@ -387,7 +375,7 @@ class GeneralConfigurationValidator
                     null,
                     [
                         $property,
-                        $this->table
+                        $this->table,
                     ]
                 ),
                 AbstractMessage::ERROR
@@ -400,7 +388,6 @@ class GeneralConfigurationValidator
      *
      * @param mixed $property Property value
      * @param array $columns List of column configurations
-     * @return void
      */
     public function validateColumnsOrderProperty(string $property, array $columns): void
     {
@@ -448,7 +435,6 @@ class GeneralConfigurationValidator
      *
      * @param array|null $property Property value
      * @param array $ctrlConfiguration Full "ctrl" configuration
-     * @return void
      */
     public function validateCustomStepsProperty(?array $property, array $ctrlConfiguration): void
     {
@@ -471,7 +457,7 @@ class GeneralConfigurationValidator
                             null,
                             [
                                 $e->getMessage(),
-                                $e->getCode()
+                                $e->getCode(),
                             ]
                         ),
                         AbstractMessage::NOTICE

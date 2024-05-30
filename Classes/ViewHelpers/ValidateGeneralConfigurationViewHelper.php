@@ -25,8 +25,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Validates the general part of a configuration and loads the validation results as a container variable.
- *
- * @package Cobweb\ExternalImport\ViewHelpers
  */
 class ValidateGeneralConfigurationViewHelper extends AbstractViewHelper
 {
@@ -39,8 +37,6 @@ class ValidateGeneralConfigurationViewHelper extends AbstractViewHelper
 
     /**
      * Initializes the arguments of the ViewHelper.
-     *
-     * @return void
      */
     public function initializeArguments(): void
     {

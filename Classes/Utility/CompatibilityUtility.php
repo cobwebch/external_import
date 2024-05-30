@@ -22,8 +22,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Small class for encapsulating methods related to backwards-compatibility.
- *
- * @package Cobweb\ExternalImport\Utility
  */
 class CompatibilityUtility
 {

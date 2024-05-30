@@ -44,8 +44,8 @@ class ConfigurationTest extends UnitTestCase
     public function getAdditionalFieldsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getAdditionalFields()
+            [],
+            $this->subject->getAdditionalFields()
         );
     }
 
@@ -55,8 +55,8 @@ class ConfigurationTest extends UnitTestCase
     public function getColumnConfigurationInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getColumnConfiguration()
+            [],
+            $this->subject->getColumnConfiguration()
         );
     }
 
@@ -66,8 +66,8 @@ class ConfigurationTest extends UnitTestCase
     public function getConfigurationForColumnInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getConfigurationForColumn('foo')
+            [],
+            $this->subject->getConfigurationForColumn('foo')
         );
     }
 
@@ -77,7 +77,7 @@ class ConfigurationTest extends UnitTestCase
     public function getConnectorInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getConnector()
+            $this->subject->getConnector()
         );
     }
 
@@ -87,8 +87,8 @@ class ConfigurationTest extends UnitTestCase
     public function getCountAdditionalFieldsInitiallyReturnsZero(): void
     {
         self::assertSame(
-                0,
-                $this->subject->getCountAdditionalFields()
+            0,
+            $this->subject->getCountAdditionalFields()
         );
     }
 
@@ -98,8 +98,8 @@ class ConfigurationTest extends UnitTestCase
     public function getGenerallConfigurationInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getGeneralConfiguration()
+            [],
+            $this->subject->getGeneralConfiguration()
         );
     }
 
@@ -109,7 +109,7 @@ class ConfigurationTest extends UnitTestCase
     public function getGenerallConfigurationPropertyInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getGeneralConfigurationProperty('foo')
+            $this->subject->getGeneralConfigurationProperty('foo')
         );
     }
 
@@ -119,7 +119,7 @@ class ConfigurationTest extends UnitTestCase
     public function getIndexInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getIndex()
+            $this->subject->getIndex()
         );
     }
 
@@ -129,8 +129,8 @@ class ConfigurationTest extends UnitTestCase
     public function getStepsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getSteps()
+            [],
+            $this->subject->getSteps()
         );
     }
 
@@ -140,7 +140,7 @@ class ConfigurationTest extends UnitTestCase
     public function hasParametersForStepInitiallyReturnsFalse(): void
     {
         self::assertFalse(
-                $this->subject->hasParametersForStep(StoreDataStep::class)
+            $this->subject->hasParametersForStep(StoreDataStep::class)
         );
     }
 
@@ -150,8 +150,8 @@ class ConfigurationTest extends UnitTestCase
     public function getParametersForStepInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getParametersForStep(StoreDataStep::class)
+            [],
+            $this->subject->getParametersForStep(StoreDataStep::class)
         );
     }
 
@@ -162,12 +162,12 @@ class ConfigurationTest extends UnitTestCase
     {
         $parameters = ['foo', 'bar' => 'baz'];
         $this->subject->setParametersForStep(
-                $parameters,
-                StoreDataStep::class
+            $parameters,
+            StoreDataStep::class
         );
         self::assertSame(
-                $parameters,
-                $this->subject->getParametersForStep(StoreDataStep::class)
+            $parameters,
+            $this->subject->getParametersForStep(StoreDataStep::class)
         );
     }
 
@@ -177,7 +177,7 @@ class ConfigurationTest extends UnitTestCase
     public function getStoragePidInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getStoragePid()
+            $this->subject->getStoragePid()
         );
     }
 
@@ -187,7 +187,7 @@ class ConfigurationTest extends UnitTestCase
     public function getTableInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getTable()
+            $this->subject->getTable()
         );
     }
 
@@ -198,10 +198,10 @@ class ConfigurationTest extends UnitTestCase
                         [
                                 'connector' => 'feed',
                                 'pid' => 42,
-                                'additionalFields' => 'foo,bar'
+                                'additionalFields' => 'foo,bar',
                         ],
-                        42
-                ]
+                        42,
+                ],
         ];
     }
 
@@ -215,16 +215,16 @@ class ConfigurationTest extends UnitTestCase
     {
         $this->subject->setGeneralConfiguration($configuration);
         self::assertSame(
-                $configuration,
-                $this->subject->getGeneralConfiguration()
+            $configuration,
+            $this->subject->getGeneralConfiguration()
         );
         self::assertEquals(
-                $pid,
-                $this->subject->getStoragePid()
+            $pid,
+            $this->subject->getStoragePid()
         );
         self::assertSame(
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                $this->subject->getSteps()
+            Importer::SYNCHRONYZE_DATA_STEPS,
+            $this->subject->getSteps()
         );
     }
 
@@ -238,52 +238,52 @@ class ConfigurationTest extends UnitTestCase
                                         'field' => 'bar',
                                         'transformations' => [
                                                 20 => [
-                                                        'value' => 3
+                                                        'value' => 3,
                                                 ],
                                                 10 => [
-                                                        'value' => 4
-                                                ]
-                                        ]
-                                ]
+                                                        'value' => 4,
+                                                ],
+                                        ],
+                                ],
                         ],
                         'foo',
                         [
                                 'field' => 'bar',
                                 'transformations' => [
                                         10 => [
-                                                'value' => 4
+                                                'value' => 4,
                                         ],
                                         20 => [
-                                                'value' => 3
-                                        ]
-                                ]
-                        ]
+                                                'value' => 3,
+                                        ],
+                                ],
+                        ],
                 ],
                 'configuration with additional fields' => [
                         [
                                 'baz' => [
-                                        'field' => 'baz'
-                                ]
+                                        'field' => 'baz',
+                                ],
                         ],
                         [
                                 'foo' => [
                                         'field' => 'bar',
                                         'transformations' => [
                                                 20 => [
-                                                        'value' => 3
+                                                        'value' => 3,
                                                 ],
                                                 10 => [
-                                                        'value' => 4
-                                                ]
-                                        ]
-                                ]
+                                                        'value' => 4,
+                                                ],
+                                        ],
+                                ],
                         ],
                         'baz',
                         [
                                 'field' => 'baz',
-                                Configuration::DO_NOT_SAVE_KEY => true
-                        ]
-                ]
+                                Configuration::DO_NOT_SAVE_KEY => true,
+                        ],
+                ],
         ];
     }
 
@@ -302,8 +302,8 @@ class ConfigurationTest extends UnitTestCase
         }
         $this->subject->setColumnConfiguration($columnConfiguration);
         self::assertSame(
-                $processedConfiguration,
-                $this->subject->getConfigurationForColumn($columnName)
+            $processedConfiguration,
+            $this->subject->getConfigurationForColumn($columnName)
         );
     }
 
@@ -314,23 +314,23 @@ class ConfigurationTest extends UnitTestCase
     {
         $additionalFields = [
                 'foo' => [
-                        'field' => 'foo'
+                        'field' => 'foo',
                 ],
                 'bar' => [
-                        'field' => 'bar'
-                ]
+                        'field' => 'bar',
+                ],
         ];
         $this->subject->setAdditionalFields($additionalFields);
         // When set, additional fields get extra data attached to them
         $additionalFields['foo'][Configuration::DO_NOT_SAVE_KEY] = true;
         $additionalFields['bar'][Configuration::DO_NOT_SAVE_KEY] = true;
         self::assertSame(
-                $additionalFields,
-                $this->subject->getAdditionalFields()
+            $additionalFields,
+            $this->subject->getAdditionalFields()
         );
         self::assertEquals(
-                count($additionalFields),
-                $this->subject->getCountAdditionalFields()
+            count($additionalFields),
+            $this->subject->getCountAdditionalFields()
         );
     }
 
@@ -350,8 +350,8 @@ class ConfigurationTest extends UnitTestCase
         );
         $this->subject->setConnector($connector);
         self::assertSame(
-                $connector,
-                $this->subject->getConnector()
+            $connector,
+            $this->subject->getConnector()
         );
     }
 
@@ -363,8 +363,8 @@ class ConfigurationTest extends UnitTestCase
         $countAdditionalFields = 2;
         $this->subject->setCountAdditionalFields($countAdditionalFields);
         self::assertEquals(
-                $countAdditionalFields,
-                $this->subject->getCountAdditionalFields()
+            $countAdditionalFields,
+            $this->subject->getCountAdditionalFields()
         );
     }
 
@@ -376,8 +376,8 @@ class ConfigurationTest extends UnitTestCase
         $index = 2;
         $this->subject->setIndex($index);
         self::assertEquals(
-                $index,
-                $this->subject->getIndex()
+            $index,
+            $this->subject->getIndex()
         );
     }
 
@@ -389,8 +389,8 @@ class ConfigurationTest extends UnitTestCase
         $storagePid = 2;
         $this->subject->setStoragePid($storagePid);
         self::assertEquals(
-                $storagePid,
-                $this->subject->getStoragePid()
+            $storagePid,
+            $this->subject->getStoragePid()
         );
     }
 
@@ -402,8 +402,8 @@ class ConfigurationTest extends UnitTestCase
         $table = 'tx_foo_bar';
         $this->subject->setTable($table);
         self::assertEquals(
-                $table,
-                $this->subject->getTable()
+            $table,
+            $this->subject->getTable()
         );
     }
 
@@ -494,7 +494,6 @@ class ConfigurationTest extends UnitTestCase
      * @param array $columns
      * @param string $order
      * @param array $orderedColumns
-     * @return void
      */
     public function sortColumnsSortsColumns(array $columns, string $order, array $orderedColumns): void
     {

@@ -25,8 +25,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Class for querying the database with some precise conditions
  * (see \Cobweb\ExternalImport\Step\StoreDataStep::reviewChildRecords())
- *
- * @package Cobweb\ExternalImport\Domain\Repository
  */
 class ChildrenRepository
 {

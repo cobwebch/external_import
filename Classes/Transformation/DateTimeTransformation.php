@@ -23,8 +23,6 @@ use TYPO3\CMS\Core\SingletonInterface;
 
 /**
  * Example transformation functions for the 'external_import' extension
- *
- * @package Cobweb\ExternalImport\Transformation
  */
 class DateTimeTransformation implements SingletonInterface, ImporterAwareInterface
 {

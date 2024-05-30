@@ -25,15 +25,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Test class for the MappingUtility.
  *
  * NOTE: the MappingUtility is also covered by unit tests.
- *
- * @package Cobweb\ExternalImport\Tests\Functional\Utility
  */
 class MappingUtilityTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
         'typo3conf/ext/svconnector',
         'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/externalimport_test',
     ];
 
     /**
@@ -54,60 +52,60 @@ class MappingUtilityTest extends FunctionalTestCase
                 [
                     'valueMap' => [
                         'foo' => 1,
-                        'bar' => 2
+                        'bar' => 2,
                     ],
                     'table' => 'sys_category',
-                    'referenceField' => 'external_key'
+                    'referenceField' => 'external_key',
                 ],
                 [
                     'foo' => 1,
-                    'bar' => 2
-                ]
+                    'bar' => 2,
+                ],
             ],
             'All records (no valueField property)' => [
                 [
                     'table' => 'sys_category',
-                    'referenceField' => 'external_key'
+                    'referenceField' => 'external_key',
                 ],
                 [
                     'CAT1' => 1,
                     'CAT2' => 2,
-                    '0' => 4
-                ]
+                    '0' => 4,
+                ],
             ],
             'All records (with valueField property)' => [
                 [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
-                    'valueField' => 'uid'
+                    'valueField' => 'uid',
                 ],
                 [
                     'CAT1' => 1,
                     'CAT2' => 2,
-                    '0' => 4
-                ]
+                    '0' => 4,
+                ],
             ],
             'All records (with non-uid valueField property)' => [
                 [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
-                    'valueField' => 'title'
+                    'valueField' => 'title',
                 ],
                 [
                     'CAT1' => 'Category 1',
                     'CAT2' => 'Category 2',
-                    '0' => 'Category 4'
-                ]
+                    '0' => 'Category 4',
+                ],
             ],
             'Filtered records' => [
                 [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
-                    'whereClause' => 'pid = 1'
+                    'whereClause' => 'pid = 1',
                 ],
                 [
-                    'CAT1' => 1
-                ]
+                    'CAT1' => 1,
+                ],
             ],
         ];
     }
@@ -136,100 +134,100 @@ class MappingUtilityTest extends FunctionalTestCase
                 'records' => [
                     0 => [
                         'title' => 'Page with matching category',
-                        'categories' => 'CAT2'
+                        'categories' => 'CAT2',
                     ],
                     1 => [
                         'title' => 'Page with non-matching category',
-                        'categories' => 'CATX'
+                        'categories' => 'CATX',
                     ],
                     2 => [
-                        'title' => 'Page with missing category'
-                    ]
+                        'title' => 'Page with missing category',
+                    ],
                 ],
                 'table' => 'pages',
                 'field' => 'categories',
                 'mappingConfiguration' => [
                     'default' => 1,
                     'table' => 'sys_category',
-                    'referenceField' => 'external_key'
+                    'referenceField' => 'external_key',
                 ],
                 'result' => [
                     0 => [
                         'title' => 'Page with matching category',
-                        'categories' => '2'
+                        'categories' => '2',
                     ],
                     1 => [
                         'title' => 'Page with non-matching category',
-                        'categories' => 1
+                        'categories' => 1,
                     ],
                     2 => [
                         'title' => 'Page with missing category',
-                        'categories' => 1
-                    ]
-                ]
+                        'categories' => 1,
+                    ],
+                ],
             ],
             'Field gets unset without default value' => [
                 'records' => [
                     0 => [
                         'title' => 'Page with matching category',
-                        'categories' => 'CAT2'
+                        'categories' => 'CAT2',
                     ],
                     1 => [
                         'title' => 'Page with non-matching category',
-                        'categories' => 'CATX'
+                        'categories' => 'CATX',
                     ],
                     2 => [
-                        'title' => 'Page with missing category'
-                    ]
-                ],
-                'table' => 'pages',
-                'field' => 'categories',
-                'mappingConfiguration' => [
-                    'table' => 'sys_category',
-                    'referenceField' => 'external_key'
-                ],
-                'result' => [
-                    0 => [
-                        'title' => 'Page with matching category',
-                        'categories' => '2'
+                        'title' => 'Page with missing category',
                     ],
-                    1 => [
-                        'title' => 'Page with non-matching category'
-                    ],
-                    2 => [
-                        'title' => 'Page with missing category'
-                    ]
-                ]
-            ],
-            'Multiple values separator' => [
-                'records' => [
-                    0 => [
-                        'title' => 'Page with two matching categories',
-                        'categories' => 'CAT1,CAT2'
-                    ],
-                    1 => [
-                        'title' => 'Page with one matching and one non-matching category',
-                        'categories' => 'CAT1,CATX'
-                    ]
                 ],
                 'table' => 'pages',
                 'field' => 'categories',
                 'mappingConfiguration' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
-                    'multipleValuesSeparator' => ','
+                ],
+                'result' => [
+                    0 => [
+                        'title' => 'Page with matching category',
+                        'categories' => '2',
+                    ],
+                    1 => [
+                        'title' => 'Page with non-matching category',
+                    ],
+                    2 => [
+                        'title' => 'Page with missing category',
+                    ],
+                ],
+            ],
+            'Multiple values separator' => [
+                'records' => [
+                    0 => [
+                        'title' => 'Page with two matching categories',
+                        'categories' => 'CAT1,CAT2',
+                    ],
+                    1 => [
+                        'title' => 'Page with one matching and one non-matching category',
+                        'categories' => 'CAT1,CATX',
+                    ],
+                ],
+                'table' => 'pages',
+                'field' => 'categories',
+                'mappingConfiguration' => [
+                    'table' => 'sys_category',
+                    'referenceField' => 'external_key',
+                    'multipleValuesSeparator' => ',',
                 ],
                 'result' => [
                     0 => [
                         'title' => 'Page with two matching categories',
-                        'categories' => '1,2'
+                        'categories' => '1,2',
                     ],
                     1 => [
                         'title' => 'Page with one matching and one non-matching category',
-                        'categories' => '1'
-                    ]
-                ]
-            ]
+                        'categories' => '1',
+                    ],
+                ],
+            ],
         ];
     }
 

@@ -43,7 +43,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class DataModuleController extends ActionController
 {
-
     protected ModuleTemplateFactory $moduleTemplateFactory;
 
     protected ?ModuleTemplate $moduleTemplate = null;
@@ -122,8 +121,8 @@ class DataModuleController extends ActionController
                     'scheduler' => $this->getBackendUser()->check(
                         'custom_options',
                         'tx_externalimport_bemodule_actions:scheduler'
-                    )
-                ]
+                    ),
+                ],
             ]
         );
 
@@ -158,7 +157,7 @@ class DataModuleController extends ActionController
         }
         $this->view->assignMultiple(
             [
-                'configurations' => $configurations
+                'configurations' => $configurations,
             ]
         );
 
@@ -230,7 +229,7 @@ class DataModuleController extends ActionController
                     'external_import',
                     [
                         $e->getMessage(),
-                        $e->getCode()
+                        $e->getCode(),
                     ]
                 ),
                 '',
@@ -244,7 +243,7 @@ class DataModuleController extends ActionController
                 'steps' => $stepList,
                 'stepClass' => $stepClass,
                 'previewData' => $previewData,
-                'downloadable' => $downloadable
+                'downloadable' => $downloadable,
             ]
         );
 
@@ -348,7 +347,7 @@ class DataModuleController extends ActionController
                     'external_import',
                     [
                         $e->getMessage(),
-                        $e->getCode()
+                        $e->getCode(),
                     ]
                 ),
                 '',
@@ -370,7 +369,7 @@ class DataModuleController extends ActionController
                 'table' => $table,
                 'index' => $index,
                 'configuration' => $configuration,
-                'storageRecord' => BackendUtility::getRecord('pages', $configuration->getStoragePid())
+                'storageRecord' => BackendUtility::getRecord('pages', $configuration->getStoragePid()),
             ],
         );
 
@@ -440,7 +439,7 @@ class DataModuleController extends ActionController
                     'autosync_save_failed',
                     'external_import',
                     [
-                        $e->getMessage()
+                        $e->getMessage(),
                     ]
                 ),
                 '',
@@ -519,7 +518,7 @@ class DataModuleController extends ActionController
                     'autosync_save_failed',
                     'external_import',
                     [
-                        $e->getMessage()
+                        $e->getMessage(),
                     ]
                 ),
                 '',
@@ -551,7 +550,7 @@ class DataModuleController extends ActionController
                     'delete_failed',
                     'external_import',
                     [
-                        $e->getMessage()
+                        $e->getMessage(),
                     ]
                 ),
                 '',
@@ -568,7 +567,6 @@ class DataModuleController extends ActionController
      *
      * @param string $menuAction
      * @param string $closeButtonAction
-     * @return void
      */
     protected function prepareView(string $menuAction = '', string $closeButtonAction = ''): void
     {
@@ -585,8 +583,6 @@ class DataModuleController extends ActionController
 
     /**
      * Loads the resources (JS, CSS) needed by some action views.
-     *
-     * @return void
      */
     protected function loadResources(): void
     {
@@ -597,8 +593,8 @@ class DataModuleController extends ActionController
         $this->pageRenderer->addRequireJsConfiguration(
             [
                 'paths' => [
-                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/datatables'
-                ]
+                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/datatables',
+                ],
             ]
         );
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
@@ -613,7 +609,6 @@ class DataModuleController extends ActionController
      * Defines the menu items in the docheader.
      *
      * @param string $action
-     * @return void
      */
     protected function prepareMainMenu(string $action): void
     {
@@ -644,7 +639,6 @@ class DataModuleController extends ActionController
      * Adds a close button to the docheader.
      *
      * @param string $returnAction Name of the action to return to
-     * @return void
      */
     protected function prepareCloseButton(string $returnAction): void
     {

@@ -20,15 +20,13 @@ namespace Cobweb\ExternalImport\Tests\Functional;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Localization\LanguageService;
 
 /**
  * Testcase for the External Import importer
- *
- * @package Cobweb\ExternalImport\Tests\Functional
  */
 class ImporterTest extends FunctionalTestCase
 {
@@ -38,7 +36,7 @@ class ImporterTest extends FunctionalTestCase
         'typo3conf/ext/svconnector_feed',
         'typo3conf/ext/svconnector_json',
         'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test'
+        'typo3conf/ext/externalimport_test',
     ];
 
     /**
@@ -223,7 +221,7 @@ class ImporterTest extends FunctionalTestCase
         self::assertSame(
             [
                 1 => '1,3',
-                2 => '2,3'
+                2 => '2,3',
             ],
             $tagRelations
         );
@@ -231,7 +229,7 @@ class ImporterTest extends FunctionalTestCase
         self::assertSame(
             [
                 2 => 1,
-                1 => 2
+                1 => 2,
             ],
             $sorting
         );
@@ -441,7 +439,6 @@ class ImporterTest extends FunctionalTestCase
      * The notes field of that bundle are expected to be nulled.
      *
      * @test
-     * @return void
      */
     public function importBundlesWithImporterOnExistingBundleSetNull(): void
     {
@@ -640,16 +637,16 @@ class ImporterTest extends FunctionalTestCase
         $pageTree = [
             [
                 'title' => 'Product 1',
-                'children' => 2
+                'children' => 2,
             ],
             [
                 'title' => 'Product 2',
-                'children' => 0
+                'children' => 0,
             ],
             [
                 'title' => 'Product 3',
-                'children' => 1
-            ]
+                'children' => 1,
+            ],
         ];
         foreach ($pageTree as $page) {
             $children = $this->getDatabaseConnection()->selectCount(
@@ -726,12 +723,12 @@ class ImporterTest extends FunctionalTestCase
         return [
             'Wrong general configuration' => [
                 'tx_externalimporttest_product',
-                'general_configuration_errors'
+                'general_configuration_errors',
             ],
             'Wrong column configuration' => [
                 'sys_categories',
-                'column_configuration_errors'
-            ]
+                'column_configuration_errors',
+            ],
         ];
     }
 

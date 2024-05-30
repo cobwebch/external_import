@@ -26,16 +26,11 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 /**
  * This step takes the raw data from the "read" step and makes it into a structured
  * array, ready for further processing.
- *
- * @package Cobweb\ExternalImport\Step
  */
 class HandleDataStep extends AbstractStep
 {
-
     /**
      * Maps the external data to TCA fields.
-     *
-     * @return void
      */
     public function run(): void
     {
@@ -56,7 +51,7 @@ class HandleDataStep extends AbstractStep
                     LocalizationUtility::translate(
                         'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler',
                         'external_import',
-                        array($generalConfiguration['dataHandler'])
+                        [$generalConfiguration['dataHandler']]
                     );
                     return;
                 }
@@ -65,7 +60,7 @@ class HandleDataStep extends AbstractStep
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler',
                     'external_import',
-                    array($generalConfiguration['dataHandler'])
+                    [$generalConfiguration['dataHandler']]
                 );
                 return;
             }
@@ -88,7 +83,7 @@ class HandleDataStep extends AbstractStep
                     );
                     break;
 
-                // This should really not happen
+                    // This should really not happen
                 default:
                     $records = $originalData;
                     break;

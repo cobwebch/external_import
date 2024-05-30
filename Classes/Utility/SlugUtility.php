@@ -29,8 +29,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * NOTE: I know I have taken parts of this code from somewhere, but I don't remember where.
  * If you recognize your baby, please raise you hand so that I can duly credit you.
- *
- * @package Cobweb\ExternalImport\Utility
  */
 class SlugUtility
 {

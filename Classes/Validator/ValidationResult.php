@@ -21,8 +21,6 @@ use TYPO3\CMS\Core\Messaging\AbstractMessage;
 
 /**
  * Utility class used to store validation results.
- *
- * @package Cobweb\ExternalImport\Validator
  */
 class ValidationResult
 {
@@ -33,8 +31,6 @@ class ValidationResult
 
     /**
      * Resets the list of results.
-     *
-     * @return void
      */
     public function reset(): void
     {
@@ -47,7 +43,6 @@ class ValidationResult
      * @param string $property
      * @param string $message
      * @param int $severity
-     * @return void
      */
     public function add(string $property, string $message, int $severity = AbstractMessage::WARNING): void
     {
@@ -56,7 +51,7 @@ class ValidationResult
         }
         $this->results[$property][] = [
             'severity' => $severity,
-            'message' => $message
+            'message' => $message,
         ];
     }
 
@@ -167,7 +162,7 @@ class ValidationResult
                 $results,
                 [
                     self::class,
-                    'compareSeverity'
+                    'compareSeverity',
                 ]
             );
             $this->results[$property] = $results;

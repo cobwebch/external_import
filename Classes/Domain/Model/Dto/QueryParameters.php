@@ -21,8 +21,6 @@ use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
 /**
  * Data Transfer Object model for AJAX query parameters coming from DataTables.
- *
- * @package Cobweb\ExternalImport\Domain\Model\Dto
  */
 class QueryParameters
 {

@@ -21,8 +21,6 @@ use Cobweb\ExternalImport\Importer;
 
 /**
  * Event for manipulating the data of a single record before it is inserted into the database.
- *
- * @package Cobweb\ExternalImport\Event
  */
 final class InsertRecordPreprocessEvent
 {
@@ -65,5 +63,4 @@ final class InsertRecordPreprocessEvent
     {
         $this->record = $record;
     }
-
 }

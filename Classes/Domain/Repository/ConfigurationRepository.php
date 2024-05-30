@@ -30,8 +30,6 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  *
  * This is not a true repository in the Extbase sense of the term, as it relies on reading its information
  * from the TCA and not a database. It also does not provide any persistence.
- *
- * @package Cobweb\ExternalImport\Domain\Repository
  */
 class ConfigurationRepository
 {
@@ -70,7 +68,7 @@ class ConfigurationRepository
         $configuration = [
             'general' => [],
             'additionalFields' => [],
-            'columns' => []
+            'columns' => [],
         ];
 
         // General configuration
@@ -78,8 +76,8 @@ class ConfigurationRepository
             $configuration['general'] = $this->processGeneralConfiguration(
                 $GLOBALS['TCA'][$table]['external']['general'][$index]
             );
-        // Check for legacy general configuration
-        // TODO: remove in version 8.0
+            // Check for legacy general configuration
+            // TODO: remove in version 8.0
         } elseif (isset($GLOBALS['TCA'][$table]['ctrl']['external'][$index])) {
             $configuration['general'] = $this->processGeneralConfiguration(
                 $GLOBALS['TCA'][$table]['ctrl']['external'][$index]
@@ -141,7 +139,7 @@ class ConfigurationRepository
                         $externalTables[$priority][] = [
                             'table' => $tableName,
                             'index' => $index,
-                            'group' => $externalConfig['group'] ?? '-'
+                            'group' => $externalConfig['group'] ?? '-',
                         ];
                     }
                 }
@@ -174,7 +172,7 @@ class ConfigurationRepository
                         }
                         $externalTables[$priority][] = [
                             'table' => $tableName,
-                            'index' => $index
+                            'index' => $index,
                         ];
                     }
                 }
@@ -303,7 +301,7 @@ class ConfigurationRepository
                             'priority' => $priority,
                             'group' => $externalConfiguration['group'] ?? '',
                             'description' => htmlspecialchars($description),
-                            'writeAccess' => $hasWriteAccess
+                            'writeAccess' => $hasWriteAccess,
                         ];
                         // Add Scheduler task information, if any
                         // If the configuration is part of a group and that group is automated, return task information too,

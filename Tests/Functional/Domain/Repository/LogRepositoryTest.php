@@ -24,14 +24,12 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test case for the LogRepository class.
- *
- * @package Cobweb\ExternalImport\Tests\Domain\Repository
  */
 class LogRepositoryTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
         'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import'
+        'typo3conf/ext/external_import',
     ];
 
     /**
@@ -67,62 +65,62 @@ class LogRepositoryTest extends FunctionalTestCase
         $searchColumns = [
             0 => [
                 'searchable' => 'true',
-                'name' => 'configuration'
+                'name' => 'configuration',
             ],
             1 => [
                 'searchable' => 'true',
-                'name' => 'message'
+                'name' => 'message',
             ],
             2 => [
                 'searchable' => 'true',
-                'name' => 'context'
+                'name' => 'context',
             ],
             3 => [
                 'searchable' => 'false',
-                'name' => 'crdate'
-            ]
+                'name' => 'crdate',
+            ],
         ];
         $order = [
             0 => [
                 'column' => 3,
-                'dir' => 'desc'
-            ]
+                'dir' => 'desc',
+            ],
         ];
         return [
             'No search, no limit' => [
                 [
                     'search' => [
-                        'value' => ''
+                        'value' => '',
                     ],
                     'columns' => $searchColumns,
-                    'order' => $order
+                    'order' => $order,
                 ],
                 4,
-                4
+                4,
             ],
             'No search, limit 2' => [
                 [
                     'search' => [
-                        'value' => ''
+                        'value' => '',
                     ],
                     'columns' => $searchColumns,
                     'length' => 2,
-                    'order' => $order
+                    'order' => $order,
                 ],
                 4,
-                2
+                2,
             ],
             'Search for "cli"' => [
                 [
                     'search' => [
-                        'value' => 'cli'
+                        'value' => 'cli',
                     ],
                     'columns' => $searchColumns,
-                    'order' => $order
+                    'order' => $order,
                 ],
                 3,
-                3
-            ]
+                3,
+            ],
         ];
     }
 

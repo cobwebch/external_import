@@ -27,12 +27,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test case for the External Import importer.
- *
- * @package Cobweb\ExternalImport\Tests\Unit
  */
 class ImporterTest extends UnitTestCase
 {
-
     /**
      * @var Importer
      */
@@ -96,7 +93,7 @@ class ImporterTest extends UnitTestCase
             [
                 AbstractMessage::ERROR => [],
                 AbstractMessage::WARNING => [],
-                AbstractMessage::OK => []
+                AbstractMessage::OK => [],
             ],
             $this->subject->getMessages()
         );
@@ -125,7 +122,7 @@ class ImporterTest extends UnitTestCase
             [
                 AbstractMessage::ERROR => [],
                 AbstractMessage::WARNING => [],
-                AbstractMessage::OK => []
+                AbstractMessage::OK => [],
             ],
             $this->subject->getMessages()
         );
@@ -252,14 +249,14 @@ class ImporterTest extends UnitTestCase
     {
         return [
             'string' => [
-                '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><node>foo</node>'
+                '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><node>foo</node>',
             ],
             'array' => [
                 [
                     'name' => 'Foo',
-                    'title' => 'Bar'
-                ]
-            ]
+                    'title' => 'Bar',
+                ],
+            ],
         ];
     }
 

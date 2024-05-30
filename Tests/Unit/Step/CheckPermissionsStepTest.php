@@ -23,8 +23,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Unit test suite for the Check Permissions Data step class. Actually this is mostly for testing
  * the base methods from the AbstractStep class.
- *
- * @package Cobweb\ExternalImport\Tests\Unit\Step
  */
 class CheckPermissionsStepTest extends UnitTestCase
 {
@@ -45,7 +43,7 @@ class CheckPermissionsStepTest extends UnitTestCase
     public function getDataInitiallyReturnsNull(): void
     {
         self::assertNull(
-                $this->subject->getData()
+            $this->subject->getData()
         );
     }
 
@@ -57,8 +55,8 @@ class CheckPermissionsStepTest extends UnitTestCase
         $data = new Data();
         $this->subject->setData($data);
         self::assertSame(
-                $data,
-                $this->subject->getData()
+            $data,
+            $this->subject->getData()
         );
     }
 
@@ -68,7 +66,7 @@ class CheckPermissionsStepTest extends UnitTestCase
     public function isAbortFlagInitiallyReturnsFalse(): void
     {
         self::assertFalse(
-                $this->subject->isAbortFlag()
+            $this->subject->isAbortFlag()
         );
     }
 
@@ -79,7 +77,7 @@ class CheckPermissionsStepTest extends UnitTestCase
     {
         $this->subject->setAbortFlag(true);
         self::assertTrue(
-                $this->subject->isAbortFlag()
+            $this->subject->isAbortFlag()
         );
     }
 
@@ -89,8 +87,8 @@ class CheckPermissionsStepTest extends UnitTestCase
     public function getParametersInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
-                [],
-                $this->subject->getParameters()
+            [],
+            $this->subject->getParameters()
         );
     }
 
@@ -100,11 +98,11 @@ class CheckPermissionsStepTest extends UnitTestCase
     public function setParametersSetsArray(): void
     {
         $this->subject->setParameters(
-                ['foo' => 'bar']
+            ['foo' => 'bar']
         );
         self::assertSame(
-                ['foo' => 'bar'],
-                $this->subject->getParameters()
+            ['foo' => 'bar'],
+            $this->subject->getParameters()
         );
     }
 
@@ -114,17 +112,17 @@ class CheckPermissionsStepTest extends UnitTestCase
                 'initially returns null - no matter what key' => [
                         'parameters' => null,
                         'key' => 'foo',
-                        'expected' => null
+                        'expected' => null,
                 ],
                 'returns expected value with valid key' => [
                         'parameters' => ['foo' => 'bar'],
                         'key' => 'foo',
-                        'expected' => 'bar'
+                        'expected' => 'bar',
                 ],
                 'returns null with invalid key' => [
                         'parameters' => ['foo' => 'bar'],
                         'key' => 'baz',
-                        'expected' => null
+                        'expected' => null,
                 ],
         ];
     }
@@ -142,8 +140,8 @@ class CheckPermissionsStepTest extends UnitTestCase
             $this->subject->setParameters($parameters);
         }
         self::assertSame(
-                $expected,
-                $this->subject->getParameter($key)
+            $expected,
+            $this->subject->getParameter($key)
         );
     }
 }

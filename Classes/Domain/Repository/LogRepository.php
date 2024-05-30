@@ -26,12 +26,9 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * Repository for the log table.
- *
- * @package Cobweb\ExternalImport\Domain\Repository
  */
 class LogRepository extends Repository
 {
-
     public function __toString()
     {
         return self::class;
@@ -69,7 +66,7 @@ class LogRepository extends Repository
         if ($queryParameters->getOrder() !== '') {
             $query->setOrderings(
                 [
-                    $queryParameters->getOrder() => $queryParameters->getDirection()
+                    $queryParameters->getOrder() => $queryParameters->getDirection(),
                 ]
             );
         }
