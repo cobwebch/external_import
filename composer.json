@@ -31,6 +31,7 @@
 		"cobweb/svconnector": "^5.0"
 	},
 	"require-dev": {
+		"cobweb/externalimport_test": "^0.14.0",
 		"cobweb/svconnector_csv": "^4.1",
 		"cobweb/svconnector_feed": "^4.1",
 		"ergebnis/composer-normalize": "~2.42.0",

@@ -254,7 +254,7 @@ fi
 # @todo Consider to switch from cgl to help as default
 TEST_SUITE="cgl"
 DATABASE_DRIVER=""
-DBMS="sqlite"
+DBMS="mysql"
 DBMS_VERSION=""
 PHP_VERSION="7.4"
 PHP_XDEBUG_ON=0
@@ -336,7 +336,7 @@ fi
 
 handleDbmsOptions
 
-COMPOSER_ROOT_VERSION="13.0.x-dev"
+COMPOSER_ROOT_VERSION="7.2.0-dev"
 HOST_UID=$(id -u)
 USERSET=""
 if [ $(uname) != "Darwin" ]; then
@@ -475,7 +475,7 @@ case ${TEST_SUITE} in
         ;;
     functional)
         CONTAINER_PARAMS=""
-        COMMAND=(.Build/bin/phpunit -c Build/phpunit/FunctionalTests.xml --exclude-group not-${DBMS} ${EXTRA_TEST_OPTIONS} "$@")
+        COMMAND=(.Build/bin/phpunit -c .Build/bin/phpunit -c .Build/vendor/nimut/testing-framework/res/Configuration/FunctionalTests.xml Tests/Functional/ --exclude-group not-${DBMS} ${EXTRA_TEST_OPTIONS} "$@")
         case ${DBMS} in
             mariadb)
                 echo "Using driver: ${DATABASE_DRIVER}"

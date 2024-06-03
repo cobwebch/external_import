@@ -48,6 +48,29 @@ jobs:
       - name: unit
         run: Build/Scripts/runTests.sh -n -p ${{ matrix.php }} -s unit
 
+  functional:
+    name: Functional
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php:
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+          - '8.3'
+        db:
+          - 'mysql'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install testing system
+        run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s composerUpdate
+
+      - name: Lint PHP
+        run: Build/Scripts/runTests.sh -p ${{ matrix.php }} -s functional -d ${{ matrix.db }}
+
   code-quality:
     name: Code quality
     runs-on: ubuntu-latest
