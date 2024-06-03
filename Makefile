@@ -30,6 +30,17 @@ fix: fix-cgl## Run all fixes
 test-cgl: ## Fix PHP coding styles
 	Build/Scripts/runTests.sh -s cgl
 
+.PHONY: test-unit-7-4
+test-unit-7-4: ## Run unit tests with PHP 7.4 (lowest)
+	Build/Scripts/runTests.sh -s unit -p 7.4
+
+.PHONY: test-unit-8-3
+test-unit-8-3: ## Run unit tests with PHP 8.3 (highest supported by TYPO3 11)
+	Build/Scripts/runTests.sh -s unit -p 8.3
+
+.PHONY: test-unit
+test-unit: test-unit-7-4 test-unit-8-3## Run unit tests with PHP 7.4 and 8.3
+
 .PHONY: phpstan
 phpstan: ## Run phpstan tests
 	Build/Scripts/runTests.sh -s phpstan
@@ -39,4 +50,4 @@ phpstan-baseline: ## Update the phpstan baseline
 	Build/Scripts/runTests.sh -s phpstanBaseline
 
 .PHONY: test
-test: test-cgl phpstan test-docs## Run all tests
+test: test-cgl phpstan test-docs test-unit## Run all tests
