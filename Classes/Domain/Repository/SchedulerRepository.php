@@ -150,7 +150,7 @@ class SchedulerRepository implements SingletonInterface
             $rows = $queryBuilder->select('uid', 'groupName')
                 ->from('tx_scheduler_task_group')
                 ->orderBy('groupName')
-                ->execute();
+                ->executeQuery();
             while ($row = $rows->fetchAssociative()) {
                 $groups[$row['uid']] = $row['groupName'];
             }

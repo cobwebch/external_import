@@ -95,7 +95,7 @@ class UidRepository
         if (count($constraints) > 0) {
             $queryBuilder->where(...$constraints);
         }
-        $result = $queryBuilder->execute();
+        $result = $queryBuilder->executeQuery();
         if ($result) {
             while ($row = $result->fetchAssociative()) {
                 // Don't consider records with empty references, as they can't be matched

@@ -1039,7 +1039,7 @@ class StoreDataStep extends AbstractStep
                 ->setMaxResults(
                     count($errorLog)
                 )
-                ->execute();
+                ->executeQuery();
             if ($result) {
                 while ($row = $result->fetchAssociative()) {
                     // Check if there's a label for the message
