@@ -221,7 +221,7 @@ class MappingUtility implements ImporterAwareInterface
             $result = $queryBuilder->selectLiteral($referenceField, $valueField)
                 ->from($mappingData['table'])
                 ->where($whereClause)
-                ->execute();
+                ->executeQuery();
 
             // Fill hash table
             if ($result) {

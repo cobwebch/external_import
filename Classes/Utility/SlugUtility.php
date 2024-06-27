@@ -63,7 +63,7 @@ class SlugUtility
             ->from($table)
             ->where(
                 $queryBuilder->expr()->in('uid', $uids)
-            )->execute()
+            )->executeQuery()
             ->fetchAllAssociative();
         // Generate the new slug for each record
         $newSlugs = [];
@@ -78,7 +78,7 @@ class SlugUtility
                         ->set($field, $slug)
                         ->where(
                             $queryBuilder->expr()->eq('uid', $record['uid'])
-                        )->execute();
+                        )->executeStatement();
                 }
             }
         }

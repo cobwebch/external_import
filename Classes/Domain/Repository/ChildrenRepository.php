@@ -39,7 +39,7 @@ class ChildrenRepository
     {
         $existingRecords = [];
         $queryBuilder = $this->prepareQueryBuilder($table, $conditions);
-        $result = $queryBuilder->execute();
+        $result = $queryBuilder->executeQuery();
         while ($record = $result->fetch()) {
             $existingRecords[] = $record['uid'];
         }
@@ -60,7 +60,7 @@ class ChildrenRepository
     public function findFirstExistingRecord(string $table, array $conditions): int
     {
         $queryBuilder = $this->prepareQueryBuilder($table, $conditions);
-        $result = $queryBuilder->execute();
+        $result = $queryBuilder->executeQuery();
         $record = $result->fetchAssociative();
         if ($record) {
             return (int)$record['uid'];
