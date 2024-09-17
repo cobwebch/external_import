@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Reaction;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Exception\InvalidPayloadException;
+use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -69,7 +70,7 @@ class ImportReaction implements ReactionInterface
     {
         $configurationKey = (string)($reaction->toArray()['external_import_configuration'] ?? '');
         try {
-            $this->isValidPayload($payload, $configurationKey);
+            $configurationKeyObject = $this->validatePayloadAndConfigurationKey($payload, $configurationKey);
             // Import
             $importer = GeneralUtility::makeInstance(Importer::class);
             // Check if a storage pid was given
@@ -77,8 +78,8 @@ class ImportReaction implements ReactionInterface
                 $importer->setForcedStoragePid((int)$payload['pid']);
             }
             $messages = $importer->import(
-                $payload['table'],
-                $payload['index'],
+                $configurationKeyObject->getTable(),
+                $configurationKeyObject->getIndex(),
                 $payload['data']
             );
             // Report on import outcome
@@ -118,21 +119,10 @@ class ImportReaction implements ReactionInterface
 
     /**
      * Validates that the payloads contains the proper structure for the External Import reaction
-     * and that the values match an existing configuration.
-     *
-     * @param array $payload
-     * @param string $configurationKey
-     * @return bool
+     * and that the configuration exists.
      */
-    protected function isValidPayload(array $payload, string $configurationKey): bool
+    protected function validatePayloadAndConfigurationKey(array $payload, string $configurationKey): ConfigurationKey
     {
-        // Early exit if some required information is missing
-        if (!isset($payload['table']) && !isset($payload['index'])) {
-            throw new InvalidPayloadException(
-                'The payload must contain both a "table" and an "index" information',
-                1681482506
-            );
-        }
         if (!isset($payload['data'])) {
             throw new InvalidPayloadException(
                 'The payload does not contain any data to import',
@@ -140,29 +130,41 @@ class ImportReaction implements ReactionInterface
             );
         }
 
-        $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
-        try {
-            $configuration = $configurationRepository->findByTableAndIndex($payload['table'], $payload['index']);
-            // If a specific configuration is targeted, ensure that it matches the incoming configuration
-            if (!empty($configurationKey)) {
-                // Assemble the configuration key
-                $configurationKeyObject = GeneralUtility::makeInstance(ConfigurationKey::class);
-                $configurationKeyObject->setTableAndIndex($payload['table'], (string)$payload['index']);
-                if ($configurationKey !== $configurationKeyObject->getConfigurationKey()) {
-                    throw new InvalidPayloadException(
-                        'The "table" and "index" information given in the payload does not match the allowed configuration',
-                        1682361784
-                    );
-                }
+        if ($configurationKey === '') {
+            if (!isset($payload['table'], $payload['index'])) {
+                throw new InvalidPayloadException(
+                    'The payload must contain both a "table" and an "index" information',
+                    1681482506
+                );
             }
-        } catch (\Cobweb\ExternalImport\Exception\NoConfigurationException $e) {
-            throw new InvalidPayloadException(
-                'The "table" and "index" information given in the payload does not match an existing configuration',
-                1681482838
-            );
+
+            $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
+
+            try {
+                $configurationRepository->findByTableAndIndex($payload['table'], $payload['index']);
+            } catch (NoConfigurationException $e) {
+                throw new InvalidPayloadException(
+                    'The "table" and "index" information given in the payload does not match an existing configuration',
+                    1681482838,
+                    $e
+                );
+            }
+
+            $configurationKeyObject = GeneralUtility::makeInstance(ConfigurationKey::class);
+            $configurationKeyObject->setTableAndIndex($payload['table'], (string)$payload['index']);
+        } else {
+            if (isset($payload['table'], $payload['index'])) {
+                throw new InvalidPayloadException(
+                    'The payload must not contain a "table" and an "index" information',
+                    1726559649
+                );
+            }
+
+            $configurationKeyObject = GeneralUtility::makeInstance(ConfigurationKey::class);
+            $configurationKeyObject->setConfigurationKey($configurationKey);
         }
 
-        return true;
+        return $configurationKeyObject;
     }
 
     /**
