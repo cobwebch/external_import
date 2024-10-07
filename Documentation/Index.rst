@@ -31,7 +31,7 @@ External Import
 
 ----
 
-Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line interface and an API.
+Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line interface, imports via URI call (Reaction) and an API.
 
 ----
 
