@@ -1058,7 +1058,7 @@ class StoreDataStep extends AbstractStep
                         );
                     }
                     if (empty($label)) {
-                        $label = $dataArray['reason'] ?? $dataArray['details'] ?? 'Unkown Reason';
+                        $label = $dataArray['reason'] ?? $dataArray['details'] ?? 'Unknown Reason';
                     }
                     // Substitute the first 5 items of extra data into the error message
                     $message = $label;
