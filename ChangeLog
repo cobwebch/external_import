@@ -1,6 +1,7 @@
 2024-10-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Allow saving empty value for override storage pid in Scheduler task, resolves #346
+    * Allow restricted Reaction without table/index in payload (thanks to Mathias Brodala)
 
 2024-05-23 Francois Suter (Idéative)  <typo3@ideative.ch>
 

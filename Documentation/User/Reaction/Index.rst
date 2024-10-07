@@ -54,10 +54,10 @@ the URI given by the reaction and pass it the secret key in the headers. The pay
 in the request body is comprised of the following information:
 
 table
-  The name of the table targeted by the import
+  The name of the table targeted by the import (not necessary when a configuration is explicitly defined).
 
 index
-  The index of the targeted External Import configuration
+  The index of the targeted External Import configuration (not necessary when a configuration is explicitly defined).
 
 data
   The actual data to import. This can be either a JSON array (for
