@@ -1,3 +1,7 @@
+2024-10-07 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Allow saving empty value for override storage pid in Scheduler task, resolves #346
+
 2024-05-23 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Improve compatibility with both TYPO3 11 and 12, resolves #298

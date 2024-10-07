@@ -179,9 +179,6 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $task->table = $configurationKey->getTable();
             $task->index = $configurationKey->getIndex();
         }
-        $fieldValue = (int)$submittedData[self::$storageFieldName];
-        if ($fieldValue > 0) {
-            $task->storage = $fieldValue;
-        }
+        $task->storage = (int)$submittedData[self::$storageFieldName];
     }
 }
