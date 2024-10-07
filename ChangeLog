@@ -2,6 +2,7 @@
 
     * Allow saving empty value for override storage pid in Scheduler task, resolves #346
     * Allow restricted Reaction without table/index in payload (thanks to Mathias Brodala)
+    * Release version 7.2.6
 
 2024-05-23 Francois Suter (Idéative)  <typo3@ideative.ch>
 
