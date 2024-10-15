@@ -99,7 +99,7 @@ class ImportReaction implements ReactionInterface
                 'messages' => $messages[AbstractMessage::OK],
             ];
             if (count($messages[AbstractMessage::WARNING]) > 0) {
-                $responseBody['warnings'] .= $messages[AbstractMessage::WARNING];
+                $responseBody['warnings'] = $messages[AbstractMessage::WARNING];
             }
             return $this->jsonResponse($responseBody);
         } catch (InvalidPayloadException $e) {
