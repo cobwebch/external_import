@@ -1,3 +1,11 @@
+2024-10-16 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Allow for unknown number of markers in TCE log messages, resolves #352
+
+2024-10-14 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Properly output warnings from Reaction import (thanks to Mathias Brodala)
+
 2024-10-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Allow saving empty value for override storage pid in Scheduler task, resolves #346

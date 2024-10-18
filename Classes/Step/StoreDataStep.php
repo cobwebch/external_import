@@ -1054,6 +1054,13 @@ class StoreDataStep extends AbstractStep
                             [
                                 $dataArray['reason'] ?? 'unknown',
                                 ($dataArray['table'] ?? 'unknown table') . ': ' . ($dataArray['uid'] ?? '0'),
+                                // This is ugly, but we need to account for a variable amount of markers depending
+                                // on the message, and although we expect a specific message, there could be others.
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
                             ]
                         );
                     }
