@@ -34,6 +34,7 @@ use Cobweb\ExternalImport\Utility\SlugUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
+use TYPO3\CMS\Core\Log\LogDataTrait;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -41,6 +42,8 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class StoreDataStep extends AbstractStep
 {
+    use LogDataTrait;
+
     protected ProcessedConfiguration $processedConfiguration;
 
     /**
@@ -1042,44 +1045,7 @@ class StoreDataStep extends AbstractStep
                 ->executeQuery();
             if ($result) {
                 while ($row = $result->fetchAssociative()) {
-                    // Check if there's a label for the message
-                    $labelCode = 'msg_' . $row['type'] . '_' . $row['action'] . '_' . $row['details_nr'];
-                    // If not, use details field
-                    $dataArray = json_decode($row['log_data'], true);
-                    if ($dataArray !== null) {
-                        $dataArray = json_decode($row['log_data'], true);
-                        $label = LocalizationUtility::translate(
-                            'LLL:EXT:belog/Resources/Private/Language/locallang.xlf:' . $labelCode,
-                            'belog',
-                            [
-                                $dataArray['reason'] ?? 'unknown',
-                                ($dataArray['table'] ?? 'unknown table') . ': ' . ($dataArray['uid'] ?? '0'),
-                                // This is ugly, but we need to account for a variable amount of markers depending
-                                // on the message, and although we expect a specific message, there could be others.
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                            ]
-                        );
-                    }
-                    if (empty($label)) {
-                        $label = $dataArray['reason'] ?? $dataArray['details'] ?? 'Unknown Reason';
-                    }
-                    // Substitute the first 5 items of extra data into the error message
-                    $message = $label;
-                    if (!empty($row['log_data'])) {
-                        $data = unserialize($row['log_data'], ['allowed_classes' => false]);
-                        $message = sprintf(
-                            $label,
-                            htmlspecialchars((string)($data[0] ?? '')),
-                            htmlspecialchars((string)($data[1] ?? '')),
-                            htmlspecialchars((string)($data[2] ?? '')),
-                            htmlspecialchars((string)($data[3] ?? '')),
-                            htmlspecialchars((string)($data[4] ?? ''))
-                        );
-                    }
+                    $message = $this->formatLogDetails($row['details'], $row['log_data'] ?? []);
                     $this->importer->addMessage(
                         $message
                     );

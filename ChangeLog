@@ -1,3 +1,7 @@
+2024-11-04 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Use Core method for formatting TCE log messages, resolves #353, references #352
+
 2024-10-16 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Allow for unknown number of markers in TCE log messages, resolves #352
