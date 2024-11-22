@@ -152,7 +152,7 @@ Description
      the settings of the RTE for the given field if the results are unexpected. This
      is particularly true for tags which are not inside other tags and need to be
      explicitly allowed using the :code:`allowTagsOutside` option for example
-     (see the :ref:`RTE configuration reference <t3tsconfig:pageTsRte>`).
+     (see the :ref:`RTE configuration reference <t3tsref:pageTsRte>`).
 
 Scope
   Transform data

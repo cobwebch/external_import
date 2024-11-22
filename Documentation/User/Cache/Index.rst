@@ -9,7 +9,7 @@ Clearing the cache
 When data is imported into your TYPO3 CMS installation, you may want to
 clear the cache for a number of pages in order for the new data to be
 displayed as soon as it is available. One way to achieve this is to
-rely purely on TYPO3 CMS and use the :ref:`TSconfig property <t3tsconfig:pagetcemain-clearcachecmd>`:
+rely purely on TYPO3 CMS and use the :ref:`TSconfig property <t3tsref:pagetcemain-clearcachecmd>`:
 
 .. code-block:: typoscript
 
@@ -41,4 +41,4 @@ on the usual clear cache hooks if needed.
 Besides page numbers, you can also use more general cache identifiers
 like "pages" (to clear the cache for all pages), cache tags, or any
 other value that can be used with
-:ref:`TCEMAIN.clearCacheCmd <t3tsconfig:pagetcemain-clearcachecmd>`.
+:ref:`TCEMAIN.clearCacheCmd <t3tsref:pagetcemain-clearcachecmd>`.

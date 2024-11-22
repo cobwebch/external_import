@@ -12,7 +12,9 @@
     />
     <project
             title="External Import"
-            release="7.2.3"
+            release="7.2.7"
             copyright="2007-2024"
     />
+    <inventory id="svconnector" url="https://docs.typo3.org/p/cobweb/svconnector/main/en-us/"/>
+    <inventory id="tut" url="https://docs.typo3.org/p/cobweb/externalimport_tut/main/en-us/"/>
 </guides>

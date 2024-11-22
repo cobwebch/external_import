@@ -1,6 +1,7 @@
 2024-11-22 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Pass properly structured data to DatamapPostprocessEvent, resolves #355
+    * Fix cross-linking and documentation configuration, resolves #356
 
 2024-11-04 Francois Suter (Idéative)  <typo3@ideative.ch>
 
