@@ -330,6 +330,13 @@ class StoreDataStep extends AbstractStep
             $tce->reverseOrder = true;
         }
         $savedData = [];
+        // This is introduced for backwards-compatibility reason
+        // There was a bug with savedData, which ignored the fact that multiple tables could be handled
+        // by an import process, ever since the concept of children was introduced. When savedData was made
+        // multidimensional, this single dimension copy was created for single-table scenarios and is used
+        // to keep backwards-compatibility in the DatamapPostprocessEvent.
+        // TODO: drop this support in the next major version
+        $savedDataSingleDimension = [];
 
         // Load the data and process it, if not in preview mode
         if (!$this->importer->isPreview()) {
@@ -360,7 +367,8 @@ class StoreDataStep extends AbstractStep
                 $this->childrenSortingInformation->replaceAllNewIds($tce->substNEWwithIDs);
 
                 // Prepare data for post-processing
-                foreach ($tceData as $tableRecords) {
+                foreach ($tceData as $table => $tableRecords) {
+                    $savedData[$table] = [];
                     foreach ($tableRecords as $id => $record) {
                         // Add status to record
                         // If operation was insert, match placeholder to actual id
@@ -377,15 +385,21 @@ class StoreDataStep extends AbstractStep
                                 $record[$fieldName] = $fieldValue;
                             }
                         }
-                        $savedData[$uid] = $record;
+                        $savedData[$table][$uid] = $record;
+                        $savedDataSingleDimension[$uid] = $record;
                     }
                 }
-                // Post-processing event after data was saved
+                // Post-processing event after data was saved (see comment above, when $savedDataSingleDimension is initialized)
                 try {
+                    if (count(array_keys($savedData)) === 1) {
+                        $dataForEvent = $savedDataSingleDimension;
+                    } else {
+                        $dataForEvent = $savedData;
+                    }
                     /** @var DatamapPostprocessEvent $event */
                     $this->eventDispatcher->dispatch(
                         new DatamapPostprocessEvent(
-                            $savedData,
+                            $dataForEvent,
                             $this->importer
                         )
                     );

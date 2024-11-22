@@ -204,6 +204,12 @@ Datamap Postprocess
       :code:`tx_externalimport:status` with a value of either "insert" or "update"
       depending on which operation was performed on the record.
 
+      .. note::
+
+         The structure if a one-dimensional array if a single table is handled by the import.
+         If mutliples tables are handled (via the "children" property), the structure is multi-dimensional,
+         with the first key being the name of the table, then the list of records.
+
    .. php:method:: getImporter()
 
       Current instance of :php:`\Cobweb\ExternalImport\Importer`.
