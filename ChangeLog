@@ -2,6 +2,7 @@
 
     * Pass properly structured data to DatamapPostprocessEvent, resolves #355
     * Fix cross-linking and documentation configuration, resolves #356
+    * Release version 7.2.8
 
 2024-11-04 Francois Suter (Idéative)  <typo3@ideative.ch>
 
