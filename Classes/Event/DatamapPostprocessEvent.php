@@ -34,25 +34,33 @@ final class DatamapPostprocessEvent
      */
     protected array $data = [];
 
-    public function __construct(array $data, Importer $importer)
+    /**
+     * @var array Stored data, *really* structured as TCE datamap, i.e. first array dimension is table name, then records with additional information
+     */
+    protected array $structuredData = [];
+
+    public function __construct(array $data, array $structuredData, Importer $importer)
     {
         $this->data = $data;
+        $this->structuredData = $structuredData;
         $this->importer = $importer;
     }
 
-    /**
-     * @return Importer
-     */
     public function getImporter(): Importer
     {
         return $this->importer;
     }
 
     /**
-     * @return array
+     * TODO: deprecate in next major version, remove in following major version
      */
     public function getData(): array
     {
         return $this->data;
+    }
+
+    public function getStructuredData(): array
+    {
+        return $this->structuredData;
     }
 }

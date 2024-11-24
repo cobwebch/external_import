@@ -1,3 +1,7 @@
+2024-11-24 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Improve passing properly structured data to DatamapPostprocessEvent, references #355
+
 2024-11-22 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Pass properly structured data to DatamapPostprocessEvent, resolves #355

@@ -204,11 +204,34 @@ Datamap Postprocess
       :code:`tx_externalimport:status` with a value of either "insert" or "update"
       depending on which operation was performed on the record.
 
-      .. note::
+      .. warning::
 
-         The structure if a one-dimensional array if a single table is handled by the import.
-         If mutliples tables are handled (via the "children" property), the structure is multi-dimensional,
-         with the first key being the name of the table, then the list of records.
+         This structure is one-dimensional, which is buggy when multiple tables are handled by the import
+         (when using the "children" property), because records with the same primary key will override each
+         other. Use :code:`getStructuredData()` instead. Don't use :code:`getData()` anymore, it will be
+         dropped in the future.
+
+   .. php:method:: getStructuredData()
+
+      Returns the list of tables and their records keyed to their primary keys (including the new primary keys
+      for the inserted records). Each record contains an additional field called
+      :code:`tx_externalimport:status` with a value of either "insert" or "update"
+      depending on which operation was performed on the record. Example:
+
+      .. code-block:: php
+
+            [
+                'pages' => [
+                    23 => [
+                        'title' => 'Page title'
+                    ],
+                ],
+                'sys_file_reference' => [
+                    47 => [
+                        'title' => 'Page image'
+                    ],
+                ],
+            ]
 
    .. php:method:: getImporter()
 

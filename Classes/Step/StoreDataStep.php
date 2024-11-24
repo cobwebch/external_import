@@ -329,13 +329,9 @@ class StoreDataStep extends AbstractStep
         if (!empty($GLOBALS['TCA'][$mainTable]['ctrl']['sortby'])) {
             $tce->reverseOrder = true;
         }
-        $savedData = [];
-        // This is introduced for backwards-compatibility reason
-        // There was a bug with savedData, which ignored the fact that multiple tables could be handled
-        // by an import process, ever since the concept of children was introduced. When savedData was made
-        // multidimensional, this single dimension copy was created for single-table scenarios and is used
-        // to keep backwards-compatibility in the DatamapPostprocessEvent.
+        // Non-multidimensional saved data is kept for backwards-compatibility
         // TODO: drop this support in the next major version
+        $savedData = [];
         $savedDataSingleDimension = [];
 
         // Load the data and process it, if not in preview mode
@@ -391,15 +387,10 @@ class StoreDataStep extends AbstractStep
                 }
                 // Post-processing event after data was saved (see comment above, when $savedDataSingleDimension is initialized)
                 try {
-                    if (count(array_keys($savedData)) === 1) {
-                        $dataForEvent = $savedDataSingleDimension;
-                    } else {
-                        $dataForEvent = $savedData;
-                    }
-                    /** @var DatamapPostprocessEvent $event */
                     $this->eventDispatcher->dispatch(
                         new DatamapPostprocessEvent(
-                            $dataForEvent,
+                            $savedDataSingleDimension,
+                            $savedData,
                             $this->importer
                         )
                     );
@@ -600,7 +591,7 @@ class StoreDataStep extends AbstractStep
         );
 
         // Free some memory
-        unset($tce, $tceData, $savedData, $tceCommands, $tceDeleteCommands);
+        unset($tce, $tceData, $savedData, $savedDataSingleDimension, $tceCommands, $tceDeleteCommands);
     }
 
     /**
