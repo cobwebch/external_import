@@ -48,6 +48,7 @@ class DatamapPostprocessEventTest extends UnitTestCase
         );
         $this->subject = new DatamapPostprocessEvent(
             [],
+            [],
             $this->importer
         );
     }
@@ -60,6 +61,17 @@ class DatamapPostprocessEventTest extends UnitTestCase
         self::assertSame(
             [],
             $this->subject->getData()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function getStructuredDataInitiallyReturnsEmptyArray(): void
+    {
+        self::assertSame(
+            [],
+            $this->subject->getStructuredData()
         );
     }
 
