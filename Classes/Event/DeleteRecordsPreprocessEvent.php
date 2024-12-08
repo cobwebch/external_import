@@ -24,20 +24,17 @@ use Cobweb\ExternalImport\Importer;
  */
 final class DeleteRecordsPreprocessEvent
 {
-    /**
-     * @var Importer Back-reference to the calling Importer instance
-     */
-    protected Importer $importer;
-
-    /**
-     * @var array List of records to be deleted (primary keys)
-     */
-    protected array $records = [];
-
-    public function __construct(array $records, Importer $importer)
+    public function __construct(
+        /**
+         * @var array List of records to be deleted (primary keys)
+         */
+        protected array $records,
+        /**
+         * @var Importer Back-reference to the calling Importer instance
+         */
+        protected Importer $importer
+    )
     {
-        $this->records = $records;
-        $this->importer = $importer;
     }
 
     /**

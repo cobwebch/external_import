@@ -34,23 +34,12 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 class TransformDataStep extends AbstractStep
 {
     /**
-     * @var MappingUtility
-     */
-    protected MappingUtility $mappingUtility;
-
-    /**
      * @var array List of transformation properties
      */
     public static array $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
 
-    public function __construct(MappingUtility $mappingUtility)
+    public function __construct(protected MappingUtility $mappingUtility)
     {
-        $this->mappingUtility = $mappingUtility;
-    }
-
-    public function __toString(): string
-    {
-        return self::class;
     }
 
     /**
@@ -127,8 +116,7 @@ class TransformDataStep extends AbstractStep
                                     $this->importer->debug(
                                         sprintf(
                                             LocalizationUtility::translate(
-                                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:unknownTransformationProperty',
-                                                'external_import'
+                                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:unknownTransformationProperty'
                                             ),
                                             $property
                                         ),
@@ -136,7 +124,7 @@ class TransformDataStep extends AbstractStep
                                         $configuration
                                     );
                             }
-                        } catch (CriticalFailureException $e) {
+                        } catch (CriticalFailureException) {
                             // If a critical failure occurred during a transformation, set the abort flag and return to controller
                             $this->setAbortFlag(true);
                             return;
@@ -159,7 +147,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyTrim(string $name, $configuration, array $records): array
+    public function applyTrim(string $name, mixed $configuration, array $records): array
     {
         if ((bool)$configuration) {
             foreach ($records as $index => $record) {
@@ -198,7 +186,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyValue(string $name, $configuration, array $records): array
+    public function applyValue(string $name, mixed $configuration, array $records): array
     {
         foreach ($records as $index => $record) {
             $records[$index][$name] = $configuration;
@@ -214,7 +202,7 @@ class TransformDataStep extends AbstractStep
      * @param array $records Data to transform
      * @return array
      */
-    public function applyRteEnabledFlag(string $name, $configuration, array $records): array
+    public function applyRteEnabledFlag(string $name, mixed $configuration, array $records): array
     {
         if ((bool)$configuration) {
             foreach ($records as $index => $record) {
@@ -255,7 +243,7 @@ class TransformDataStep extends AbstractStep
                     $this->importer->debug(
                         LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidRecordRemoved',
-                            'external_import',
+                            null,
                             [
                                 $e->getMessage(),
                                 $e->getCode(),
@@ -273,7 +261,7 @@ class TransformDataStep extends AbstractStep
                     $this->importer->debug(
                         LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailedWithMessage',
-                            'external_import',
+                            null,
                             [
                                 $e->getMessage(),
                                 $e->getCode(),
@@ -287,12 +275,11 @@ class TransformDataStep extends AbstractStep
                     );
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $this->importer->debug(
                 sprintf(
                     LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalid_userfunc',
-                        'external_import'
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalid_userfunc'
                     ),
                     $configuration['class']
                 ),
@@ -339,8 +326,7 @@ class TransformDataStep extends AbstractStep
                     $this->importer->debug(
                         sprintf(
                             LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:expressionError',
-                                'external_import'
+                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:expressionError'
                             ),
                             $configuration['expression'],
                             $e->getMessage(),
@@ -360,7 +346,7 @@ class TransformDataStep extends AbstractStep
                     $this->importer->debug(
                         LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:emptyRecordRemoved',
-                            'external_import',
+                            null,
                             [
                                 $index,
                                 $name,

@@ -26,22 +26,8 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class ValidateConfigurationStep extends AbstractStep
 {
-    /**
-     * @var GeneralConfigurationValidator
-     */
-    protected GeneralConfigurationValidator $generalValidator;
-
-    /**
-     * @var ColumnConfigurationValidator
-     */
-    protected ColumnConfigurationValidator $columnValidator;
-
-    public function __construct(
-        GeneralConfigurationValidator $generalConfigurationValidator,
-        ColumnConfigurationValidator $columnConfigurationValidator
-    ) {
-        $this->generalValidator = $generalConfigurationValidator;
-        $this->columnValidator = $columnConfigurationValidator;
+    public function __construct(protected GeneralConfigurationValidator $generalValidator, protected ColumnConfigurationValidator $columnValidator)
+    {
     }
 
     /**
@@ -53,13 +39,13 @@ class ValidateConfigurationStep extends AbstractStep
         // If there's no general configuration, issue error
         if (count($generalConfiguration) === 0) {
             $this->importer->addMessage(
-                sprintf(
-                    LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingCtrlConfigurationError',
-                        'external_import'
-                    ),
-                    $this->importer->getExternalConfiguration()->getTable(),
-                    $this->importer->getExternalConfiguration()->getIndex()
+                LocalizationUtility::translate(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingCtrlConfigurationError',
+                    null,
+                    [
+                        $this->importer->getExternalConfiguration()->getTable(),
+                        $this->importer->getExternalConfiguration()->getIndex(),
+                    ]
                 )
             );
             $this->abortFlag = true;
@@ -69,13 +55,13 @@ class ValidateConfigurationStep extends AbstractStep
             // If there's no column configuration at all, issue error
             if (count($columnConfiguration) === 0) {
                 $this->importer->addMessage(
-                    sprintf(
-                        LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingColumnConfigurationError',
-                            'external_import'
-                        ),
-                        $this->importer->getExternalConfiguration()->getTable(),
-                        $this->importer->getExternalConfiguration()->getIndex()
+                    LocalizationUtility::translate(
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:missingColumnConfigurationError',
+                        null,
+                        [
+                            $this->importer->getExternalConfiguration()->getTable(),
+                            $this->importer->getExternalConfiguration()->getIndex(),
+                        ]
                     )
                 );
                 $this->abortFlag = true;
@@ -90,8 +76,7 @@ class ValidateConfigurationStep extends AbstractStep
                     if (!$isValid) {
                         $this->importer->addMessage(
                             LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
-                                'external_import'
+                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError'
                             )
                         );
                         $this->abortFlag = true;
@@ -103,8 +88,7 @@ class ValidateConfigurationStep extends AbstractStep
         } else {
             $this->importer->addMessage(
                 LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError',
-                    'external_import'
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:configurationError'
                 )
             );
             $this->abortFlag = true;

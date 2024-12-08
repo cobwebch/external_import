@@ -26,11 +26,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
  */
 class ReportStep extends AbstractStep
 {
-    protected EventDispatcherInterface $eventDispatcher;
-
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(protected EventDispatcherInterface $eventDispatcher)
     {
-        $this->eventDispatcher = $eventDispatcher;
         $this->setExecuteDespiteAbort(true);
     }
 
@@ -40,14 +37,10 @@ class ReportStep extends AbstractStep
         $this->importer->getReportingUtility()->writeToLog();
 
         // Fire event for custom reporting
-        // NOTE: it also triggers the reporting webhook and hence is fired only with TYPO3 12
-        if (CompatibilityUtility::isV12()) {
-            /** @var ReportEvent $event */
-            $event = $this->eventDispatcher->dispatch(
-                new ReportEvent(
-                    $this->importer
-                )
-            );
-        }
+        $this->eventDispatcher->dispatch(
+            new ReportEvent(
+                $this->importer
+            )
+        );
     }
 }

@@ -15,6 +15,7 @@ namespace Cobweb\ExternalImport\Tests\Unit;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
@@ -22,7 +23,6 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -91,9 +91,9 @@ class ImporterTest extends UnitTestCase
     {
         self::assertSame(
             [
-                AbstractMessage::ERROR => [],
-                AbstractMessage::WARNING => [],
-                AbstractMessage::OK => [],
+                ContextualFeedbackSeverity::ERROR->value => [],
+                ContextualFeedbackSeverity::WARNING->value => [],
+                ContextualFeedbackSeverity::OK->value => [],
             ],
             $this->subject->getMessages()
         );
@@ -104,10 +104,10 @@ class ImporterTest extends UnitTestCase
      */
     public function addMessagesAddsMessage(): void
     {
-        $this->subject->addMessage('foo', AbstractMessage::WARNING);
+        $this->subject->addMessage('foo', ContextualFeedbackSeverity::WARNING->value);
         self::assertCount(
             1,
-            $this->subject->getMessages()[AbstractMessage::WARNING]
+            $this->subject->getMessages()[ContextualFeedbackSeverity::WARNING->value]
         );
     }
 
@@ -116,13 +116,13 @@ class ImporterTest extends UnitTestCase
      */
     public function resetMessagesInitiallyPreparesEmptyStructure(): void
     {
-        $this->subject->addMessage('foo', AbstractMessage::WARNING);
+        $this->subject->addMessage('foo', ContextualFeedbackSeverity::WARNING->value);
         $this->subject->resetMessages();
         self::assertSame(
             [
-                AbstractMessage::ERROR => [],
-                AbstractMessage::WARNING => [],
-                AbstractMessage::OK => [],
+                ContextualFeedbackSeverity::ERROR->value => [],
+                ContextualFeedbackSeverity::WARNING->value => [],
+                ContextualFeedbackSeverity::OK->value => [],
             ],
             $this->subject->getMessages()
         );
@@ -263,9 +263,8 @@ class ImporterTest extends UnitTestCase
     /**
      * @test
      * @dataProvider previewDataProvider
-     * @param mixed $data
      */
-    public function setPreviewDataSetsPreviewData($data): void
+    public function setPreviewDataSetsPreviewData(mixed $data): void
     {
         $this->subject->setPreviewData($data);
         self::assertSame(

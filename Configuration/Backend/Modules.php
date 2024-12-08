@@ -1,5 +1,8 @@
 <?php
 
+use Cobweb\ExternalImport\Controller\DataModuleController;
+use Cobweb\ExternalImport\Controller\LogModuleController;
+
 return [
     'ExternalImport' => [
         'access' => '',
@@ -18,7 +21,7 @@ return [
         'labels' => 'LLL:EXT:external_import/Resources/Private/Language/DataModule.xlf',
         'extensionName' => 'external_import',
         'controllerActions' => [
-            \Cobweb\ExternalImport\Controller\DataModuleController::class => [
+            DataModuleController::class => [
                 'listSynchronizable',
                 'listNonSynchronizable',
                 'viewConfiguration',
@@ -42,7 +45,7 @@ return [
         'labels' => 'LLL:EXT:external_import/Resources/Private/Language/LogModule.xlf',
         'extensionName' => 'external_import',
         'controllerActions' => [
-            \Cobweb\ExternalImport\Controller\LogModuleController::class => [
+            LogModuleController::class => [
                 'list',
             ],
         ],

@@ -5,7 +5,6 @@ return [
         'title' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log',
         'label' => 'configuration',
         'crdate' => 'crdate',
-        'cruser_id' => 'cruser_id',
         'rootLevel' => -1,
         'default_sortby' => 'ORDER BY crdate DESC',
         'searchFields' => 'configuration',
@@ -19,10 +18,9 @@ return [
             'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.status',
             'config' => [
                 'readOnly' => true,
-                'type' => 'input',
+                'type' => 'number',
                 'size' => 10,
                 'max' => 5,
-                'eval' => 'int',
             ],
         ],
         'crdate' => [
@@ -30,10 +28,8 @@ return [
             'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.crdate',
             'config' => [
                 'readOnly' => true,
-                'type' => 'input',
-                'renderType' => 'inputDateTime',
+                'type' => 'datetime',
                 'size' => 20,
-                'eval' => 'datetime',
             ],
         ],
         'cruser_id' => [
@@ -80,9 +76,7 @@ return [
             'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.duration',
             'config' => [
                 'readOnly' => true,
-                'type' => 'input',
-                'max' => 20,
-                'eval' => 'int',
+                'type' => 'number',
             ],
         ],
     ],

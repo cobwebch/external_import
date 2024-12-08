@@ -33,8 +33,7 @@ class ValidateConnectorStep extends AbstractStep
         if (empty($generalConfiguration['connector'])) {
             $this->importer->addMessage(
                 LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_connector',
-                    'external_import'
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_connector'
                 )
             );
             $this->abortFlag = true;

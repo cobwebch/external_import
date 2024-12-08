@@ -24,20 +24,17 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
  */
 final class ProcessConnectorParametersEvent
 {
-    /**
-     * @var array Connector parameters
-     */
-    protected array $parameters = [];
-
-    /**
-     * @var Configuration Current External Import configuration
-     */
-    protected Configuration $externalConfiguration;
-
-    public function __construct(array $parameters, Configuration $configuration)
+    public function __construct(
+        /**
+         * @var array Connector parameters
+         */
+        protected array $parameters,
+        /**
+         * @var Configuration Current External Import configuration
+         */
+        protected Configuration $externalConfiguration
+    )
     {
-        $this->parameters = $parameters;
-        $this->externalConfiguration = $configuration;
     }
 
     /**

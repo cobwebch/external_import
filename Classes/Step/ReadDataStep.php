@@ -28,13 +28,8 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
  */
 class ReadDataStep extends AbstractStep
 {
-    protected ConnectorRegistry $connectorRegistry;
-    protected EventDispatcherInterface $eventDispatcher;
-
-    public function __construct(ConnectorRegistry $connectorRegistry, EventDispatcherInterface $eventDispatcher)
+    public function __construct(protected ConnectorRegistry $connectorRegistry, protected EventDispatcherInterface $eventDispatcher)
     {
-        $this->connectorRegistry = $connectorRegistry;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -53,7 +48,7 @@ class ReadDataStep extends AbstractStep
                 $this->importer->addMessage(
                     LocalizationUtility::translate(
                         'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:service_not_available',
-                        'external_import',
+                        null,
                         [
                             $generalConfiguration['connector'],
                         ],
@@ -66,7 +61,7 @@ class ReadDataStep extends AbstractStep
             $this->importer->addMessage(
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:service_error',
-                    'external_import',
+                    null,
                     [
                         $generalConfiguration['connector'],
                         $e->getMessage(),
@@ -101,7 +96,7 @@ class ReadDataStep extends AbstractStep
                     $this->importer->addMessage(
                         LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
-                            'external_import',
+                            null,
                             [
                                 $e->getMessage(),
                             ]
@@ -118,7 +113,7 @@ class ReadDataStep extends AbstractStep
                     $this->importer->addMessage(
                         LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
-                            'external_import',
+                            null,
                             [
                                 $e->getMessage(),
                             ]
@@ -132,8 +127,7 @@ class ReadDataStep extends AbstractStep
                 $this->abortFlag = true;
                 $this->importer->addMessage(
                     LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_type_not_defined',
-                        'external_import'
+                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_type_not_defined'
                     )
                 );
                 break;

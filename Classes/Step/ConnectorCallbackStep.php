@@ -17,7 +17,7 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
  * Calls on the Connector at the end of the synchronize process.
@@ -40,7 +40,7 @@ class ConnectorCallbackStep extends AbstractStep
         if ($this->importer->getExternalConfiguration()->getConnector() !== null) {
             $errorStatus = false;
             $messages = $this->importer->getMessages();
-            if (count($messages[AbstractMessage::ERROR]) > 0) {
+            if (count($messages[ContextualFeedbackSeverity::ERROR->value]) > 0) {
                 $errorStatus = true;
             }
             $this->importer->getExternalConfiguration()->getConnector()->postProcessOperations(

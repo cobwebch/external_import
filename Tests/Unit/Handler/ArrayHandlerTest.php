@@ -516,11 +516,8 @@ class ArrayHandlerTest extends UnitTestCase
     /**
      * @test
      * @dataProvider getValueSuccessProvider
-     * @param array $record
-     * @param array $configuration
-     * @param mixed $result
      */
-    public function getValueReturnsValueIfFound(array $record, array $configuration, $result): void
+    public function getValueReturnsValueIfFound(array $record, array $configuration, mixed $result): void
     {
         $value = $this->subject->getValue($record, $configuration);
         self::assertSame(

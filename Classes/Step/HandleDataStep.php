@@ -50,16 +50,16 @@ class HandleDataStep extends AbstractStep
                     $this->abortFlag = true;
                     LocalizationUtility::translate(
                         'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler',
-                        'external_import',
+                        null,
                         [$generalConfiguration['dataHandler']]
                     );
                     return;
                 }
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 $this->abortFlag = true;
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler',
-                    'external_import',
+                    null,
                     [$generalConfiguration['dataHandler']]
                 );
                 return;

@@ -39,14 +39,17 @@ class CheckPermissionsStep extends AbstractStep
             $context = GeneralUtility::makeInstance(Context::class);
             try {
                 $userName = $context->getPropertyFromAspect('backend.user', 'username');
-            } catch (AspectNotFoundException $e) {
+            } catch (AspectNotFoundException) {
                 $userName = 'Unknown';
             }
             $this->importer->addMessage(
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_rights_for_sync',
-                    'external_import',
-                    [$userName, $table]
+                    null,
+                    [
+                        $userName,
+                        $table
+                    ]
                 )
             );
         }

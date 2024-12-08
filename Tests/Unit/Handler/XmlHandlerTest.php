@@ -105,12 +105,9 @@ class XmlHandlerTest extends UnitTestCase
     /**
      * @test
      * @dataProvider getValueSuccessProvider
-     * @param string $structure
-     * @param array $configuration
-     * @param mixed $result
      * @throws \Exception
      */
-    public function getValueReturnsValueIfFound(string $structure, array $configuration, $result): void
+    public function getValueReturnsValueIfFound(string $structure, array $configuration, mixed $result): void
     {
         // Load the XML into a DOM object
         $dom = new \DOMDocument();

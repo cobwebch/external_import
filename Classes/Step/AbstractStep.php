@@ -55,59 +55,39 @@ abstract class AbstractStep implements ImporterAwareInterface
 
     /**
      * Sets the preview data for the Importer class.
-     *
-     * @param mixed $data
      */
-    public function setPreviewData($data): void
+    public function setPreviewData(mixed $data): void
     {
         if ($this->importer->isPreview()) {
             $this->importer->setPreviewData($data);
         }
     }
 
-    /**
-     * @return Data
-     */
     public function getData(): ?Data
     {
         return $this->data;
     }
 
-    /**
-     * @param Data $data
-     */
     public function setData(Data $data): void
     {
         $this->data = $data;
     }
 
-    /**
-     * @return bool
-     */
     public function isAbortFlag(): bool
     {
         return $this->abortFlag;
     }
 
-    /**
-     * @param bool $abortFlag
-     */
     public function setAbortFlag(bool $abortFlag): void
     {
         $this->abortFlag = $abortFlag;
     }
 
-    /**
-     * @return bool
-     */
     public function isExecuteDespiteAbort(): bool
     {
         return $this->executeDespiteAbort;
     }
 
-    /**
-     * @param bool $executeDespiteAbort
-     */
     public function setExecuteDespiteAbort(bool $executeDespiteAbort): void
     {
         $this->executeDespiteAbort = $executeDespiteAbort;
@@ -115,8 +95,6 @@ abstract class AbstractStep implements ImporterAwareInterface
 
     /**
      * Sets the list of parameters for the (custom) step.
-     *
-     * @param array $parameters
      */
     public function setParameters(array $parameters): void
     {
@@ -125,8 +103,6 @@ abstract class AbstractStep implements ImporterAwareInterface
 
     /**
      * Returns the list of parameters.
-     *
-     * @return array
      */
     public function getParameters(): array
     {
@@ -137,9 +113,8 @@ abstract class AbstractStep implements ImporterAwareInterface
      * Returns a specific parameter.
      *
      * @param mixed $key Key/index of the parameter
-     * @return mixed
      */
-    public function getParameter($key)
+    public function getParameter(mixed $key): mixed
     {
         return $this->parameters[$key] ?? null;
     }
@@ -151,8 +126,6 @@ abstract class AbstractStep implements ImporterAwareInterface
      * The download is a feature from the preview mode in the BE module.
      *
      * Override to return true in specific steps.
-     *
-     * @return bool
      */
     public function hasDownloadableData(): bool
     {
