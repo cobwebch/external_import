@@ -23,24 +23,22 @@
 		}
 	},
 	"require": {
-		"php": "^7.4 || ^8.0 || ^8.1 || ^8.2 || ^8.3",
-		"typo3/cms-core": "^11.5 || ^12.4",
+		"php": "^8.1 || ^8.2 || ^8.3 || ^8.4",
+		"typo3/cms-core": "^12.4 || ^13.4",
 		"typo3/cms-extbase": "*",
-		"typo3/cms-scheduler": "^11.5 || ^12.4",
+		"typo3/cms-scheduler": "^12.4 || ^13.4",
+		"typo3/cms-reactions": "^12.4 || ^13.4",
 		"typo3/coding-standards": "*",
-		"cobweb/svconnector": "^5.0"
+		"cobweb/svconnector": "^6.0"
 	},
 	"require-dev": {
 		"cobweb/externalimport_test": "^0.14.0",
-		"cobweb/svconnector_csv": "^4.1",
-		"cobweb/svconnector_feed": "^4.1",
+		"cobweb/svconnector_csv": "^5.0",
+		"cobweb/svconnector_feed": "^5.0",
 		"ergebnis/composer-normalize": "~2.42.0",
 		"friendsofphp/php-cs-fixer": "^3.52",
 		"nimut/testing-framework": "^6.0",
 		"phpstan/phpstan": "^1.10"
-	},
-	"suggest": {
-		"typo3/cms-reactions": "^12.4"
 	},
 	"extra": {
 		"branch-alias": {
