@@ -64,16 +64,11 @@ class QueryParameters
      *
      * @param array|null $parameters Query parameters from the AJAX query
      */
-    public function __construct(array $parameters = null)
+    public function __construct(?array $parameters)
     {
         if ($parameters !== null) {
             $this->setAllParameters($parameters);
         }
-    }
-
-    public function __toString()
-    {
-        return self::class;
     }
 
     /**

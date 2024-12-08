@@ -351,7 +351,7 @@ class XmlHandler implements DataHandlerInterface
      * @return \DOMNodeList List of found nodes
      * @throws \Exception
      */
-    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, \DOMNode $context = null): \DOMNodeList
+    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context): \DOMNodeList
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
         if ($resultNodes->length > 0) {

@@ -96,11 +96,6 @@ class Configuration
         $this->processedConfiguration = GeneralUtility::makeInstance(ProcessedConfiguration::class);
     }
 
-    public function __toString()
-    {
-        return self::class;
-    }
-
     /**
      * Restructures part of the configuration for easier use during the import process.
      */
@@ -197,7 +192,7 @@ class Configuration
      * @param array $generalConfiguration
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the repository)
      */
-    public function setGeneralConfiguration(array $generalConfiguration, array $defaultSteps = null): void
+    public function setGeneralConfiguration(array $generalConfiguration, ?array $defaultSteps): void
     {
         $this->generalConfiguration = $generalConfiguration;
         $stepUtility = GeneralUtility::makeInstance(StepUtility::class);

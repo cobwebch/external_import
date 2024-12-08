@@ -216,7 +216,7 @@ class ConfigurationRepository
      * @return Configuration
      * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
      */
-    public function findConfigurationObject(string $table, $index, array $defaultSteps = null): Configuration
+    public function findConfigurationObject(string $table, $index, ?array $defaultSteps): Configuration
     {
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $externalConfiguration = $this->findByTableAndIndex($table, $index);

@@ -31,6 +31,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -46,7 +47,7 @@ class Importer implements LoggerAwareInterface
     /**
      * @var array Extension configuration
      */
-    protected $extensionConfiguration = [];
+    protected array $extensionConfiguration = [];
 
     /**
      * @var array List of result messages
@@ -214,7 +215,7 @@ class Importer implements LoggerAwareInterface
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @throws NoConfigurationException
      */
-    protected function initialize(string $table, $index, array $defaultSteps = null): void
+    protected function initialize(string $table, $index, ?array $defaultSteps): void
     {
         // Assign back-reference to reporting utility
         $this->reportingUtility->setImporter($this);
@@ -265,7 +266,7 @@ class Importer implements LoggerAwareInterface
                         $e->getMessage(),
                     ]
                 ),
-                AbstractMessage::WARNING
+                ContextualFeedbackSeverity::WARNING->value
             );
         } catch (NoConfigurationException $e) {
             $this->addMessage(
@@ -401,7 +402,7 @@ class Importer implements LoggerAwareInterface
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
                             'external_import'
                         ),
-                        AbstractMessage::WARNING
+                        ContextualFeedbackSeverity::WARNING->value
                     );
                 }
                 $this->currentData = $step->getData();
@@ -534,7 +535,7 @@ class Importer implements LoggerAwareInterface
      * @param string $text The message itself
      * @param int $status Status of the message. Expected is "success", "warning" or "error"
      */
-    public function addMessage(string $text, int $status = AbstractMessage::ERROR): void
+    public function addMessage(string $text, int $status = ContextualFeedbackSeverity::ERROR->value): void
     {
         if (!empty($text)) {
             $this->messages[$status][] = $text;
@@ -557,9 +558,9 @@ class Importer implements LoggerAwareInterface
     public function resetMessages(): void
     {
         $this->messages = [
-                AbstractMessage::ERROR => [],
-                AbstractMessage::WARNING => [],
-                AbstractMessage::OK => [],
+            ContextualFeedbackSeverity::ERROR->value => [],
+            ContextualFeedbackSeverity::WARNING->value => [],
+            ContextualFeedbackSeverity::OK->value => [],
         ];
     }
 

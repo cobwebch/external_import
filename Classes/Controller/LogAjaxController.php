@@ -35,8 +35,9 @@ class LogAjaxController
      * @param ServerRequestInterface $request
      * @param ResponseInterface|null $response
      * @return ResponseInterface
+     * @throws \JsonException
      */
-    public function getAction(ServerRequestInterface $request, ResponseInterface $response = null): ResponseInterface
+    public function getAction(ServerRequestInterface $request, ?ResponseInterface $response): ResponseInterface
     {
         // Process query parameters
         $queryParameters = GeneralUtility::makeInstance(
