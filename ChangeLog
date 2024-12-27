@@ -1,3 +1,9 @@
+2024-12-27 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Add a delete reaction, resolves #361
+    * Avoid accessing substructure when not of the expected type, resolves #360
+    * Release version 7.3.0
+
 2024-11-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Improve passing properly structured data to DatamapPostprocessEvent, references #355

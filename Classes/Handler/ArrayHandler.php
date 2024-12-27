@@ -124,10 +124,12 @@ class ArrayHandler implements DataHandlerInterface
                                 )
                             );
                             $theValue = $event->getSubstructure();
-                            $rows[$columnName] = $this->getSubstructureValues(
-                                $theValue,
-                                $columnData['substructureFields']
-                            );
+                            if (is_array($theValue)) {
+                                $rows[$columnName] = $this->getSubstructureValues(
+                                    $theValue,
+                                    $columnData['substructureFields']
+                                );
+                            }
                             // Prepare for the case where no substructure was found
                             // If one was found, it is added later
                             $data[$referenceCounter][$columnName] = null;

@@ -30,6 +30,9 @@
 			<trans-unit id="sys_reaction.reaction_type.import_external_data" xml:space="preserve">
 				<source>Import external data</source>
 			</trans-unit>
+			<trans-unit id="sys_reaction.reaction_type.delete_external_data" xml:space="preserve">
+				<source>Delete external data</source>
+			</trans-unit>
 			<trans-unit id="sys_reaction.external_import_configuration" xml:space="preserve">
 				<source>External Import configuration</source>
 			</trans-unit>

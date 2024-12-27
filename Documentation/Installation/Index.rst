@@ -23,6 +23,14 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-730:
+
+Upgrade to 7.3.0
+""""""""""""""""
+
+This version introduces a new reaction dedicated to deleting already import data.
+
+
 .. _installation-upgrade-720:
 
 Upgrade to 7.2.0
