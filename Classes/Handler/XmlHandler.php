@@ -109,11 +109,16 @@ class XmlHandler implements DataHandlerInterface
                             )
                         );
                         $nodeList = $event->getSubstructure();
-                        $rows[$columnName] = $this->getSubstructureValues(
-                            $nodeList,
-                            $columnData['substructureFields'],
-                            $xPathObject
-                        );
+                        if ($nodeList instanceof \DOMNodeList) {
+                            $rows[$columnName] = $this->getSubstructureValues(
+                                $nodeList,
+                                $columnData['substructureFields'],
+                                $xPathObject
+                            );
+                        }
+                        // Prepare for the case where no substructure was found
+                        // If one was found, it is added later
+                        $data[$referenceCounter][$columnName] = null;
                     } else {
                         $data[$referenceCounter][$columnName] = $this->getValue(
                             $theRecord,

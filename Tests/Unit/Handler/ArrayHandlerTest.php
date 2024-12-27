@@ -802,6 +802,17 @@ class ArrayHandlerTest extends UnitTestCase
                     ],
                 ],
             ],
+            'raw data with general array path but invalid value type' => [
+                'generalConfiguration' => [
+                    'arrayPath' => 'data/items',
+                ],
+                'rawData' => [
+                    'data' => [
+                        'items' => 'This should be an array',
+                    ],
+                ],
+                'expectedStructure' => [],
+            ],
             'raw data with general invalid array path (empty)' => [
                 'generalConfiguration' => [
                     'arrayPath' => '',
