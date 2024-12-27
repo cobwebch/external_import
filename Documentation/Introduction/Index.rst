@@ -14,6 +14,8 @@ A backend module provides a way to synchronize any table manually
 or to define a scheduling for all synchronizations.
 Synchronizations can also be run using the command-line interface.
 Automatic scheduling can be defined using a Scheduler task.
+Finally, this extension provides reactions (starting with TYPO3 12)
+to import or delete data, responding to calls from remote sources.
 
 The main idea of getting external data into the TYPO3 CMS database
 is to be able to use TYPO3 CMS standard functions on that data
@@ -26,7 +28,7 @@ called "connectors", the base of which is available as a separate extension
 Data from several external sources can be stored into the same table
 allowing data aggregation.
 
-The extension also provides an API for sending it data from some other source.
+The extension also provides an API for receiving data from some other source.
 This data is stored into the TYPO3 CMS database using the same mapping process
 as when data is fetched directly by the extension.
 

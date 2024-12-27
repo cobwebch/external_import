@@ -281,3 +281,33 @@ Report
    .. php:method:: getImporter()
 
       Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+
+
+.. _developer-events-get-external-key:
+
+Report
+""""""
+
+.. php:namespace:: Cobweb\ExternalImport\Event
+
+.. php:class:: GetExternalKeyEvent
+
+   This event is not related to the import process. It is triggered by the
+   "Delete external data" reaction. It makes it possible to retrieve the key
+   to the external data, if it is not stored in the "external_id" field as expected.
+
+   .. php:method:: getConfiguration()
+
+      Instance of :php:`\Cobweb\ExternalImport\Domain\Model\Configuration` with the targeted configuration.
+
+   .. php:method:: getData()
+
+      An array with the data for the item to delete.
+
+   .. php:method:: getExternalKey()
+
+      Value of the external key before the event is fired. It will be :code:`null` if the key was not found as expected.
+
+   .. php:method:: setExternalKey()
+
+      Use this method to set the value of the external key, once you have performed your custom processing of the data.

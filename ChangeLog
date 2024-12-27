@@ -1,3 +1,7 @@
+2024-12-27 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Add a delete reaction, resolves #361
+
 2024-11-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Improve passing properly structured data to DatamapPostprocessEvent, references #355
