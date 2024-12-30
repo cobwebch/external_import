@@ -62,12 +62,13 @@
   <g
      style="display:inline;opacity:1"
      id="New Layer"
+     stroke="currentColor"
      inkscape:groupmode="layer"
      inkscape:label="Icon">
     <path
        inkscape:connector-curvature="0"
        id="path833"
        d="m 23.578903,8.4506594 c -5.062778,2.9771086 -5.021019,8.9956586 -5.021019,8.9956586 0,0 5.021019,0.06408 5.021019,0.06408 0,0 -7.535202,6.015295 -7.535202,6.015295 0,0 -7.5076199,-6.025664 -7.5076199,-6.025664 0,0 5.0049049,-0.06596 5.0049049,-0.06596 0,0 0.07423,-5.988296 -5.0444897,-9.046651 3.3412417,0.041688 12.2065337,-0.02234 15.0824067,0.063241 z"
-       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:1.13385827;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:none;fill-opacity:1;stroke-width:1.13385827;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
 </svg>
