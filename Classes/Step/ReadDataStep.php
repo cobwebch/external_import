@@ -17,10 +17,12 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\Svconnector\Registry\ConnectorRegistry;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
@@ -38,10 +40,21 @@ class ReadDataStep extends AbstractStep
     public function run(): void
     {
         $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
+
+        // Pre-process connector parameters
+        try {
+            $parameters = $this->processParameters($generalConfiguration['parameters'] ?? []);
+        } catch (CriticalFailureException $e) {
+            // If a critical failure occurred during hook execution, set the abort flag and return to controller
+            $this->setAbortFlag(true);
+            return;
+        }
+
         // Check if there are any services of the given type
         try {
             $connector = $this->connectorRegistry->getServiceForType(
-                $generalConfiguration['connector']
+                $generalConfiguration['connector'],
+                $parameters
             );
             if (!$connector->isAvailable()) {
                 $this->setAbortFlag(true);
@@ -71,26 +84,27 @@ class ReadDataStep extends AbstractStep
             );
             return;
         }
+        // Set the call context for the connector
+        $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
+        $configurationKey->setTableAndIndex(
+            $this->importer->getExternalConfiguration()->getTable(),
+            (string)$this->importer->getExternalConfiguration()->getIndex()
+        );
+        $connector->getCallContext()->add(
+            'external_import',
+            $configurationKey->getConfigurationKey(),
+        );
 
         // Store a reference to the connector object for the callback step
         $this->importer->getExternalConfiguration()->setConnector($connector);
         $data = [];
-
-        // Pre-process connector parameters
-        try {
-            $parameters = $this->processParameters($generalConfiguration['parameters']);
-        } catch (CriticalFailureException $e) {
-            // If a critical failure occurred during hook execution, set the abort flag and return to controller
-            $this->setAbortFlag(true);
-            return;
-        }
 
         // A problem may happen while fetching the data
         // If so, the import process has to be aborted
         switch ($generalConfiguration['data']) {
             case 'xml':
                 try {
-                    $data = $connector->fetchXML($parameters);
+                    $data = $connector->fetchXML();
                 } catch (\Exception $e) {
                     $this->abortFlag = true;
                     $this->importer->addMessage(
@@ -107,7 +121,7 @@ class ReadDataStep extends AbstractStep
 
             case 'array':
                 try {
-                    $data = $connector->fetchArray($parameters);
+                    $data = $connector->fetchArray();
                 } catch (\Exception $e) {
                     $this->abortFlag = true;
                     $this->importer->addMessage(
