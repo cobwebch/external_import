@@ -17,7 +17,7 @@ namespace Cobweb\ExternalImport\Validator;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
  * Utility class used to store validation results.
@@ -42,9 +42,9 @@ class ValidationResult
      *
      * @param string $property
      * @param string $message
-     * @param int $severity
+     * @param ContextualFeedbackSeverity $severity
      */
-    public function add(string $property, string $message, int $severity = AbstractMessage::WARNING): void
+    public function add(string $property, string $message, ContextualFeedbackSeverity $severity = ContextualFeedbackSeverity::WARNING): void
     {
         if (!isset($this->results[$property])) {
             $this->results[$property] = [];
@@ -92,10 +92,10 @@ class ValidationResult
     /**
      * Returns all results for a given severity level.
      *
-     * @param int $severity Severity level
+     * @param ContextualFeedbackSeverity $severity Severity level
      * @return array
      */
-    public function getForSeverity(int $severity): array
+    public function getForSeverity(ContextualFeedbackSeverity $severity): array
     {
         $listOfResults = [];
         foreach ($this->results as $property => $results) {
@@ -115,10 +115,10 @@ class ValidationResult
      * NOTE: this is mostly used for testing, to better target results.
      *
      * @param string $property Name of the property
-     * @param int $severity Severity level
+     * @param ContextualFeedbackSeverity $severity Severity level
      * @return array
      */
-    public function getForPropertyAndSeverity(string $property, int $severity): array
+    public function getForPropertyAndSeverity(string $property, ContextualFeedbackSeverity $severity): array
     {
         $listOfResults = [];
         if (array_key_exists($property, $this->results)) {
@@ -134,10 +134,10 @@ class ValidationResult
     /**
      * Returns the number of results for a given severity level.
      *
-     * @param int $severity Severity level
+     * @param ContextualFeedbackSeverity $severity Severity level
      * @return int
      */
-    public function countForSeverity(int $severity): int
+    public function countForSeverity(ContextualFeedbackSeverity $severity): int
     {
         $count = 0;
         foreach ($this->results as $property => $results) {
@@ -172,7 +172,7 @@ class ValidationResult
     /**
      * Sorts two messages according to severity, so that more important severity comes first.
      *
-     * NOTE: the higher the severity value the more important it is (see \TYPO3\CMS\Core\Messaging\AbstractMessage).
+     * NOTE: the higher the severity value the more important it is (see \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity).
      * So in terms of values, we want to sort by decreasing values of severity.
      *
      * @param array $a
@@ -181,10 +181,10 @@ class ValidationResult
      */
     public static function compareSeverity(array $a, array $b): int
     {
-        if ($a['severity'] > $b['severity']) {
+        if ($a['severity']->value > $b['severity']->value) {
             return -1;
         }
-        if ($a['severity'] < $b['severity']) {
+        if ($a['severity']->value < $b['severity']->value) {
             return 1;
         }
         return 0;

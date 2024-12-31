@@ -2,6 +2,9 @@
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
 
+<f:layout name="Module" />
+<f:section name="Content">
+
 	<h1><f:translate id="edit_sync" /></h1>
 	<p>
 		<f:if condition="{task.table} == 'all'">
@@ -17,4 +20,5 @@
 	<f:form name="taskForm" action="updateTask" method="post">
 		<f:render partial="DataModule/TaskFields" arguments="{_all}" />
 	</f:form>
+</f:section>
 </html>

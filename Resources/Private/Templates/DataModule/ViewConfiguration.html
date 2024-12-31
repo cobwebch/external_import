@@ -1,8 +1,10 @@
 <html data-namespace-typo3-fluid="true"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
-	<f:flashMessages />
 
+<f:layout name="Module" />
+<f:section name="Content">
+	<f:flashMessages/>
 	<h1><f:translate id="configuration_details" arguments="{0: '{ex:be.tableTitle(table: table)}', 1: index}" /></h1>
 
 	<f:if condition="{configuration}">
@@ -50,5 +52,5 @@
 			</div>
 		</div>
 	</f:if>
-
+</f:section>
 </html>

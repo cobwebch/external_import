@@ -1,8 +1,10 @@
 <html data-namespace-typo3-fluid="true"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
-	<f:flashMessages />
 
+<f:layout name="Module" />
+<f:section name="Content">
+	<f:flashMessages/>
 	<h1><f:translate id="function_sync" /></h1>
 
 	<f:if condition="{configurations->f:count()}">
@@ -153,4 +155,5 @@
 			</table>
 		</div>
 	</f:if>
+</f:section>
 </html>

@@ -23,7 +23,7 @@ use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\StepUtility;
 use Cobweb\Svconnector\Registry\ConnectorRegistry;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -108,8 +108,8 @@ class GeneralConfigurationValidator
         }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
-        return $this->results->countForSeverity(AbstractMessage::ERROR) +
-            $this->results->countForSeverity(AbstractMessage::WARNING) === 0;
+        return $this->results->countForSeverity(ContextualFeedbackSeverity::ERROR) +
+            $this->results->countForSeverity(ContextualFeedbackSeverity::WARNING) === 0;
     }
 
     /**
@@ -125,7 +125,7 @@ class GeneralConfigurationValidator
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingDataProperty'
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         } elseif ($property !== 'array' && $property !== 'xml') {
             $this->results->add(
@@ -133,7 +133,7 @@ class GeneralConfigurationValidator
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty'
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
     }
@@ -160,7 +160,7 @@ class GeneralConfigurationValidator
                     LocalizationUtility::translate(
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:unavailableConnector'
                     ),
-                    AbstractMessage::ERROR
+                    ContextualFeedbackSeverity::ERROR
                 );
             }
         }
@@ -210,7 +210,7 @@ class GeneralConfigurationValidator
                             LocalizationUtility::translate(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerInterfaceIssue'
                             ),
-                            AbstractMessage::NOTICE
+                            ContextualFeedbackSeverity::NOTICE
                         );
                     }
                 } catch (\Exception $e) {
@@ -219,7 +219,7 @@ class GeneralConfigurationValidator
                         LocalizationUtility::translate(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNoInstance'
                         ),
-                        AbstractMessage::NOTICE
+                        ContextualFeedbackSeverity::NOTICE
                     );
                 }
             } else {
@@ -228,7 +228,7 @@ class GeneralConfigurationValidator
                     LocalizationUtility::translate(
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNotFound'
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE
                 );
             }
         }
@@ -249,7 +249,7 @@ class GeneralConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodeProperty',
                     'external_import'
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
     }
@@ -267,7 +267,7 @@ class GeneralConfigurationValidator
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingReferenceUidProperty'
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
     }
@@ -289,7 +289,7 @@ class GeneralConfigurationValidator
                         Importer::DEFAULT_PRIORITY,
                     ]
                 ),
-                AbstractMessage::NOTICE
+                ContextualFeedbackSeverity::NOTICE
             );
         }
     }
@@ -315,7 +315,7 @@ class GeneralConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPage',
                         'external_import'
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE
                 );
             } else {
                 // Records for current table are not allowed on root page
@@ -328,7 +328,7 @@ class GeneralConfigurationValidator
                             $this->table,
                         ]
                     ),
-                    AbstractMessage::ERROR
+                    ContextualFeedbackSeverity::ERROR
                 );
             }
         } elseif ($property < 0) {
@@ -339,7 +339,7 @@ class GeneralConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:negativePidProperty',
                     'external_import'
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             // Pid is a positive integer, but records for current table can only be stored on root page
         } elseif ($rootLevelFlag === 1) {
@@ -352,7 +352,7 @@ class GeneralConfigurationValidator
                         $this->table,
                     ]
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
     }
@@ -378,7 +378,7 @@ class GeneralConfigurationValidator
                         $this->table,
                     ]
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
     }
@@ -405,7 +405,7 @@ class GeneralConfigurationValidator
                         implode(', ', $difference),
                     ]
                 ),
-                AbstractMessage::NOTICE
+                ContextualFeedbackSeverity::NOTICE
             );
         }
         // Check if some columns do not exist in the configuration
@@ -425,7 +425,7 @@ class GeneralConfigurationValidator
                         implode(', ', $invalidColumns),
                     ]
                 ),
-                AbstractMessage::NOTICE
+                ContextualFeedbackSeverity::NOTICE
             );
         }
     }
@@ -460,7 +460,7 @@ class GeneralConfigurationValidator
                                 $e->getCode(),
                             ]
                         ),
-                        AbstractMessage::NOTICE
+                        ContextualFeedbackSeverity::NOTICE
                     );
                     break;
                 }

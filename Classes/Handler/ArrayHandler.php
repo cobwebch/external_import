@@ -22,7 +22,7 @@ use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
 use Cobweb\ExternalImport\Importer;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
  * Remaps data from a "raw" PHP array to an array mapped to TCA columns.
@@ -43,11 +43,6 @@ class ArrayHandler implements DataHandlerInterface
     {
         $this->eventDispatcher = $eventDispatcher;
         $this->expressionLanguage = new ExpressionLanguage();
-    }
-
-    public function __toString()
-    {
-        return self::class;
     }
 
     /**
@@ -86,7 +81,7 @@ class ArrayHandler implements DataHandlerInterface
                             'Using arrayPath property (value %s) returned an empty set',
                             $generalConfiguration['arrayPath']
                         ),
-                        AbstractMessage::WARNING
+                        ContextualFeedbackSeverity::WARNING->value
                     );
                     return [];
                 }

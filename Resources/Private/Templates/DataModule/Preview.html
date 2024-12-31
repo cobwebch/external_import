@@ -2,8 +2,10 @@
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
 	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers">
-	<f:flashMessages />
 
+<f:layout name="Module" />
+<f:section name="Content">
+	<f:flashMessages/>
 	<h1><f:translate id="preview_configuration" arguments="{0: '{ex:be.tableTitle(table: table)}', 1: index}" /></h1>
 
 	<div id="tx_externalimport_preview">
@@ -48,4 +50,5 @@
 			<f:debug inline="true">{previewData}</f:debug>
 		</f:if>
 	</div>
+</f:section>
 </html>

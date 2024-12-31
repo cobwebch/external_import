@@ -21,7 +21,7 @@ use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -123,7 +123,7 @@ class SlugUtility
                         $e->getMessage(),
                         $e->getCode()
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE->value
                 );
             }
         } elseif (GeneralUtility::inList('uniqueInPid', $fieldConfiguration['eval'] ?? '')) {
@@ -152,7 +152,7 @@ class SlugUtility
                         $e->getMessage(),
                         $e->getCode()
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE->value
                 );
             }
         } else {

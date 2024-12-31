@@ -30,8 +30,8 @@ use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
@@ -97,7 +97,7 @@ class DataModuleController extends ActionController
                         'external_import'
                     ),
                     '',
-                    AbstractMessage::INFO
+                    ContextualFeedbackSeverity::INFO
                 );
             } catch (\Exception $e) {
                 // The above code should really work, nothing to do if it doesn't
@@ -109,7 +109,7 @@ class DataModuleController extends ActionController
         } catch (\Exception $e) {
             $fullSynchronizationTask = null;
         }
-        $this->view->assignMultiple(
+        $this->moduleTemplate->assignMultiple(
             [
                 'configurations' => $configurations,
                 'fullSynchronizationTask' => $fullSynchronizationTask,
@@ -126,8 +126,7 @@ class DataModuleController extends ActionController
             ]
         );
 
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->moduleTemplate->renderResponse('DataModule/ListSynchronizable');
     }
 
     /**
@@ -149,20 +148,19 @@ class DataModuleController extends ActionController
                         'external_import'
                     ),
                     '',
-                    AbstractMessage::INFO
+                    ContextualFeedbackSeverity::INFO
                 );
             } catch (\Exception $e) {
                 // The above code should really work, nothing to do if it doesn't
             }
         }
-        $this->view->assignMultiple(
+        $this->moduleTemplate->assignMultiple(
             [
                 'configurations' => $configurations,
             ]
         );
 
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->moduleTemplate->renderResponse('DataModule/ListNonSynchronizable');
     }
 
     /**
@@ -233,10 +231,10 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
-        $this->view->assignMultiple(
+        $this->moduleTemplate->assignMultiple(
             [
                 'table' => $table,
                 'index' => $index,
@@ -247,8 +245,7 @@ class DataModuleController extends ActionController
             ]
         );
 
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->moduleTemplate->renderResponse('DataModule/Preview');
     }
 
     /**
@@ -292,7 +289,7 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             return $this->redirect(
                 'preview',
@@ -351,7 +348,7 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
 
@@ -364,7 +361,7 @@ class DataModuleController extends ActionController
         // Add a close button to the toolbar
         $this->prepareView('', $returnAction);
 
-        $this->view->assignMultiple(
+        $this->moduleTemplate->assignMultiple(
             [
                 'table' => $table,
                 'index' => $index,
@@ -373,8 +370,7 @@ class DataModuleController extends ActionController
             ],
         );
 
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->moduleTemplate->renderResponse('DataModule/ViewConfiguration');
     }
 
     /**
@@ -388,7 +384,7 @@ class DataModuleController extends ActionController
     {
         // Add a close button to the toolbar
         $this->prepareView('', 'listSynchronizable');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
+//        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
 
         $this->view->assignMultiple(
             [
@@ -398,8 +394,7 @@ class DataModuleController extends ActionController
             ]
         );
 
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->moduleTemplate->renderResponse('DataModule/NewTask');
     }
 
     /**
@@ -443,7 +438,7 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
         return $this->redirect('listSynchronizable');
@@ -476,13 +471,12 @@ class DataModuleController extends ActionController
                     'external_import'
                 ),
                 '',
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             return $this->redirect('listSynchronizable');
         }
 
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->moduleTemplate->renderResponse('DataModule/EditTask');
     }
 
     /**
@@ -522,7 +516,7 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
         return $this->redirect('listSynchronizable');
@@ -554,7 +548,7 @@ class DataModuleController extends ActionController
                     ]
                 ),
                 '',
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
         return $this->redirect('listSynchronizable');
@@ -590,6 +584,7 @@ class DataModuleController extends ActionController
             ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
         );
         $this->pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
+/*
         $this->pageRenderer->addRequireJsConfiguration(
             [
                 'paths' => [
@@ -598,6 +593,7 @@ class DataModuleController extends ActionController
             ]
         );
         $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
+*/
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
 
         // Evaluate write access on all tables
@@ -680,7 +676,7 @@ class DataModuleController extends ActionController
                     $this->addFlashMessage(
                         $aMessage,
                         '',
-                        $severity,
+                        ContextualFeedbackSeverity::tryFrom($severity),
                         $storeInSession
                     );
                 } catch (\Exception $e) {

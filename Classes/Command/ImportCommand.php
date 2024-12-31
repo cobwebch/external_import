@@ -26,8 +26,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Authentication\CommandLineUserAuthentication;
 use TYPO3\CMS\Core\Core\Bootstrap;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -120,6 +121,7 @@ class ImportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Make sure the _cli_ user is loaded
+        Bootstrap::initializeBackendUser(CommandLineUserAuthentication::class);
         Bootstrap::initializeBackendAuthentication();
 
         $this->io = new SymfonyStyle($input, $output);
@@ -271,13 +273,13 @@ class ImportCommand extends Command
         foreach ($messages as $severity => $messageList) {
             foreach ($messageList as $message) {
                 switch ($severity) {
-                    case AbstractMessage::ERROR:
+                    case ContextualFeedbackSeverity::ERROR->value:
                         $this->io->error($message);
                         break;
-                    case AbstractMessage::WARNING:
+                    case ContextualFeedbackSeverity::WARNING->value:
                         $this->io->warning($message);
                         break;
-                    case AbstractMessage::OK:
+                    case ContextualFeedbackSeverity::OK->value:
                         $this->io->success($message);
                 }
             }

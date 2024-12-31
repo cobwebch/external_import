@@ -21,7 +21,7 @@ use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
 use Cobweb\ExternalImport\Importer;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
  * Remaps data from an XML structure to an array mapped to TCA columns.
@@ -75,7 +75,7 @@ class XmlHandler implements DataHandlerInterface
             } catch (\Exception $e) {
                 $importer->addMessage(
                     $e->getMessage(),
-                    AbstractMessage::WARNING
+                    ContextualFeedbackSeverity::WARNING->value
                 );
             }
         } else {
@@ -356,7 +356,7 @@ class XmlHandler implements DataHandlerInterface
      * @return \DOMNodeList List of found nodes
      * @throws \Exception
      */
-    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context): \DOMNodeList
+    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context = null): \DOMNodeList
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
         if ($resultNodes->length > 0) {

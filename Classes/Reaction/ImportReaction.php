@@ -21,7 +21,7 @@ use Cobweb\ExternalImport\Exception\InvalidPayloadException;
 use Cobweb\ExternalImport\Importer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Reactions\Model\ReactionInstruction;
@@ -69,12 +69,12 @@ class ImportReaction extends AbstractReaction implements ReactionInterface
                 $payload['data']
             );
             // Report on import outcome
-            if (count($messages[AbstractMessage::ERROR]) > 0) {
+            if (count($messages[ContextualFeedbackSeverity::ERROR->value]) > 0) {
                 // If errors occurred, report only about errors
                 return $this->jsonResponse(
                     [
                         'success' => false,
-                        'errors' => $messages[AbstractMessage::ERROR],
+                        'errors' => $messages[ContextualFeedbackSeverity::ERROR->value],
                     ],
                     400
                 );
@@ -82,10 +82,10 @@ class ImportReaction extends AbstractReaction implements ReactionInterface
             // If import completed successfully, report about success and possible warnings
             $responseBody = [
                 'success' => true,
-                'messages' => $messages[AbstractMessage::OK],
+                'messages' => $messages[ContextualFeedbackSeverity::OK->value],
             ];
-            if (count($messages[AbstractMessage::WARNING]) > 0) {
-                $responseBody['warnings'] = $messages[AbstractMessage::WARNING];
+            if (count($messages[ContextualFeedbackSeverity::WARNING->value]) > 0) {
+                $responseBody['warnings'] = $messages[ContextualFeedbackSeverity::WARNING->value];
             }
             return $this->jsonResponse($responseBody);
         } catch (InvalidPayloadException $e) {

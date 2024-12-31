@@ -29,11 +29,6 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class LogRepository extends Repository
 {
-    public function __toString()
-    {
-        return self::class;
-    }
-
     public function initializeObject(): void
     {
         $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);

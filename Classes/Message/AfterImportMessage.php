@@ -20,8 +20,8 @@ namespace Cobweb\ExternalImport\Message;
 use Cobweb\ExternalImport\Event\ReportEvent;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Attribute\WebhookMessage;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\WebhookMessageInterface;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 #[WebhookMessage(identifier: 'externalimport/after-import', description: 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:webhook.after_import')]
 class AfterImportMessage implements WebhookMessageInterface
@@ -61,9 +61,9 @@ class AfterImportMessage implements WebhookMessageInterface
         ];
         $messages = $this->importer->getMessages();
         $response['result'] = [
-            'success' => $messages[AbstractMessage::OK],
-            'warning' => $messages[AbstractMessage::WARNING],
-            'error' => $messages[AbstractMessage::ERROR],
+            'success' => $messages[ContextualFeedbackSeverity::OK->value],
+            'warning' => $messages[ContextualFeedbackSeverity::WARNING->value],
+            'error' => $messages[ContextualFeedbackSeverity::ERROR->value],
         ];
         return $response;
     }

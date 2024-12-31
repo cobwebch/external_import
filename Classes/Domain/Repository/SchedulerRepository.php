@@ -20,13 +20,16 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Exception\SchedulerRepositoryException;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand;
-use TYPO3\CMS\Scheduler\Scheduler;
-use TYPO3\CMS\Scheduler\Task\AbstractTask;
+use TYPO3\CMS\Scheduler\Domain\Repository\SchedulerTaskRepository;
+use TYPO3\CMS\Scheduler\Exception\InvalidTaskException;
+use TYPO3\CMS\Scheduler\Task\TaskSerializer;
+use TYPO3\CMS\Scheduler\Validation\Validator\TaskValidator;
 
 /**
  * Pseudo-repository class for Scheduler tasks
@@ -47,28 +50,9 @@ class SchedulerRepository implements SingletonInterface
      */
     protected array $tasks = [];
 
-    /**
-     * Local instance of the scheduler object
-     *
-     * @var Scheduler
-     */
-    protected $scheduler;
-
-    public function __construct()
+    public function __construct(protected SchedulerTaskRepository $schedulerTaskRepository, protected TaskSerializer $taskSerializer)
     {
-        $this->scheduler = GeneralUtility::makeInstance(Scheduler::class);
-        $allTasks = $this->scheduler->fetchTasksWithCondition('', true);
-        /** @var $aTaskObject AbstractTask */
-        foreach ($allTasks as $aTaskObject) {
-            if (get_class($aTaskObject) === self::$taskClassName) {
-                $this->tasks[] = $aTaskObject;
-            }
-        }
-    }
-
-    public function __toString()
-    {
-        return self::class;
+        $this->loadAllSynchronisationTasks();
     }
 
     /**
@@ -154,10 +138,44 @@ class SchedulerRepository implements SingletonInterface
             while ($row = $rows->fetchAssociative()) {
                 $groups[$row['uid']] = $row['groupName'];
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable) {
             // Nothing to do, let an empty groups list be returned
         }
         return $groups;
+    }
+
+    /**
+     * Fetch all tasks based on the \Cobweb\ExternalImport\Task\AutomatedSyncTask class
+     *
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function loadAllSynchronisationTasks(): void
+    {
+        $tasks = [];
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable('tx_scheduler_task');
+
+        $queryBuilder
+            ->select('serialized_task_object')
+            ->from('tx_scheduler_task')
+            ->where(
+                $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
+            );
+
+        $result = $queryBuilder->executeQuery();
+        while ($row = $result->fetchAssociative()) {
+            try {
+                $task = $this->taskSerializer->deserialize($row['serialized_task_object']);
+            } catch (InvalidTaskException) {
+                continue;
+            }
+
+            // Add the task to the list only if it is valid
+            if (get_class($task) === self::$taskClassName && (new TaskValidator())->isValid($task)) {
+                $task->setScheduler();
+                $this->tasks[] = $task;
+            }
+        }
     }
 
     /**
@@ -207,7 +225,7 @@ class SchedulerRepository implements SingletonInterface
      * If no uid is given, a new task is created.
      *
      * @param array $taskData List of fields to save. Must include "uid" for an existing registered task
-     * @throws \Cobweb\ExternalImport\Exception\SchedulerRepositoryException
+     * @throws SchedulerRepositoryException
      */
     public function saveTask(array $taskData): void
     {
@@ -226,9 +244,9 @@ class SchedulerRepository implements SingletonInterface
             $task->table = $taskData['table'];
             $task->index = $taskData['index'];
             $task->setTaskGroup($taskData['group']);
-            $result = $this->scheduler->addTask($task);
+            $result = $this->schedulerTaskRepository->add($task);
         } else {
-            $task = $this->scheduler->fetchTask($taskData['uid']);
+            $task = $this->schedulerTaskRepository->findByUid((int)$taskData['uid']);
             // Stop any existing execution(s)...
             $task->stop();
             /// ...and replace it(them) by a new one
@@ -261,13 +279,12 @@ class SchedulerRepository implements SingletonInterface
      */
     public function deleteTask(int $uid): bool
     {
-        $result = false;
         if ($uid > 0) {
-            $task = $this->scheduler->fetchTask($uid);
+            $task = $this->schedulerTaskRepository->findByUid($uid);
             // Stop any existing execution(s) and save
-            $result = (bool)$this->scheduler->removeTask($task);
+            return $this->schedulerTaskRepository->remove($task);
         }
-        return $result;
+        return false;
     }
 
     /**
@@ -302,7 +319,7 @@ class SchedulerRepository implements SingletonInterface
             NormalizeCommand::normalize($frequency);
             $taskData['croncmd'] = $frequency;
         } // If the cron command was invalid, we may still have a valid frequency in seconds
-        catch (\Exception $e) {
+        catch (\Exception) {
             // Check if the frequency is a valid number
             // If yes, assume it is a frequency in seconds
             if (is_numeric($frequency)) {

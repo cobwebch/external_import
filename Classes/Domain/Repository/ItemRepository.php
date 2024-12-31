@@ -32,9 +32,9 @@ class ItemRepository
      * Find an item in the given DB table, matching one or more constraints
      * (with strict equality), return its primary key (uid)
      *
-     * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws InvalidRecordException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function find(string $table, array $constraints, string $additionalConstraint = ''): int
     {

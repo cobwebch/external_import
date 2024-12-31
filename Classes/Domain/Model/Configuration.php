@@ -192,7 +192,7 @@ class Configuration
      * @param array $generalConfiguration
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the repository)
      */
-    public function setGeneralConfiguration(array $generalConfiguration, ?array $defaultSteps): void
+    public function setGeneralConfiguration(array $generalConfiguration, ?array $defaultSteps = null): void
     {
         $this->generalConfiguration = $generalConfiguration;
         $stepUtility = GeneralUtility::makeInstance(StepUtility::class);

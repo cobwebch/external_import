@@ -17,7 +17,7 @@ namespace Cobweb\ExternalImport\Domain\Model;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
@@ -28,7 +28,7 @@ class Log extends AbstractEntity
     /**
      * @var int Run status (based on FlashMessage codes)
      */
-    protected int $status = AbstractMessage::NOTICE;
+    protected int $status = ContextualFeedbackSeverity::NOTICE->value;
 
     /**
      * @var \DateTime|null Run date and time

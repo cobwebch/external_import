@@ -20,7 +20,7 @@ namespace Cobweb\ExternalImport\Task;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
@@ -95,7 +95,7 @@ class AutomatedSyncTask extends AbstractTask
                             $configuration['index'],
                             $messages
                         );
-                        $errorCount += count($messages[AbstractMessage::ERROR]);
+                        $errorCount += count($messages[ContextualFeedbackSeverity::ERROR->value]);
                     }
                 }
             }
@@ -118,7 +118,7 @@ class AutomatedSyncTask extends AbstractTask
                     $this->index,
                     $messages
                 );
-                if (count($messages[AbstractMessage::ERROR]) > 0) {
+                if (count($messages[ContextualFeedbackSeverity::ERROR->value]) > 0) {
                     $globalStatus = 'ERROR';
                 }
                 // Assemble the subject and send the mail

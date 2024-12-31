@@ -92,10 +92,18 @@ class ReportingUtility implements LoggerAwareInterface
             $now->setTimestamp((int)$this->context->getPropertyFromAspect('date', 'timestamp'));
 
             try {
-                /** @var ?BackendUser $currentUser */
-                $currentUser = $this->userRepository->findByUid(
-                    $this->context->getPropertyFromAspect('backend.user', 'id')
-                );
+                $user = $this->context->getPropertyFromAspect('backend.user', 'id');
+                // On the command-line, the context does not contain the backend user
+                // Get it directly from the global variable
+                if ($user === 0) {
+                    // TODO: drop usage of model class, at least based on Extbase's AbstractEntity
+                    $currentUser = new BackendUser();
+                    $currentUser->_setProperty('uid', $GLOBALS['BE_USER']->user['uid']);
+                    $currentUser->setUserName($GLOBALS['BE_USER']->user['username']);
+                } else {
+                    /** @var ?BackendUser $currentUser */
+                    $currentUser = $this->userRepository->findByUid($user);
+                }
             } catch (AspectNotFoundException $e) {
                 $currentUser = null;
             }

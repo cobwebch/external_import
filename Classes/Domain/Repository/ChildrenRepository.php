@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Domain\Repository;
 
+use Cobweb\ExternalImport\Exception\NoSuchRecordException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
@@ -29,25 +30,26 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ChildrenRepository
 {
     /**
-     * Returns all existing records in the given table for the given condition.
+     * Return all existing records in the given table for the given condition.
      *
      * @param string $table Table to query
      * @param array $conditions Conditions to apply (field-value pairs)
      * @return array
+     * @throws \Doctrine\DBAL\Exception
      */
     public function findAllExistingRecords(string $table, array $conditions): array
     {
         $existingRecords = [];
         $queryBuilder = $this->prepareQueryBuilder($table, $conditions);
         $result = $queryBuilder->executeQuery();
-        while ($record = $result->fetch()) {
+        while ($record = $result->fetchAssociative()) {
             $existingRecords[] = $record['uid'];
         }
         return $existingRecords;
     }
 
     /**
-     * Returns the first existing records in the given table for the given condition.
+     * Return the first existing records in the given table for the given condition.
      *
      * NOTE: it is assumed that the given conditions lead to a single record being found.
      * We don't consider other records if that is not the case.
@@ -55,7 +57,8 @@ class ChildrenRepository
      * @param string $table Table to query
      * @param array $conditions Conditions to apply (field-value pairs)
      * @return int
-     * @throws \Cobweb\ExternalImport\Exception\NoSuchRecordException
+     * @throws NoSuchRecordException
+     * @throws \Doctrine\DBAL\Exception
      */
     public function findFirstExistingRecord(string $table, array $conditions): int
     {
@@ -65,7 +68,7 @@ class ChildrenRepository
         if ($record) {
             return (int)$record['uid'];
         }
-        throw new \Cobweb\ExternalImport\Exception\NoSuchRecordException(
+        throw new NoSuchRecordException(
             'Record not found with the given conditions',
             1602322832
         );

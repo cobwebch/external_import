@@ -17,7 +17,7 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
@@ -55,19 +55,17 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
         RenderingContextInterface $renderingContext
     ): string {
         $results = $arguments['result'];
-        $classes = [
-            AbstractMessage::INFO => 'alert-info',
-            AbstractMessage::NOTICE => 'alert-notice',
-            AbstractMessage::WARNING => 'alert-warning',
-            AbstractMessage::ERROR => 'alert-danger',
-        ];
-        $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert %1$s">%2$s</li></ul></div>';
+        $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert alert-%1$s">%2$s</li></ul></div>';
         $output = '';
         if (is_array($results)) {
             foreach ($results as $result) {
+                $severity = $result['severity'];
+                if (is_int($severity)) {
+                    $severity = ContextualFeedbackSeverity::tryFrom($severity);
+                }
                 $output .= sprintf(
                     $message,
-                    $classes[$result['severity']],
+                    $severity->getCssClass(),
                     $result['message']
                 );
             }

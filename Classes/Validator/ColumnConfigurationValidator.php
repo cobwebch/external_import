@@ -18,7 +18,7 @@ namespace Cobweb\ExternalImport\Validator;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -87,8 +87,8 @@ class ColumnConfigurationValidator
         }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
-        return $this->results->countForSeverity(AbstractMessage::ERROR) +
-            $this->results->countForSeverity(AbstractMessage::WARNING) === 0;
+        return $this->results->countForSeverity(ContextualFeedbackSeverity::ERROR) +
+            $this->results->countForSeverity(ContextualFeedbackSeverity::WARNING) === 0;
     }
 
     /**
@@ -116,7 +116,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForArrayData',
                         'external_import'
                     ),
-                    AbstractMessage::ERROR
+                    ContextualFeedbackSeverity::ERROR
                 );
                 // "value" property should not be set if another value-setting property is also defined, except in special cases, so let's issue a notice
             } elseif ($hasValueProperty && isset($columnConfiguration['field'])) {
@@ -127,7 +127,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForArrayData',
                         'external_import'
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE
                 );
             }
         } elseif ($generalConfiguration['data'] === 'xml') {
@@ -140,7 +140,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingPropertiesForXmlData',
                         'external_import'
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE
                 );
                 // "value" property should not be set if another value-setting property is also defined
             } elseif (
@@ -154,7 +154,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:conflictingPropertiesForXmlData',
                         'external_import'
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE
                 );
             }
         }
@@ -176,7 +176,7 @@ class ColumnConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyIsNotAnArray',
                     'external_import'
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             // There's nothing else to check
             return;
@@ -189,7 +189,7 @@ class ColumnConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyMissingTableInformation',
                     'external_import'
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
         }
         // Check the existence of the "columns" property
@@ -201,7 +201,7 @@ class ColumnConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyMissingColumnsInformation',
                     'external_import'
                 ),
-                AbstractMessage::ERROR
+                ContextualFeedbackSeverity::ERROR
             );
             // If it exists check that individual configuration uses only "value" and "field" sub-properties
         } else {
@@ -217,7 +217,7 @@ class ColumnConfigurationValidator
                                 'external_import',
                                 [$key]
                             ),
-                            AbstractMessage::ERROR
+                            ContextualFeedbackSeverity::ERROR
                         );
                     }
                 } else {
@@ -227,7 +227,7 @@ class ColumnConfigurationValidator
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyColumnsInformationNotAnArray',
                             'external_import'
                         ),
-                        AbstractMessage::ERROR
+                        ContextualFeedbackSeverity::ERROR
                     );
                 }
             }
@@ -241,7 +241,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperySortingIsIncomplete',
                         'external_import'
                     ),
-                    AbstractMessage::ERROR
+                    ContextualFeedbackSeverity::ERROR
                 );
             }
         }
@@ -260,7 +260,7 @@ class ColumnConfigurationValidator
                                 implode(', ', $missingColumns),
                             ]
                         ),
-                        AbstractMessage::ERROR
+                        ContextualFeedbackSeverity::ERROR
                     );
                 }
             } else {
@@ -270,7 +270,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForUpdateMissing',
                         'external_import'
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE
                 );
             }
         } else {
@@ -280,7 +280,7 @@ class ColumnConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForUpdateMissing',
                     'external_import'
                 ),
-                AbstractMessage::NOTICE
+                ContextualFeedbackSeverity::NOTICE
             );
         }
         // Check the "controlColumnsForDelete" property
@@ -298,7 +298,7 @@ class ColumnConfigurationValidator
                                 implode(', ', $missingColumns),
                             ]
                         ),
-                        AbstractMessage::ERROR
+                        ContextualFeedbackSeverity::ERROR
                     );
                 }
             } else {
@@ -308,7 +308,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForDeleteMissing',
                         'external_import'
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE
                 );
             }
             if (!array_key_exists('controlColumnsForUpdate', $childrenConfiguration)) {
@@ -318,7 +318,7 @@ class ColumnConfigurationValidator
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForDeleteSetButNotControlColumnsForUpdate',
                         'external_import'
                     ),
-                    AbstractMessage::NOTICE
+                    ContextualFeedbackSeverity::NOTICE
                 );
             }
         } else {
@@ -328,7 +328,7 @@ class ColumnConfigurationValidator
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:childrenProperyControlColumnsForDeleteMissing',
                     'external_import'
                 ),
-                AbstractMessage::NOTICE
+                ContextualFeedbackSeverity::NOTICE
             );
         }
     }
@@ -353,7 +353,7 @@ class ColumnConfigurationValidator
                             $field,
                         ]
                     ),
-                    AbstractMessage::ERROR
+                    ContextualFeedbackSeverity::ERROR
                 );
             }
         }
@@ -371,7 +371,7 @@ class ColumnConfigurationValidator
                                 $field,
                             ]
                         ),
-                        AbstractMessage::ERROR
+                        ContextualFeedbackSeverity::ERROR
                     );
                 } else {
                     // Check that all keys match the allowed properties
@@ -388,7 +388,7 @@ class ColumnConfigurationValidator
                                     implode(', ', self::$substructurePropertiesForArrayType),
                                 ]
                             ),
-                            AbstractMessage::ERROR
+                            ContextualFeedbackSeverity::ERROR
                         );
                     }
                 }
@@ -411,7 +411,7 @@ class ColumnConfigurationValidator
                                     implode(', ', self::$substructurePropertiesForXmlType),
                                 ]
                             ),
-                            AbstractMessage::ERROR
+                            ContextualFeedbackSeverity::ERROR
                         );
                     }
                 }

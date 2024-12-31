@@ -36,12 +36,7 @@ class ConfigurationRepository
     /**
      * @var array Extension configuration
      */
-    protected $extensionConfiguration = [];
-
-    public function __toString()
-    {
-        return self::class;
-    }
+    protected array $extensionConfiguration = [];
 
     /**
      * ConfigurationRepository constructor.
@@ -216,7 +211,7 @@ class ConfigurationRepository
      * @return Configuration
      * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
      */
-    public function findConfigurationObject(string $table, $index, ?array $defaultSteps): Configuration
+    public function findConfigurationObject(string $table, $index, ?array $defaultSteps = null): Configuration
     {
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $externalConfiguration = $this->findByTableAndIndex($table, $index);
