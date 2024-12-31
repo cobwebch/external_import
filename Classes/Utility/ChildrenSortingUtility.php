@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Utility;
 
 use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
 use Cobweb\ExternalImport\Importer;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -90,11 +91,11 @@ class ChildrenSortingUtility
         foreach ($sorting as $uid => $value) {
             try {
                 $queryBuilder->update($table)
-                    ->set($field, $value, true, \PDO::PARAM_INT)
+                    ->set($field, $value, true, Connection::PARAM_INT)
                     ->where(
                         $queryBuilder->expr()->eq('uid', $uid)
                     )
-                    ->execute();
+                    ->executeStatement();
             } catch (\Exception $e) {
                 $this->importer->debug(
                     sprintf(
