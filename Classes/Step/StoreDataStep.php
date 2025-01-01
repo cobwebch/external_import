@@ -518,7 +518,7 @@ class StoreDataStep extends AbstractStep
                     null,
                     [$inserts]
                 ),
-                ContextualFeedbackSeverity::OK->value
+                ContextualFeedbackSeverity::OK
             );
             $this->importer->addMessage(
                 LocalizationUtility::translate(
@@ -526,7 +526,7 @@ class StoreDataStep extends AbstractStep
                     null,
                     [$updates]
                 ),
-                ContextualFeedbackSeverity::OK->value
+                ContextualFeedbackSeverity::OK
             );
             $this->importer->addMessage(
                 LocalizationUtility::translate(
@@ -534,7 +534,7 @@ class StoreDataStep extends AbstractStep
                     null,
                     [$deletes]
                 ),
-                ContextualFeedbackSeverity::OK->value
+                ContextualFeedbackSeverity::OK
             );
             $this->importer->addMessage(
                 LocalizationUtility::translate(
@@ -542,7 +542,7 @@ class StoreDataStep extends AbstractStep
                     null,
                     [$moves]
                 ),
-                ContextualFeedbackSeverity::OK->value
+                ContextualFeedbackSeverity::OK
             );
             // Store the number of operations in the reporting utility
             $this->importer->getReportingUtility()->setValueForStep(
@@ -1053,7 +1053,7 @@ class StoreDataStep extends AbstractStep
                 LocalizationUtility::translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:things_happened'
                 ),
-                ContextualFeedbackSeverity::WARNING->value
+                ContextualFeedbackSeverity::WARNING
             );
         }
     }

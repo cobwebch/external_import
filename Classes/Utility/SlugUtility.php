@@ -123,7 +123,7 @@ class SlugUtility
                         $e->getMessage(),
                         $e->getCode()
                     ),
-                    ContextualFeedbackSeverity::NOTICE->value
+                    ContextualFeedbackSeverity::NOTICE
                 );
             }
         } elseif (GeneralUtility::inList('uniqueInPid', $fieldConfiguration['eval'] ?? '')) {
@@ -152,7 +152,7 @@ class SlugUtility
                         $e->getMessage(),
                         $e->getCode()
                     ),
-                    ContextualFeedbackSeverity::NOTICE->value
+                    ContextualFeedbackSeverity::NOTICE
                 );
             }
         } else {

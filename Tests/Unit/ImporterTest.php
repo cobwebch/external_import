@@ -104,7 +104,7 @@ class ImporterTest extends UnitTestCase
      */
     public function addMessagesAddsMessage(): void
     {
-        $this->subject->addMessage('foo', ContextualFeedbackSeverity::WARNING->value);
+        $this->subject->addMessage('foo', ContextualFeedbackSeverity::WARNING);
         self::assertCount(
             1,
             $this->subject->getMessages()[ContextualFeedbackSeverity::WARNING->value]
@@ -116,12 +116,14 @@ class ImporterTest extends UnitTestCase
      */
     public function resetMessagesInitiallyPreparesEmptyStructure(): void
     {
-        $this->subject->addMessage('foo', ContextualFeedbackSeverity::WARNING->value);
+        $this->subject->addMessage('foo', ContextualFeedbackSeverity::WARNING);
         $this->subject->resetMessages();
         self::assertSame(
             [
                 ContextualFeedbackSeverity::ERROR->value => [],
                 ContextualFeedbackSeverity::WARNING->value => [],
+                ContextualFeedbackSeverity::INFO->value => [],
+                ContextualFeedbackSeverity::NOTICE->value => [],
                 ContextualFeedbackSeverity::OK->value => [],
             ],
             $this->subject->getMessages()

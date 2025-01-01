@@ -28,7 +28,9 @@ class Log extends AbstractEntity
     /**
      * @var int Run status (based on FlashMessage codes)
      */
-    protected int $status = ContextualFeedbackSeverity::NOTICE->value;
+// TODO: switch when support for PHP 8.1 is dropped (or get rid of that class entirely)
+//    protected int $status = ContextualFeedbackSeverity::NOTICE->value;
+    protected int $status = -2;
 
     /**
      * @var \DateTime|null Run date and time

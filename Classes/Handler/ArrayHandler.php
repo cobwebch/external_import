@@ -81,7 +81,7 @@ class ArrayHandler implements DataHandlerInterface
                             'Using arrayPath property (value %s) returned an empty set',
                             $generalConfiguration['arrayPath']
                         ),
-                        ContextualFeedbackSeverity::WARNING->value
+                        ContextualFeedbackSeverity::WARNING
                     );
                     return [];
                 }

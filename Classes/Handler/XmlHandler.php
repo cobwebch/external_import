@@ -75,7 +75,7 @@ class XmlHandler implements DataHandlerInterface
             } catch (\Exception $e) {
                 $importer->addMessage(
                     $e->getMessage(),
-                    ContextualFeedbackSeverity::WARNING->value
+                    ContextualFeedbackSeverity::WARNING
                 );
             }
         } else {

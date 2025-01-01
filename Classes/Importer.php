@@ -265,7 +265,7 @@ class Importer implements LoggerAwareInterface
                         $e->getMessage(),
                     ]
                 ),
-                ContextualFeedbackSeverity::WARNING->value
+                ContextualFeedbackSeverity::WARNING
             );
         } catch (NoConfigurationException $e) {
             $this->addMessage(
@@ -401,7 +401,7 @@ class Importer implements LoggerAwareInterface
                             'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
                             'external_import'
                         ),
-                        ContextualFeedbackSeverity::WARNING->value
+                        ContextualFeedbackSeverity::WARNING
                     );
                 }
                 $this->currentData = $step->getData();
@@ -532,12 +532,12 @@ class Importer implements LoggerAwareInterface
      * when the synchronization is complete.
      *
      * @param string $text The message itself
-     * @param int $status Status of the message. Expected is "success", "warning" or "error"
+     * @param ContextualFeedbackSeverity $status Status of the message
      */
-    public function addMessage(string $text, int $status = ContextualFeedbackSeverity::ERROR->value): void
+    public function addMessage(string $text, ContextualFeedbackSeverity $status = ContextualFeedbackSeverity::ERROR): void
     {
         if (!empty($text)) {
-            $this->messages[$status][] = $text;
+            $this->messages[$status->value][] = $text;
         }
     }
 
@@ -559,6 +559,8 @@ class Importer implements LoggerAwareInterface
         $this->messages = [
             ContextualFeedbackSeverity::ERROR->value => [],
             ContextualFeedbackSeverity::WARNING->value => [],
+            ContextualFeedbackSeverity::INFO->value => [],
+            ContextualFeedbackSeverity::NOTICE->value => [],
             ContextualFeedbackSeverity::OK->value => [],
         ];
     }
