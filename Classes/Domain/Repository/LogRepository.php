@@ -18,37 +18,47 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Persistence\Generic\Typo3QuerySettings;
-use TYPO3\CMS\Extbase\Persistence\QueryInterface;
-use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
-use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * Repository for the log table.
  */
-class LogRepository extends Repository
+class LogRepository
 {
-    public function initializeObject(): void
+    static protected string $table = 'tx_externalimport_domain_model_log';
+
+    public function countAll(): int
     {
-        $querySettings = GeneralUtility::makeInstance(Typo3QuerySettings::class);
-        $querySettings->setRespectStoragePage(false);
-        $this->setDefaultQuerySettings($querySettings);
+        $query = $this->getQueryBuilder();
+        try {
+            return $query->count('*')
+                ->from(self::$table)
+                ->execute()
+                ->fetchOne();
+        } catch (\Throwable) {
+            return 0;
+        }
     }
 
     /**
      * Performs a search on the database based on given criteria, with ordering and pagination.
      *
      * @param QueryParameters $queryParameters
-     * @return array|QueryResultInterface
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @return array
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Exception
      */
-    public function findBySearch(QueryParameters $queryParameters)
+    public function findBySearch(QueryParameters $queryParameters): array
     {
-        $query = $this->createQuery();
+        $query = $this->getQueryBuilder();
+        $query->select('*')
+            ->from(self::$table);
         if ($queryParameters->getSearch() !== '' && count($queryParameters->getSearchColumns()) > 0) {
-            $query->matching(
-                $query->logicalOr(
+            $query->where(
+                $query->expr()->or(
                     ...$this->assembleSearchConditions(
                         $query,
                         $queryParameters->getSearch(),
@@ -59,18 +69,17 @@ class LogRepository extends Repository
         }
         // Set ordering
         if ($queryParameters->getOrder() !== '') {
-            $query->setOrderings(
-                [
-                    $queryParameters->getOrder() => $queryParameters->getDirection(),
-                ]
+            $query->orderBy(
+                $queryParameters->getOrder(),
+                $queryParameters->getDirection()
             );
         }
         // Set limit (pagination)
         if ($queryParameters->getLimit() > 0) {
-            $query->setLimit($queryParameters->getLimit());
-            $query->setOffset($queryParameters->getOffset());
+            $query->setMaxResults($queryParameters->getLimit());
+            $query->setFirstResult($queryParameters->getOffset());
         }
-        return $query->execute();
+        return $query->execute()->fetchAllAssociative();
     }
 
     /**
@@ -81,14 +90,17 @@ class LogRepository extends Repository
      *
      * @param QueryParameters $queryParameters
      * @return int
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @throws \Doctrine\DBAL\DBALException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function countBySearch(QueryParameters $queryParameters): int
     {
-        $query = $this->createQuery();
+        $query = $this->getQueryBuilder();
+        $query->count('*')
+            ->from(self::$table);
         if ($queryParameters->getSearch() !== '' && count($queryParameters->getSearchColumns()) > 0) {
-            $query->matching(
-                $query->logicalOr(
+            $query->where(
+                $query->expr()->or(
                     ...$this->assembleSearchConditions(
                         $query,
                         $queryParameters->getSearch(),
@@ -97,25 +109,23 @@ class LogRepository extends Repository
                 )
             );
         }
-        return $query->execute()->count();
+        return $query->execute()->fetchOne();
     }
 
     /**
      * Assembles the search conditions.
      *
-     * @param QueryInterface $query
+     * @param QueryBuilder $query
      * @param string $search String to search for
      * @param array $searchColumns List of columns to search in
      * @return array
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
      */
-    protected function assembleSearchConditions(QueryInterface $query, string $search, array $searchColumns): array
+    protected function assembleSearchConditions(QueryBuilder $query, string $search, array $searchColumns): array
     {
         $searchConditions = [];
         $search = '%' . $search . '%';
         foreach ($searchColumns as $column) {
-            // Filter on user name
-            $searchConditions[] = $query->like(
+            $searchConditions[] = $query->expr()->like(
                 $column,
                 $search
             );
@@ -124,10 +134,18 @@ class LogRepository extends Repository
     }
 
     /**
-     * Forces persisting changes, useful when repository is used outside Extbase context.
+     * @throws \Doctrine\DBAL\DBALException
      */
-    public function persist(): void
+    public function insert(array $logData): void
     {
-        $this->persistenceManager->persistAll();
+        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder->insert(self::$table)
+            ->values($logData)
+            ->executeStatement();
+    }
+
+    protected function getQueryBuilder(): QueryBuilder
+    {
+        return GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(self::$table);
     }
 }

@@ -1,3 +1,11 @@
+2025-01-02 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Drop Extbase usage for logs, resolves #362
+
+2024-12-31 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Adapt to changes in connector services 6.0.0, resolves #351
+
 2024-12-27 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Add a delete reaction, resolves #361

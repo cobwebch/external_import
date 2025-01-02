@@ -37,7 +37,7 @@ class LogAjaxController
      * @return ResponseInterface
      * @throws \JsonException
      */
-    public function getAction(ServerRequestInterface $request, ?ResponseInterface $response): ResponseInterface
+    public function getAction(ServerRequestInterface $request): ResponseInterface
     {
         // Process query parameters
         $queryParameters = GeneralUtility::makeInstance(
@@ -48,7 +48,7 @@ class LogAjaxController
         $logRepository = GeneralUtility::makeInstance(LogRepository::class);
 
         // Get the count of all the log entries
-        $totalEntries = $logRepository->findAll()->count();
+        $totalEntries = $logRepository->countAll();
         // Get the filtered entries and their count
         $logs = [];
         $logCount = 0;
@@ -61,13 +61,13 @@ class LogAjaxController
             /** @var \Cobweb\ExternalImport\Domain\Model\Log $logEntry */
             foreach ($logEntries as $logEntry) {
                 $logs[] = [
-                    'status' => $logEntry->getStatus(),
-                    'crdate' => $logEntry->getCrdate()->format('U'),
-                    'username' => $logEntry->getCruserId() ? $logEntry->getCruserId()->getUserName() : '-',
-                    'configuration' => $logEntry->getConfiguration(),
-                    'context' => $logEntry->getContext(),
-                    'message' => $logEntry->getMessage(),
-                    'duration' => $logEntry->getDuration(),
+                    'status' => $logEntry['status'],
+                    'crdate' => $logEntry['crdate'],
+                    'username' => (string)$logEntry['cruser_id'] . ' TODO: retrieve user name',
+                    'configuration' => $logEntry['configuration'],
+                    'context' => $logEntry['context'],
+                    'message' => $logEntry['message'],
+                    'duration' => $logEntry['duration'],
                 ];
             }
         } catch (\Exception $e) {
@@ -85,9 +85,7 @@ class LogAjaxController
             'recordsFiltered' => $logCount,
             'error' => $error,
         ];
-        if ($response === null) {
-            $response = GeneralUtility::makeInstance(JsonResponse::class);
-        }
+        $response = GeneralUtility::makeInstance(JsonResponse::class);
         $response->getBody()->write(json_encode($fullResponse, JSON_THROW_ON_ERROR));
         return $response;
     }

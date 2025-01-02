@@ -17,8 +17,6 @@ namespace Cobweb\ExternalImport\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Cobweb\ExternalImport\Domain\Model\BackendUser;
-use Cobweb\ExternalImport\Domain\Model\Log;
 use Cobweb\ExternalImport\Domain\Repository\BackendUserRepository;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use Cobweb\ExternalImport\Exception\UnknownReportingKeyException;
@@ -88,54 +86,43 @@ class ReportingUtility implements LoggerAwareInterface
         if (!$this->importer->isPreview()) {
             $messages = $this->importer->getMessages();
             $importContext = $this->importer->getContext();
-            $now = new \DateTime();
-            $now->setTimestamp((int)$this->context->getPropertyFromAspect('date', 'timestamp'));
+            $now = (int)$this->context->getPropertyFromAspect('date', 'timestamp');
+            $pid = (int)$this->extensionConfiguration['logStorage'];
 
             try {
-                $user = $this->context->getPropertyFromAspect('backend.user', 'id');
+                $currentUser = $this->context->getPropertyFromAspect('backend.user', 'id');
                 // On the command-line, the context does not contain the backend user
                 // Get it directly from the global variable
-                if ($user === 0) {
-                    // TODO: drop usage of model class, at least based on Extbase's AbstractEntity
-                    $currentUser = new BackendUser();
-                    $currentUser->_setProperty('uid', $GLOBALS['BE_USER']->user['uid']);
-                    $currentUser->setUserName($GLOBALS['BE_USER']->user['username']);
-                } else {
-                    /** @var ?BackendUser $currentUser */
-                    $currentUser = $this->userRepository->findByUid($user);
+                if (empty($currentUser)) {
+                    $currentUser = $GLOBALS['BE_USER']->user['uid'];
                 }
             } catch (AspectNotFoundException $e) {
                 $currentUser = null;
             }
             foreach ($messages as $status => $messageList) {
                 foreach ($messageList as $message) {
-                    /** @var Log $logEntry */
-                    $logEntry = GeneralUtility::makeInstance(Log::class);
-                    $logEntry->setPid((int)$this->extensionConfiguration['logStorage']);
-                    $logEntry->setStatus($status);
-                    $logEntry->setCrdate($now);
-                    if ($currentUser !== null) {
-                        $logEntry->setCruserId($currentUser);
-                    }
                     $configuration = $this->importer->getExternalConfiguration() ?
                         $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex() :
                         'Invalid configuration';
-                    $logEntry->setConfiguration($configuration);
-                    $logEntry->setContext($importContext);
-                    $logEntry->setMessage($message);
-                    $logEntry->setDuration(
-                        $this->importer->getEndTime() - $this->importer->getStartTime()
-                    );
+                    $data = [
+                        'pid' => $pid,
+                        'status' => $status,
+                        'crdate' => $now,
+                        'configuration' => $configuration,
+                        'context' => $importContext,
+                        'message' => $message,
+                        'duration'  => $this->importer->getEndTime() - $this->importer->getStartTime(),
+                    ];
+                    if ($currentUser !== null) {
+                        $data['cruser_id'] = $currentUser;
+                    }
                     try {
-                        $this->logRepository->add($logEntry);
+                        $this->logRepository->insert($data);
                     } catch (\Exception $e) {
                         // Nothing to do
                     }
                 }
             }
-            // Make sure the entries are persisted (this will not happen automatically
-            // when called from the command line)
-            $this->logRepository->persist();
         }
     }
 
