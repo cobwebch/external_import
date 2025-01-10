@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Task;
 
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
@@ -75,7 +76,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         }
         // Add "all" selector
         $fieldCode .= '<option value="all"' . $selected . '>' .
-            $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') .
+            $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') .
             '</option>';
         // Get configuration repository for fetching values
         $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
@@ -84,7 +85,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         $groups = $configurationRepository->findAllGroups();
         if (count($groups) > 0) {
             $fieldCode .= '<optgroup label="' .
-                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.groups') .
+                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.groups') .
                 '">';
             foreach ($groups as $group) {
                 $id = 'group:' . $group;
@@ -101,7 +102,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         $configurations = $configurationRepository->findBySync(true);
         if (count($configurations) > 0) {
             $fieldCode .= '<optgroup label="' .
-                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.configurations') .
+                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.configurations') .
                 '">';
             foreach ($configurations as $configuration) {
                 $id = $configuration['id'];
@@ -109,11 +110,11 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
                 if ($taskInfo[self::$itemFieldName] === $id) {
                     $selected = ' selected="selected"';
                 }
-                $label = $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') .
+                $label = $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') .
                     ': ' . $configuration['table'];
-                $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') .
+                $label .= ', ' . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') .
                     ': ' . $configuration['index'];
-                $label .= ', ' . $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') .
+                $label .= ', ' . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') .
                     ': ' . $configuration['priority'];
                 $fieldCode .= '<option value="' . $id . '"' . $selected . '>' . $label . '</option>';
             }
@@ -170,7 +171,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
     public function saveAdditionalFields(array $submittedData, AbstractTask $task): void
     {
         $fieldValue = $submittedData[self::$itemFieldName];
-        if ($fieldValue === 'all' || strpos($fieldValue, 'group:') === 0) {
+        if ($fieldValue === 'all' || str_starts_with($fieldValue, 'group:')) {
             $task->table = $fieldValue;
             $task->index = 0;
         } else {
@@ -180,5 +181,10 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $task->index = $configurationKey->getIndex();
         }
         $task->storage = (int)$submittedData[self::$storageFieldName];
+    }
+
+    protected function getLanguageService(): ?LanguageService
+    {
+        return $GLOBALS['LANG'] ?? null;
     }
 }

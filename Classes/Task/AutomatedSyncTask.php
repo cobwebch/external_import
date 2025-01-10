@@ -22,7 +22,6 @@ use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 /**
@@ -145,13 +144,13 @@ class AutomatedSyncTask extends AbstractTask
     public function getAdditionalInformation(): string
     {
         if ($this->table === 'all') {
-            $info = LocalizationUtility::translate(
+            $info = $this->getLanguageService()->sL(
                 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables'
             );
         } elseif (strpos($this->table, 'group:') === 0) {
             $group = substr($this->table, 6);
             $info = sprintf(
-                LocalizationUtility::translate(
+                $this->getLanguageService()->sL(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:selectedGroup'
                 ),
                 $group
@@ -161,7 +160,7 @@ class AutomatedSyncTask extends AbstractTask
                 $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
                 $configuration = $configurationRepository->findConfigurationObject($this->table, $this->index);
                 $info = sprintf(
-                    LocalizationUtility::translate(
+                    $this->getLanguageService()->sL(
                         'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:tableIndexAndPriority'
                     ),
                     $this->table,
@@ -177,7 +176,9 @@ class AutomatedSyncTask extends AbstractTask
                 $info .= ' / ';
             }
             $info .= sprintf(
-                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:overrideStoragePid'),
+                $this->getLanguageService()->sL(
+                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:overrideStoragePid'
+                ),
                 $this->storage
             );
         }
