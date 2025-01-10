@@ -69,29 +69,8 @@ class LogModuleController extends ActionController
             ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
         );
         $this->pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
-        // TODO: remove when compatibility with v11 is dropped
-        if (CompatibilityUtility::isV11()) {
-            $this->pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport11.css');
-        }
-        $this->pageRenderer->addRequireJsConfiguration(
-            [
-                'paths' => [
-                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/datatables',
-                ],
-            ]
-        );
-        // TODO: remove and replace with Luxon when compatibility with v11 is dropped
-        // Reference: https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/12.1/Important-88158-ReplacedMomentJsWithLuxon.html
-        if (CompatibilityUtility::isV12()) {
-            $this->pageRenderer->addRequireJsConfiguration(
-                [
-                    'paths' => [
-                        'moment' => $publicResourcesPath . 'JavaScript/Contrib/moment',
-                    ],
-                ]
-            );
-        }
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/LogModule');
+        $this->pageRenderer->loadJavaScriptModule('@cobweb/externalimport/log-module.js');
+        $this->pageRenderer->loadJavaScriptModule('@cobweb/externalimport-contribs/datatables.min.js');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
     }
 

@@ -1,3 +1,7 @@
+2025-01-10 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Update datatables, drop RequireJS, use Luxon instead of Moment, resolves #358
+
 2025-01-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Drop Extbase usage for logs, resolves #362

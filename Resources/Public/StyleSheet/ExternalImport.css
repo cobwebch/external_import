@@ -49,7 +49,7 @@ a.next {
 	border-top-right-radius: 2px;
 }
 
-.sync-button img.active {
+.sync-button svg.active {
 	animation-name: merrygoround;
 	animation-duration: 2s;
 	animation-iteration-count: infinite;

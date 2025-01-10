@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Controller;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\CsvUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -584,16 +585,8 @@ class DataModuleController extends ActionController
             ExtensionManagementUtility::extPath('external_import') . 'Resources/Public/'
         );
         $this->pageRenderer->addCssFile($publicResourcesPath . 'StyleSheet/ExternalImport.css');
-/*
-        $this->pageRenderer->addRequireJsConfiguration(
-            [
-                'paths' => [
-                    'datatables' => $publicResourcesPath . 'JavaScript/Contrib/datatables',
-                ],
-            ]
-        );
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/ExternalImport/DataModule');
-*/
+        $this->pageRenderer->loadJavaScriptModule('@cobweb/externalimport/data-module.js');
+        $this->pageRenderer->loadJavaScriptModule('@cobweb/externalimport-contribs/datatables.min.js');
         $this->pageRenderer->addInlineLanguageLabelFile('EXT:external_import/Resources/Private/Language/JavaScript.xlf');
 
         // Evaluate write access on all tables

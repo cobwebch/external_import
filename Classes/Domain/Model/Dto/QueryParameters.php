@@ -86,14 +86,18 @@ class QueryParameters
         // Assemble list of search columns
         $this->setSearchColumns($parameters['columns']);
         // Ordering column name must match existing column
-        $column = (int)$parameters['order'][0]['column'];
+        if ($parameters['order'] ?? false) {
+            $column = $parameters['order'][0]['column'] ? (int)$parameters['order'][0]['column'] : null;
+        } else {
+            $column = null;
+        }
         if (array_key_exists($column, $parameters['columns'])) {
             $columnName = $parameters['columns'][$column]['name'];
         } else {
             $columnName = '';
         }
         $this->setOrder($columnName);
-        $direction = strtoupper($parameters['order'][0]['dir']);
+        $direction = strtoupper($parameters['order'][0]['dir'] ?? 'asc');
         $this->setDirection($direction);
     }
 
