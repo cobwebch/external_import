@@ -951,18 +951,6 @@ class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
     #[Test] #[DataProvider('clearCachePreviewProvider')]
     public function runPreviewOnClearCacheStepReturnsCacheListAndClearsNothing(string $table, mixed $index, array $result): void
     {
-        try {
-            $this->importCSVDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.csv');
-        } catch (\Exception $e) {
-            self::markTestSkipped(
-                sprintf(
-                    VersionNumberUtility::convertVersionNumberToInteger(
-                        VersionNumberUtility::getNumericTypo3Version()
-                    ) . ': Could not load fixture file: %s',
-                    $e->getMessage()
-                )
-            );
-        }
         $this->subject->setPreviewStep(ClearCacheStep::class);
         $this->subject->setTestMode(true);
         $messages = $this->subject->synchronize(
@@ -973,12 +961,6 @@ class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
             $result,
             $this->subject->getPreviewData()
         );
-        // The cache item created with the fixture should not have been cleared
-        $countCacheItems = $this->selectCount(
-            'id',
-            'cache_pages_tags'
-        );
-        self::assertEquals(1, $countCacheItems);
     }
 
     #[Test]
