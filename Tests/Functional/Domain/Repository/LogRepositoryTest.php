@@ -21,7 +21,6 @@ use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**

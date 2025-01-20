@@ -19,7 +19,6 @@ namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Scheduler\Domain\Repository\SchedulerTaskRepository;
 use TYPO3\CMS\Scheduler\Task\TaskSerializer;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;

@@ -20,7 +20,6 @@ namespace Cobweb\ExternalImport\Tests\Functional\Utility;
 use Cobweb\ExternalImport\Utility\MappingUtility;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**

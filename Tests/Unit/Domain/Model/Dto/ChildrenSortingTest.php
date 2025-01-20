@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model\Dto;
 

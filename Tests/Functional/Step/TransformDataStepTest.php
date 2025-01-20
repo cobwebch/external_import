@@ -53,10 +53,8 @@ class TransformDataStepTest extends FunctionalTestCase
         parent::setUp();
         $this->subject = new TransformDataStep(new MappingUtility());
         $importer = $this->createMock(Importer::class);
-//        $configuration = $this->getAccessibleMock(Configuration::class);
         $configuration = $this->createMock(Configuration::class);
         $configuration->method('getTable')->willReturn('foo');
-//        $configuration->setTable('foo');
         $importer->method('getExternalConfiguration')->willReturn($configuration);
         $this->subject->setImporter(
             $importer

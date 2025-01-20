@@ -17,7 +17,6 @@ namespace Cobweb\ExternalImport\Validator;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Extbase\Validation\Validator\AbstractValidator;
 use TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand;
 
