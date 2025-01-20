@@ -99,7 +99,7 @@ class ChildrenSorting
     {
         foreach ($this->sortingInformation as $table => $items) {
             foreach ($items as $key => $value) {
-                if (is_string($key) && strpos($key, 'NEW') === 0) {
+                if (is_string($key) && str_starts_with($key, 'NEW')) {
                     if (isset($replacements[$key])) {
                         $this->sortingInformation[$table][$replacements[$key]] = $value;
                         unset($this->sortingInformation[$table][$key]);

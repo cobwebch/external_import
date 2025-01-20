@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception for invalid step given for preview.
  */
-class InvalidPreviewStepException extends Exception
-{
-}
+class InvalidPreviewStepException extends Exception {}

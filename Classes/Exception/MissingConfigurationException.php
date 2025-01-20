@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception for missing configuration.
  */
-class MissingConfigurationException extends Exception
-{
-}
+class MissingConfigurationException extends Exception {}

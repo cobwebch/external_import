@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception when the requested column does not exist or has no configuration.
  */
-class NoSuchColumnException extends Exception
-{
-}
+class NoSuchColumnException extends Exception {}

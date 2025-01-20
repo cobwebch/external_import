@@ -18,6 +18,4 @@ namespace Cobweb\ExternalImport\Exception;
 /**
  * Exception to be thrown when the payload sent for import is not correct
  */
-class InvalidPayloadException extends \RuntimeException
-{
-}
+class InvalidPayloadException extends \RuntimeException {}

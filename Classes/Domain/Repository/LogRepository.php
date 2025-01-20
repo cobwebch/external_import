@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -27,7 +28,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class LogRepository
 {
-    static protected string $table = 'tx_externalimport_domain_model_log';
+    protected static string $table = 'tx_externalimport_domain_model_log';
 
     public function countAll(): int
     {
@@ -35,7 +36,7 @@ class LogRepository
         try {
             return $query->count('*')
                 ->from(self::$table)
-                ->execute()
+                ->executeQuery()
                 ->fetchOne();
         } catch (\Throwable) {
             return 0;
@@ -47,8 +48,6 @@ class LogRepository
      *
      * @param QueryParameters $queryParameters
      * @return array
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
      * @throws \Doctrine\DBAL\Exception
      */
     public function findBySearch(QueryParameters $queryParameters): array
@@ -79,7 +78,7 @@ class LogRepository
             $query->setMaxResults($queryParameters->getLimit());
             $query->setFirstResult($queryParameters->getOffset());
         }
-        return $query->execute()->fetchAllAssociative();
+        return $query->executeQuery()->fetchAllAssociative();
     }
 
     /**
@@ -90,8 +89,7 @@ class LogRepository
      *
      * @param QueryParameters $queryParameters
      * @return int
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws \Doctrine\DBAL\Exception
      */
     public function countBySearch(QueryParameters $queryParameters): int
     {
@@ -109,7 +107,7 @@ class LogRepository
                 )
             );
         }
-        return $query->execute()->fetchOne();
+        return $query->executeQuery()->fetchOne();
     }
 
     /**
@@ -123,19 +121,16 @@ class LogRepository
     protected function assembleSearchConditions(QueryBuilder $query, string $search, array $searchColumns): array
     {
         $searchConditions = [];
-        $search = '%' . $search . '%';
+        $search = '%' . $query->escapeLikeWildcards($search) . '%';
         foreach ($searchColumns as $column) {
             $searchConditions[] = $query->expr()->like(
                 $column,
-                $search
+                $query->createNamedParameter($search)
             );
         }
         return $searchConditions;
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     */
     public function insert(array $logData): void
     {
         $queryBuilder = $this->getQueryBuilder();

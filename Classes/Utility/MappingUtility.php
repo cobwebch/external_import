@@ -31,18 +31,6 @@ class MappingUtility implements ImporterAwareInterface
     use ImporterAwareTrait;
 
     /**
-     * Returns the object as a string.
-     *
-     * NOTE: this seems pretty useless but somehow is needed when a functional test fails. Don't ask me why.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return __CLASS__;
-    }
-
-    /**
      * Takes a record set and maps a given field to some existing database relation.
      *
      * @param array $records Records to handle
@@ -197,7 +185,7 @@ class MappingUtility implements ImporterAwareInterface
             $whereClause = '1 = 1';
             if (!empty($mappingData['whereClause'])) {
                 // If the where clause contains the ###PID_IN_USE### marker, replace it with current storage pid
-                if (strpos($mappingData['whereClause'], '###PID_IN_USE###') !== false) {
+                if (str_contains($mappingData['whereClause'], '###PID_IN_USE###')) {
                     $whereClause = str_replace(
                         '###PID_IN_USE###',
                         (string)$this->importer->getExternalConfiguration()->getStoragePid(),

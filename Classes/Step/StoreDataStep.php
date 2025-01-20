@@ -17,8 +17,6 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Step;
 
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
 use Cobweb\ExternalImport\Domain\Model\ProcessedConfiguration;
@@ -30,6 +28,7 @@ use Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent;
 use Cobweb\ExternalImport\Event\UpdateRecordPreprocessEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Exception\InvalidRecordException;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ChildrenSortingUtility;
 use Cobweb\ExternalImport\Utility\SlugUtility;
@@ -37,9 +36,9 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Log\LogDataTrait;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class StoreDataStep extends AbstractStep
 {
@@ -78,9 +77,7 @@ class StoreDataStep extends AbstractStep
          * @var ChildrenSorting DTO object for storing children sorting data
          */
         protected ChildrenSorting $childrenSortingInformation
-    )
-    {
-    }
+    ) {}
 
     public function setImporter(Importer $importer): void
     {
@@ -127,7 +124,7 @@ class StoreDataStep extends AbstractStep
 
         // Prepare some data before the loop
         $storagePid = $this->importer->getExternalConfiguration()->getStoragePid();
-        $updateSlugs = array_key_exists('updateSlugs', $generalConfiguration) ? (bool)$generalConfiguration['updateSlugs']: false;
+        $updateSlugs = array_key_exists('updateSlugs', $generalConfiguration) ? (bool)$generalConfiguration['updateSlugs'] : false;
 
         // Prepare the data to store
         $dateToStore = $this->prepareDataToStore();
@@ -513,34 +510,30 @@ class StoreDataStep extends AbstractStep
         // Set informational messages (not in preview mode)
         if (!$this->importer->isPreview()) {
             $this->importer->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_inserted',
-                    null,
-                    [$inserts]
+                sprintf(
+                    $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_inserted'),
+                    $inserts
                 ),
                 ContextualFeedbackSeverity::OK
             );
             $this->importer->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_updated',
-                    null,
-                    [$updates]
+                sprintf(
+                    $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_updated'),
+                    $updates
                 ),
                 ContextualFeedbackSeverity::OK
             );
             $this->importer->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_deleted',
-                    null,
-                    [$deletes]
+                sprintf(
+                    $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_deleted'),
+                    $deletes
                 ),
                 ContextualFeedbackSeverity::OK
             );
             $this->importer->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_moved',
-                    null,
-                    [$moves]
+                sprintf(
+                    $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:records_moved'),
+                    $moves
                 ),
                 ContextualFeedbackSeverity::OK
             );
@@ -1050,9 +1043,7 @@ class StoreDataStep extends AbstractStep
             }
             // Add a warning that number of operations reported may not be accurate
             $this->importer->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:things_happened'
-                ),
+                $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:things_happened'),
                 ContextualFeedbackSeverity::WARNING
             );
         }
@@ -1146,16 +1137,13 @@ class StoreDataStep extends AbstractStep
         $this->abortFlag = true;
         // Add an error message
         $this->importer->addMessage(
-            LocalizationUtility::translate(
-                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurredDuringSave',
-                null,
-                [
-                    $e->getMessage(),
-                    $e->getCode(),
-                    $e->getFile(),
-                    $e->getLine(),
-                ]
-            )
+            sprintf(
+                $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurredDuringSave'),
+                $e->getMessage(),
+                $e->getCode(),
+                $e->getFile(),
+                $e->getLine()
+            ),
         );
         // Send the call trail to the debut output
         $this->importer->debug(

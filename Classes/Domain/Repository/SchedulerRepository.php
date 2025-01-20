@@ -24,7 +24,6 @@ use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand;
 use TYPO3\CMS\Scheduler\Domain\Repository\SchedulerTaskRepository;
 use TYPO3\CMS\Scheduler\Exception\InvalidTaskException;
@@ -204,10 +203,9 @@ class SchedulerRepository implements SingletonInterface
             'interval' => $interval,
             'croncmd' => $cronCommand,
             'frequency' => ($cronCommand !== '') ? $cronCommand : $interval,
-            'frequencyText' => ($cronCommand !== '') ? $cronCommand : LocalizationUtility::translate(
-                'number_of_seconds',
-                'external_import',
-                [$interval]
+            'frequencyText' => ($cronCommand !== '') ? $cronCommand : sprintf(
+                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xlf:number_of_seconds'),
+                $interval
             ),
             'group' => $taskObject->getTaskGroup(),
             // Format date and time as needed for form input
@@ -262,10 +260,7 @@ class SchedulerRepository implements SingletonInterface
         }
         if ($result === false) {
             throw new SchedulerRepositoryException(
-                LocalizationUtility::translate(
-                    'taskSaveFailed',
-                    'external_import'
-                ),
+                'Creating or updating the task has failed (I know this is not very helpful, sorry).',
                 1509896783
             );
         }

@@ -24,7 +24,6 @@ use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\Utility\MappingUtility;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This step takes the structured data and transforms the values it contains according to whatever
@@ -38,9 +37,7 @@ class TransformDataStep extends AbstractStep
      */
     public static array $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
 
-    public function __construct(protected MappingUtility $mappingUtility)
-    {
-    }
+    public function __construct(protected MappingUtility $mappingUtility) {}
 
     /**
      * Sets the Importer instance (using the parent method) and passes to the mapping utility.
@@ -115,9 +112,7 @@ class TransformDataStep extends AbstractStep
                                     // Unknown property, log error
                                     $this->importer->debug(
                                         sprintf(
-                                            LocalizationUtility::translate(
-                                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:unknownTransformationProperty'
-                                            ),
+                                            $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:unknownTransformationProperty'),
                                             $property
                                         ),
                                         2,
@@ -241,13 +236,10 @@ class TransformDataStep extends AbstractStep
                     // This exception means that the record must be removed from the dataset entirely
                     unset($records[$index]);
                     $this->importer->debug(
-                        LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidRecordRemoved',
-                            null,
-                            [
-                                $e->getMessage(),
-                                $e->getCode(),
-                            ]
+                        sprintf(
+                            $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidRecordRemoved'),
+                            $e->getMessage(),
+                            $e->getCode(),
                         ),
                         3,
                         [
@@ -259,13 +251,10 @@ class TransformDataStep extends AbstractStep
                     // If the value could not be transformed, remove it from the imported dataset
                     unset($records[$index][$name]);
                     $this->importer->debug(
-                        LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailedWithMessage',
-                            null,
-                            [
-                                $e->getMessage(),
-                                $e->getCode(),
-                            ]
+                        sprintf(
+                            $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailedWithMessage'),
+                            $e->getMessage(),
+                            $e->getCode(),
                         ),
                         3,
                         [
@@ -278,9 +267,7 @@ class TransformDataStep extends AbstractStep
         } catch (\Exception) {
             $this->importer->debug(
                 sprintf(
-                    LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalid_userfunc'
-                    ),
+                    $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalid_userfunc'),
                     $configuration['class']
                 ),
                 2,
@@ -325,9 +312,7 @@ class TransformDataStep extends AbstractStep
                     $isEmpty = true;
                     $this->importer->debug(
                         sprintf(
-                            LocalizationUtility::translate(
-                                'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:expressionError'
-                            ),
+                            $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:expressionError'),
                             $configuration['expression'],
                             $e->getMessage(),
                             $e->getCode()
@@ -344,13 +329,10 @@ class TransformDataStep extends AbstractStep
                     unset($records[$index]);
                     // Log info about dropped record
                     $this->importer->debug(
-                        LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:emptyRecordRemoved',
-                            null,
-                            [
-                                $index,
-                                $name,
-                            ]
+                        sprintf(
+                            $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:emptyRecordRemoved'),
+                            $index,
+                            $name
                         ),
                         3,
                         [

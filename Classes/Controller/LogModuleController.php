@@ -18,7 +18,6 @@ namespace Cobweb\ExternalImport\Controller;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;

@@ -21,7 +21,6 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This class ensure that permissions are enough to allow the import process to run.
@@ -43,13 +42,10 @@ class CheckPermissionsStep extends AbstractStep
                 $userName = 'Unknown';
             }
             $this->importer->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_rights_for_sync',
-                    null,
-                    [
-                        $userName,
-                        $table
-                    ]
+                sprintf(
+                    $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_rights_for_sync'),
+                    $userName,
+                    $table
                 )
             );
         }

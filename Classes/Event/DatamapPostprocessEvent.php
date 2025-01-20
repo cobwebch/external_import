@@ -37,9 +37,7 @@ final class DatamapPostprocessEvent
          * @var Importer Back-reference to the calling Importer instance
          */
         protected Importer $importer
-    )
-    {
-    }
+    ) {}
 
     public function getImporter(): Importer
     {

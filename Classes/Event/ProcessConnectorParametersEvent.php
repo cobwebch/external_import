@@ -33,9 +33,7 @@ final class ProcessConnectorParametersEvent
          * @var Configuration Current External Import configuration
          */
         protected Configuration $externalConfiguration
-    )
-    {
-    }
+    ) {}
 
     /**
      * Returns the parameters.

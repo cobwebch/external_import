@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception when a searched for record is not found in the database.
  */
-class NoSuchRecordException extends Exception
-{
-}
+class NoSuchRecordException extends Exception {}

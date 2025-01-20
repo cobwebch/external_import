@@ -21,6 +21,4 @@ use TYPO3\CMS\Core\Exception;
  * Exception that should be thrown whenever a failed operation should stop the whole import,
  * rather than just having a single record fail. See the documentation for more information.
  */
-class CriticalFailureException extends Exception
-{
-}
+class CriticalFailureException extends Exception {}

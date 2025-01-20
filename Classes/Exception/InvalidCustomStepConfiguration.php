@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception for invalid custom step configuration.
  */
-class InvalidCustomStepConfiguration extends Exception
-{
-}
+class InvalidCustomStepConfiguration extends Exception {}

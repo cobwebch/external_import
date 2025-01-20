@@ -64,7 +64,7 @@ class QueryParameters
      *
      * @param array|null $parameters Query parameters from the AJAX query
      */
-    public function __construct(?array $parameters)
+    public function __construct(?array $parameters = null)
     {
         if ($parameters !== null) {
             $this->setAllParameters($parameters);
@@ -79,9 +79,9 @@ class QueryParameters
     public function setAllParameters(array $parameters): void
     {
         // Set simple parameters
-        $this->setDraw((int)$parameters['draw']);
-        $this->setLimit((int)$parameters['length']);
-        $this->setOffset((int)$parameters['start']);
+        $this->setDraw(isset($parameters['draw']) ? (int)$parameters['draw'] : 0);
+        $this->setLimit(isset($parameters['length']) ? (int)$parameters['length'] : 0);
+        $this->setOffset(isset($parameters['start']) ? (int)$parameters['start'] : 0);
         $this->setSearch((string)$parameters['search']['value']);
         // Assemble list of search columns
         $this->setSearchColumns($parameters['columns']);

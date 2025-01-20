@@ -23,9 +23,9 @@ use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\StepUtility;
 use Cobweb\Svconnector\Registry\ConnectorRegistry;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This class parses the general part of an External Import configuration
@@ -100,7 +100,7 @@ class GeneralConfigurationValidator
         }
 
         // Validate properties specific to the "xml"-type data
-        if ($generalConfiguration['data'] === 'xml') {
+        if (($generalConfiguration['data'] ?? '') === 'xml') {
             $this->validateNodeProperty(
                 $generalConfiguration['nodetype'] ?? '',
                 $generalConfiguration['nodepath'] ?? ''
@@ -122,7 +122,7 @@ class GeneralConfigurationValidator
         if (empty($property)) {
             $this->results->add(
                 'data',
-                LocalizationUtility::translate(
+                $this->getLanguageService()->sL(
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingDataProperty'
                 ),
                 ContextualFeedbackSeverity::ERROR
@@ -130,7 +130,7 @@ class GeneralConfigurationValidator
         } elseif ($property !== 'array' && $property !== 'xml') {
             $this->results->add(
                 'data',
-                LocalizationUtility::translate(
+                $this->getLanguageService()->sL(
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidDataProperty'
                 ),
                 ContextualFeedbackSeverity::ERROR
@@ -157,7 +157,7 @@ class GeneralConfigurationValidator
             } catch (\Exception $e) {
                 $this->results->add(
                     'connector',
-                    LocalizationUtility::translate(
+                    $this->getLanguageService()->sL(
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:unavailableConnector'
                     ),
                     ContextualFeedbackSeverity::ERROR
@@ -176,18 +176,18 @@ class GeneralConfigurationValidator
     public function validateConnectorConfigurationProperty(string $connector, array $property): void
     {
         try {
-            $connectorService = $this->connectorRegistry->getServiceForType($connector);
+            $connectorService = $this->connectorRegistry->getServiceForType($connector, $property);
         } catch (\Exception $e) {
             // NOTE: we do not report if connector was not found, because this is the task of validateConnectorProperty()
             return;
         }
-        $results = $connectorService->checkConfiguration($property);
+        $results = $connectorService->checkConfiguration();
         foreach ($results as $severity => $messages) {
             foreach ($messages as $message) {
                 $this->results->add(
                     'parameters',
                     $message,
-                    $severity
+                    ContextualFeedbackSeverity::from($severity)
                 );
             }
         }
@@ -207,7 +207,7 @@ class GeneralConfigurationValidator
                     if (!($dataHandler instanceof DataHandlerInterface)) {
                         $this->results->add(
                             'dataHandler',
-                            LocalizationUtility::translate(
+                            $this->getLanguageService()->sL(
                                 'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerInterfaceIssue'
                             ),
                             ContextualFeedbackSeverity::NOTICE
@@ -216,7 +216,7 @@ class GeneralConfigurationValidator
                 } catch (\Exception $e) {
                     $this->results->add(
                         'dataHandler',
-                        LocalizationUtility::translate(
+                        $this->getLanguageService()->sL(
                             'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNoInstance'
                         ),
                         ContextualFeedbackSeverity::NOTICE
@@ -225,7 +225,7 @@ class GeneralConfigurationValidator
             } else {
                 $this->results->add(
                     'dataHandler',
-                    LocalizationUtility::translate(
+                    $this->getLanguageService()->sL(
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:dataHandlerNotFound'
                     ),
                     ContextualFeedbackSeverity::NOTICE
@@ -245,9 +245,8 @@ class GeneralConfigurationValidator
         if (empty($nodetype) && empty($nodepath)) {
             $this->results->add(
                 'nodetype',
-                LocalizationUtility::translate(
+                $this->getLanguageService()->sL(
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingNodeProperty',
-                    'external_import'
                 ),
                 ContextualFeedbackSeverity::ERROR
             );
@@ -264,7 +263,7 @@ class GeneralConfigurationValidator
         if (empty($property)) {
             $this->results->add(
                 'referenceUid',
-                LocalizationUtility::translate(
+                $this->getLanguageService()->sL(
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:missingReferenceUidProperty'
                 ),
                 ContextualFeedbackSeverity::ERROR
@@ -282,12 +281,9 @@ class GeneralConfigurationValidator
         if ($property === 0) {
             $this->results->add(
                 'priority',
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:defaultPriorityValue',
-                    null,
-                    [
-                        Importer::DEFAULT_PRIORITY,
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:defaultPriorityValue'),
+                    Importer::DEFAULT_PRIORITY,
                 ),
                 ContextualFeedbackSeverity::NOTICE
             );
@@ -311,9 +307,8 @@ class GeneralConfigurationValidator
             if ($rootLevelFlag === -1 || $rootLevelFlag === 1 || $rootLevelFlag) {
                 $this->results->add(
                     'pid',
-                    LocalizationUtility::translate(
+                    $this->getLanguageService()->sL(
                         'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPage',
-                        'external_import'
                     ),
                     ContextualFeedbackSeverity::NOTICE
                 );
@@ -321,12 +316,9 @@ class GeneralConfigurationValidator
                 // Records for current table are not allowed on root page
                 $this->results->add(
                     'pid',
-                    LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPageNotAllowed',
-                        null,
-                        [
-                            $this->table,
-                        ]
+                    sprintf(
+                        $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:pidNotSetStoreRootPageNotAllowed'),
+                        $this->table,
                     ),
                     ContextualFeedbackSeverity::ERROR
                 );
@@ -335,9 +327,8 @@ class GeneralConfigurationValidator
             // Negative pid is invalid
             $this->results->add(
                 'pid',
-                LocalizationUtility::translate(
+                $this->getLanguageService()->sL(
                     'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:negativePidProperty',
-                    'external_import'
                 ),
                 ContextualFeedbackSeverity::ERROR
             );
@@ -345,12 +336,9 @@ class GeneralConfigurationValidator
         } elseif ($rootLevelFlag === 1) {
             $this->results->add(
                 'pid',
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidPidPropertyOnlyRoot',
-                    null,
-                    [
-                        $this->table,
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidPidPropertyOnlyRoot'),
+                    $this->table,
                 ),
                 ContextualFeedbackSeverity::ERROR
             );
@@ -370,13 +358,10 @@ class GeneralConfigurationValidator
         if ($property !== null && count($columns) === 0) {
             $this->results->add(
                 'useColumnIndex',
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:wrongUseColumnIndexProperty',
-                    null,
-                    [
-                        $property,
-                        $this->table,
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:wrongUseColumnIndexProperty'),
+                    $property,
+                    $this->table,
                 ),
                 ContextualFeedbackSeverity::ERROR
             );
@@ -398,12 +383,9 @@ class GeneralConfigurationValidator
         if (count($difference) > 0) {
             $this->results->add(
                 'columnsOrder',
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:duplicateKeysInColumnsOrderProperty',
-                    null,
-                    [
-                        implode(', ', $difference),
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:duplicateKeysInColumnsOrderProperty'),
+                    implode(', ', $difference),
                 ),
                 ContextualFeedbackSeverity::NOTICE
             );
@@ -418,12 +400,9 @@ class GeneralConfigurationValidator
         if (count($invalidColumns) > 0) {
             $this->results->add(
                 'columnsOrder',
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidColumnsInColumnsOrderProperty',
-                    null,
-                    [
-                        implode(', ', $invalidColumns),
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidColumnsInColumnsOrderProperty'),
+                    implode(', ', $invalidColumns),
                 ),
                 ContextualFeedbackSeverity::NOTICE
             );
@@ -452,13 +431,10 @@ class GeneralConfigurationValidator
                 } catch (InvalidCustomStepConfiguration $e) {
                     $this->results->add(
                         'customSteps',
-                        LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidCustomStepsProperty',
-                            null,
-                            [
-                                $e->getMessage(),
-                                $e->getCode(),
-                            ]
+                        sprintf(
+                            $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidCustomStepsProperty'),
+                            $e->getMessage(),
+                            $e->getCode(),
                         ),
                         ContextualFeedbackSeverity::NOTICE
                     );
@@ -476,5 +452,10 @@ class GeneralConfigurationValidator
     public function getResults(): ValidationResult
     {
         return $this->results;
+    }
+
+    protected function getLanguageService(): LanguageService
+    {
+        return $GLOBALS['LANG'];
     }
 }

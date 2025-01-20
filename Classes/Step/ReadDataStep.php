@@ -23,16 +23,13 @@ use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\Svconnector\Registry\ConnectorRegistry;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This step reads the data from the external source.
  */
 class ReadDataStep extends AbstractStep
 {
-    public function __construct(protected ConnectorRegistry $connectorRegistry, protected EventDispatcherInterface $eventDispatcher)
-    {
-    }
+    public function __construct(protected ConnectorRegistry $connectorRegistry, protected EventDispatcherInterface $eventDispatcher) {}
 
     /**
      * Reads the data from the external source.
@@ -59,12 +56,9 @@ class ReadDataStep extends AbstractStep
             if (!$connector->isAvailable()) {
                 $this->setAbortFlag(true);
                 $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:service_not_available',
-                        null,
-                        [
-                            $generalConfiguration['connector'],
-                        ],
+                    sprintf(
+                        $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:service_not_available'),
+                        $generalConfiguration['connector'],
                     )
                 );
                 return;
@@ -72,14 +66,11 @@ class ReadDataStep extends AbstractStep
         } catch (\Exception $e) {
             $this->setAbortFlag(true);
             $this->importer->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:service_error',
-                    null,
-                    [
-                        $generalConfiguration['connector'],
-                        $e->getMessage(),
-                        $e->getCode(),
-                    ],
+                sprintf(
+                    $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:service_error'),
+                    $generalConfiguration['connector'],
+                    $e->getMessage(),
+                    $e->getCode(),
                 )
             );
             return;
@@ -108,12 +99,9 @@ class ReadDataStep extends AbstractStep
                 } catch (\Exception $e) {
                     $this->abortFlag = true;
                     $this->importer->addMessage(
-                        LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
-                            null,
-                            [
-                                $e->getMessage(),
-                            ]
+                        sprintf(
+                            $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error'),
+                            $e->getMessage()
                         )
                     );
                 }
@@ -125,12 +113,9 @@ class ReadDataStep extends AbstractStep
                 } catch (\Exception $e) {
                     $this->abortFlag = true;
                     $this->importer->addMessage(
-                        LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error',
-                            null,
-                            [
-                                $e->getMessage(),
-                            ]
+                        sprintf(
+                            $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_not_fetched_connector_error'),
+                            $e->getMessage()
                         )
                     );
                 }
@@ -140,9 +125,7 @@ class ReadDataStep extends AbstractStep
             default:
                 $this->abortFlag = true;
                 $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_type_not_defined'
-                    )
+                    $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:data_type_not_defined')
                 );
                 break;
         }

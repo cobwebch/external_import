@@ -24,9 +24,7 @@ use Cobweb\ExternalImport\Importer;
  */
 class ReportEvent
 {
-    public function __construct(protected Importer $importer)
-    {
-    }
+    public function __construct(protected Importer $importer) {}
 
     /**
      * @return Importer

@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception when no configuration.
  */
-class NoConfigurationException extends Exception
-{
-}
+class NoConfigurationException extends Exception {}

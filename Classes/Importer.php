@@ -30,9 +30,9 @@ use Cobweb\ExternalImport\Utility\ReportingUtility;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This class drives the import process by moving from step to step, aborting when necessary and triggering the reporting.
@@ -137,31 +137,31 @@ class Importer implements LoggerAwareInterface
      * @var array List of default steps for the synchronize data process
      */
     public const SYNCHRONYZE_DATA_STEPS = [
-            Step\CheckPermissionsStep::class,
-            Step\ValidateConfigurationStep::class,
-            Step\ValidateConnectorStep::class,
-            Step\ReadDataStep::class,
-            Step\HandleDataStep::class,
-            Step\ValidateDataStep::class,
-            Step\TransformDataStep::class,
-            Step\StoreDataStep::class,
-            Step\ClearCacheStep::class,
-            Step\ConnectorCallbackStep::class,
-            Step\ReportStep::class,
+        Step\CheckPermissionsStep::class,
+        Step\ValidateConfigurationStep::class,
+        Step\ValidateConnectorStep::class,
+        Step\ReadDataStep::class,
+        Step\HandleDataStep::class,
+        Step\ValidateDataStep::class,
+        Step\TransformDataStep::class,
+        Step\StoreDataStep::class,
+        Step\ClearCacheStep::class,
+        Step\ConnectorCallbackStep::class,
+        Step\ReportStep::class,
     ];
 
     /**
      * @var array List of default steps for the import data process
      */
     public const IMPORT_DATA_STEPS = [
-            Step\CheckPermissionsStep::class,
-            Step\ValidateConfigurationStep::class,
-            Step\HandleDataStep::class,
-            Step\ValidateDataStep::class,
-            Step\TransformDataStep::class,
-            Step\StoreDataStep::class,
-            Step\ClearCacheStep::class,
-            Step\ReportStep::class,
+        Step\CheckPermissionsStep::class,
+        Step\ValidateConfigurationStep::class,
+        Step\HandleDataStep::class,
+        Step\ValidateDataStep::class,
+        Step\TransformDataStep::class,
+        Step\StoreDataStep::class,
+        Step\ClearCacheStep::class,
+        Step\ReportStep::class,
     ];
 
     /**
@@ -192,18 +192,6 @@ class Importer implements LoggerAwareInterface
         }
         // Initialize message array
         $this->resetMessages();
-    }
-
-    /**
-     * Returns the object as a string.
-     *
-     * NOTE: this seems pretty useless but somehow is needed when a functional test fails. Don't ask me why.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return __CLASS__;
     }
 
     /**
@@ -258,37 +246,28 @@ class Importer implements LoggerAwareInterface
             $this->runSteps();
         } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
-                    'external_import',
-                    [
-                        $e->getMessage(),
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep'),
+                    $e->getMessage(),
                 ),
                 ContextualFeedbackSeverity::WARNING
             );
         } catch (NoConfigurationException $e) {
             $this->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
-                    'external_import',
-                    [
-                        $table,
-                        $index,
-                        $e->getMessage(),
-                        $e->getCode(),
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound'),
+                    $table,
+                    $index,
+                    $e->getMessage(),
+                    $e->getCode(),
                 )
             );
         } catch (\Exception $e) {
             $this->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:generalProcessError',
-                    'external_import',
-                    [
-                        $e->getMessage(),
-                        $e->getCode(),
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:generalProcessError'),
+                    $e->getMessage(),
+                    $e->getCode()
                 )
             );
         }
@@ -325,36 +304,28 @@ class Importer implements LoggerAwareInterface
             $this->runSteps();
         } catch (InvalidPreviewStepException $e) {
             $this->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep',
-                    'external_import',
-                    [
-                        $e->getMessage(),
-                    ]
-                )
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongPreviewStep'),
+                    $e->getMessage(),
+                ),
+                ContextualFeedbackSeverity::WARNING
             );
         } catch (NoConfigurationException $e) {
             $this->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound',
-                    'external_import',
-                    [
-                        $table,
-                        $index,
-                        $e->getMessage(),
-                        $e->getCode(),
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:noConfigurationFound'),
+                    $table,
+                    $index,
+                    $e->getMessage(),
+                    $e->getCode(),
                 )
             );
         } catch (\Exception $e) {
             $this->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:generalProcessError',
-                    'external_import',
-                    [
-                        $e->getMessage(),
-                        $e->getCode(),
-                    ]
+                sprintf(
+                    $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:generalProcessError'),
+                    $e->getMessage(),
+                    $e->getCode()
                 )
             );
         }
@@ -397,10 +368,7 @@ class Importer implements LoggerAwareInterface
                     $this->setProcessAborted(true);
                     // Report about aborting
                     $this->addMessage(
-                        LocalizationUtility::translate(
-                            'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted',
-                            'external_import'
-                        ),
+                        $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted'),
                         ContextualFeedbackSeverity::WARNING
                     );
                 }
@@ -830,5 +798,10 @@ class Importer implements LoggerAwareInterface
     public function isTestMode(): bool
     {
         return $this->testMode;
+    }
+
+    public function getLanguageService(): LanguageService
+    {
+        return $GLOBALS['LANG'];
     }
 }

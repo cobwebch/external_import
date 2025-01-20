@@ -23,7 +23,6 @@ use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Pseudo-repository for fetching external import configurations from the TCA
@@ -213,6 +212,7 @@ class ConfigurationRepository
      */
     public function findConfigurationObject(string $table, $index, ?array $defaultSteps = null): Configuration
     {
+        /** @var Configuration $configuration */
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $externalConfiguration = $this->findByTableAndIndex($table, $index);
 
@@ -272,14 +272,14 @@ class ConfigurationRepository
                         }
                         $description = '';
                         if (isset($externalConfiguration['description'])) {
-                            if (strpos($externalConfiguration['description'], 'LLL:') === 0) {
-                                $description = LocalizationUtility::translate($externalConfiguration['description']);
+                            if (str_starts_with($externalConfiguration['description'], 'LLL:')) {
+                                $description = $GLOBALS['LANG']->sL($externalConfiguration['description']);
                             } else {
                                 $description = $externalConfiguration['description'];
                             }
                         }
-                        if (strpos($sections['ctrl']['title'] ?? '', 'LLL:') === 0) {
-                            $tableTitle = LocalizationUtility::translate($sections['ctrl']['title']);
+                        if (str_starts_with($sections['ctrl']['title'] ?? '', 'LLL:')) {
+                            $tableTitle = $GLOBALS['LANG']->sL($sections['ctrl']['title']);
                         } else {
                             $tableTitle = $sections['ctrl']['title'] ?? 'untitled';
                         }

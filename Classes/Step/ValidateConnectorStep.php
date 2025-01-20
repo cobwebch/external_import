@@ -17,8 +17,6 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-
 /**
  * Validation of the External Import configuration specifically for synchronize processes.
  */
@@ -32,9 +30,7 @@ class ValidateConnectorStep extends AbstractStep
         $generalConfiguration = $this->importer->getExternalConfiguration()->getGeneralConfiguration();
         if (empty($generalConfiguration['connector'])) {
             $this->importer->addMessage(
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_connector'
-                )
+                $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:no_connector')
             );
             $this->abortFlag = true;
         }

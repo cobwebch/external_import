@@ -30,7 +30,7 @@ class CsvUtility
     public function prepareCsvData(array $array): string
     {
         $array = $this->ensureCompleteStructure($array);
-        $lines= [];
+        $lines = [];
         foreach ($array as $index => $item) {
             // Header row with array keys
             if ($index === 0) {

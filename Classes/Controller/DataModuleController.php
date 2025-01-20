@@ -20,7 +20,6 @@ namespace Cobweb\ExternalImport\Controller;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
 use Cobweb\ExternalImport\Importer;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Cobweb\ExternalImport\Utility\CsvUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
@@ -385,7 +384,7 @@ class DataModuleController extends ActionController
     {
         // Add a close button to the toolbar
         $this->prepareView('', 'listSynchronizable');
-//        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
+        //        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
 
         $this->view->assignMultiple(
             [

@@ -21,7 +21,6 @@ use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Handler\ArrayHandler;
 use Cobweb\ExternalImport\Handler\XmlHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * This step takes the raw data from the "read" step and makes it into a structured
@@ -48,19 +47,21 @@ class HandleDataStep extends AbstractStep
                     );
                 } else {
                     $this->abortFlag = true;
-                    LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler',
-                        null,
-                        [$generalConfiguration['dataHandler']]
+                    $this->importer->addMessage(
+                        sprintf(
+                            $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidCustomHandler'),
+                            $generalConfiguration['dataHandler']
+                        )
                     );
                     return;
                 }
             } catch (\Exception) {
                 $this->abortFlag = true;
-                LocalizationUtility::translate(
-                    'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler',
-                    null,
-                    [$generalConfiguration['dataHandler']]
+                $this->importer->addMessage(
+                    sprintf(
+                        $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:wrongCustomHandler'),
+                        $generalConfiguration['dataHandler']
+                    )
                 );
                 return;
             }

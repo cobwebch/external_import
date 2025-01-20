@@ -66,7 +66,9 @@ class ArrayHandler implements DataHandlerInterface
                 // Extract parts of the path
                 $segments = str_getcsv(
                     (string)$generalConfiguration['arrayPath'],
-                    array_key_exists('arrayPathSeparator', $generalConfiguration) ? (string)$generalConfiguration['arrayPathSeparator'] : '/'
+                    array_key_exists('arrayPathSeparator', $generalConfiguration) ? (string)$generalConfiguration['arrayPathSeparator'] : '/',
+                    '"',
+                    '\\'
                 );
 
                 $rawData = $this->getArrayPathStructure(
@@ -194,7 +196,9 @@ class ArrayHandler implements DataHandlerInterface
             // Extract parts of the path
             $segments = str_getcsv(
                 (string)$columnConfiguration['arrayPath'],
-                array_key_exists('arrayPathSeparator', $columnConfiguration) ? (string)$columnConfiguration['arrayPathSeparator'] : '/'
+                array_key_exists('arrayPathSeparator', $columnConfiguration) ? (string)$columnConfiguration['arrayPathSeparator'] : '/',
+                '"',
+                '\\'
             );
 
             $value = $this->getArrayPathStructure(
@@ -270,7 +274,7 @@ class ArrayHandler implements DataHandlerInterface
                 $key = $segment;
                 $condition = '';
                 // If the segment contains a condition, extract it
-                if (strpos($segment, '{') !== false) {
+                if (str_contains($segment, '{')) {
                     $result = preg_match('/(.*){(.*)}/', $segment, $matches);
                     if ($result) {
                         $key = $matches[1];

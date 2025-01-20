@@ -18,7 +18,6 @@ namespace Cobweb\ExternalImport\Step;
  */
 
 use Cobweb\ExternalImport\Event\ReportEvent;
-use Cobweb\ExternalImport\Utility\CompatibilityUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**

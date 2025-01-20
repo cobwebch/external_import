@@ -33,9 +33,7 @@ final class InsertRecordPreprocessEvent
          * @var Importer Back-reference to the calling Importer instance
          */
         protected Importer $importer
-    )
-    {
-    }
+    ) {}
 
     /**
      * @return Importer

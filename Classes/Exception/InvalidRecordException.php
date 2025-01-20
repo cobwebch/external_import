@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception for invalidating a record during a process step.
  */
-class InvalidRecordException extends Exception
-{
-}
+class InvalidRecordException extends Exception {}

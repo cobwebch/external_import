@@ -82,7 +82,7 @@ class ConfigurationKey
         // Handle special cases for "all tables" and "group" configurations
         if ($table === 'all') {
             $this->configurationKey = 'all';
-        } elseif (strpos($table, 'group:') === 0) {
+        } elseif (str_starts_with($table, 'group:')) {
             $this->configurationKey = $table;
         } else {
             $this->configurationKey = $table . self::CONCATENATOR . $index;

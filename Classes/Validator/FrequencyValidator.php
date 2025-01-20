@@ -45,10 +45,7 @@ class FrequencyValidator extends AbstractValidator
         // Frequency is mandatory
         if ($value === '') {
             $this->addError(
-                LocalizationUtility::translate(
-                    'error_empty_frequency',
-                    'external_import'
-                ),
+                $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xlf:error_empty_frequency'),
                 1463494395
             );
         }
@@ -63,12 +60,9 @@ class FrequencyValidator extends AbstractValidator
             // If yes, assume it is a frequency in seconds, else issue error
             if (!is_numeric($value)) {
                 $this->addError(
-                    LocalizationUtility::translate(
-                        'error_wrong_frequency',
-                        'external_import',
-                        [
-                            $e->getMessage(),
-                        ]
+                    sprintf(
+                        $GLOBALS['LANG']->sL('LLL:EXT:external_import/Resources/Private/Language/locallang.xlf:error_wrong_frequency'),
+                        $e->getMessage(),
                     ),
                     1463495019
                 );

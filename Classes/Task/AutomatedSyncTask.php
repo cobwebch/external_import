@@ -67,7 +67,7 @@ class AutomatedSyncTask extends AbstractTask
         // Synchronize all tables
         $globalStatus = 'OK';
         $errorCount = 0;
-        if ($this->table === 'all' || strpos($this->table, 'group:') === 0) {
+        if ($this->table === 'all' || str_starts_with($this->table, 'group:')) {
             if ($this->table === 'all') {
                 $configurations = $importer->getConfigurationRepository()->findOrderedConfigurations();
             } else {
@@ -147,7 +147,7 @@ class AutomatedSyncTask extends AbstractTask
             $info = $this->getLanguageService()->sL(
                 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables'
             );
-        } elseif (strpos($this->table, 'group:') === 0) {
+        } elseif (str_starts_with($this->table, 'group:')) {
             $group = substr($this->table, 6);
             $info = sprintf(
                 $this->getLanguageService()->sL(

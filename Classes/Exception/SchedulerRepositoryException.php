@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception for errors in the SchedulerRepository.
  */
-class SchedulerRepositoryException extends Exception
-{
-}
+class SchedulerRepositoryException extends Exception {}

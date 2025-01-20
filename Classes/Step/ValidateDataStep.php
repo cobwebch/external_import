@@ -17,8 +17,6 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
-
 /**
  * Validates the data after it has been mapped to TCA columns.
  *
@@ -41,14 +39,11 @@ class ValidateDataStep extends AbstractStep
             if ($countRecords < $generalConfiguration['minimumRecords']) {
                 $this->abortFlag = true;
                 $this->importer->addMessage(
-                    LocalizationUtility::translate(
-                        'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:notEnoughRecords',
-                        'external_import',
-                        [
-                            $countRecords,
-                            $generalConfiguration['minimumRecords'],
-                        ]
-                    )
+                    sprintf(
+                        $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:notEnoughRecords'),
+                        $countRecords,
+                        $generalConfiguration['minimumRecords'],
+                    ),
                 );
             }
         }

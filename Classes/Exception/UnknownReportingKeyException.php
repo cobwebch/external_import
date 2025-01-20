@@ -20,6 +20,4 @@ use TYPO3\CMS\Core\Exception;
 /**
  * Exception for invalid key in the reporting utility.
  */
-class UnknownReportingKeyException extends Exception
-{
-}
+class UnknownReportingKeyException extends Exception {}
