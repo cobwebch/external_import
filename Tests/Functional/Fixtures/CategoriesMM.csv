@@ -1,0 +1,6 @@
+sys_category,,,,
+,uid,pid,title,external_key
+,1,0,Nice products,NICE
+sys_category_record_mm,,,,
+,uid_local,uid_foreign,tablenames,fieldname
+,1,1,tx_externalimporttest_product,categories

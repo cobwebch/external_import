@@ -19,36 +19,35 @@ namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Test case for the LogRepository class.
  */
 class LogRepositoryTest extends FunctionalTestCase
 {
-    protected $testExtensionsToLoad = [
-        'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import',
+    protected array $coreExtensionsToLoad = [
+        'scheduler',
     ];
 
-    /**
-     * @var LogRepository
-     */
-    protected $subject;
+    protected array $testExtensionsToLoad = [
+        'cobweb/svconnector',
+        'cobweb/external_import',
+    ];
 
-    /**
-     * @var QueryParameters
-     */
-    protected $queryParameters;
+    protected LogRepository $subject;
+    protected QueryParameters $queryParameters;
 
     public function setUp(): void
     {
         parent::setUp();
         try {
-            $this->subject = GeneralUtility::makeInstance(LogRepository::class);
-            $this->queryParameters = GeneralUtility::makeInstance(QueryParameters::class);
-            $this->importDataSet(__DIR__ . '/../../Fixtures/Logs.xml');
+            $this->subject = new LogRepository();
+            $this->queryParameters = new QueryParameters();
+            $this->importCSVDataSet(__DIR__ . '/../../Fixtures/Logs.csv');
         } catch (\Exception $e) {
             self::markTestSkipped(
                 sprintf(
@@ -60,7 +59,7 @@ class LogRepositoryTest extends FunctionalTestCase
         }
     }
 
-    public function queryDataProvider(): array
+    public static function queryDataProvider(): array
     {
         $searchColumns = [
             0 => [
@@ -88,18 +87,18 @@ class LogRepositoryTest extends FunctionalTestCase
         ];
         return [
             'No search, no limit' => [
-                [
+                'parameters' => [
                     'search' => [
                         'value' => '',
                     ],
                     'columns' => $searchColumns,
                     'order' => $order,
                 ],
-                4,
-                4,
+                'fullCount' => 4,
+                'filteredCount' => 4,
             ],
             'No search, limit 2' => [
-                [
+                'parameters' => [
                     'search' => [
                         'value' => '',
                     ],
@@ -107,31 +106,27 @@ class LogRepositoryTest extends FunctionalTestCase
                     'length' => 2,
                     'order' => $order,
                 ],
-                4,
-                2,
+                'fullCount' => 4,
+                'filteredCount' => 2,
             ],
             'Search for "cli"' => [
-                [
+                'parameters' => [
                     'search' => [
                         'value' => 'cli',
                     ],
                     'columns' => $searchColumns,
                     'order' => $order,
                 ],
-                3,
-                3,
+                'fullCount' => 3,
+                'filteredCount' => 3,
             ],
         ];
     }
 
     /**
-     * @test
-     * @dataProvider queryDataProvider
-     * @param array $parameters
-     * @param int $fullCount The total number of records
-     * @param int $filteredCount The filtered number of records
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @throws \Doctrine\DBAL\Driver\Exception
      */
+    #[Test] #[DataProvider('queryDataProvider')]
     public function countBySearchReturnsExpectedNumberOfRecords(
         array $parameters,
         int $fullCount,
@@ -147,28 +142,22 @@ class LogRepositoryTest extends FunctionalTestCase
     }
 
     /**
-     * @test
-     * @dataProvider queryDataProvider
-     * @param array $parameters
-     * @param int $fullCount The total number of records
-     * @param int $filteredCount The filtered number of records
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\InvalidQueryException
+     * @throws \Doctrine\DBAL\Exception
      */
+    #[Test] #[DataProvider('queryDataProvider')]
     public function findBySearchReturnsExpectedRecords(array $parameters, int $fullCount, int $filteredCount): void
     {
         $this->queryParameters->setAllParameters($parameters);
         $records = $this->subject->findBySearch($this->queryParameters);
-        self::assertEquals(
+        self::assertCount(
             $filteredCount,
-            $records->count()
+            $records
         );
         // To go one step further, test ordering (which should be by descending creation date)
         // by accessing the first record and checking the creation timestamp
-        /** @var \Cobweb\ExternalImport\Domain\Model\Log $firstRecord */
-        $firstRecord = $records->getFirst();
         self::assertEquals(
             1529789282,
-            $firstRecord->getCrdate()->getTimestamp()
+            $records[0]['crdate']
         );
     }
 }

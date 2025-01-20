@@ -19,22 +19,16 @@ namespace Cobweb\ExternalImport\Tests\Unit\Event;
 
 use Cobweb\ExternalImport\Event\InsertRecordPreprocessEvent;
 use Cobweb\ExternalImport\Importer;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the InsertRecordPreprocessEvent class
  */
 class InsertRecordPreprocessEventTest extends UnitTestCase
 {
-    /**
-     * @var InsertRecordPreprocessEvent
-     */
     protected InsertRecordPreprocessEvent $subject;
-
-    /**
-     * @var Importer
-     */
-    protected $importer;
+    protected Importer $importer;
 
     public function setUp(): void
     {
@@ -52,9 +46,7 @@ class InsertRecordPreprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getRecordInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -63,9 +55,7 @@ class InsertRecordPreprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setRecordSetsRecord(): void
     {
         $record = ['foo', 'bar'];
@@ -76,9 +66,7 @@ class InsertRecordPreprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getImporterInitiallyReturnsOriginalObject(): void
     {
         self::assertSame(

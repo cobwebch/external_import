@@ -14,7 +14,3 @@ parameters:
 
   excludePaths:
     - '../../ext_emconf.php'
-    # Todo: Drop exclude after dropping v11 support
-    - '../../Classes/Reaction'
-    - '../../Classes/Message'
-

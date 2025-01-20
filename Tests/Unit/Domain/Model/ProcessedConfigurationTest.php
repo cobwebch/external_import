@@ -19,8 +19,9 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 use Cobweb\ExternalImport\Domain\Model\ChildrenConfiguration;
 use Cobweb\ExternalImport\Domain\Model\ProcessedConfiguration;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class ProcessedConfigurationTest extends UnitTestCase
 {
@@ -32,9 +33,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(ProcessedConfiguration::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getFieldsExcludedFromInsertsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -43,9 +42,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function addFieldExcludedFromInsertsAddsColumn(): void
     {
         $this->subject->addFieldExcludedFromInserts('foo');
@@ -60,9 +57,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setFieldsExcludedFromInsertsSetsArray(): void
     {
         $this->subject->setFieldsExcludedFromInserts(['foo', 'bar']);
@@ -72,9 +67,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getFieldsExcludedFromUpdatesInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -83,9 +76,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function addFieldExcludedFromUpdatesAddsColumn(): void
     {
         $this->subject->addFieldExcludedFromUpdates('foo');
@@ -100,9 +91,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setFieldsExcludedFromUpdatesSetsArray(): void
     {
         $this->subject->setFieldsExcludedFromUpdates(['foo', 'bar']);
@@ -112,9 +101,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getChildColumnsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -123,9 +110,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function addChildColumnAddsChildrenConfigurationObject(): void
     {
         $childA = new ChildrenConfiguration();
@@ -144,9 +129,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setChildColumnsSetsChildrenConfigurationArrayt(): void
     {
         $childA = new ChildrenConfiguration();
@@ -160,9 +143,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasChildColumnsInitiallyReturnsFalse(): void
     {
         self::assertFalse(
@@ -170,9 +151,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasChildColumnsReturnsTrueAfterAddingColumn(): void
     {
         $this->subject->addChildColumn(
@@ -184,9 +163,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getNullableColumnsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -195,9 +172,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setNullableColumnsSetsColumnsList(): void
     {
         $this->subject->setNullableColumns(['foo', 'bar']);
@@ -207,9 +182,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function addNullableColumnAddsColumnToList(): void
     {
         $this->subject->setNullableColumns(['foo']);
@@ -220,9 +193,7 @@ class ProcessedConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isNullableColumnReturnsBoolean(): void
     {
         $this->subject->setNullableColumns(['foo', 'bar']);

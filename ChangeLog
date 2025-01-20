@@ -1,3 +1,7 @@
+2025-01-20 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Migrate all tests to typo3/testing-framework, resolves #359
+
 2025-01-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Update datatables, drop RequireJS, use Luxon instead of Moment, resolves #358

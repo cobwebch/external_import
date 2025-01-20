@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Repository;
 
 /*
@@ -16,18 +18,16 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Repository;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the TemporaryKeyRepository class
  */
 class TemporaryKeyRepositoryTest extends UnitTestCase
 {
-    /**
-     * @var TemporaryKeyRepository
-     */
-    protected $subject;
+    protected TemporaryKeyRepository $subject;
 
     public function setUp(): void
     {
@@ -36,9 +36,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         $this->subject->setTestMode(true);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasTemporaryKeyInitiallyReturnsFalse(): void
     {
         self::assertFalse(
@@ -46,9 +44,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasTemporaryKeyReturnsTrueIfKeyExists(): void
     {
         $this->subject->addTemporaryKey(
@@ -61,9 +57,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getTemporaryKeysInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -72,9 +66,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getTemporaryKeysReturnsArrayOfKeys(): void
     {
         $this->subject->resetForcedTemporaryKeySerial();
@@ -90,20 +82,18 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         );
         self::assertSame(
             [
-                    'foo' => [
-                            1 => 'NEW1',
-                    ],
-                    'bar' => [
-                            2 => 'NEW2',
-                    ],
+                'foo' => [
+                    1 => 'NEW1',
+                ],
+                'bar' => [
+                    2 => 'NEW2',
+                ],
             ],
             $this->subject->getTemporaryKeys()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function generateTemporaryKeyGeneratesSequenceInTestMode(): void
     {
         $this->subject->resetForcedTemporaryKeySerial();
@@ -117,9 +107,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getTemporaryKeyForValueInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -127,9 +115,7 @@ class TemporaryKeyRepositoryTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getTemporaryKeyForValueReturnsExpectedKeyForValueAndTable(): void
     {
         $this->subject->resetForcedTemporaryKeySerial();

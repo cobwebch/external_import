@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model\Dto;
 
 /*
@@ -16,18 +18,17 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model\Dto;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test case for the ChildrenSorting model object.
  */
 class ChildrenSortingTest extends UnitTestCase
 {
-    /**
-     * @var ChildrenSorting
-     */
-    protected $subject;
+    protected ChildrenSorting $subject;
 
     public function setUp(): void
     {
@@ -35,9 +36,7 @@ class ChildrenSortingTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(ChildrenSorting::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasSortingInformationInitiallyReturnsFalse(): void
     {
         self::assertFalse(
@@ -45,14 +44,14 @@ class ChildrenSortingTest extends UnitTestCase
         );
     }
 
-    public function hasSortingInformationProvider(): array
+    public static function hasSortingInformationProvider(): array
     {
         return [
             'one table - empty' => [
                 'structure' => [
                     'foo' => [],
                 ],
-                'result' => false,
+                'expectedResult' => false,
             ],
             'one table - one item' => [
                 'structure' => [
@@ -64,7 +63,7 @@ class ChildrenSortingTest extends UnitTestCase
                         ],
                     ],
                 ],
-                'result' => true,
+                'expectedResult' => true,
             ],
             'two tables - one empty, one not' => [
                 'structure' => [
@@ -77,15 +76,12 @@ class ChildrenSortingTest extends UnitTestCase
                     ],
                     'bar' => [],
                 ],
-                'result' => true,
+                'expectedResult' => true,
             ],
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider hasSortingInformationProvider
-     */
+    #[Test] #[DataProvider('hasSortingInformationProvider')]
     public function hasSortingInformationInitiallyReturnsBooleanValue(array $structure, bool $expectedResult): void
     {
         foreach ($structure as $table => $items) {
@@ -99,9 +95,7 @@ class ChildrenSortingTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getSortingInformationInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -110,9 +104,7 @@ class ChildrenSortingTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getSortingInformationReturnsEmptyArrayAfterReset(): void
     {
         $this->subject->addSortingInformation('foo', 2, 'sorting', 1);
@@ -123,9 +115,7 @@ class ChildrenSortingTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function addSortingInformationExpandsArray(): void
     {
         $this->subject->addSortingInformation('foo', 2, 'sorting', 1);
@@ -175,9 +165,7 @@ class ChildrenSortingTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function replaceIdReplacesChildId(): void
     {
         $this->subject->addSortingInformation('foo', 'tempKey', 'sorting', 1);
@@ -198,9 +186,7 @@ class ChildrenSortingTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function replaceAllNewIdsReplacesNewMarkers(): void
     {
         // "NEW" id, will be replaced

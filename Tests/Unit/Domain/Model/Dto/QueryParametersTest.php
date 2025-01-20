@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model\Dto;
 
 /*
@@ -16,19 +18,18 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model\Dto;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Dto\QueryParameters;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test case for the QueryParameters model object.
  */
 class QueryParametersTest extends UnitTestCase
 {
-    /**
-     * @var QueryParameters
-     */
-    protected $subject;
+    protected QueryParameters $subject;
 
     public function setUp(): void
     {
@@ -36,9 +37,7 @@ class QueryParametersTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(QueryParameters::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getDrawInitiallyReturnsZero(): void
     {
         self::assertSame(
@@ -47,9 +46,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getSearchInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
@@ -58,9 +55,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getSearchColumnsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -69,9 +64,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getLimitInitiallyReturnsZero(): void
     {
         self::assertSame(
@@ -80,9 +73,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getOffsetInitiallyReturnsZero(): void
     {
         self::assertSame(
@@ -91,9 +82,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getOrderInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
@@ -102,9 +91,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getDirectionInitiallyReturnsDesc(): void
     {
         self::assertSame(
@@ -113,9 +100,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setDrawSetsValue(): void
     {
         $this->subject->setDraw(2);
@@ -125,9 +110,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setSearchSetsValue(): void
     {
         $this->subject->setSearch('foo');
@@ -137,25 +120,23 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setSearchColumnsKeepsOnlySearchableColumns(): void
     {
         $this->subject->setSearchColumns(
             [
-                    [
-                            'searchable' => 'true',
-                            'name' => 'foo',
-                    ],
-                    [
-                            'searchable' => 'false',
-                            'name' => 'not me',
-                    ],
-                    [
-                            'searchable' => 'true',
-                            'name' => 'bar',
-                    ],
+                [
+                    'searchable' => 'true',
+                    'name' => 'foo',
+                ],
+                [
+                    'searchable' => 'false',
+                    'name' => 'not me',
+                ],
+                [
+                    'searchable' => 'true',
+                    'name' => 'bar',
+                ],
             ]
         );
         self::assertSame(
@@ -164,9 +145,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setLimitSetsValue(): void
     {
         $this->subject->setLimit(2);
@@ -176,9 +155,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setOffsetSetsValue(): void
     {
         $this->subject->setOffset(2);
@@ -188,9 +165,7 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setOrderSetsValue(): void
     {
         $this->subject->setOrder('foo');
@@ -200,34 +175,29 @@ class QueryParametersTest extends UnitTestCase
         );
     }
 
-    public function directionValueProvider(): array
+    public static function directionValueProvider(): array
     {
         return [
-                'ASC is ASC' => [
-                        'ASC',
-                        QueryInterface::ORDER_ASCENDING,
-                ],
-                'DESC is DESC' => [
-                        'DESC',
-                        QueryInterface::ORDER_DESCENDING,
-                ],
-                'asc is DESC' => [
-                        'asc',
-                        QueryInterface::ORDER_DESCENDING,
-                ],
-                'wathever is DESC' => [
-                        'foo',
-                        QueryInterface::ORDER_DESCENDING,
-                ],
+            'ASC is ASC' => [
+                'value' => 'ASC',
+                'expected' => QueryInterface::ORDER_ASCENDING,
+            ],
+            'DESC is DESC' => [
+                'value' => 'DESC',
+                'expected' => QueryInterface::ORDER_DESCENDING,
+            ],
+            'asc is DESC' => [
+                'value' => 'asc',
+                'expected' => QueryInterface::ORDER_DESCENDING,
+            ],
+            'wathever is DESC' => [
+                'value' => 'foo',
+                'expected' => QueryInterface::ORDER_DESCENDING,
+            ],
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider directionValueProvider
-     * @param string $value
-     * @param string $expected
-     */
+    #[Test] #[DataProvider('directionValueProvider')]
     public function setDirectionSetsSanitizedValue(string $value, string $expected): void
     {
         $this->subject->setDirection($value);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 /*
@@ -16,16 +18,14 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Data;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the Data model class.
  */
 class DataTest extends UnitTestCase
 {
-    /**
-     * @var Data
-     */
     protected Data $subject;
 
     public function setUp(): void
@@ -34,17 +34,13 @@ class DataTest extends UnitTestCase
         $this->subject = new Data();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getRawDataInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getRawData());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setRawDataSetsRawData(): void
     {
         $this->subject->setRawData('foo');
@@ -54,9 +50,7 @@ class DataTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getExtraDataInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -65,9 +59,7 @@ class DataTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setExtraDataOverwritesExistingExtraData(): void
     {
         $this->subject->setExtraData(['foo']);
@@ -78,9 +70,7 @@ class DataTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function addExtraDataAddsExtraData(): void
     {
         $this->subject->addExtraData('entry1', 'foo');
@@ -91,9 +81,7 @@ class DataTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getRecordsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -102,9 +90,7 @@ class DataTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setRecordsSetsRecords(): void
     {
         $this->subject->setRecords([1, 2]);
@@ -114,9 +100,7 @@ class DataTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getDownloadableInitiallyReturnsFalse(): void
     {
         self::assertFalse(
@@ -124,9 +108,7 @@ class DataTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setDownloadableSetsBooleanValue(): void
     {
         $this->subject->setDownloadable(true);

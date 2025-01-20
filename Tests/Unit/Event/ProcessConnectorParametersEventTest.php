@@ -19,21 +19,15 @@ namespace Cobweb\ExternalImport\Tests\Unit\Event;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the ProcessConnectorParametersEvent class
  */
 class ProcessConnectorParametersEventTest extends UnitTestCase
 {
-    /**
-     * @var ProcessConnectorParametersEvent
-     */
     protected ProcessConnectorParametersEvent $subject;
-
-    /**
-     * @var Configuration
-     */
     protected Configuration $configuration;
 
     public function setUp(): void
@@ -46,9 +40,7 @@ class ProcessConnectorParametersEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getParametersInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -57,9 +49,7 @@ class ProcessConnectorParametersEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setParametersSetsParameters(): void
     {
         $parameters = ['foo' => 'bar'];
@@ -70,9 +60,7 @@ class ProcessConnectorParametersEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getExternalConfigurationInitiallyReturnsOriginalConfiguration(): void
     {
         self::assertSame(

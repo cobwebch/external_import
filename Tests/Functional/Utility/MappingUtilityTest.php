@@ -18,8 +18,10 @@ namespace Cobweb\ExternalImport\Tests\Functional\Utility;
  */
 
 use Cobweb\ExternalImport\Utility\MappingUtility;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Test class for the MappingUtility.
@@ -28,28 +30,32 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class MappingUtilityTest extends FunctionalTestCase
 {
-    protected $testExtensionsToLoad = [
-        'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test',
+    protected array $coreExtensionsToLoad = [
+        'scheduler',
     ];
 
-    /**
-     * @var MappingUtility
-     */
-    protected $subject;
+    protected array $testExtensionsToLoad = [
+        'cobweb/svconnector',
+        'cobweb/svconnector_csv',
+        'cobweb/svconnector_feed',
+        'cobweb/svconnector_json',
+        'cobweb/external_import',
+        'cobweb/externalimport_test',
+    ];
+
+    protected MappingUtility $subject;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(MappingUtility::class);
+        $this->subject = new MappingUtility();
     }
 
-    public function mappingConfigurationProvider(): array
+    public static function mappingInformationProvider(): array
     {
         return [
             'Value map takes precedence' => [
-                [
+                'mappingInformation' => [
                     'valueMap' => [
                         'foo' => 1,
                         'bar' => 2,
@@ -57,77 +63,71 @@ class MappingUtilityTest extends FunctionalTestCase
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                 ],
-                [
+                'results' => [
                     'foo' => 1,
                     'bar' => 2,
                 ],
             ],
             'All records (no valueField property)' => [
-                [
+                'mappingInformation' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                 ],
-                [
+                'results' => [
                     'CAT1' => 1,
                     'CAT2' => 2,
                     '0' => 4,
                 ],
             ],
             'All records (with valueField property)' => [
-                [
+                'mappingInformation' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                     'valueField' => 'uid',
                 ],
-                [
+                'results' => [
                     'CAT1' => 1,
                     'CAT2' => 2,
                     '0' => 4,
                 ],
             ],
             'All records (with non-uid valueField property)' => [
-                [
+                'mappingInformation' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                     'valueField' => 'title',
                 ],
-                [
+                'results' => [
                     'CAT1' => 'Category 1',
                     'CAT2' => 'Category 2',
                     '0' => 'Category 4',
                 ],
             ],
             'Filtered records' => [
-                [
+                'mappingInformation' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                     'whereClause' => 'pid = 1',
                 ],
-                [
+                'results' => [
                     'CAT1' => 1,
                 ],
             ],
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider mappingConfigurationProvider
-     * @param array $mappingConfiguration
-     * @param array $results
-     * @throws \Nimut\TestingFramework\Exception\Exception
-     */
-    public function getMappingReturnsRecordsToMap(array $mappingConfiguration, array $results): void
+    #[Test] #[DataProvider('mappingInformationProvider')]
+    public function getMappingReturnsRecordsToMap(array $mappingInformation, array $results): void
     {
-        $this->importDataSet(__DIR__ . '/../Fixtures/Mappings.xml');
-        $mappings = $this->subject->getMapping($mappingConfiguration);
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/Mappings.csv');
+        $mappings = $this->subject->getMapping($mappingInformation);
         self::assertSame(
             $results,
             $mappings
         );
     }
 
-    public function dataToMapProvider(): array
+    public static function dataToMapProvider(): array
     {
         return [
             'Default value gets applied' => [
@@ -145,8 +145,8 @@ class MappingUtilityTest extends FunctionalTestCase
                     ],
                 ],
                 'table' => 'pages',
-                'field' => 'categories',
-                'mappingConfiguration' => [
+                'columnName' => 'categories',
+                'mappingInformation' => [
                     'default' => 1,
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
@@ -181,8 +181,8 @@ class MappingUtilityTest extends FunctionalTestCase
                     ],
                 ],
                 'table' => 'pages',
-                'field' => 'categories',
-                'mappingConfiguration' => [
+                'columnName' => 'categories',
+                'mappingInformation' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                 ],
@@ -211,8 +211,8 @@ class MappingUtilityTest extends FunctionalTestCase
                     ],
                 ],
                 'table' => 'pages',
-                'field' => 'categories',
-                'mappingConfiguration' => [
+                'columnName' => 'categories',
+                'mappingInformation' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                     'multipleValuesSeparator' => ',',
@@ -231,16 +231,7 @@ class MappingUtilityTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider dataToMapProvider
-     * @param array $records Records to handle
-     * @param string $table Name of the table the records belong to
-     * @param string $columnName Name of the column whose values must be mapped
-     * @param array $mappingInformation Mapping configuration
-     * @param array $result Mapped records (expected result)
-     * @throws \Nimut\TestingFramework\Exception\Exception
-     */
+    #[Test] #[DataProvider('dataToMapProvider')]
     public function mapDataMapsDataAndAppliesDefaultValueIfDefined(
         array $records,
         string $table,
@@ -248,7 +239,7 @@ class MappingUtilityTest extends FunctionalTestCase
         array $mappingInformation,
         array $result
     ): void {
-        $this->importDataSet(__DIR__ . '/../Fixtures/Mappings.xml');
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/Mappings.csv');
         $mappedRecords = $this->subject->mapData($records, $table, $columnName, $mappingInformation);
         self::assertSame(
             $result,

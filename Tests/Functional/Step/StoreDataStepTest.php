@@ -19,12 +19,17 @@ namespace Cobweb\ExternalImport\Tests\Functional\Step;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
+use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\StoreDataStep;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\CMS\Core\Tests\Unit\Fixtures\EventDispatcher\MockEventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Test suite for the StoreDataStep class.
@@ -33,30 +38,35 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class StoreDataStepTest extends FunctionalTestCase
 {
-    protected $testExtensionsToLoad = [
-        'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test',
+    protected array $coreExtensionsToLoad = [
+        'scheduler',
     ];
 
-    /**
-     * @var StoreDataStep
-     */
-    protected $subject;
+    protected array $testExtensionsToLoad = [
+        'cobweb/svconnector',
+        'cobweb/svconnector_csv',
+        'cobweb/svconnector_feed',
+        'cobweb/svconnector_json',
+        'cobweb/external_import',
+        'cobweb/externalimport_test',
+    ];
 
-    public function __sleep()
-    {
-        return [];
-    }
+    protected StoreDataStep $subject;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(StoreDataStep::class);
-        $this->subject->setData(GeneralUtility::makeInstance(Data::class));
+        $this->subject = new StoreDataStep(
+            $this->getAccessibleMock(
+                EventDispatcher::class,
+                callOriginalConstructor: false
+            ),
+            new ChildrenSorting()
+        );
+        $this->subject->setData(new Data());
     }
 
-    public function dataToStoreProvider(): array
+    public static function dataToStoreProvider(): array
     {
         return [
             'no denormalized data' => [
@@ -436,18 +446,10 @@ class StoreDataStepTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider dataToStoreProvider
-     * @param array $generalConfiguration
-     * @param array $columnConfiguration
-     * @param array $input
-     * @param array $output
-     * @param array $existingUids
-     * @throws \TYPO3\CMS\Extbase\Object\Exception
-     */
+    #[Test] #[DataProvider('dataToStoreProvider')]
     public function prepareDataToStoreReturnsPreparedData(array $generalConfiguration, array $columnConfiguration, array $input, array $output, array $existingUids): void
     {
+        /** @var Configuration $configuration */
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
@@ -461,6 +463,7 @@ class StoreDataStepTest extends FunctionalTestCase
         $importer->method('getUidRepository')->willReturn($uidRepository);
         $temporaryKeyRepository = GeneralUtility::makeInstance(TemporaryKeyRepository::class);
         $temporaryKeyRepository->setTestMode(true);
+        $temporaryKeyRepository->resetForcedTemporaryKeySerial();
         $importer->method('getTemporaryKeyRepository')->willReturn($temporaryKeyRepository);
         $this->subject->setImporter($importer);
 
@@ -470,7 +473,7 @@ class StoreDataStepTest extends FunctionalTestCase
         );
     }
 
-    public function childStructureProvider(): array
+    public static function childStructureProvider(): array
     {
         return [
             'orders' => [
@@ -501,20 +504,13 @@ class StoreDataStepTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider childStructureProvider
-     * @param array $childConfiguration
-     * @param mixed $parentId
-     * @param array $parentData
-     * @param array $result
-     * @throws \TYPO3\CMS\Extbase\Object\Exception
-     */
+    #[Test] #[DataProvider('childStructureProvider')]
     public function prepareChildStructureReturnsChildData(array $childConfiguration, $parentId, array $parentData, array $result): void
     {
         $importer = $this->createMock(Importer::class);
         $temporaryKeyRepository = GeneralUtility::makeInstance(TemporaryKeyRepository::class);
         $temporaryKeyRepository->setTestMode(true);
+        $temporaryKeyRepository->resetForcedTemporaryKeySerial();
         $importer->method('getTemporaryKeyRepository')->willReturn($temporaryKeyRepository);
         $importer->method('getExternalConfiguration')->willReturn(
             GeneralUtility::makeInstance(Configuration::class)

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Cobweb\ExternalImport\Tests\Unit;
 
 /*
@@ -15,32 +17,46 @@ namespace Cobweb\ExternalImport\Tests\Unit;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test case for the External Import importer.
  */
 class ImporterTest extends UnitTestCase
 {
-    /**
-     * @var Importer
-     */
-    protected $subject;
+    protected Importer $subject;
 
     protected function setUp(): void
     {
+        parent::setUp();
         // For unit testing, don't inject all dependencies
+        $extensionConfiguration = $this->createMock(ExtensionConfiguration::class);
+        $extensionConfiguration->method('get')
+            ->willReturn(
+                [
+                    'debug' => 0,
+                ]
+            );
         $this->subject = GeneralUtility::makeInstance(
             Importer::class,
-            $this->getAccessibleMock(ConfigurationRepository::class),
+            $this->getAccessibleMock(
+                ConfigurationRepository::class,
+                [],
+                [],
+                '',
+                // Don't call the original constructor to avoid a cascade of dependencies
+                false
+            ),
             $this->getAccessibleMock(
                 ReportingUtility::class,
                 [],
@@ -51,32 +67,12 @@ class ImporterTest extends UnitTestCase
             ),
             $this->getAccessibleMock(UidRepository::class),
             $this->getAccessibleMock(TemporaryKeyRepository::class),
-            new ExtensionConfiguration()
+            $extensionConfiguration
         );
+        $this->resetSingletonInstances = true;
     }
 
-    /**
-     * @test
-     */
-    public function getExtensionConfigurationInitiallyReturnsDefaultConfiguration(): void
-    {
-        self::assertSame(
-            [
-                'storagePID' => '0',
-                'logStorage' => '0',
-                'timelimit' => '-1',
-                'reportEmail' => '',
-                'reportSubject' => '',
-                'debug' => '0',
-                'disableLog' => '0',
-            ],
-            $this->subject->getExtensionConfiguration()
-        );
-    }
-
-    /**
-     * @test
-     */
+    #[Test]
     public function getExternalConfigurationInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -84,24 +80,22 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getMessagesInitiallyReturnsEmptyStructure(): void
     {
         self::assertSame(
             [
                 ContextualFeedbackSeverity::ERROR->value => [],
                 ContextualFeedbackSeverity::WARNING->value => [],
+                ContextualFeedbackSeverity::INFO->value => [],
+                ContextualFeedbackSeverity::NOTICE->value => [],
                 ContextualFeedbackSeverity::OK->value => [],
             ],
             $this->subject->getMessages()
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function addMessagesAddsMessage(): void
     {
         $this->subject->addMessage('foo', ContextualFeedbackSeverity::WARNING);
@@ -111,9 +105,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resetMessagesInitiallyPreparesEmptyStructure(): void
     {
         $this->subject->addMessage('foo', ContextualFeedbackSeverity::WARNING);
@@ -130,9 +122,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getContextInitiallyReturnsManualContext(): void
     {
         self::assertSame(
@@ -141,9 +131,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setContextSetsContext(): void
     {
         $this->subject->setContext('cli');
@@ -153,43 +141,33 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isDebugInitiallyReturnsFalse(): void
     {
         self::assertFalse($this->subject->isDebug());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setDebugSetsDebugFlag(): void
     {
         $this->subject->setDebug(true);
         self::assertTrue($this->subject->isDebug());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isVerboseInitiallyReturnsFalse(): void
     {
         self::assertFalse($this->subject->isVerbose());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setVerboseSetsVerboseFlag(): void
     {
         $this->subject->setVerbose(true);
         self::assertTrue($this->subject->isVerbose());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isTestModeInitiallyReturnsFalse(): void
     {
         self::assertFalse(
@@ -197,9 +175,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setTestModeSetsTestMode(): void
     {
         $this->subject->setTestMode(true);
@@ -208,17 +184,13 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isPreviewInitiallyReturnsFalse(): void
     {
         self::assertFalse($this->subject->isPreview());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getPreviewStepInitiallyReturnsEmptyString(): void
     {
         self::assertSame(
@@ -227,9 +199,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setPreviewStepSetsPreviewStep(): void
     {
         $this->subject->setPreviewStep('foo');
@@ -239,22 +209,20 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getPreviewDataInitiallyReturnsNull(): void
     {
         self::assertNull($this->subject->getPreviewData());
     }
 
-    public function previewDataProvider(): array
+    public static function previewDataProvider(): array
     {
         return [
             'string' => [
-                '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><node>foo</node>',
+                'data' => '<?xml version="1.0" encoding="utf-8" standalone="yes" ?><node>foo</node>',
             ],
             'array' => [
-                [
+                'data' => [
                     'name' => 'Foo',
                     'title' => 'Bar',
                 ],
@@ -262,10 +230,7 @@ class ImporterTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider previewDataProvider
-     */
+    #[Test] #[DataProvider('previewDataProvider')]
     public function setPreviewDataSetsPreviewData(mixed $data): void
     {
         $this->subject->setPreviewData($data);
@@ -275,9 +240,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resetPreviewDataSetsPreviewDataToNull(): void
     {
         $this->subject->resetPreviewData();
@@ -286,9 +249,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getStartTimeInitiallyReturnsZero(): void
     {
         self::assertEquals(
@@ -297,9 +258,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setStartTimeSetsStartTime(): void
     {
         $now = time();
@@ -310,9 +269,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getEndTimeInitiallyReturnsZero(): void
     {
         self::assertEquals(
@@ -321,9 +278,7 @@ class ImporterTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setEndTimeSetsEndTime(): void
     {
         $now = time();

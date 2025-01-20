@@ -20,17 +20,16 @@ namespace Cobweb\ExternalImport\Tests\Unit\Handler;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Handler\ArrayHandler;
 use Cobweb\ExternalImport\Importer;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the ArrayHandler class.
  */
 class ArrayHandlerTest extends UnitTestCase
 {
-    /**
-     * @var ArrayHandler
-     */
     protected ArrayHandler $subject;
 
     public function setUp(): void
@@ -41,7 +40,7 @@ class ArrayHandlerTest extends UnitTestCase
         );
     }
 
-    public function getValueSuccessProvider(): array
+    public static function getValueSuccessProvider(): array
     {
         $sampleStructureComplexity1 = [
             'test' => [
@@ -513,10 +512,7 @@ class ArrayHandlerTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider getValueSuccessProvider
-     */
+    #[Test] #[DataProvider('getValueSuccessProvider')]
     public function getValueReturnsValueIfFound(array $record, array $configuration, mixed $result): void
     {
         $value = $this->subject->getValue($record, $configuration);
@@ -526,7 +522,7 @@ class ArrayHandlerTest extends UnitTestCase
         );
     }
 
-    public function getValueFailsWithInvalidArgumentExceptionProvider(): array
+    public static function getValueFailsWithInvalidArgumentExceptionProvider(): array
     {
         return [
             'direct simple value' => [
@@ -608,19 +604,14 @@ class ArrayHandlerTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider getValueFailsWithInvalidArgumentExceptionProvider
-     * @param array $record
-     * @param array $configuration
-     */
+    #[Test] #[DataProvider('getValueFailsWithInvalidArgumentExceptionProvider')]
     public function getValueThrowsInvalidArgumentExceptionIfValueNotFound(array $record, array $configuration): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $value = $this->subject->getValue($record, $configuration);
     }
 
-    public function getSubstructureProvider(): array
+    public static function getSubstructureProvider(): array
     {
         return [
             [
@@ -665,13 +656,7 @@ class ArrayHandlerTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider getSubstructureProvider
-     * @param array $structure
-     * @param array $configuration
-     * @param array $result
-     */
+    #[Test] #[DataProvider('getSubstructureProvider')]
     public function getSubstructureValuesReturnsExpectedRows(array $structure, array $configuration, array $result): void
     {
         self::assertSame(
@@ -680,7 +665,7 @@ class ArrayHandlerTest extends UnitTestCase
         );
     }
 
-    public function rawDataProvider(): array
+    public static function rawDataProvider(): array
     {
         return [
             'empty raw data' => [
@@ -856,12 +841,9 @@ class ArrayHandlerTest extends UnitTestCase
     }
 
     /**
-     * @test
-     * @param array $generalConfiguration
-     * @param array $rawData
-     * @param array $expectedStructure
-     * @dataProvider rawDataProvider
+     * @throws \PHPUnit\Framework\MockObject\Exception
      */
+    #[Test] #[DataProvider('rawDataProvider')]
     public function handleDataReturnsStructureData(array $generalConfiguration, array $rawData, array $expectedStructure): void
     {
         $configuration = $this->createMock(Configuration::class);

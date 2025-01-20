@@ -18,17 +18,16 @@ namespace Cobweb\ExternalImport\Tests\Unit\Handler;
  */
 
 use Cobweb\ExternalImport\Handler\XmlHandler;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the XmlHandler class.
  */
 class XmlHandlerTest extends UnitTestCase
 {
-    /**
-     * @var XmlHandler
-     */
     protected XmlHandler $subject;
 
     public function setUp(): void
@@ -39,7 +38,7 @@ class XmlHandlerTest extends UnitTestCase
         );
     }
 
-    public function getValueSuccessProvider(): array
+    public static function getValueSuccessProvider(): array
     {
         return [
             'fixed value - number zero' => [
@@ -103,10 +102,9 @@ class XmlHandlerTest extends UnitTestCase
     }
 
     /**
-     * @test
-     * @dataProvider getValueSuccessProvider
      * @throws \Exception
      */
+    #[Test] #[DataProvider('getValueSuccessProvider')]
     public function getValueReturnsValueIfFound(string $structure, array $configuration, mixed $result): void
     {
         // Load the XML into a DOM object
@@ -121,7 +119,7 @@ class XmlHandlerTest extends UnitTestCase
         );
     }
 
-    public function getSubstructureProvider(): array
+    public static function getSubstructureProvider(): array
     {
         return [
             [
@@ -153,13 +151,9 @@ class XmlHandlerTest extends UnitTestCase
     }
 
     /**
-     * @test
-     * @dataProvider getSubstructureProvider
-     * @param string $structure
-     * @param array $configuration
-     * @param array $result
      * @throws \Exception
      */
+    #[Test] #[DataProvider('getSubstructureProvider')]
     public function getSubstructureValuesReturnsExpectedRows(string $structure, array $configuration, array $result): void
     {
         // Load the XML into a DOM object

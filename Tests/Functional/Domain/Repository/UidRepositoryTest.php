@@ -19,109 +19,97 @@ namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Test class for the UidRepository
  */
 class UidRepositoryTest extends FunctionalTestCase
 {
-    /**
-     * @var UidRepository
-     */
-    protected $subject;
-
-    public function __sleep()
-    {
-        return [];
-    }
+    protected UidRepository $subject;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(UidRepository::class);
+        $this->subject = new UidRepository();
     }
 
-    public function configurationDataProvider(): array
+    public static function configurationDataProvider(): array
     {
         return [
             'No special configuration, no pid restriction' => [
-                [
+                'configuration' => [
                     'referenceUid' => 'tstamp',
                 ],
-                [
+                'listOfUids' => [
                     1520788063 => 2,
                     1520788087 => 3,
                 ],
-                [
+                'listOfPids' => [
                     1520788063 => 1,
                     1520788087 => 2,
                 ],
             ],
             'Pid restriction true' => [
-                [
+                'configuration' => [
                     'referenceUid' => 'tstamp',
                     'enforcePid' => true,
                 ],
-                [
+                'listOfUids' => [
                     1520788063 => 2,
                 ],
-                [
+                'listOfPids' => [
                     1520788063 => 1,
                 ],
             ],
             'Pid restriction true-ish' => [
-                [
+                'configuration' => [
                     'referenceUid' => 'tstamp',
                     'enforcePid' => 1,
                 ],
-                [
+                'listOfUids' => [
                     1520788063 => 2,
                 ],
-                [
+                'listOfPids' => [
                     1520788063 => 1,
                 ],
             ],
             'Pid restriction other than true' => [
-                [
+                'configuration' => [
                     'referenceUid' => 'tstamp',
                     'enforcePid' => false,
                 ],
-                [
+                'listOfUids' => [
                     1520788063 => 2,
                     1520788087 => 3,
                 ],
-                [
+                'listOfPids' => [
                     1520788063 => 1,
                     1520788087 => 2,
                 ],
             ],
             'Where clause' => [
-                [
+                'configuration' => [
                     'referenceUid' => 'tstamp',
                     'whereClause' => 'header like \'%deleted%\'',
                 ],
-                [
+                'listOfUids' => [
                     1520788087 => 3,
                 ],
-                [
+                'listOfPids' => [
                     1520788087 => 2,
                 ],
             ],
         ];
     }
 
-    /**
-     * @param array $configuration
-     * @param array $listOfUids
-     * @param array $listOfPids
-     * @test
-     * @dataProvider configurationDataProvider
-     */
+    #[Test] #[DataProvider('configurationDataProvider')]
     public function getExistingUidsTriggersFetchingOfUidsAndPids(array $configuration, array $listOfUids, array $listOfPids): void
     {
-        $this->importDataSet(__DIR__ . '/../../Fixtures/UidRepository.xml');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/UidRepository.csv');
         $configurationObject = GeneralUtility::makeInstance(Configuration::class);
         $configurationObject->setTable('tt_content');
         $configurationObject->setGeneralConfiguration($configuration);

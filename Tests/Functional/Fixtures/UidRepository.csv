@@ -1,0 +1,9 @@
+pages,,,
+,uid,pid,title
+,1,0,Page 1
+,2,0,Page 2
+tt_content,,,,,
+,uid,pid,deleted,hidden,header,tstamp
+,1,1,1,0,Deleted content,1520788041
+,2,1,0,1,Hidden content,1520788063
+,3,2,0,0,Not deleted nor hidden content,1520788087

@@ -22,15 +22,14 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use Cobweb\SvconnectorFeed\Service\ConnectorFeed;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class ConfigurationTest extends UnitTestCase
 {
-    /**
-     * @var Configuration
-     */
-    protected $subject;
+    protected Configuration $subject;
 
     public function setUp(): void
     {
@@ -38,9 +37,7 @@ class ConfigurationTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(Configuration::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getAdditionalFieldsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -49,9 +46,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getColumnConfigurationInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -60,9 +55,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getConfigurationForColumnInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -71,9 +64,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getConnectorInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -81,9 +72,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getCountAdditionalFieldsInitiallyReturnsZero(): void
     {
         self::assertSame(
@@ -92,9 +81,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getGenerallConfigurationInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -103,9 +90,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getGenerallConfigurationPropertyInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -113,9 +98,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getIndexInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -123,9 +106,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getStepsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -134,9 +115,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function hasParametersForStepInitiallyReturnsFalse(): void
     {
         self::assertFalse(
@@ -144,9 +123,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getParametersForStepInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -155,9 +132,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setParametersForStepSetsParameters(): void
     {
         $parameters = ['foo', 'bar' => 'baz'];
@@ -171,9 +146,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getStoragePidInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -181,9 +154,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getTableInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -191,26 +162,21 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    public function ctrlConfigurationProvider(): array
+    public static function ctrlConfigurationProvider(): array
     {
         return [
-                'sample configuration' => [
-                        [
-                                'connector' => 'feed',
-                                'pid' => 42,
-                                'additionalFields' => 'foo,bar',
-                        ],
-                        42,
+            'sample configuration' => [
+                'configuration' => [
+                    'connector' => 'feed',
+                    'pid' => 42,
+                    'additionalFields' => 'foo,bar',
                 ],
+                'pid' => 42,
+            ],
         ];
     }
 
-    /**
-     * @test
-     * @param array $configuration
-     * @param int $pid
-     * @dataProvider ctrlConfigurationProvider
-     */
+    #[Test] #[DataProvider('ctrlConfigurationProvider')]
     public function setGeneralConfigurationSetsGeneralConfigurationAndMore(array $configuration, int $pid): void
     {
         $this->subject->setGeneralConfiguration($configuration);
@@ -228,73 +194,66 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    public function columnConfigurationProvider(): array
+    public static function columnConfigurationProvider(): array
     {
         return [
-                'configuration without additional fields' => [
-                        [],
-                        [
-                                'foo' => [
-                                        'field' => 'bar',
-                                        'transformations' => [
-                                                20 => [
-                                                        'value' => 3,
-                                                ],
-                                                10 => [
-                                                        'value' => 4,
-                                                ],
-                                        ],
-                                ],
+            'configuration without additional fields' => [
+                'additionalFieldsConfiguration' => [],
+                'columnConfiguration' => [
+                    'foo' => [
+                        'field' => 'bar',
+                        'transformations' => [
+                            20 => [
+                                'value' => 3,
+                            ],
+                            10 => [
+                                'value' => 4,
+                            ],
                         ],
-                        'foo',
-                        [
-                                'field' => 'bar',
-                                'transformations' => [
-                                        10 => [
-                                                'value' => 4,
-                                        ],
-                                        20 => [
-                                                'value' => 3,
-                                        ],
-                                ],
-                        ],
+                    ],
                 ],
-                'configuration with additional fields' => [
-                        [
-                                'baz' => [
-                                        'field' => 'baz',
-                                ],
+                'columnName' => 'foo',
+                'processedConfiguration' => [
+                    'field' => 'bar',
+                    'transformations' => [
+                        10 => [
+                            'value' => 4,
                         ],
-                        [
-                                'foo' => [
-                                        'field' => 'bar',
-                                        'transformations' => [
-                                                20 => [
-                                                        'value' => 3,
-                                                ],
-                                                10 => [
-                                                        'value' => 4,
-                                                ],
-                                        ],
-                                ],
+                        20 => [
+                            'value' => 3,
                         ],
-                        'baz',
-                        [
-                                'field' => 'baz',
-                                Configuration::DO_NOT_SAVE_KEY => true,
-                        ],
+                    ],
                 ],
+            ],
+            'configuration with additional fields' => [
+                'additionalFieldsConfiguration' => [
+                    'baz' => [
+                        'field' => 'baz',
+                    ],
+                ],
+                'columnConfiguration' => [
+                    'foo' => [
+                        'field' => 'bar',
+                        'transformations' => [
+                            20 => [
+                                'value' => 3,
+                            ],
+                            10 => [
+                                'value' => 4,
+                            ],
+                        ],
+                    ],
+                ],
+                'columnName' => 'baz',
+                'processedConfiguration' => [
+                    'field' => 'baz',
+                    Configuration::DO_NOT_SAVE_KEY => true,
+                ],
+            ],
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider columnConfigurationProvider
-     * @param array $additionalFieldsConfiguration
-     * @param array $columnConfiguration
-     * @param string $columnName
-     * @param array $processedConfiguration
-     */
+    #[Test] #[DataProvider('columnConfigurationProvider')]
     public function setColumnConfigurationSetsConfigurationAndSortsTransformations(array $additionalFieldsConfiguration, array $columnConfiguration, string $columnName, array $processedConfiguration): void
     {
         if (count($additionalFieldsConfiguration) > 0) {
@@ -307,18 +266,16 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setAdditionalFieldsSetsFieldsAndCount(): void
     {
         $additionalFields = [
-                'foo' => [
-                        'field' => 'foo',
-                ],
-                'bar' => [
-                        'field' => 'bar',
-                ],
+            'foo' => [
+                'field' => 'foo',
+            ],
+            'bar' => [
+                'field' => 'bar',
+            ],
         ];
         $this->subject->setAdditionalFields($additionalFields);
         // When set, additional fields get extra data attached to them
@@ -334,9 +291,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setConnectorSetsConnector(): void
     {
         // Use a mock as full initialization requires to be in a functional testing environment
@@ -355,9 +310,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setCountAdditionalFieldsSetsCount(): void
     {
         $countAdditionalFields = 2;
@@ -368,9 +321,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setIndexSetsIndex(): void
     {
         $index = 2;
@@ -381,9 +332,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setStoragePidSetsPid(): void
     {
         $storagePid = 2;
@@ -394,9 +343,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setTableSetsTable(): void
     {
         $table = 'tx_foo_bar';
@@ -407,7 +354,7 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
-    public function sortColumnsProvider(): array
+    public static function sortColumnsProvider(): array
     {
         return [
             'No sorting - output ordered by key, as per default' => [
@@ -417,7 +364,7 @@ class ConfigurationTest extends UnitTestCase
                     'cc' => 'baz',
                     'dd' => 'foo2',
                 ],
-                'sorting' => '',
+                'order' => '',
                 'orderedColumns' => [
                     'aa' => 'bar',
                     'bb' => 'foo',
@@ -432,7 +379,7 @@ class ConfigurationTest extends UnitTestCase
                     'cc' => 'baz',
                     'dd' => 'foo2',
                 ],
-                'sorting' => 'dd, aa, bb, cc',
+                'order' => 'dd, aa, bb, cc',
                 'orderedColumns' => [
                     'dd' => 'foo2',
                     'aa' => 'bar',
@@ -447,7 +394,7 @@ class ConfigurationTest extends UnitTestCase
                     'cc' => 'baz',
                     'dd' => 'foo2',
                 ],
-                'sorting' => 'bb, cc',
+                'order' => 'bb, cc',
                 'orderedColumns' => [
                     'bb' => 'foo',
                     'cc' => 'baz',
@@ -462,7 +409,7 @@ class ConfigurationTest extends UnitTestCase
                     'cc' => 'baz',
                     'dd' => 'foo2',
                 ],
-                'sorting' => 'bb, ff, cc',
+                'order' => 'bb, ff, cc',
                 'orderedColumns' => [
                     'bb' => 'foo',
                     'cc' => 'baz',
@@ -477,7 +424,7 @@ class ConfigurationTest extends UnitTestCase
                     'cc' => 'baz',
                     'dd' => 'foo2',
                 ],
-                'sorting' => 'bb, cc, bb',
+                'order' => 'bb, cc, bb',
                 'orderedColumns' => [
                     'bb' => 'foo',
                     'cc' => 'baz',
@@ -488,13 +435,7 @@ class ConfigurationTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider sortColumnsProvider
-     * @param array $columns
-     * @param string $order
-     * @param array $orderedColumns
-     */
+    #[Test] #[DataProvider('sortColumnsProvider')]
     public function sortColumnsSortsColumns(array $columns, string $order, array $orderedColumns): void
     {
         self::assertSame(

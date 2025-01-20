@@ -19,43 +19,39 @@ namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Testing\FunctionalTestCaseWithDatabaseTools;
 use Cobweb\ExternalimportTest\UserFunction\Transformation;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use TYPO3\CMS\Core\Localization\LanguageService;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Test suite for the ConfigurationRepository class.
  */
-class ConfigurationRepositoryTest extends FunctionalTestCase
+class ConfigurationRepositoryTest extends FunctionalTestCaseWithDatabaseTools
 {
-    protected $coreExtensionsToLoad = [
+    protected array $coreExtensionsToLoad = [
         'scheduler',
     ];
 
-    protected $testExtensionsToLoad = [
-        'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test',
+    protected array $testExtensionsToLoad = [
+        'cobweb/svconnector',
+        'cobweb/svconnector_csv',
+        'cobweb/svconnector_feed',
+        'cobweb/svconnector_json',
+        'cobweb/external_import',
+        'cobweb/externalimport_test',
     ];
 
-    /**
-     * @var ConfigurationRepository
-     */
-    protected $subject;
-
-    public function __sleep()
-    {
-        return [];
-    }
+    protected ConfigurationRepository $subject;
 
     public function setUp(): void
     {
         parent::setUp();
         try {
-            $this->setUpBackendUserFromFixture(1);
-            // Configuration repository needs a global LanguageService object
-            $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+            $this->initializeBackendUser();
+            Bootstrap::initializeLanguageObject();
 
             $this->subject = GeneralUtility::makeInstance(ConfigurationRepository::class);
         } catch (\Exception $e) {
@@ -69,9 +65,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function findByGroupFindsDesignatedGroup(): void
     {
         $groups = $this->subject->findByGroup('Products');
@@ -81,23 +75,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    public function syncFlagProvider(): array
-    {
-        return [
-            'sync is true' => [
-                true,
-                16,
-            ],
-            'sync is false' => [
-                false,
-                1,
-            ],
-        ];
-    }
-
-    /**
-     * @test
-     */
+    #[Test]
     public function findAllGroupsReturnsListOfGroups(): void
     {
         self::assertSame(
@@ -108,12 +86,21 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @param bool $sync
-     * @param int $expectedCount
-     * @test
-     * @dataProvider syncFlagProvider
-     */
+    public static function syncFlagProvider(): array
+    {
+        return [
+            'sync is true' => [
+                'sync' => true,
+                'expectedCount' => 16,
+            ],
+            'sync is false' => [
+                'sync' => false,
+                'expectedCount' => 1,
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('syncFlagProvider')]
     public function findBySyncFindsCorrectCountOfConfigurations(bool $sync, int $expectedCount): void
     {
         // TODO: this is not very satisfying, because the default user provided by the backend user fixture is admin
@@ -123,15 +110,15 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    public function findConfigurationProvider(): array
+    public static function findConfigurationProvider(): array
     {
         return [
             'simple configuration' => [
                 'table' => 'tx_externalimporttest_bundle',
                 'index' => 0,
-                'referenceUid' => 'bundle_code',
-                'testedProperty' => 'bundle_code',
-                'columnConfiguration' => [
+                'expectedReferenceUidValue' => 'bundle_code',
+                'testColumnName' => 'bundle_code',
+                'expectedColumnConfiguration' => [
                     'field' => 'code',
                     'transformations' => [
                         10 => [
@@ -139,7 +126,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                'additionalFields' => [
+                'expectedAdditionalFieldsConfiguration' => [
                     'position' => [
                         'field' => 'position',
                         'transformations' => [
@@ -157,23 +144,23 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
             'configuration with useColumnIndex and no specific configuration' => [
                 'table' => 'tx_externalimporttest_product',
                 'index' => 'stable',
-                'referenceUid' => 'sku',
-                'testedProperty' => 'sku',
+                'expectedReferenceUidValue' => 'sku',
+                'testColumnName' => 'sku',
                 // NOTE: this is expected to match information from the "base" configuration,
                 // since the "stable" configuration has the useColumnIndex property pointing to "base" configuration
-                'columnConfiguration' => [
+                'expectedColumnConfiguration' => [
                     'xpath' => './self::*[@type="current"]/item',
                     'attribute' => 'sku',
                 ],
-                'additionalFields' => [],
+                'expectedAdditionalFieldsConfiguration' => [],
             ],
             'configuration with useColumnIndex but specific configuration' => [
                 'table' => 'tx_externalimporttest_product',
                 'index' => 'stable',
-                'referenceUid' => 'sku',
-                'testedProperty' => 'name',
+                'expectedReferenceUidValue' => 'sku',
+                'testColumnName' => 'name',
                 // NOTE: in this case the "name" column has its own configuration, despite the use of useColumnIndex
-                'columnConfiguration' => [
+                'expectedColumnConfiguration' => [
                     'xpath' => './self::*[@type="current"]/item',
                     'transformations' => [
                         10 => [
@@ -187,25 +174,17 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                'additionalFields' => [],
+                'expectedAdditionalFieldsConfiguration' => [],
             ],
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider findConfigurationProvider
-     * @param string $table
-     * @param mixed $index
-     * @param string $expectedReferenceUdiValue
-     * @param array $expectedColumnConfiguration
-     * @param array $expectedAdditionalFieldsConfiguration
-     */
+    #[Test] #[DataProvider('findConfigurationProvider')]
     public function findConfigurationObjectReturnsExpectedConfiguration(
         string $table,
-        $index,
-        string $expectedReferenceUdiValue,
-        $testColumnName,
+        mixed $index,
+        string $expectedReferenceUidValue,
+        string $testColumnName,
         array $expectedColumnConfiguration,
         array $expectedAdditionalFieldsConfiguration
     ): void {
@@ -214,7 +193,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
             $index
         );
         self::assertSame(
-            $expectedReferenceUdiValue,
+            $expectedReferenceUidValue,
             $configuration->getGeneralConfigurationProperty('referenceUid')
         );
         self::assertSame(
@@ -227,9 +206,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function findGlobalWriteAccessReturnsAll(): void
     {
         // TODO: this is not very satisfying, because the default user provided by the backend user fixture is admin
@@ -239,9 +216,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function findOrderedConfigurationsReturnsFullOrderedList(): void
     {
         $expectedList = [
@@ -298,9 +273,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function findByTableAndIndexReturnsExternalConfiguration(): void
     {
         $externalConfiguration = $this->subject->findByTableAndIndex(
@@ -385,9 +358,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function findByTableAndIndexWithWrongInformationThrowsException(): void
     {
         $this->expectException(\Cobweb\ExternalImport\Exception\NoConfigurationException::class);

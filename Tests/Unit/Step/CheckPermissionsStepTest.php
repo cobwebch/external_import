@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Step;
 
 /*
@@ -17,8 +19,10 @@ namespace Cobweb\ExternalImport\Tests\Unit\Step;
 
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Step\CheckPermissionsStep;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Unit test suite for the Check Permissions Data step class. Actually this is mostly for testing
@@ -26,10 +30,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class CheckPermissionsStepTest extends UnitTestCase
 {
-    /**
-     * @var CheckPermissionsStep
-     */
-    protected $subject;
+    protected CheckPermissionsStep $subject;
 
     public function setUp(): void
     {
@@ -37,9 +38,7 @@ class CheckPermissionsStepTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(CheckPermissionsStep::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getDataInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -47,9 +46,7 @@ class CheckPermissionsStepTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setDataSetsDataObject(): void
     {
         $data = new Data();
@@ -60,9 +57,7 @@ class CheckPermissionsStepTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isAbortFlagInitiallyReturnsFalse(): void
     {
         self::assertFalse(
@@ -70,9 +65,7 @@ class CheckPermissionsStepTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setAbortFlagSetsBooleanFlag(): void
     {
         $this->subject->setAbortFlag(true);
@@ -81,9 +74,7 @@ class CheckPermissionsStepTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getParametersInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -92,9 +83,7 @@ class CheckPermissionsStepTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setParametersSetsArray(): void
     {
         $this->subject->setParameters(
@@ -106,34 +95,28 @@ class CheckPermissionsStepTest extends UnitTestCase
         );
     }
 
-    public function parametersProvider(): array
+    public static function parametersProvider(): array
     {
         return [
-                'initially returns null - no matter what key' => [
-                        'parameters' => null,
-                        'key' => 'foo',
-                        'expected' => null,
-                ],
-                'returns expected value with valid key' => [
-                        'parameters' => ['foo' => 'bar'],
-                        'key' => 'foo',
-                        'expected' => 'bar',
-                ],
-                'returns null with invalid key' => [
-                        'parameters' => ['foo' => 'bar'],
-                        'key' => 'baz',
-                        'expected' => null,
-                ],
+            'initially returns null - no matter what key' => [
+                'parameters' => null,
+                'key' => 'foo',
+                'expected' => null,
+            ],
+            'returns expected value with valid key' => [
+                'parameters' => ['foo' => 'bar'],
+                'key' => 'foo',
+                'expected' => 'bar',
+            ],
+            'returns null with invalid key' => [
+                'parameters' => ['foo' => 'bar'],
+                'key' => 'baz',
+                'expected' => null,
+            ],
         ];
     }
 
-    /**
-     * @param $parameters
-     * @param $key
-     * @param $expected
-     * @test
-     * @dataProvider parametersProvider
-     */
+    #[Test] #[DataProvider('parametersProvider')]
     public function getParameterReturnsExpectedValueForKey($parameters, $key, $expected): void
     {
         if (is_array($parameters)) {

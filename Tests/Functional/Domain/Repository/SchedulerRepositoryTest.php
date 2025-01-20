@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 /*
@@ -16,43 +18,45 @@ namespace Cobweb\ExternalImport\Tests\Domain\Repository;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Scheduler\Domain\Repository\SchedulerTaskRepository;
+use TYPO3\CMS\Scheduler\Task\TaskSerializer;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Test class for SchedulerRepository
  */
 class SchedulerRepositoryTest extends FunctionalTestCase
 {
-    protected $coreExtensionsToLoad = [
-            'scheduler',
+    protected array $coreExtensionsToLoad = [
+        'scheduler',
     ];
 
-    /**
-     * @var SchedulerRepository
-     */
-    protected $subject;
+    protected SchedulerRepository $subject;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(SchedulerRepository::class);
+        $this->subject = new SchedulerRepository(
+            new SchedulerTaskRepository(
+                new TaskSerializer()
+            ),
+            new TaskSerializer()
+        );
     }
 
-    /**
-     * @test
-     * @throws \Nimut\TestingFramework\Exception\Exception
-     */
+    #[Test]
     public function fetchAllGroupsReturnsAllExistingGroups(): void
     {
-        $this->importDataSet(__DIR__ . '/../../Fixtures/Scheduler.xml');
+        $this->importCSVDataSet(__DIR__ . '/../../Fixtures/Scheduler.csv');
         $groups = $this->subject->fetchAllGroups();
         self::assertSame(
             [
-                    0 => '',
-                    5 => 'Group 0',
-                    1 => 'Group 1',
-                    3 => 'Group 3',
+                0 => '',
+                5 => 'Group 0',
+                1 => 'Group 1',
+                3 => 'Group 3',
             ],
             $groups
         );

@@ -1,0 +1,8 @@
+tx_externalimporttest_order,,,,,
+,uid,pid,order_id,order_date,client_id
+,1,1,000001,1596810720,Conan the Barbarian
+,12,1,000005,1596810720,Attila the Hun
+tx_externalimporttest_order_items,,,,,
+,uid,uid_local,uid_foreign,quantity,pid
+,1,1,1,2,1
+,2,1,5,4,1

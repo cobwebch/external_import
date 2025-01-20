@@ -21,23 +21,22 @@ use Cobweb\ExternalImport\Domain\Repository\BackendUserRepository;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for simple methods from the reporting utility.
  */
 class ReportingUtilityTest extends UnitTestCase
 {
-    /**
-     * @var ReportingUtility
-     */
-    protected $subject;
+    protected ReportingUtility $subject;
 
     public function setUp(): void
     {
         parent::setUp();
+        $this->resetSingletonInstances = true;
         $this->subject = GeneralUtility::makeInstance(
             ReportingUtility::class,
             $this->getAccessibleMock(
@@ -60,18 +59,14 @@ class ReportingUtilityTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getValueForStepForUnknownKeyThrowsException(): void
     {
         $this->expectException(\Cobweb\ExternalImport\Exception\UnknownReportingKeyException::class);
         $this->subject->getValueForStep('foo', 'bar');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getValueForStepReturnsExpectedValue(): void
     {
         $this->subject->setValueForStep(

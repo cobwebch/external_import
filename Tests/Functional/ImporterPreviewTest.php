@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Functional;
 
 /*
@@ -26,47 +28,46 @@ use Cobweb\ExternalImport\Step\TransformDataStep;
 use Cobweb\ExternalImport\Step\ValidateConfigurationStep;
 use Cobweb\ExternalImport\Step\ValidateConnectorStep;
 use Cobweb\ExternalImport\Step\ValidateDataStep;
+use Cobweb\ExternalImport\Testing\FunctionalTestCaseWithDatabaseTools;
 use Cobweb\ExternalImport\Transformation\ImageTransformation;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Test suite for the preview feature of the Importer class.
  */
-class ImporterPreviewTest extends FunctionalTestCase
+class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
 {
-    protected $testExtensionsToLoad = [
-        'typo3conf/ext/svconnector',
-        'typo3conf/ext/svconnector_csv',
-        'typo3conf/ext/svconnector_feed',
-        'typo3conf/ext/svconnector_json',
-        'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test',
+    protected array $coreExtensionsToLoad = [
+        'scheduler',
     ];
 
-    /**
-     * @var Importer
-     */
-    protected $subject;
+    protected array $testExtensionsToLoad = [
+        'cobweb/svconnector',
+        'cobweb/svconnector_csv',
+        'cobweb/svconnector_feed',
+        'cobweb/svconnector_json',
+        'cobweb/external_import',
+        'cobweb/externalimport_test',
+    ];
 
-    public function __sleep()
-    {
-        return [];
-    }
+    protected Importer $subject;
 
     protected function setUp(): void
     {
         parent::setUp();
         try {
-            $this->setUpBackendUserFromFixture(1);
-            // Connector services need a global LanguageService object
-            $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+            $this->initializeBackendUser();
+            Bootstrap::initializeLanguageObject();
 
             $this->subject = GeneralUtility::makeInstance(Importer::class);
-            $this->importDataSet(__DIR__ . '/Fixtures/StoragePage.xml');
+            $this->subject->setTestMode(true);
+            $this->importCSVDataSet(__DIR__ . '/Fixtures/StoragePage.csv');
             $this->subject->setForcedStoragePid(1);
         } catch (\Exception $e) {
             self::markTestSkipped(
@@ -79,9 +80,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function runPreviewWithWrongPreviewStepIssuesWarning(): void
     {
         $this->subject->setPreviewStep('foo');
@@ -91,13 +90,11 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
         self::assertCount(
             1,
-            $messages[AbstractMessage::WARNING]
+            $messages[ContextualFeedbackSeverity::WARNING->value]
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function runPreviewOnCheckPermissionsStepReturnsNull(): void
     {
         $this->subject->setPreviewStep(CheckPermissionsStep::class);
@@ -110,9 +107,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function runPreviewOnValidateConfigurationStepReturnsNull(): void
     {
         $this->subject->setPreviewStep(ValidateConfigurationStep::class);
@@ -125,9 +120,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function runPreviewOnValidateConnectorStepReturnsNull(): void
     {
         $this->subject->setPreviewStep(ValidateConnectorStep::class);
@@ -140,7 +133,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    public function readPreviewProvider(): array
+    public static function readPreviewProvider(): array
     {
         return [
             'xml-type data' => [
@@ -181,14 +174,8 @@ class ImporterPreviewTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider readPreviewProvider
-     * @param $table
-     * @param $index
-     * @param $result
-     */
-    public function runPreviewOnReadDataStepReturnsRawData($table, $index, $result): void
+    #[Test] #[DataProvider('readPreviewProvider')]
+    public function runPreviewOnReadDataStepReturnsRawData(string $table, mixed $index, array|string $result): void
     {
         $this->subject->setPreviewStep(ReadDataStep::class);
         $messages = $this->subject->synchronize(
@@ -196,7 +183,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             $index
         );
         // The result variable may be pointing to a file, in which case we want to read it
-        if (is_string($result) && strpos($result, 'EXT:') === 0) {
+        if (is_string($result) && str_starts_with($result, 'EXT:')) {
             $result = file_get_contents(
                 GeneralUtility::getFileAbsFileName($result)
             );
@@ -207,7 +194,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    public function handlePreviewProvider(): array
+    public static function handlePreviewProvider(): array
     {
         return [
             'xml-type data' => [
@@ -352,14 +339,8 @@ class ImporterPreviewTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider handlePreviewProvider
-     * @param $table
-     * @param $index
-     * @param $result
-     */
-    public function runPreviewOnHandleDataStepReturnsHandledData($table, $index, $result): void
+    #[Test] #[DataProvider('handlePreviewProvider')]
+    public function runPreviewOnHandleDataStepReturnsHandledData(string $table, mixed $index, array $result): void
     {
         $this->subject->setPreviewStep(HandleDataStep::class);
         $messages = $this->subject->synchronize(
@@ -372,9 +353,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function runPreviewOnValidateDataStepReturnsNull(): void
     {
         $this->subject->setPreviewStep(ValidateDataStep::class);
@@ -387,7 +366,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    public function transformPreviewProvider(): array
+    public static function transformPreviewProvider(): array
     {
         return [
             'tags' => [
@@ -463,14 +442,8 @@ class ImporterPreviewTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider transformPreviewProvider
-     * @param $table
-     * @param $index
-     * @param $result
-     */
-    public function runPreviewOnTransformDataStepReturnsTransformedData($table, $index, $result): void
+    #[Test] #[DataProvider('transformPreviewProvider')]
+    public function runPreviewOnTransformDataStepReturnsTransformedData(string $table, mixed $index, array $result): void
     {
         $this->subject->setPreviewStep(TransformDataStep::class);
         $messages = $this->subject->synchronize(
@@ -483,14 +456,14 @@ class ImporterPreviewTest extends FunctionalTestCase
         );
     }
 
-    public function storePreviewProvider(): array
+    public static function storePreviewProvider(): array
     {
         return [
             'tags' => [
                 'fixtures' => [
-                    __DIR__ . '/Fixtures/StoreDataStepPreviewTest.xml',
+                    __DIR__ . '/Fixtures/StoreDataStepPreviewTest.csv',
                 ],
-                'prerequisistes' => [],
+                'prerequisites' => [],
                 'table' => 'tx_externalimporttest_tag',
                 'index' => 0,
                 'testDatabase' => true,
@@ -539,9 +512,9 @@ class ImporterPreviewTest extends FunctionalTestCase
             ],
             'tags (only delete)' => [
                 'fixtures' => [
-                    __DIR__ . '/Fixtures/StoreDataStepPreviewTest.xml',
+                    __DIR__ . '/Fixtures/StoreDataStepPreviewTest.csv',
                 ],
-                'prerequisistes' => [],
+                'prerequisites' => [],
                 'table' => 'tx_externalimporttest_tag',
                 'index' => 'only-delete',
                 'testDatabase' => true,
@@ -564,7 +537,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             ],
             'base products (insert)' => [
                 'fixtures' => [],
-                'prerequisistes' => [
+                'prerequisites' => [
                     [
                         'table' => 'tx_externalimporttest_tag',
                         'index' => 0,
@@ -633,7 +606,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             ],
             'base products (update)' => [
                 'fixtures' => [],
-                'prerequisistes' => [
+                'prerequisites' => [
                     [
                         'table' => 'tx_externalimporttest_product',
                         'index' => 'base',
@@ -703,9 +676,9 @@ class ImporterPreviewTest extends FunctionalTestCase
             ],
             'update products with move' => [
                 'fixtures' => [
-                    __DIR__ . '/Fixtures/ExtraStoragePage.xml',
+                    __DIR__ . '/Fixtures/ExtraStoragePage.csv',
                 ],
-                'prerequisistes' => [
+                'prerequisites' => [
                     [
                         'table' => 'tx_externalimporttest_product',
                         'index' => 'base',
@@ -792,7 +765,7 @@ class ImporterPreviewTest extends FunctionalTestCase
             ],
             'orders' => [
                 'fixtures' => [
-                    __DIR__ . '/Fixtures/Orders.xml',
+                    __DIR__ . '/Fixtures/Orders.csv',
                 ],
                 'prerequisites' => [
                     [
@@ -901,24 +874,14 @@ class ImporterPreviewTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider storePreviewProvider
-     * @param array $fixtures List of fixture files to load
-     * @param array $prerequisites List of imports to perform before the one being actually tested
-     * @param $table
-     * @param $index
-     * @param bool $testDatabase TRUE to test DB insertions
-     * @param int $recordsCount How many records should be in the database
-     * @param $result
-     */
-    public function runPreviewOnStoreDataStepReturnsStorageDataAndWritesNothingToDatabase(array $fixtures, array $prerequisites, $table, $index, bool $testDatabase, int $recordsCount, $result): void
+    #[Test] #[DataProvider('storePreviewProvider')]
+    public function runPreviewOnStoreDataStepReturnsStorageDataAndWritesNothingToDatabase(array $fixtures, array $prerequisites, string $table, mixed $index, bool $testDatabase, int $recordsCount, array $result): void
     {
         // Load designated fixture files
         if (count($fixtures) > 0) {
             foreach ($fixtures as $fixture) {
                 try {
-                    $this->importDataSet($fixture);
+                    $this->importCSVDataSet($fixture);
                 } catch (\Exception $e) {
                     self::markTestSkipped(
                         sprintf(
@@ -943,6 +906,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         // Run the actual test
         $this->subject->setPreviewStep(StoreDataStep::class);
         $this->subject->setTestMode(true);
+        $this->subject->getTemporaryKeyRepository()->resetForcedTemporaryKeySerial();
         $messages = $this->subject->synchronize(
             $table,
             $index
@@ -955,7 +919,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         // Test that nothing was written to the database, i.e. the record count is unchanged
         // (if appropriate, not for update scenarios)
         if ($testDatabase) {
-            $countItems = $this->getDatabaseConnection()->selectCount(
+            $countItems = $this->selectCount(
                 'uid',
                 $table
             );
@@ -963,7 +927,7 @@ class ImporterPreviewTest extends FunctionalTestCase
         }
     }
 
-    public function clearCachePreviewProvider(): array
+    public static function clearCachePreviewProvider(): array
     {
         return [
             'tags' => [
@@ -985,17 +949,11 @@ class ImporterPreviewTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider clearCachePreviewProvider
-     * @param $table
-     * @param $index
-     * @param $result
-     */
-    public function runPreviewOnClearCacheStepReturnsCacheListAndClearsNothing($table, $index, $result): void
+    #[Test] #[DataProvider('clearCachePreviewProvider')]
+    public function runPreviewOnClearCacheStepReturnsCacheListAndClearsNothing(string $table, mixed $index, array $result): void
     {
         try {
-            $this->importDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.xml');
+            $this->importCSVDataSet(__DIR__ . '/Fixtures/ClearCacheStepPreviewTest.csv');
         } catch (\Exception $e) {
             self::markTestSkipped(
                 sprintf(
@@ -1016,17 +974,15 @@ class ImporterPreviewTest extends FunctionalTestCase
             $result,
             $this->subject->getPreviewData()
         );
-        // The cache item created with the fixture should not be have been cleared
-        $countCacheItems = $this->getDatabaseConnection()->selectCount(
+        // The cache item created with the fixture should not have been cleared
+        $countCacheItems = $this->selectCount(
             'id',
             'cache_pages_tags'
         );
         self::assertEquals(1, $countCacheItems);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function runPreviewOnConnectorCallbackStepReturnsNull(): void
     {
         $this->subject->setPreviewStep(ConnectorCallbackStep::class);
@@ -1038,4 +994,6 @@ class ImporterPreviewTest extends FunctionalTestCase
             $this->subject->getPreviewData()
         );
     }
+
+    // TODO: add ReportStep test (maybe)
 }

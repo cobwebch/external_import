@@ -20,18 +20,17 @@ namespace Cobweb\ExternalImport\Tests\Unit\Utility;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step;
 use Cobweb\ExternalImport\Utility\StepUtility;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test case for the Step utility.
  */
 class StepUtilityTest extends UnitTestCase
 {
-    /**
-     * @var StepUtility
-     */
-    protected $subject;
+    protected StepUtility $subject;
 
     protected function setUp(): void
     {
@@ -39,22 +38,16 @@ class StepUtilityTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(StepUtility::class);
     }
 
-    /**
-     * @return array
-     */
-    public function customStepsGoodConfigurationProvider(): array
+    public static function customStepsGoodConfigurationProvider(): array
     {
         return [
             'insert step before first step' => [
-                // Current steps
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'before:' . Step\CheckPermissionsStep::class,
                 ],
-                // Resulting steps
-                [
+                'resultingSteps' => [
                     Step\HandleDataStep::class,
                     Step\CheckPermissionsStep::class,
                     Step\ValidateConfigurationStep::class,
@@ -70,15 +63,12 @@ class StepUtilityTest extends UnitTestCase
                 ],
             ],
             'insert step after transform data' => [
-                // Current steps
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'after:' . Step\TransformDataStep::class,
                 ],
-                // Resulting steps
-                [
+                'resultingSteps' => [
                     Step\CheckPermissionsStep::class,
                     Step\ValidateConfigurationStep::class,
                     Step\ValidateConnectorStep::class,
@@ -94,12 +84,12 @@ class StepUtilityTest extends UnitTestCase
                 ],
             ],
             'insert step before validate data step' => [
-                Importer::IMPORT_DATA_STEPS,
-                [
+                'currentSteps' => Importer::IMPORT_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'before:' . Step\ValidateDataStep::class,
                 ],
-                [
+                'resultingSteps' => [
                     Step\CheckPermissionsStep::class,
                     Step\ValidateConfigurationStep::class,
                     Step\HandleDataStep::class,
@@ -112,15 +102,12 @@ class StepUtilityTest extends UnitTestCase
                 ],
             ],
             'insert step after last step' => [
-                // Current steps
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'after:' . Step\ReportStep::class,
                 ],
-                // Resulting steps
-                [
+                'resultingSteps' => [
                     Step\CheckPermissionsStep::class,
                     Step\ValidateConfigurationStep::class,
                     Step\ValidateConnectorStep::class,
@@ -138,13 +125,7 @@ class StepUtilityTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider customStepsGoodConfigurationProvider
-     * @param array $currentSteps
-     * @param array $configuration
-     * @param array $resultingSteps
-     */
+    #[Test] #[DataProvider('customStepsGoodConfigurationProvider')]
     public function insertStepInsertsCustomStepAtCorrectLocation(
         array $currentSteps,
         array $configuration,
@@ -159,69 +140,52 @@ class StepUtilityTest extends UnitTestCase
         );
     }
 
-    /**
-     * @return array
-     */
-    public function customStepsWrongConfigurationProvider(): array
+    public static function customStepsWrongConfigurationProvider(): array
     {
         return [
             'insert step with missing class information' => [
-                // Current steps
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'configuration' => [
                     'position' => 'after:' . Step\TransformDataStep::class,
                 ],
             ],
             'insert step with missing position information' => [
-                // Current steps
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                 ],
             ],
             'insert step with wrong syntax for position' => [
-                // Current steps
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => Step\TransformDataStep::class,
                 ],
             ],
             'insert step with wrong keyword for position' => [
-                // Current steps
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'next:' . Step\TransformDataStep::class,
                 ],
             ],
             'insert step with unknown class' => [
-                // Current steps
-                Importer::IMPORT_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::IMPORT_DATA_STEPS,
+                'configuration' => [
                     'class' => 'Foo\\Bar\\Baz',
                     'position' => 'after:' . Step\TransformDataStep::class,
                 ],
             ],
             'insert step after unregistered step' => [
-                // Current steps
-                Importer::IMPORT_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::IMPORT_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'after:' . Step\ReadDataStep::class,
                 ],
             ],
             'insert step after unknown step' => [
-                // Current steps
-                Importer::SYNCHRONYZE_DATA_STEPS,
-                // New step configuration
-                [
+                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'before:Not\\Known\\Step',
                 ],
@@ -230,12 +194,7 @@ class StepUtilityTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider customStepsWrongConfigurationProvider
-     * @param array $currentSteps
-     * @param array $configuration
-     */
+    #[Test] #[DataProvider('customStepsWrongConfigurationProvider')]
     public function validateCustomStepConfigurationWithWrongInformationThrowsException(
         array $currentSteps,
         array $configuration
@@ -247,12 +206,7 @@ class StepUtilityTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     * @dataProvider customStepsWrongConfigurationProvider
-     * @param array $currentSteps
-     * @param array $configuration
-     */
+    #[Test] #[DataProvider('customStepsWrongConfigurationProvider')]
     public function insertStepWithWrongInformationReturnsCurrentSteps(array $currentSteps, array $configuration): void
     {
         self::assertSame(

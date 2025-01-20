@@ -16,17 +16,16 @@ namespace Cobweb\ExternalImport\Tests\Unit\Validator;
  */
 
 use Cobweb\ExternalImport\Validator\ValidationResult;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test case for the ValidationResult class.
  */
 class ValidationResultTest extends UnitTestCase
 {
-    /**
-     * @var ValidationResult
-     */
     protected ValidationResult $subject;
 
     public function setUp(): void
@@ -35,9 +34,7 @@ class ValidationResultTest extends UnitTestCase
         $this->subject = new ValidationResult();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getAllInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -46,12 +43,10 @@ class ValidationResultTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resetSetsResultsToEmptyArray(): void
     {
-        $this->subject->add('foo', 'This is a validation result', AbstractMessage::NOTICE);
+        $this->subject->add('foo', 'This is a validation result', ContextualFeedbackSeverity::NOTICE);
         $this->subject->reset();
         self::assertSame(
             [],
@@ -59,9 +54,7 @@ class ValidationResultTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getForPropertyInitiallyReturnsNull(): void
     {
         self::assertNull(
@@ -69,14 +62,12 @@ class ValidationResultTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getForSeverityInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
             [],
-            $this->subject->getForSeverity(AbstractMessage::NOTICE)
+            $this->subject->getForSeverity(ContextualFeedbackSeverity::NOTICE)
         );
     }
 
@@ -85,151 +76,146 @@ class ValidationResultTest extends UnitTestCase
      *
      * @return \array[][][]
      */
-    public function getSampleMessages(): array
+    public static function getSampleMessages(): array
     {
         return [
-                'single message' => [
-                        'messages' => [
-                                [
-                                        'property' => 'foo',
-                                        'message' => 'This is a validation result',
-                                        'severity' => AbstractMessage::NOTICE,
-                                ],
-                        ],
+            'single message' => [
+                'messages' => [
+                    [
+                        'property' => 'foo',
+                        'message' => 'This is a validation result',
+                        'severity' => ContextualFeedbackSeverity::NOTICE,
+                    ],
                 ],
-                'single message, not requested property, not requested severity' => [
-                        'messages' => [
-                                [
-                                        'property' => 'baz',
-                                        'message' => 'This is a baz validation result',
-                                        'severity' => AbstractMessage::ERROR,
-                                ],
-                        ],
+            ],
+            'single message, not requested property, not requested severity' => [
+                'messages' => [
+                    [
+                        'property' => 'baz',
+                        'message' => 'This is a baz validation result',
+                        'severity' => ContextualFeedbackSeverity::ERROR,
+                    ],
                 ],
-                'two messages, same property, same severity' => [
-                        'messages' => [
-                                [
-                                        'property' => 'foo',
-                                        'message' => 'This is a validation result',
-                                        'severity' => AbstractMessage::NOTICE,
-                                ],
-                                [
-                                        'property' => 'foo',
-                                        'message' => 'This is a second validation result',
-                                        'severity' => AbstractMessage::NOTICE,
-                                ],
-                        ],
+            ],
+            'two messages, same property, same severity' => [
+                'messages' => [
+                    [
+                        'property' => 'foo',
+                        'message' => 'This is a validation result',
+                        'severity' => ContextualFeedbackSeverity::NOTICE,
+                    ],
+                    [
+                        'property' => 'foo',
+                        'message' => 'This is a second validation result',
+                        'severity' => ContextualFeedbackSeverity::NOTICE,
+                    ],
                 ],
-                'two messages, same property, different severity' => [
-                        'messages' => [
-                                [
-                                        'property' => 'foo',
-                                        'message' => 'This is a notice validation result',
-                                        'severity' => AbstractMessage::NOTICE,
-                                ],
-                                [
-                                        'property' => 'foo',
-                                        'message' => 'This is a warning validation result',
-                                        'severity' => AbstractMessage::WARNING,
-                                ],
-                        ],
+            ],
+            'two messages, same property, different severity' => [
+                'messages' => [
+                    [
+                        'property' => 'foo',
+                        'message' => 'This is a notice validation result',
+                        'severity' => ContextualFeedbackSeverity::NOTICE,
+                    ],
+                    [
+                        'property' => 'foo',
+                        'message' => 'This is a warning validation result',
+                        'severity' => ContextualFeedbackSeverity::WARNING,
+                    ],
                 ],
-                'two messages, different property, same severity' => [
-                        'messages' => [
-                                [
-                                        'property' => 'foo',
-                                        'message' => 'This is a foo validation result',
-                                        'severity' => AbstractMessage::NOTICE,
-                                ],
-                                [
-                                        'property' => 'bar',
-                                        'message' => 'This is a bar validation result',
-                                        'severity' => AbstractMessage::NOTICE,
-                                ],
-                        ],
+            ],
+            'two messages, different property, same severity' => [
+                'messages' => [
+                    [
+                        'property' => 'foo',
+                        'message' => 'This is a foo validation result',
+                        'severity' => ContextualFeedbackSeverity::NOTICE,
+                    ],
+                    [
+                        'property' => 'bar',
+                        'message' => 'This is a bar validation result',
+                        'severity' => ContextualFeedbackSeverity::NOTICE,
+                    ],
                 ],
+            ],
         ];
     }
 
-    public function allResultsProvider(): array
+    public static function allResultsProvider(): array
     {
         return array_merge_recursive(
-            $this->getSampleMessages(),
+            self::getSampleMessages(),
             [
-                    'single message' => [
-                            'expected' => [
-                                    'foo' => [
-                                            [
-                                                    'severity' => AbstractMessage::NOTICE,
-                                                    'message' => 'This is a validation result',
-                                            ],
-                                    ],
+                'single message' => [
+                    'expectedStructure' => [
+                        'foo' => [
+                            [
+                                'severity' => ContextualFeedbackSeverity::NOTICE,
+                                'message' => 'This is a validation result',
                             ],
+                        ],
                     ],
-                    'single message, not requested property, not requested severity' => [
-                            'expected' => [
-                                    'baz' => [
-                                            [
-                                                    'severity' => AbstractMessage::ERROR,
-                                                    'message' => 'This is a baz validation result',
-                                            ],
-                                    ],
+                ],
+                'single message, not requested property, not requested severity' => [
+                    'expectedStructure' => [
+                        'baz' => [
+                            [
+                                'severity' => ContextualFeedbackSeverity::ERROR,
+                                'message' => 'This is a baz validation result',
                             ],
+                        ],
                     ],
-                    'two messages, same property, same severity' => [
-                            'expected' => [
-                                    'foo' => [
-                                            [
-                                                    'severity' => AbstractMessage::NOTICE,
-                                                    'message' => 'This is a validation result',
-                                            ],
-                                            [
-                                                    'severity' => AbstractMessage::NOTICE,
-                                                    'message' => 'This is a second validation result',
-                                            ],
-                                    ],
+                ],
+                'two messages, same property, same severity' => [
+                    'expectedStructure' => [
+                        'foo' => [
+                            [
+                                'severity' => ContextualFeedbackSeverity::NOTICE,
+                                'message' => 'This is a validation result',
                             ],
-                    ],
-                    'two messages, same property, different severity' => [
-                            'expected' => [
-                                    'foo' => [
-                                            [
-                                                    'severity' => AbstractMessage::WARNING,
-                                                    'message' => 'This is a warning validation result',
-                                            ],
-                                            [
-                                                    'severity' => AbstractMessage::NOTICE,
-                                                    'message' => 'This is a notice validation result',
-                                            ],
-                                    ],
+                            [
+                                'severity' => ContextualFeedbackSeverity::NOTICE,
+                                'message' => 'This is a second validation result',
                             ],
+                        ],
                     ],
-                    'two messages, different property, same severity' => [
-                            'expected' => [
-                                    'foo' => [
-                                            [
-                                                    'severity' => AbstractMessage::NOTICE,
-                                                    'message' => 'This is a foo validation result',
-                                            ],
-                                    ],
-                                    'bar' => [
-                                            [
-                                                    'severity' => AbstractMessage::NOTICE,
-                                                    'message' => 'This is a bar validation result',
-                                            ],
-                                    ],
+                ],
+                'two messages, same property, different severity' => [
+                    'expectedStructure' => [
+                        'foo' => [
+                            [
+                                'severity' => ContextualFeedbackSeverity::WARNING,
+                                'message' => 'This is a warning validation result',
                             ],
+                            [
+                                'severity' => ContextualFeedbackSeverity::NOTICE,
+                                'message' => 'This is a notice validation result',
+                            ],
+                        ],
                     ],
+                ],
+                'two messages, different property, same severity' => [
+                    'expectedStructure' => [
+                        'foo' => [
+                            [
+                                'severity' => ContextualFeedbackSeverity::NOTICE,
+                                'message' => 'This is a foo validation result',
+                            ],
+                        ],
+                        'bar' => [
+                            [
+                                'severity' => ContextualFeedbackSeverity::NOTICE,
+                                'message' => 'This is a bar validation result',
+                            ],
+                        ],
+                    ],
+                ],
             ]
         );
     }
 
-    /**
-     * @test
-     * @dataProvider allResultsProvider
-     * @param array $messages
-     * @param array $expectedStructure
-     */
+    #[Test] #[DataProvider('allResultsProvider')]
     public function addAddsResultToList(array $messages, array $expectedStructure): void
     {
         $this->loadMessages($messages);
@@ -242,12 +228,8 @@ class ValidationResultTest extends UnitTestCase
     /**
      * This is currently the same as addAddsResultToList() above, but it was still separated
      * to clarify coverage and in case some variant is needed in the future.
-     *
-     * @test
-     * @dataProvider allResultsProvider
-     * @param array $messages
-     * @param array $expectedStructure
      */
+    #[Test] #[DataProvider('allResultsProvider')]
     public function getAllReturnsAllMessages(array $messages, array $expectedStructure): void
     {
         $this->loadMessages($messages);
@@ -257,70 +239,64 @@ class ValidationResultTest extends UnitTestCase
         );
     }
 
-    public function forPropertyProvider(): array
+    public static function forPropertyProvider(): array
     {
         return array_merge_recursive(
-            $this->getSampleMessages(),
+            self::getSampleMessages(),
             [
-                    'single message' => [
-                            'property' => 'foo',
-                            'expected' => [
-                                    [
-                                            'severity' => AbstractMessage::NOTICE,
-                                            'message' => 'This is a validation result',
-                                    ],
-                            ],
+                'single message' => [
+                    'property' => 'foo',
+                    'expectedStructure' => [
+                        [
+                            'severity' => ContextualFeedbackSeverity::NOTICE,
+                            'message' => 'This is a validation result',
+                        ],
                     ],
-                    'single message, not requested property, not requested severity' => [
-                            'property' => 'foo',
-                            'expected' => null,
+                ],
+                'single message, not requested property, not requested severity' => [
+                    'property' => 'foo',
+                    'expectedStructure' => null,
+                ],
+                'two messages, same property, same severity' => [
+                    'property' => 'foo',
+                    'expectedStructure' => [
+                        [
+                            'severity' => ContextualFeedbackSeverity::NOTICE,
+                            'message' => 'This is a validation result',
+                        ],
+                        [
+                            'severity' => ContextualFeedbackSeverity::NOTICE,
+                            'message' => 'This is a second validation result',
+                        ],
                     ],
-                    'two messages, same property, same severity' => [
-                            'property' => 'foo',
-                            'expected' => [
-                                    [
-                                            'severity' => AbstractMessage::NOTICE,
-                                            'message' => 'This is a validation result',
-                                    ],
-                                    [
-                                            'severity' => AbstractMessage::NOTICE,
-                                            'message' => 'This is a second validation result',
-                                    ],
-                            ],
+                ],
+                'two messages, same property, different severity' => [
+                    'property' => 'foo',
+                    'expectedStructure' => [
+                        [
+                            'severity' => ContextualFeedbackSeverity::WARNING,
+                            'message' => 'This is a warning validation result',
+                        ],
+                        [
+                            'severity' => ContextualFeedbackSeverity::NOTICE,
+                            'message' => 'This is a notice validation result',
+                        ],
                     ],
-                    'two messages, same property, different severity' => [
-                            'property' => 'foo',
-                            'expected' => [
-                                    [
-                                            'severity' => AbstractMessage::WARNING,
-                                            'message' => 'This is a warning validation result',
-                                    ],
-                                    [
-                                            'severity' => AbstractMessage::NOTICE,
-                                            'message' => 'This is a notice validation result',
-                                    ],
-                            ],
+                ],
+                'two messages, different property, same severity' => [
+                    'property' => 'foo',
+                    'expectedStructure' => [
+                        [
+                            'severity' => ContextualFeedbackSeverity::NOTICE,
+                            'message' => 'This is a foo validation result',
+                        ],
                     ],
-                    'two messages, different property, same severity' => [
-                            'property' => 'foo',
-                            'expected' => [
-                                    [
-                                            'severity' => AbstractMessage::NOTICE,
-                                            'message' => 'This is a foo validation result',
-                                    ],
-                            ],
-                    ],
+                ],
             ]
         );
     }
 
-    /**
-     * @test
-     * @dataProvider forPropertyProvider
-     * @param array $messages
-     * @param string $property
-     * @param array|null $expectedStructure
-     */
+    #[Test] #[DataProvider('forPropertyProvider')]
     public function getForPropertyReturnsAllMessagesForProperty(array $messages, string $property, ?array $expectedStructure): void
     {
         $this->loadMessages($messages);
@@ -330,65 +306,59 @@ class ValidationResultTest extends UnitTestCase
         );
     }
 
-    public function forSeverityProvider(): array
+    public static function forSeverityProvider(): array
     {
         return array_merge_recursive(
-            $this->getSampleMessages(),
+            self::getSampleMessages(),
             [
-                    'single message' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => [
-                                    'foo' => [
-                                            'This is a validation result',
-                                    ],
-                            ],
+                'single message' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedStructure' => [
+                        'foo' => [
+                            'This is a validation result',
+                        ],
                     ],
-                    'single message, not requested property, not requested severity' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => [
-                                    'baz' => [],
-                            ],
+                ],
+                'single message, not requested property, not requested severity' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedStructure' => [
+                        'baz' => [],
                     ],
-                    'two messages, same property, same severity' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => [
-                                    'foo' => [
-                                            'This is a validation result',
-                                            'This is a second validation result',
-                                    ],
-                            ],
+                ],
+                'two messages, same property, same severity' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedStructure' => [
+                        'foo' => [
+                            'This is a validation result',
+                            'This is a second validation result',
+                        ],
                     ],
-                    'two messages, same property, different severity' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => [
-                                    'foo' => [
-                                            'This is a notice validation result',
-                                    ],
-                            ],
+                ],
+                'two messages, same property, different severity' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedStructure' => [
+                        'foo' => [
+                            'This is a notice validation result',
+                        ],
                     ],
-                    'two messages, different property, same severity' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => [
-                                    'foo' => [
-                                            'This is a foo validation result',
-                                    ],
-                                    'bar' => [
-                                            'This is a bar validation result',
-                                    ],
-                            ],
+                ],
+                'two messages, different property, same severity' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedStructure' => [
+                        'foo' => [
+                            'This is a foo validation result',
+                        ],
+                        'bar' => [
+                            'This is a bar validation result',
+                        ],
                     ],
+                ],
             ]
         );
     }
 
-    /**
-     * @test
-     * @dataProvider forSeverityProvider
-     * @param array $messages
-     * @param int $severity
-     * @param array $expectedStructure
-     */
-    public function getForSeverityReturnsAllMessagesForSeverity(array $messages, int $severity, array $expectedStructure): void
+    #[Test] #[DataProvider('forSeverityProvider')]
+    public function getForSeverityReturnsAllMessagesForSeverity(array $messages, ContextualFeedbackSeverity $severity, array $expectedStructure): void
     {
         $this->loadMessages($messages);
         self::assertSame(
@@ -397,42 +367,36 @@ class ValidationResultTest extends UnitTestCase
         );
     }
 
-    public function countForPropertyProvider(): array
+    public static function countForPropertyProvider(): array
     {
         return array_merge_recursive(
-            $this->getSampleMessages(),
+            self::getSampleMessages(),
             [
-                    'single message' => [
-                            'property' => 'foo',
-                            'expected' => 1,
-                    ],
-                    'single message, not requested property, not requested severity' => [
-                            'property' => 'foo',
-                            'expected' => 0,
-                    ],
-                    'two messages, same property, same severity' => [
-                            'property' => 'foo',
-                            'expected' => 2,
-                    ],
-                    'two messages, same property, different severity' => [
-                            'property' => 'foo',
-                            'expected' => 2,
-                    ],
-                    'two messages, different property, same severity' => [
-                            'property' => 'foo',
-                            'expected' => 1,
-                    ],
+                'single message' => [
+                    'property' => 'foo',
+                    'expectedTotal' => 1,
+                ],
+                'single message, not requested property, not requested severity' => [
+                    'property' => 'foo',
+                    'expectedTotal' => 0,
+                ],
+                'two messages, same property, same severity' => [
+                    'property' => 'foo',
+                    'expectedTotal' => 2,
+                ],
+                'two messages, same property, different severity' => [
+                    'property' => 'foo',
+                    'expectedTotal' => 2,
+                ],
+                'two messages, different property, same severity' => [
+                    'property' => 'foo',
+                    'expectedTotal' => 1,
+                ],
             ]
         );
     }
 
-    /**
-     * @test
-     * @dataProvider countForPropertyProvider
-     * @param array $messages
-     * @param string $property
-     * @param int $expectedTotal
-     */
+    #[Test] #[DataProvider('countForPropertyProvider')]
     public function countForPropertyReturnsTotalMessagesForProperty(array $messages, string $property, int $expectedTotal): void
     {
         $this->loadMessages($messages);
@@ -442,43 +406,37 @@ class ValidationResultTest extends UnitTestCase
         );
     }
 
-    public function countForSeverityProvider(): array
+    public static function countForSeverityProvider(): array
     {
         return array_merge_recursive(
-            $this->getSampleMessages(),
+            self::getSampleMessages(),
             [
-                    'single message' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => 1,
-                    ],
-                    'single message, not requested property, not requested severity' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => 0,
-                    ],
-                    'two messages, same property, same severity' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => 2,
-                    ],
-                    'two messages, same property, different severity' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => 1,
-                    ],
-                    'two messages, different property, same severity' => [
-                            'severity' => AbstractMessage::NOTICE,
-                            'expected' => 2,
-                    ],
+                'single message' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedTotal' => 1,
+                ],
+                'single message, not requested property, not requested severity' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedTotal' => 0,
+                ],
+                'two messages, same property, same severity' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedTotal' => 2,
+                ],
+                'two messages, same property, different severity' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedTotal' => 1,
+                ],
+                'two messages, different property, same severity' => [
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'expectedTotal' => 2,
+                ],
             ]
         );
     }
 
-    /**
-     * @test
-     * @dataProvider countForSeverityProvider
-     * @param array $messages
-     * @param int $severity
-     * @param int $expectedTotal
-     */
-    public function countForSeverityReturnsTotalMessagesForSeverity(array $messages, int $severity, int $expectedTotal): void
+    #[Test] #[DataProvider('countForSeverityProvider')]
+    public function countForSeverityReturnsTotalMessagesForSeverity(array $messages, ContextualFeedbackSeverity $severity, int $expectedTotal): void
     {
         $this->loadMessages($messages);
         self::assertSame(
@@ -487,49 +445,42 @@ class ValidationResultTest extends UnitTestCase
         );
     }
 
-    public function getForPropertyAndSeverityProvider(): array
+    public static function getForPropertyAndSeverityProvider(): array
     {
         return array_merge_recursive(
-            $this->getSampleMessages(),
+            self::getSampleMessages(),
             [
-                    'single message' => [
-                            'property' => 'foo',
-                            'severity' => AbstractMessage::NOTICE,
-                            'count' => 1,
-                    ],
-                    'single message, not requested property, not requested severity' => [
-                            'property' => 'foo',
-                            'severity' => AbstractMessage::NOTICE,
-                            'count' => 0,
-                    ],
-                    'two messages, same property, same severity' => [
-                            'property' => 'foo',
-                            'severity' => AbstractMessage::NOTICE,
-                            'count' => 2,
-                    ],
-                    'two messages, same property, different severity' => [
-                            'property' => 'foo',
-                            'severity' => AbstractMessage::NOTICE,
-                            'count' => 1,
-                    ],
-                    'two messages, different property, same severity' => [
-                            'property' => 'foo',
-                            'severity' => AbstractMessage::NOTICE,
-                            'count' => 1,
-                    ],
+                'single message' => [
+                    'property' => 'foo',
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'count' => 1,
+                ],
+                'single message, not requested property, not requested severity' => [
+                    'property' => 'foo',
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'count' => 0,
+                ],
+                'two messages, same property, same severity' => [
+                    'property' => 'foo',
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'count' => 2,
+                ],
+                'two messages, same property, different severity' => [
+                    'property' => 'foo',
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'count' => 1,
+                ],
+                'two messages, different property, same severity' => [
+                    'property' => 'foo',
+                    'severity' => ContextualFeedbackSeverity::NOTICE,
+                    'count' => 1,
+                ],
             ]
         );
     }
 
-    /**
-     * @test
-     * @dataProvider getForPropertyAndSeverityProvider
-     * @param array $messages
-     * @param string $property
-     * @param int $severity
-     * @param int $count
-     */
-    public function getForPropertyAndSeverityReturnsAllMessagesForPropertyAndSeverity(array $messages, string $property, int $severity, int $count): void
+    #[Test] #[DataProvider('getForPropertyAndSeverityProvider')]
+    public function getForPropertyAndSeverityReturnsAllMessagesForPropertyAndSeverity(array $messages, string $property, ContextualFeedbackSeverity $severity, int $count): void
     {
         $this->loadMessages($messages);
         self::assertCount(

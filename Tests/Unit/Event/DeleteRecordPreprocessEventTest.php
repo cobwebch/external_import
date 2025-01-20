@@ -19,22 +19,16 @@ namespace Cobweb\ExternalImport\Tests\Unit\Event;
 
 use Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent;
 use Cobweb\ExternalImport\Importer;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the InsertRecordPreprocessEvent class
  */
 class DeleteRecordPreprocessEventTest extends UnitTestCase
 {
-    /**
-     * @var DeleteRecordsPreprocessEvent
-     */
     protected DeleteRecordsPreprocessEvent $subject;
-
-    /**
-     * @var Importer
-     */
-    protected $importer;
+    protected Importer $importer;
 
     public function setUp(): void
     {
@@ -52,9 +46,7 @@ class DeleteRecordPreprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getRecordsInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -63,9 +55,7 @@ class DeleteRecordPreprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setRecordsSetsRecords(): void
     {
         $record = ['foo', 'bar'];
@@ -76,9 +66,7 @@ class DeleteRecordPreprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getImporterInitiallyReturnsOriginalObject(): void
     {
         self::assertSame(

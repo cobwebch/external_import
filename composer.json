@@ -32,12 +32,13 @@
 		"cobweb/svconnector": "^6.0"
 	},
 	"require-dev": {
-		"cobweb/externalimport_test": "^0.14.0",
+		"cobweb/externalimport_test": "dev-next",
 		"cobweb/svconnector_csv": "^5.0",
 		"cobweb/svconnector_feed": "^5.0",
+		"cobweb/svconnector_json": "^5.0",
 		"ergebnis/composer-normalize": "~2.42.0",
 		"friendsofphp/php-cs-fixer": "^3.52",
-		"nimut/testing-framework": "^6.0",
+		"typo3/testing-framework": "^8.2",
 		"phpstan/phpstan": "^1.10"
 	},
 	"extra": {

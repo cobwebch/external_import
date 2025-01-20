@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 /*
@@ -16,16 +18,15 @@ namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
  */
 
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the ConfigurationKey model
  */
 class ConfigurationKeyTest extends UnitTestCase
 {
-    /**
-     * @var ConfigurationKey
-     */
     protected ConfigurationKey $subject;
 
     public function setUp(): void
@@ -34,73 +35,61 @@ class ConfigurationKeyTest extends UnitTestCase
         $this->subject = new ConfigurationKey();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getConfigurationKeyInitiallyReturnsEmptyString(): void
     {
         self::assertEquals('', $this->subject->getConfigurationKey());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getIndexInitiallyReturnsEmptyString(): void
     {
         self::assertEquals('', $this->subject->getIndex());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getTableInitiallyReturnsEmptyString(): void
     {
         self::assertEquals('', $this->subject->getTable());
     }
 
-    public function configurationProvider(): array
+    public static function configurationProvider(): array
     {
         return [
-                'standard table name, numerical index' => [
-                        'table' => 'tx_foo',
-                        'index' => 1,
-                        'key' => 'tx_foo***1',
-                ],
-                'standard table name, numerical index with value 0' => [
-                        'table' => 'tx_foo',
-                        'index' => 0,
-                        'key' => 'tx_foo***0',
-                ],
-                'standard table name, string index' => [
-                        'table' => 'tx_foo',
-                        'index' => 'bar',
-                        'key' => 'tx_foo***bar',
-                ],
-                'table name with hyphen, string index' => [
-                        'table' => 'tx-foo',
-                        'index' => 'bar',
-                        'key' => 'tx-foo***bar',
-                ],
-                'group name' => [
-                        'table' => 'group:foo',
-                        'index' => '',
-                        'key' => 'group:foo',
-                ],
-                'all tables' => [
-                        'table' => 'all',
-                        'index' => '',
-                        'key' => 'all',
-                ],
+            'standard table name, numerical index' => [
+                'table' => 'tx_foo',
+                'index' => 1,
+                'key' => 'tx_foo***1',
+            ],
+            'standard table name, numerical index with value 0' => [
+                'table' => 'tx_foo',
+                'index' => 0,
+                'key' => 'tx_foo***0',
+            ],
+            'standard table name, string index' => [
+                'table' => 'tx_foo',
+                'index' => 'bar',
+                'key' => 'tx_foo***bar',
+            ],
+            'table name with hyphen, string index' => [
+                'table' => 'tx-foo',
+                'index' => 'bar',
+                'key' => 'tx-foo***bar',
+            ],
+            'group name' => [
+                'table' => 'group:foo',
+                'index' => '',
+                'key' => 'group:foo',
+            ],
+            'all tables' => [
+                'table' => 'all',
+                'index' => '',
+                'key' => 'all',
+            ],
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider configurationProvider
-     * @param string $table
-     * @param mixed $index
-     * @param string $key
-     */
+    #[Test] #[DataProvider('configurationProvider')]
     public function setConfigurationKeySetsTableAndIndex(string $table, $index, string $key): void
     {
         $this->subject->setConfigurationKey($key);
@@ -108,13 +97,7 @@ class ConfigurationKeyTest extends UnitTestCase
         self::assertEquals($index, $this->subject->getIndex());
     }
 
-    /**
-     * @test
-     * @dataProvider configurationProvider
-     * @param string $table
-     * @param mixed $index
-     * @param string $key
-     */
+    #[Test] #[DataProvider('configurationProvider')]
     public function setTableAndIndexSetsConfigurationKey(string $table, $index, string $key): void
     {
         $this->subject->setTableAndIndex($table, (string)$index);

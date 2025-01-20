@@ -1,0 +1,10 @@
+pages,,,
+,uid,pid,title
+,1,0,Mapping storage 1
+,2,0,Mapping storage 2
+sys_category,,,,,,,
+,uid,pid,deleted,hidden,title,external_key,description
+,1,1,0,0,Category 1,CAT1,
+,2,2,0,1,Category 2,CAT2,
+,3,2,1,0,Category 3,CAT3,
+,4,2,0,0,Category 4,0,Tests that 0 is an acceptable value for external_key

@@ -19,37 +19,42 @@ namespace Cobweb\ExternalImport\Tests\Functional\Utility;
 
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\SlugUtility;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Test class for the SlugUtility.
  */
 class SlugUtilityTest extends FunctionalTestCase
 {
-    protected $testExtensionsToLoad = [
-        'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test',
+    protected array $coreExtensionsToLoad = [
+        'scheduler',
     ];
 
-    /**
-     * @var SlugUtility
-     */
-    protected $subject;
+    protected array $testExtensionsToLoad = [
+        'cobweb/svconnector',
+        'cobweb/svconnector_csv',
+        'cobweb/svconnector_feed',
+        'cobweb/svconnector_json',
+        'cobweb/external_import',
+        'cobweb/externalimport_test',
+    ];
+
+    protected SlugUtility $subject;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(
-            SlugUtility::class,
-            GeneralUtility::makeInstance(Importer::class)
+        $this->subject = new SlugUtility(
+            $this->getAccessibleMock(
+                Importer::class,
+                callOriginalConstructor: false
+            ),
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function resolveSlugFieldNamesFindsListOfSlugFields(): void
     {
         self::assertSame(

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Cobweb\ExternalImport\Tests\Unit\Utility;
 
 /*
@@ -16,60 +18,47 @@ namespace Cobweb\ExternalImport\Tests\Unit\Utility;
  */
 
 use Cobweb\ExternalImport\Utility\MappingUtility;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test case for the External Import mapping utility.
  */
 class MappingUtilityTest extends UnitTestCase
 {
-    /**
-     * Local instance for testing
-     *
-     * @var MappingUtility
-     */
-    protected $mappingUtility;
+    protected MappingUtility $mappingUtility;
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->mappingUtility = GeneralUtility::makeInstance(MappingUtility::class);
     }
 
     /**
      * Provide data for soft matching with strpos
      * (currently provides only one data set, but could provide more in the future)
-     *
-     * @return array
      */
-    public function mappingTestWithStrposProvider(): array
+    public static function mappingTestWithStrposProvider(): array
     {
         return [
-                'australia' => [
-                        'inputData' => 'Australia',
-                        'mappingTable' => [
-                                'Commonwealth of Australia' => 'AU',
-                                'Kingdom of Spain' => 'ES',
-                        ],
-                        'mappingConfiguration' => [
-                                'matchMethod' => 'strpos',
-                                'matchSymmetric' => false,
-                        ],
-                        'result' => 'AU',
+            'australia' => [
+                'inputData' => 'Australia',
+                'mappingTable' => [
+                    'Commonwealth of Australia' => 'AU',
+                    'Kingdom of Spain' => 'ES',
                 ],
+                'mappingConfiguration' => [
+                    'matchMethod' => 'strpos',
+                    'matchSymmetric' => false,
+                ],
+                'expectedResult' => 'AU',
+            ],
         ];
     }
 
-    /**
-     * Test soft-matching method with strpos
-     *
-     * @test
-     * @dataProvider mappingTestWithStrposProvider
-     * @param string $inputData
-     * @param array $mappingTable
-     * @param array $mappingConfiguration
-     * @param string $expectedResult
-     */
+    #[Test] #[DataProvider('mappingTestWithStrposProvider')]
     public function matchWordsWithStrposNotSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration, string $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
@@ -77,39 +66,28 @@ class MappingUtilityTest extends UnitTestCase
     }
 
     /**
-     * Provide data for soft matching with strpos
+     * Provide data for soft matching with strpos with symmetric matching
      * (currently provides only one data set, but could provide more in the future)
-     *
-     * @return array
      */
-    public function mappingTestWithStrposSymmetricProvider(): array
+    public static function mappingTestWithStrposSymmetricProvider(): array
     {
         return [
-                'australia' => [
-                        'inputData' => 'Commonwealth of Australia',
-                        'mappingTable' => [
-                                'Australia' => 'AU',
-                                'Spain' => 'ES',
-                        ],
-                        'mappingConfiguration' => [
-                                'matchMethod' => 'strpos',
-                                'matchSymmetric' => true,
-                        ],
-                        'result' => 'AU',
+            'australia' => [
+                'inputData' => 'Commonwealth of Australia',
+                'mappingTable' => [
+                    'Australia' => 'AU',
+                    'Spain' => 'ES',
                 ],
+                'mappingConfiguration' => [
+                    'matchMethod' => 'strpos',
+                    'matchSymmetric' => true,
+                ],
+                'expectedResult' => 'AU',
+            ],
         ];
     }
 
-    /**
-     * Test soft-matching method with strpos and symmetric flag
-     *
-     * @test
-     * @dataProvider mappingTestWithStrposSymmetricProvider
-     * @param string $inputData
-     * @param array $mappingTable
-     * @param array $mappingConfiguration
-     * @param string $expectedResult
-     */
+    #[Test] #[DataProvider('mappingTestWithStrposSymmetricProvider')]
     public function matchWordsWithStrposSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration, string $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
@@ -117,46 +95,38 @@ class MappingUtilityTest extends UnitTestCase
     }
 
     /**
-     * Provide data for soft matching with strpos
-     *
-     * @return array
+     * Provide data for soft matching with strpos that will not match
      */
-    public function mappingTestWithStrposWithBadMappingTableProvider(): array
+    public static function mappingTestWithStrposWithBadMappingTableProvider(): array
     {
         return [
             // Case doesn't match in this data set
             'wrong case' => [
-                    'inputData' => 'australia',
-                    'mappingTable' => [
-                            'Commonwealth of Australia' => 'AU',
-                            'Kingdom of Spain' => 'ES',
-                    ],
-                    'mappingConfiguration' => [
-                            'matchMethod' => 'strpos',
-                            'matchSymmetric' => false,
-                    ],
+                'inputData' => 'australia',
+                'mappingTable' => [
+                    'Commonwealth of Australia' => 'AU',
+                    'Kingdom of Spain' => 'ES',
+                ],
+                'mappingConfiguration' => [
+                    'matchMethod' => 'strpos',
+                    'matchSymmetric' => false,
+                ],
             ],
             'no matching data' => [
-                    'inputData' => 'Swaziland',
-                    'mappingTable' => [
-                            'Commonwealth of Australia' => 'AU',
-                            'Kingdom of Spain' => 'ES',
-                    ],
-                    'mappingConfiguration' => [
-                            'matchMethod' => 'strpos',
-                            'matchSymmetric' => false,
-                    ],
+                'inputData' => 'Swaziland',
+                'mappingTable' => [
+                    'Commonwealth of Australia' => 'AU',
+                    'Kingdom of Spain' => 'ES',
+                ],
+                'mappingConfiguration' => [
+                    'matchMethod' => 'strpos',
+                    'matchSymmetric' => false,
+                ],
             ],
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider mappingTestWithStrposWithBadMappingTableProvider
-     * @param string $inputData
-     * @param array $mappingTable
-     * @param array $mappingConfiguration
-     */
+    #[Test] #[DataProvider('mappingTestWithStrposWithBadMappingTableProvider')]
     public function failMatchWordsWithStrposNotSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration): void
     {
         $this->expectException(\UnexpectedValueException::class);
@@ -164,39 +134,27 @@ class MappingUtilityTest extends UnitTestCase
     }
 
     /**
-     * Provide data that will not match for strpos
-     *
-     * @return array
+     * Provide data that will not match for stripos
      */
-    public function mappingTestWithStriposProvider(): array
+    public static function mappingTestWithStriposProvider(): array
     {
-        $data = [
-                'australia' => [
-                        'inputData' => 'australia',
-                        'mappingTable' => [
-                                'Commonwealth of Australia' => 'AU',
-                                'Kingdom of Spain' => 'ES',
-                        ],
-                        'mappingConfiguration' => [
-                                'matchMethod' => 'stripos',
-                                'matchSymmetric' => false,
-                        ],
-                        'result' => 'AU',
+        return [
+            'australia' => [
+                'inputData' => 'australia',
+                'mappingTable' => [
+                    'Commonwealth of Australia' => 'AU',
+                    'Kingdom of Spain' => 'ES',
                 ],
+                'mappingConfiguration' => [
+                    'matchMethod' => 'stripos',
+                    'matchSymmetric' => false,
+                ],
+                'expectedResult' => 'AU',
+            ],
         ];
-        return $data;
     }
 
-    /**
-     * Test soft-matching method with stripos
-     *
-     * @test
-     * @dataProvider mappingTestWithStriposProvider
-     * @param string $inputData
-     * @param array $mappingTable
-     * @param array $mappingConfiguration
-     * @param string $expectedResult
-     */
+    #[Test] #[DataProvider('mappingTestWithStriposProvider')]
     public function matchWordsWithStirposNotSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration, string $expectedResult): void
     {
         $actualResult = $this->mappingUtility->matchSingleField($inputData, $mappingConfiguration, $mappingTable);
@@ -204,36 +162,28 @@ class MappingUtilityTest extends UnitTestCase
     }
 
     /**
-     * Provide data for soft matching with strpos
+     * Provide data for soft matching with stripos that will not match
      * (currently provides only one data set, but could provide more in the future)
-     *
-     * @return array
      */
-    public function mappingTestWithStriposWithBadMappingTableProvider(): array
+    public static function mappingTestWithStriposWithBadMappingTableProvider(): array
     {
         return [
             // Case doesn't match in this data set
             'no matching data' => [
-                    'inputData' => 'Swaziland',
-                    'mappingTable' => [
-                            'Commonwealth of Australia' => 'AU',
-                            'Kingdom of Spain' => 'ES',
-                    ],
-                    'mappingConfiguration' => [
-                            'matchMethod' => 'strpos',
-                            'matchSymmetric' => false,
-                    ],
+                'inputData' => 'Swaziland',
+                'mappingTable' => [
+                    'Commonwealth of Australia' => 'AU',
+                    'Kingdom of Spain' => 'ES',
+                ],
+                'mappingConfiguration' => [
+                    'matchMethod' => 'strpos',
+                    'matchSymmetric' => false,
+                ],
             ],
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider mappingTestWithStriposWithBadMappingTableProvider
-     * @param string $inputData
-     * @param array $mappingTable
-     * @param array $mappingConfiguration
-     */
+    #[Test] #[DataProvider('mappingTestWithStriposWithBadMappingTableProvider')]
     public function failMatchWordsWithStriposNotSymmetric(string $inputData, array $mappingTable, array $mappingConfiguration): void
     {
         $this->expectException(\UnexpectedValueException::class);

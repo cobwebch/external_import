@@ -21,33 +21,42 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Step\TransformDataStep;
 use Cobweb\ExternalImport\Transformation\DateTimeTransformation;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use Cobweb\ExternalImport\Utility\MappingUtility;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 /**
  * Test suite for the TransformDataStep class.
  */
 class TransformDataStepTest extends FunctionalTestCase
 {
-    protected $testExtensionsToLoad = [
-        'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import',
-        'typo3conf/ext/externalimport_test',
+    protected array $coreExtensionsToLoad = [
+        'scheduler',
     ];
 
-    /**
-     * @var TransformDataStep
-     */
-    protected $subject;
+    protected array $testExtensionsToLoad = [
+        'cobweb/svconnector',
+        'cobweb/svconnector_csv',
+        'cobweb/svconnector_feed',
+        'cobweb/svconnector_json',
+        'cobweb/external_import',
+        'cobweb/externalimport_test',
+    ];
+
+    protected TransformDataStep $subject;
 
     public function setUp(): void
     {
         parent::setUp();
-        $this->subject = GeneralUtility::makeInstance(TransformDataStep::class);
+        $this->subject = new TransformDataStep(new MappingUtility());
         $importer = $this->createMock(Importer::class);
-        $configuration = GeneralUtility::makeInstance(Configuration::class);
-        $configuration->setTable('foo');
+//        $configuration = $this->getAccessibleMock(Configuration::class);
+        $configuration = $this->createMock(Configuration::class);
+        $configuration->method('getTable')->willReturn('foo');
+//        $configuration->setTable('foo');
         $importer->method('getExternalConfiguration')->willReturn($configuration);
         $this->subject->setImporter(
             $importer
@@ -56,13 +65,13 @@ class TransformDataStepTest extends FunctionalTestCase
         $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('en');
     }
 
-    public function trimDataProvider(): array
+    public static function trimDataProvider(): array
     {
         return [
             'Trim data (true)' => [
-                'foo',
-                true,
-                [
+                'name' => 'foo',
+                'configuration' => true,
+                'records' => [
                     0 => [
                         'foo' => ' White space all around ',
                         'bar' => ' Not trimmed ',
@@ -80,7 +89,7 @@ class TransformDataStepTest extends FunctionalTestCase
                         'bar' => ' Not trimmed ',
                     ],
                 ],
-                [
+                'expected' => [
                     0 => [
                         'foo' => 'White space all around',
                         'bar' => ' Not trimmed ',
@@ -100,9 +109,9 @@ class TransformDataStepTest extends FunctionalTestCase
                 ],
             ],
             'Do not trim data (false)' => [
-                'foo',
-                false,
-                [
+                'name' => 'foo',
+                'configuration' => false,
+                'records' => [
                     0 => [
                         'foo' => ' White space all around ',
                         'bar' => ' Not trimmed ',
@@ -112,7 +121,7 @@ class TransformDataStepTest extends FunctionalTestCase
                         'bar' => ' Not trimmed ',
                     ],
                 ],
-                [
+                'expected' => [
                     0 => [
                         'foo' => ' White space all around ',
                         'bar' => ' Not trimmed ',
@@ -124,9 +133,9 @@ class TransformDataStepTest extends FunctionalTestCase
                 ],
             ],
             'Trim not string data' => [
-                'foo',
-                true,
-                [
+                'name' => 'foo',
+                'configuration' => true,
+                'records' => [
                     0 => [
                         'foo' => ['bar' => 'baz'],
                     ],
@@ -140,7 +149,7 @@ class TransformDataStepTest extends FunctionalTestCase
                         'bar' => 'baz',
                     ],
                 ],
-                [
+                'expected' => [
                     0 => [
                         'foo' => ['bar' => 'baz'],
                     ],
@@ -158,16 +167,7 @@ class TransformDataStepTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * Tests the applyTrim() method.
-     *
-     * @param string $name Name of the column to transform
-     * @param bool $configuration True if data needs to be trimmed
-     * @param array $records Records to handle
-     * @param array $expected Expected results
-     * @test
-     * @dataProvider trimDataProvider
-     */
+    #[Test] #[DataProvider('trimDataProvider')]
     public function applyTrimTrimsDataIfTrue(string $name, bool $configuration, array $records, array $expected): void
     {
         $result = $this->subject->applyTrim(
@@ -178,17 +178,17 @@ class TransformDataStepTest extends FunctionalTestCase
         self::assertSame($expected, $result);
     }
 
-    public function mappingDataProvider(): array
+    public static function mappingDataProvider(): array
     {
         return [
             'Map to sys_category with default value' => [
-                'foo',
-                [
+                'name' => 'foo',
+                'configuration' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                     'default' => 19,
                 ],
-                [
+                'records' => [
                     0 => [
                         'foo' => 'USEFUL',
                         'bar' => 42,
@@ -202,7 +202,7 @@ class TransformDataStepTest extends FunctionalTestCase
                         'bar' => 24,
                     ],
                 ],
-                [
+                'expected' => [
                     0 => [
                         'foo' => '1',
                         'bar' => 42,
@@ -218,12 +218,12 @@ class TransformDataStepTest extends FunctionalTestCase
                 ],
             ],
             'Map to sys_category without default value' => [
-                'foo',
-                [
+                'name' => 'foo',
+                'configuration' => [
                     'table' => 'sys_category',
                     'referenceField' => 'external_key',
                 ],
-                [
+                'records' => [
                     0 => [
                         'foo' => 'USEFUL',
                         'bar' => 42,
@@ -237,7 +237,7 @@ class TransformDataStepTest extends FunctionalTestCase
                         'bar' => 24,
                     ],
                 ],
-                [
+                'expected' => [
                     0 => [
                         'foo' => '1',
                         'bar' => 42,
@@ -254,20 +254,10 @@ class TransformDataStepTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * Tests the applyMapping() method.
-     *
-     * @param string $name Name of the column to transform
-     * @param array $configuration Mapping configuration
-     * @param array $records Records to handle
-     * @param array $expected Expected results
-     * @test
-     * @dataProvider mappingDataProvider
-     * @throws \Nimut\TestingFramework\Exception\Exception
-     */
+    #[Test] #[DataProvider('mappingDataProvider')]
     public function applyMappingMapsData(string $name, array $configuration, array $records, array $expected): void
     {
-        $this->importDataSet(__DIR__ . '/../Fixtures/Categories.xml');
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/Categories.csv');
         $result = $this->subject->applyMapping(
             $name,
             $configuration,
@@ -276,11 +266,7 @@ class TransformDataStepTest extends FunctionalTestCase
         self::assertSame($expected, $result);
     }
 
-    /**
-     * Tests the applyValue() method.
-     *
-     * @test
-     */
+    #[Test]
     public function applyValueAppliesValue(): void
     {
         $result = $this->subject->applyValue(
@@ -312,11 +298,7 @@ class TransformDataStepTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * Tests the applyValue() method.
-     *
-     * @test
-     */
+    #[Test]
     public function applyRteEnabledFlagAppliesFlag(): void
     {
         $result = $this->subject->applyRteEnabledFlag(
@@ -350,12 +332,12 @@ class TransformDataStepTest extends FunctionalTestCase
         );
     }
 
-    public function userFunctionDataProvider(): array
+    public static function userFunctionDataProvider(): array
     {
         return [
             'Valid configuration - data transformed' => [
-                'foo',
-                [
+                'name' => 'foo',
+                'configuration' => [
                     'class' => DateTimeTransformation::class,
                     'method' => 'parseDate',
                     'parameters' => [
@@ -363,13 +345,13 @@ class TransformDataStepTest extends FunctionalTestCase
                         'format' => 'U',
                     ],
                 ],
-                [
+                'records' => [
                     0 => [
                         'foo' => '2017-10-11T18:29:01+02:00',
                         'bar' => 4,
                     ],
                 ],
-                [
+                'expected' => [
                     0 => [
                         'foo' => '1507739341',
                         'bar' => 4,
@@ -380,15 +362,9 @@ class TransformDataStepTest extends FunctionalTestCase
     }
 
     /**
-     * Tests the applyUserFunction() method.
-     *
-     * @param string $name Name of the column to transform
-     * @param array $configuration userFunction configuration
-     * @param array $records Records to handle
-     * @param array $expected Expected results
-     * @test
-     * @dataProvider userFunctionDataProvider
+     * @throws \Cobweb\ExternalImport\Exception\CriticalFailureException
      */
+    #[Test] #[DataProvider('userFunctionDataProvider')]
     public function applyUserFunctionTransformsDataIfValid(string $name, array $configuration, array $records, array $expected): void
     {
         $result = $this->subject->applyUserFunction(
@@ -399,7 +375,7 @@ class TransformDataStepTest extends FunctionalTestCase
         self::assertSame($expected, $result);
     }
 
-    public function isEmptyDataProvider(): array
+    public static function isEmptyDataProvider(): array
     {
         $emptyArray = [
             0 => [
@@ -587,16 +563,7 @@ class TransformDataStepTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * Tests the applyIsEmpty() method.
-     *
-     * @param string $name Name of the column to transform
-     * @param array $configuration isEmpty configuration
-     * @param array $records Records to handle
-     * @param array $expected Expected results
-     * @test
-     * @dataProvider isEmptyDataProvider
-     */
+    #[Test] #[DataProvider('isEmptyDataProvider')]
     public function applyIsEmptyFiltersRecordsOrSetsDefaultValue(string $name, array $configuration, array $records, array $expected): void
     {
         $result = $this->subject->applyIsEmpty(

@@ -30,11 +30,11 @@ return RectorConfig::configure()
         __DIR__ . '/../../Configuration',
         __DIR__ . '/../../*.php',
     ])
-    ->withPhpSets(php74: true)
+    ->withPhpSets(php81: true)
     ->withSets([
         Typo3SetList::CODE_QUALITY,
         Typo3SetList::GENERAL,
-        Typo3LevelSetList::UP_TO_TYPO3_11,
+        Typo3LevelSetList::UP_TO_TYPO3_12,
     ])
     ->withImportNames(importShortClasses: false, removeUnusedImports: true)
     // To have a better analysis from PHPStan, we teach it here some more things
@@ -46,7 +46,7 @@ return RectorConfig::configure()
         ConvertImplicitVariablesToExplicitGlobalsRector::class,
     ])
     ->withConfiguredRule(ExtEmConfRector::class, [
-        ExtEmConfRector::TYPO3_VERSION_CONSTRAINT => '11.5.0-12.4.99',
+        ExtEmConfRector::TYPO3_VERSION_CONSTRAINT => '12.4.0-13.4.99',
         ExtEmConfRector::ADDITIONAL_VALUES_TO_BE_REMOVED => [],
     ])
     // If you use importNames(), you should consider excluding some TYPO3 files.

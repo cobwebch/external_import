@@ -18,8 +18,10 @@ namespace Cobweb\ExternalImport\Tests\Unit\Utility;
  */
 
 use Cobweb\ExternalImport\Utility\CsvUtility;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class CsvUtilityTest extends UnitTestCase
 {
@@ -27,10 +29,11 @@ class CsvUtilityTest extends UnitTestCase
 
     public function setUp(): void
     {
+        parent::setUp();
         $this->subject = GeneralUtility::makeInstance(CsvUtility::class);
     }
 
-    public function arrayDataProvider(): array
+    public static function arrayDataProvider(): array
     {
         return [
             'simple case - all values for all indices' => [
@@ -112,10 +115,7 @@ class CsvUtilityTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider arrayDataProvider
-     */
+    #[Test] #[DataProvider('arrayDataProvider')]
     public function ensureCompleteStructureCompletesStructureAsNeeded(array $input, array $output): void
     {
         $result = $this->subject->ensureCompleteStructure($input);

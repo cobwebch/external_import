@@ -18,8 +18,10 @@ declare(strict_types=1);
 namespace Cobweb\ExternalImport\Tests\Unit\Domain\Model;
 
 use Cobweb\ExternalImport\Domain\Model\ChildrenConfiguration;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class ChildrenConfigurationTest extends UnitTestCase
 {
@@ -31,9 +33,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(ChildrenConfiguration::class);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getBaseDataInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -42,9 +42,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setBaseDataSetsDataArray(): void
     {
         $this->subject->setBaseData(['table' => 'foo']);
@@ -54,7 +52,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    public function propertyProvider(): array
+    public static function propertyProvider(): array
     {
         return [
             'empty base data' => [
@@ -79,14 +77,8 @@ class ChildrenConfigurationTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider propertyProvider
-     * @param array $baseData
-     * @param string $property
-     * @param $result
-     */
-    public function getBaseDataPropertyReturnsValueOrNull(array $baseData, string $property, $result): void
+    #[Test] #[DataProvider('propertyProvider')]
+    public function getBaseDataPropertyReturnsValueOrNull(array $baseData, string $property, mixed $result): void
     {
         $this->subject->setBaseData($baseData);
         self::assertSame(
@@ -95,9 +87,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getControlColumnsForDeleteInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -106,9 +96,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setControlColumnsForDeleteSetsArray(): void
     {
         $this->subject->setControlColumnsForDelete(['foo', 'bar']);
@@ -118,9 +106,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getControlColumnsForUpdateInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -129,9 +115,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setControlColumnsForUpdateSetsArray(): void
     {
         $this->subject->setControlColumnsForUpdate(['foo', 'bar']);
@@ -141,9 +125,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isDeleteAllowedInitiallyReturnsTrue(): void
     {
         self::assertTrue(
@@ -151,9 +133,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setDeleteAllowedInitiallySetsBoolean(): void
     {
         $this->subject->setDeleteAllowed(false);
@@ -162,9 +142,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isInsertAllowedInitiallyReturnsTrue(): void
     {
         self::assertTrue(
@@ -172,9 +150,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setInsertAllowedInitiallySetsBoolean(): void
     {
         $this->subject->setInsertAllowed(false);
@@ -183,9 +159,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function isUpdateAllowedInitiallyReturnsTrue(): void
     {
         self::assertTrue(
@@ -193,9 +167,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setUpdateAllowedInitiallySetsBoolean(): void
     {
         $this->subject->setUpdateAllowed(false);
@@ -204,7 +176,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    public function allowedOperationsProvider(): array
+    public static function allowedOperationsProvider(): array
     {
         return [
             'set delete to true' => [
@@ -222,12 +194,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         ];
     }
 
-    /**
-     * @test
-     * @dataProvider allowedOperationsProvider
-     * @param string $operation
-     * @param bool $flag
-     */
+    #[Test] #[DataProvider('allowedOperationsProvider')]
     public function setAllowedOperationSetExpectedFlag(string $operation, bool $flag): void
     {
         $this->subject->setAllowedOperation($operation, $flag);
@@ -248,9 +215,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getSortingInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -259,9 +224,7 @@ class ChildrenConfigurationTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function setSortingSetsArray(): void
     {
         $this->subject->setSorting(

@@ -18,82 +18,85 @@ namespace Cobweb\ExternalImport\Tests\Functional\Validator;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Testing\FunctionalTestCaseWithDatabaseTools;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
-use Nimut\TestingFramework\TestCase\FunctionalTestCase;
-use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use Cobweb\ExternalImport\Validator\ValidationResult;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Core\Bootstrap;
+use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class ColumnConfigurationValidatorTest extends FunctionalTestCase
+class ColumnConfigurationValidatorTest extends FunctionalTestCaseWithDatabaseTools
 {
-    protected $testExtensionsToLoad = [
-        'typo3conf/ext/svconnector',
-        'typo3conf/ext/external_import',
+    protected array $coreExtensionsToLoad = [
+        'scheduler',
     ];
 
-    /**
-     * @var ColumnConfigurationValidator
-     */
-    protected $subject;
+    protected array $testExtensionsToLoad = [
+        'cobweb/svconnector',
+        'cobweb/external_import',
+    ];
+
+    protected ColumnConfigurationValidator $subject;
 
     public function setUp(): void
     {
         parent::setUp();
-        // Connector services need a global LanguageService object
-        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
-        $GLOBALS['LANG']->init('en');
+        $this->initializeBackendUser();
+        Bootstrap::initializeLanguageObject();
 
-        $this->subject = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
+        $this->subject = new ColumnConfigurationValidator(new ValidationResult());
     }
 
-    public function validConfigurationProvider(): array
+    public static function validConfigurationProvider(): array
     {
         return [
             'Data type "array": using property "field" (string)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'foo',
                     ],
                 ],
             ],
             'Data type "array": using property "field" (positive integer)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 42,
                     ],
                 ],
             ],
             'Data type "array": using property "field" (zero)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 0,
                     ],
                 ],
             ],
             'Data type "array": using column property "value" (number)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'value' => 17,
                     ],
                 ],
             ],
             'Data type "array": using transformations property "value" (number)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'transformations' => [
                             10 => [
@@ -104,20 +107,20 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
             ],
             'Data type "array": using column property "value" (string)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'value' => 'bar',
                     ],
                 ],
             ],
             'Data type "array": using transformations property "value" (string)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'transformations' => [
                             10 => [
@@ -128,40 +131,40 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
             ],
             'Data type "array": using property "arrayPath"' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'arrayPath' => 'foo/bar',
                     ],
                 ],
             ],
             'Data type "xml": using property "field" (string)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'foo',
                     ],
                 ],
             ],
             'Data type "xml": using column property "value" (number)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'value' => 17,
                     ],
                 ],
             ],
             'Data type "xml": using transformations property "value" (number)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'transformations' => [
                             10 => [
@@ -172,20 +175,20 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
             ],
             'Data type "xml": using column property "value" (string)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'value' => 'bar',
                     ],
                 ],
             ],
             'Data type "xml": using transformations property "value" (string)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'transformations' => [
                             10 => [
@@ -196,30 +199,32 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
             ],
             'Data type "xml": using property "attribute" (string)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'baz',
                     ],
                 ],
             ],
             'Data type "xml": using property "xpath" (string)' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'hello',
                     ],
                 ],
             ],
             'Children definition' => [
-                // No need for a general configuration
-                [],
-                [
+                'generalConfiguration' => [
+                    'data' => 'array',
+                ],
+                'columnConfiguration' => [
                     'col' => [
+                        'field' => 'foo',
                         'children' => [
                             'table' => 'foo',
                             'columns' => [
@@ -230,15 +235,17 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                                     'field' => 'baz',
                                 ],
                             ],
+                            'controlColumnsForUpdate' => 'column1',
+                            'controlColumnsForDelete' => 'column2',
                         ],
                     ],
                 ],
             ],
             'Substructure fields: valid structure and properties for "array" data type' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
@@ -250,10 +257,10 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                 ],
             ],
             'Substructure fields: valid structure and properties for "xml" data type' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'substructureFields' => [
                             'foo' => [
@@ -266,12 +273,7 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         ];
     }
 
-    /**
-     * @param array $generalConfiguration
-     * @param array $columnConfiguration
-     * @test
-     * @dataProvider validConfigurationProvider
-     */
+    #[Test] #[DataProvider('validConfigurationProvider')]
     public function isValidReturnsTrueForValidConfiguration(
         array $generalConfiguration,
         array $columnConfiguration
@@ -288,28 +290,28 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
         );
     }
 
-    public function invalidConfigurationProvider(): array
+    public static function invalidConfigurationProvider(): array
     {
         return [
             'Data type "array": missing data-setting properties' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [],
-                AbstractMessage::ERROR,
+                'columnConfiguration' => [],
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Data type "xml": missing data-setting properties' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [],
-                AbstractMessage::NOTICE,
+                'columnConfiguration' => [],
+                'severity' => ContextualFeedbackSeverity::NOTICE,
             ],
             'Data type "array": conflicting data-setting properties' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'foo',
                         'transformations' => [
@@ -319,13 +321,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::NOTICE,
+                'severity' => ContextualFeedbackSeverity::NOTICE,
             ],
             'Data type "xml": conflicting data-setting properties' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'xpath' => 'item',
                         'transformations' => [
@@ -335,12 +337,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::NOTICE,
+                'severity' => ContextualFeedbackSeverity::NOTICE,
             ],
             'Children definition: no "table" property' => [
-                // No need for a general configuration
-                [],
-                [
+                'generalConfiguration' => [
+                    'data' => 'array',
+                ],
+                'columnConfiguration' => [
                     'col' => [
                         'children' => [
                             'columns' => [
@@ -356,24 +359,26 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Children definition: no "columns" property' => [
-                // No need for a general configuration
-                [],
-                [
+                'generalConfiguration' => [
+                    'data' => 'array',
+                ],
+                'columnConfiguration' => [
                     'col' => [
                         'children' => [
                             'table' => 'foo',
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Children definition: "columns" sub-property not an array' => [
-                // No need for a general configuration
-                [],
-                [
+                'generalConfiguration' => [
+                    'data' => 'array',
+                ],
+                'columnConfiguration' => [
                     'col' => [
                         'children' => [
                             'table' => 'foo',
@@ -385,12 +390,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Children definition: wrong "columns" sub-property' => [
-                // No need for a general configuration
-                [],
-                [
+                'generalConfiguration' => [
+                    'data' => 'array',
+                ],
+                'columnConfiguration' => [
                     'col' => [
                         'children' => [
                             'table' => 'foo',
@@ -404,12 +410,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Children definition: wrong "controlColumnsForUpdate" sub-property' => [
-                // No need for a general configuration
-                [],
-                [
+                'generalConfiguration' => [
+                    'data' => 'array',
+                ],
+                'columnConfiguration' => [
                     'col' => [
                         'children' => [
                             'table' => 'foo',
@@ -422,12 +429,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Children definition: wrong "controlColumnsForDelete" sub-property' => [
-                // No need for a general configuration
-                [],
-                [
+                'generalConfiguration' => [
+                    'data' => 'array',
+                ],
+                'columnConfiguration' => [
                     'col' => [
                         'children' => [
                             'table' => 'foo',
@@ -440,13 +448,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Substructure fields: wrong structure' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
@@ -454,13 +462,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Substructure fields: empty configuration for "array" data type' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
@@ -468,13 +476,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Substructure fields: invalid properties for "array" data type' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'array',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
@@ -484,13 +492,13 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
             'Substructure fields: invalid properties for "xml" data type' => [
-                [
+                'generalConfiguration' => [
                     'data' => 'xml',
                 ],
-                [
+                'columnConfiguration' => [
                     'col' => [
                         'field' => 'foo',
                         'substructureFields' => [
@@ -500,22 +508,16 @@ class ColumnConfigurationValidatorTest extends FunctionalTestCase
                         ],
                     ],
                 ],
-                AbstractMessage::ERROR,
+                'severity' => ContextualFeedbackSeverity::ERROR,
             ],
         ];
     }
 
-    /**
-     * @param array $generalConfiguration
-     * @param array $columnConfiguration
-     * @param int $severity
-     * @test
-     * @dataProvider invalidConfigurationProvider
-     */
+    #[Test] #[DataProvider('invalidConfigurationProvider')]
     public function isValidRaisesMessageForInvalidConfiguration(
         array $generalConfiguration,
         array $columnConfiguration,
-        int $severity
+        ContextualFeedbackSeverity $severity
     ): void {
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         $configuration->setGeneralConfiguration($generalConfiguration);

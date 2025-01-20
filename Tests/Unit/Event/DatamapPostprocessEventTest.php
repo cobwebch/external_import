@@ -19,22 +19,16 @@ namespace Cobweb\ExternalImport\Tests\Unit\Event;
 
 use Cobweb\ExternalImport\Event\DatamapPostprocessEvent;
 use Cobweb\ExternalImport\Importer;
-use Nimut\TestingFramework\TestCase\UnitTestCase;
+use PHPUnit\Framework\Attributes\Test;
+use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 /**
  * Test suite for the InsertRecordPreprocessEvent class
  */
 class DatamapPostprocessEventTest extends UnitTestCase
 {
-    /**
-     * @var DatamapPostprocessEvent
-     */
     protected DatamapPostprocessEvent $subject;
-
-    /**
-     * @var Importer
-     */
-    protected $importer;
+    protected Importer $importer;
 
     public function setUp(): void
     {
@@ -53,9 +47,7 @@ class DatamapPostprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getDataInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -64,9 +56,7 @@ class DatamapPostprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getStructuredDataInitiallyReturnsEmptyArray(): void
     {
         self::assertSame(
@@ -75,9 +65,7 @@ class DatamapPostprocessEventTest extends UnitTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getImporterInitiallyReturnsOriginalObject(): void
     {
         self::assertSame(
