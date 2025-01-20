@@ -36,7 +36,7 @@
 		"cobweb/svconnector_csv": "^5.0",
 		"cobweb/svconnector_feed": "^5.0",
 		"cobweb/svconnector_json": "^5.0",
-		"ergebnis/composer-normalize": "~2.42.0",
+		"ergebnis/composer-normalize": "~2.45.0",
 		"friendsofphp/php-cs-fixer": "^3.52",
 		"typo3/testing-framework": "^8.2",
 		"phpstan/phpstan": "^1.10"
