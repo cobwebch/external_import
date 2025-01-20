@@ -35,7 +35,6 @@ use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Test suite for the preview feature of the Importer class.
