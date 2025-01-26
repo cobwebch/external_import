@@ -10,7 +10,7 @@
 	<f:if condition="{configurations->f:count()}">
 		<p><f:translate id="external_tables_intro" /></p>
 
-		<f:if condition="{globalWriteAccess} == 'all' && {rights.scheduler}">
+		<f:if condition="{globalWriteAccess} === 'all' && {rights.scheduler}">
 			<f:be.infobox title="{f:translate(id: 'full_autosync')}" state="-2" disableIcon="true">
 				<f:if condition="{fullSynchronizationTask}">
 					<f:then>

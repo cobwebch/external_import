@@ -590,7 +590,7 @@ class DataModuleController extends ActionController
 
         // Evaluate write access on all tables
         $globalWriteAccess = $this->configurationRepository->findGlobalWriteAccess();
-        $this->view->assign('globalWriteAccess', $globalWriteAccess);
+        $this->moduleTemplate->assign('globalWriteAccess', $globalWriteAccess);
     }
 
     /**
