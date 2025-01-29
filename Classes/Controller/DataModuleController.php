@@ -384,9 +384,8 @@ class DataModuleController extends ActionController
     {
         // Add a close button to the toolbar
         $this->prepareView('', 'listSynchronizable');
-        //        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
 
-        $this->view->assignMultiple(
+        $this->moduleTemplate->assignMultiple(
             [
                 'table' => $table,
                 'index' => $index,
@@ -454,11 +453,10 @@ class DataModuleController extends ActionController
     {
         // Add a close button to the toolbar
         $this->prepareView('', 'listSynchronizable');
-        $this->pageRenderer->loadRequireJsModule('TYPO3/CMS/Backend/DateTimePicker');
 
         try {
             $task = $this->schedulerRepository->fetchTaskByUid($uid);
-            $this->view->assignMultiple(
+            $this->moduleTemplate->assignMultiple(
                 [
                     'task' => $task,
                     'groups' => $this->schedulerRepository->fetchAllGroups(),
