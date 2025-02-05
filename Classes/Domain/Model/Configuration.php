@@ -195,6 +195,12 @@ class Configuration
     public function setGeneralConfiguration(array $generalConfiguration, ?array $defaultSteps = null): void
     {
         $this->generalConfiguration = $generalConfiguration;
+        // TODO: drop support for old "group" property in the next major version; for now automatically convert it
+        if (array_key_exists('group', $generalConfiguration)) {
+            $this->generalConfiguration['groups'] = [
+                $generalConfiguration['group'],
+            ];
+        }
         $stepUtility = GeneralUtility::makeInstance(StepUtility::class);
         // Define the process default steps, depending on process type or the predefined value
         // NOTE: normally default steps should always be defined

@@ -68,6 +68,7 @@ Properties
    disableLog_                           boolean           Store data
    enforcePid_                           boolean           Store data
    group_                                string            Sync process
+   groups_                               array             Sync process
    minimumRecords_                       integer           Validate data
    namespaces_                           array             Handle data (XML)
    nodetype_                             string            Handle data (XML)
@@ -159,6 +160,25 @@ Scope
   Handle data
 
 
+.. _administration-general-tca-properties-groups:
+
+groups
+~~~~~~
+
+Type
+  array
+
+Description
+  Any External Import configuration may belong to one or more groups. A group
+  is just an arbitrary string. It is possible to execute the
+  synchronization of all configurations in a given group in one go, in
+  order of priority (lowest goes first). Group synchronization is available on the command
+  line and in the Scheduler task.
+
+Scope
+  Sync process
+
+
 .. _administration-general-tca-properties-group:
 
 group
@@ -168,6 +188,11 @@ Type
   string
 
 Description
+  .. note::
+
+     This property is deprecated. Use :ref:`groups <administration-general-tca-properties-groups>` instead.
+     It is still supported, but will be removed in version 9.0.
+
   This can be any arbitrary string of characters. All External Import
   configurations having the same value for the "group" property will
   form a group of configurations. It is then possible to execute the

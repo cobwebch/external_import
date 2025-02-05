@@ -65,24 +65,88 @@ class ConfigurationRepositoryTest extends FunctionalTestCaseWithDatabaseTools
         }
     }
 
-    #[Test]
-    public function findByGroupFindsDesignatedGroup(): void
+    public static function findGroupsProvider(): array
     {
-        $groups = $this->subject->findByGroup('Products');
+        return [
+            'products - synchronizable' => [
+                'synchronizable' => true,
+                'nonSynchronizable' => false,
+                'group' => 'Products',
+                'count' => 4,
+            ],
+            'products - non-synchronizable' => [
+                'synchronizable' => false,
+                'nonSynchronizable' => true,
+                'group' => 'Products',
+                'count' => 1,
+            ],
+            'products - all' => [
+                'synchronizable' => false,
+                'nonSynchronizable' => false,
+                'group' => 'Products',
+                'count' => 5,
+            ],
+            'products - none' => [
+                'synchronizable' => true,
+                'nonSynchronizable' => true,
+                'group' => 'Products',
+                'count' => 0,
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('findGroupsProvider')]
+    public function findByGroupFindsDesignatedGroup(bool $synchronizable, bool $nonSynchronizable, string $group, int $count): void
+    {
+        $groupList = $this->subject->findByGroup($group, $synchronizable, $nonSynchronizable);
         self::assertCount(
-            3,
-            $groups
+            $count,
+            $groupList
         );
     }
 
-    #[Test]
-    public function findAllGroupsReturnsListOfGroups(): void
+    public static function findAllGroupsProvider(): array
+    {
+        return [
+            'synchronizable' => [
+                'synchronizable' => true,
+                'nonSynchronizable' => false,
+                'groups' => [
+                    'Products',
+                    'Stores',
+                ],
+            ],
+            'non-synchronizable' => [
+                'synchronizable' => false,
+                'nonSynchronizable' => true,
+                'groups' => [
+                    'Products',
+                    'Tags',
+                ],
+            ],
+            'all' => [
+                'synchronizable' => false,
+                'nonSynchronizable' => false,
+                'groups' => [
+                    'Products',
+                    'Stores',
+                    'Tags',
+                ],
+            ],
+            'none' => [
+                'synchronizable' => true,
+                'nonSynchronizable' => true,
+                'groups' => [],
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('findAllGroupsProvider')]
+    public function findAllGroupsReturnsListOfGroups(bool $synchronizable, bool $nonSynchronizable, array $groups): void
     {
         self::assertSame(
-            [
-                'Products',
-            ],
-            $this->subject->findAllGroups()
+            $groups,
+            $this->subject->findAllGroups($synchronizable, $nonSynchronizable)
         );
     }
 
@@ -221,50 +285,50 @@ class ConfigurationRepositoryTest extends FunctionalTestCaseWithDatabaseTools
     {
         $expectedList = [
             1000 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'general_configuration_errors', 'group' => '-'],
+                ['table' => 'tx_externalimporttest_product', 'index' => 'general_configuration_errors', 'groups' => []],
             ],
             5000 => [
-                ['table' => 'tx_externalimporttest_tag', 'index' => 0, 'group' => '-'],
+                ['table' => 'tx_externalimporttest_tag', 'index' => 0, 'groups' => []],
             ],
             5050 => [
-                ['table' => 'sys_category', 'index' => 'product_categories', 'group' => '-'],
-                ['table' => 'sys_category', 'index' => 'column_configuration_errors', 'group' => '-'],
+                ['table' => 'sys_category', 'index' => 'product_categories', 'groups' => []],
+                ['table' => 'sys_category', 'index' => 'column_configuration_errors', 'groups' => []],
             ],
             5080 => [
-                ['table' => 'tx_externalimporttest_designer', 'index' => 0, 'group' => '-'],
+                ['table' => 'tx_externalimporttest_designer', 'index' => 0, 'groups' => []],
             ],
             5100 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'base', 'group' => 'Products'],
+                ['table' => 'tx_externalimporttest_product', 'index' => 'base', 'groups' => ['Products']],
             ],
             5110 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'more', 'group' => 'Products'],
+                ['table' => 'tx_externalimporttest_product', 'index' => 'more', 'groups' => ['Products']],
             ],
             5120 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'stable', 'group' => 'Products'],
+                ['table' => 'tx_externalimporttest_product', 'index' => 'stable', 'groups' => ['Products']],
             ],
             5200 => [
-                ['table' => 'tx_externalimporttest_bundle', 'index' => 0, 'group' => '-'],
+                ['table' => 'tx_externalimporttest_bundle', 'index' => 0, 'groups' => []],
             ],
             5300 => [
-                ['table' => 'tx_externalimporttest_order', 'index' => 0, 'group' => '-'],
+                ['table' => 'tx_externalimporttest_order', 'index' => 0, 'groups' => []],
             ],
             5400 => [
-                ['table' => 'tx_externalimporttest_store', 'index' => 0, 'group' => '-'],
+                ['table' => 'tx_externalimporttest_store', 'index' => 0, 'groups' => ['Products', 'Stores']],
             ],
             5410 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'products_for_stores', 'group' => '-'],
+                ['table' => 'tx_externalimporttest_product', 'index' => 'products_for_stores', 'groups' => []],
             ],
             5500 => [
-                ['table' => 'tx_externalimporttest_invoice', 'index' => 0, 'group' => '-'],
+                ['table' => 'tx_externalimporttest_invoice', 'index' => 0, 'groups' => []],
             ],
             5800 => [
-                ['table' => 'pages', 'index' => 'product_pages', 'group' => '-'],
+                ['table' => 'pages', 'index' => 'product_pages', 'groups' => []],
             ],
             5810 => [
-                ['table' => 'tx_externalimporttest_product', 'index' => 'updated_products', 'group' => '-'],
+                ['table' => 'tx_externalimporttest_product', 'index' => 'updated_products', 'groups' => []],
             ],
             5900 => [
-                ['table' => 'tx_externalimporttest_tag', 'index' => 'only-delete', 'group' => '-'],
+                ['table' => 'tx_externalimporttest_tag', 'index' => 'only-delete', 'groups' => []],
             ],
         ];
         self::assertSame(

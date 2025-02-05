@@ -174,7 +174,7 @@ class ImportCommand extends Command
                     $this->runSynchronization($configurations);
                     // Launch group synchronization
                 } elseif ($group) {
-                    $configurations = $this->configurationRepository->findByGroup($group);
+                    $configurations = $this->configurationRepository->findByGroup($group, true);
                     $this->runSynchronization($configurations);
                     // Launch selected synchronization
                 } elseif ($table !== null && $index !== null) {
@@ -221,12 +221,12 @@ class ImportCommand extends Command
                     $priority,
                     $configuration['table'],
                     $configuration['index'],
-                    $configuration['group'],
+                    implode(', ', $configuration['groups']),
                 ];
             }
         }
         $this->io->table(
-            ['Priority', 'Table', 'Index', 'Group'],
+            ['Priority', 'Table', 'Index', 'Group(s)'],
             $outputTable
         );
     }

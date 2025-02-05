@@ -149,6 +149,12 @@
 			<trans-unit id="mmPropertyDeprecated" xml:space="preserve">
 				<source>The MM property is deprecated. Do not use it anymore. Switch to "multipleRows" or "children" instead.</source>
 			</trans-unit>
+			<trans-unit id="deprecatedGroupProperty" xml:space="preserve">
+				<source>The "group" property is deprecated, use "groups" instead.</source>
+			</trans-unit>
+			<trans-unit id="invalidGroupsProperty" xml:space="preserve">
+				<source>Property "groups" must be an array.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

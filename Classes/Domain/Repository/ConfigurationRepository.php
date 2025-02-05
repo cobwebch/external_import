@@ -130,10 +130,20 @@ class ConfigurationRepository
                         if (!isset($externalTables[$priority])) {
                             $externalTables[$priority] = [];
                         }
+                        if (is_array($externalConfig['groups'] ?? [])) {
+                            $groups = $externalConfig['groups'] ?? [];
+                            // TODO: drop support for the "group" property in the next major version
+                        } elseif (array_key_exists('group', $externalConfig)) {
+                            $groups = [
+                                $externalConfig['group'],
+                            ];
+                        } else {
+                            $groups = [];
+                        }
                         $externalTables[$priority][] = [
                             'table' => $tableName,
                             'index' => $index,
-                            'group' => $externalConfig['group'] ?? '-',
+                            'groups' => $groups,
                         ];
                     }
                 }
@@ -146,19 +156,34 @@ class ConfigurationRepository
     }
 
     /**
-     * Finds all synchronizable configurations belonging to the given group and returns them ordered by priority.
+     * Finds all configurations belonging to the given group and returns them ordered by priority,
+     * possibly filtered by synchronization status.
      *
      * @param string $group Name of the group to look up
+     * @param bool $synchronizable TRUE to get only groups from synchronizable configurations
+     * @param bool $nonSynchronizable TRUE to get only groups from non-synchronizable configurations
      * @return array
      */
-    public function findByGroup(string $group): array
+    public function findByGroup(string $group, bool $synchronizable, bool $nonSynchronizable = false): array
     {
         $externalTables = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 foreach ($generalConfiguration as $index => $externalConfig) {
-                    if (!empty($externalConfig['connector']) && array_key_exists('group', $externalConfig) && $externalConfig['group'] === $group) {
+                    // Skip the configurations we don't want, if either flag has been set
+                    if (
+                        ($synchronizable && empty($externalConfig['connector'])) ||
+                        ($nonSynchronizable && !empty($externalConfig['connector']))
+                    ) {
+                        continue;
+                    }
+                    // TODO: drop support for "group" property in the next major version
+                    $configuredGroups = $externalConfig['groups'] ?? [];
+                    if (
+                        (array_key_exists('group', $externalConfig) && $externalConfig['group'] === $group) ||
+                        (is_array($configuredGroups) && in_array($group, $configuredGroups, true))
+                    ) {
                         // Default priority if not defined, set to very low
                         $priority = $externalConfig['priority'] ?? Importer::DEFAULT_PRIORITY;
                         if (!isset($externalTables[$priority])) {
@@ -179,19 +204,35 @@ class ConfigurationRepository
     }
 
     /**
-     * Returns all configuration groups.
+     * Returns all configuration groups, possibly filtered by synchronization status.
      *
+     * @param bool $synchronizable TRUE to get only groups from synchronizable configurations
+     * @param bool $nonSynchronizable TRUE to get only groups from non-synchronizable configurations
      * @return array
      */
-    public function findAllGroups(): array
+    public function findAllGroups(bool $synchronizable = false, bool $nonSynchronizable = false): array
     {
         $groups = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 foreach ($generalConfiguration as $index => $externalConfig) {
-                    if (!empty($externalConfig['connector']) && !empty($externalConfig['group'])) {
+                    // Skip the configurations we don't want, if either flag has been set
+                    if (
+                        ($synchronizable && empty($externalConfig['connector'])) ||
+                        ($nonSynchronizable && !empty($externalConfig['connector']))
+                    ) {
+                        continue;
+                    }
+                    // TODO: remove support for "group" property in the next major version
+                    if (!empty($externalConfig['group'])) {
                         $groups[] = $externalConfig['group'];
+                    }
+                    $configuredGroups = $externalConfig['groups'] ?? [];
+                    if (is_array($configuredGroups) && count($configuredGroups) > 0) {
+                        foreach ($configuredGroups as $group) {
+                            $groups[] = $group;
+                        }
                     }
                 }
             }
@@ -283,18 +324,31 @@ class ConfigurationRepository
                         } else {
                             $tableTitle = $sections['ctrl']['title'] ?? 'untitled';
                         }
+                        // TODO: drop support for old "group" property in the next major version; for now automatically convert it
+                        if (array_key_exists('group', $externalConfiguration)) {
+                            $externalConfiguration['groups'] = [
+                                $externalConfiguration['group'],
+                            ];
+                        } else {
+                            $externalConfiguration['groups'] = $externalConfiguration['groups'] ?? [];
+                        }
                         // Store the base configuration
                         $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                         $configurationKey->setTableAndIndex($tableName, (string)$index);
                         $taskId = $configurationKey->getConfigurationKey();
-                        $groupKey = ($externalConfiguration['group'] ?? false) ? 'group:' . $externalConfiguration['group'] : '';
+                        $groupKeys = [];
+                        if (count($externalConfiguration['groups']) > 0) {
+                            foreach ($externalConfiguration['groups'] as $group) {
+                                $groupKeys[] = 'group:' . $group;
+                            }
+                        }
                         $tableConfiguration = [
                             'id' => $taskId,
                             'table' => $tableName,
                             'tableName' => $tableTitle,
                             'index' => $index,
                             'priority' => $priority,
-                            'group' => $externalConfiguration['group'] ?? '',
+                            'groups' => $externalConfiguration['groups'],
                             'description' => htmlspecialchars($description),
                             'writeAccess' => $hasWriteAccess,
                         ];
@@ -305,9 +359,13 @@ class ConfigurationRepository
                             $tableConfiguration['automated'] = 1;
                             $tableConfiguration['task'] = $tasks[$taskId];
                             $tableConfiguration['groupTask'] = 0;
-                        } elseif (array_key_exists($groupKey, $tasks)) {
+                        } elseif (count(array_intersect($groupKeys, array_keys($tasks))) > 0) {
+                            // There could be multiple tasks. We consider only the first one.
+                            // This is not fully satisfying, but the same could actually happen in the previous case too,
+                            // as a configuration could be synchronized several times (probably mistakenly, but you never know...)
+                            $foundTasks = array_intersect($groupKeys, array_keys($tasks));
                             $tableConfiguration['automated'] = 1;
-                            $tableConfiguration['task'] = $tasks[$groupKey];
+                            $tableConfiguration['task'] = $tasks[array_shift($foundTasks)];
                             $tableConfiguration['groupTask'] = 1;
                         } else {
                             $tableConfiguration['automated'] = 0;

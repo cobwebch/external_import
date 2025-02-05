@@ -82,7 +82,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
 
         // Add groups selection
-        $groups = $configurationRepository->findAllGroups();
+        $groups = $configurationRepository->findAllGroups(true);
         if (count($groups) > 0) {
             $fieldCode .= '<optgroup label="' .
                 $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.groups') .

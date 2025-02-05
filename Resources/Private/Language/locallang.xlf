@@ -78,6 +78,9 @@
 			<trans-unit id="group" xml:space="preserve">
 				<source>Group</source>
 			</trans-unit>
+			<trans-unit id="groups" xml:space="preserve">
+				<source>Group(s)</source>
+			</trans-unit>
 			<trans-unit id="data_type" xml:space="preserve">
 				<source>Data type</source>
 			</trans-unit>

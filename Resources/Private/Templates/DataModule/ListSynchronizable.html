@@ -1,5 +1,6 @@
 <html data-namespace-typo3-fluid="true"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers"
 	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
 
 <f:layout name="Module" />
@@ -49,7 +50,7 @@
 							<f:translate id="priority" />
 						</th>
 						<th class="column-group">
-							<f:translate id="group" />
+							<f:translate id="groups" />
 						</th>
 						<th class="column-actions">&nbsp;</th>
 						<th class="column-autosync">
@@ -68,9 +69,9 @@
 							<td>[{configuration.index}] {configuration.description}</td>
 							<td>{configuration.priority}</td>
 							<td>
-								<f:if condition="{configuration.group}">
+								<f:if condition="{configuration.groups}">
 									<f:then>
-										<f:translate id="{configuration.group}" default="{configuration.group}" />
+										<ex:implode array="{configuration.groups}"/>
 									</f:then>
 									<f:else>-</f:else>
 								</f:if>

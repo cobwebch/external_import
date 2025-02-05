@@ -87,6 +87,10 @@ class GeneralConfigurationValidator
             $generalConfiguration['customSteps'] ?? null,
             $generalConfiguration
         );
+        $this->validateGroupsProperty(
+            $generalConfiguration['groups'] ?? null,
+            $generalConfiguration['group'] ?? null,
+        );
 
         // Validate properties for pull-only configurations
         if (!empty($connector)) {
@@ -441,6 +445,32 @@ class GeneralConfigurationValidator
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * Validate the "groups" property.
+     * Send deprecation notice about the old "group" property, until it is dropped
+     *
+     * @param array|null $property The "groups" property
+     * @param string|null $oldProperty The "group" property
+     */
+    public function validateGroupsProperty(?array $property = null, ?string $oldProperty = null): void
+    {
+        // TODO: drop checking deprecated "group" property in the next major version
+        if (!empty($oldProperty)) {
+            $this->results->add(
+                'groups',
+                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedGroupProperty'),
+                ContextualFeedbackSeverity::NOTICE
+            );
+        }
+        if ($property !== null && !is_array($property)) {
+            $this->results->add(
+                'groups',
+                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidGroupsProperty'),
+                ContextualFeedbackSeverity::ERROR
+            );
         }
     }
 

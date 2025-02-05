@@ -13,6 +13,76 @@ Upgrading instructions for older versions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _appendix-old-upgrades-630:
+.. _installation-upgrade-630:
+
+Upgrade to 6.3.0
+""""""""""""""""
+
+External Import now supports Connector services registered with new system introduced with
+extension "svconnector" version 5.0.0, while staying compatible with the older versions.
+
+Another small new feature is the possibility to define a storage pid for the imported data
+on the :ref:`command line <user-command>` or when creating a :ref:`Scheduler task <user-scheduler>`,
+which overrides storage information that might be found in the TCA or in the extension configuration.
+
+
+.. _appendix-old-upgrades-620:
+.. _installation-upgrade-620:
+
+Upgrade to 6.2.0
+""""""""""""""""
+
+The :ref:`Substructure Preprocess event <developer-events-substructure-preprocess>`
+is now fired for both array-type and XML-type data (previously, only for array-type data).
+To know which type of data is being handled, a new :code:`getDataType()` method is available.
+The type of structure that must be returned after modfication (by calling :code:`setStructure()`
+must be either an array or a :code:`\DomNodeList`, as opposed to just an array in older versions.
+Existing event listeners may need to be adapted.
+
+
+.. _appendix-old-upgrades-610:
+.. _installation-upgrade-610:
+
+Upgrade to 6.1.0
+""""""""""""""""
+
+Records which have no external key set (the value referenced by the
+:ref:`referenceUid <administration-general-tca-properties-reference-uid>` property)
+are now skipped in the import. Indeed it makes no sense to import records without
+such keys, as they can never be updated and - if several are created in a single
+import run - they will override each other. Still it is a change of behaviour and
+should be noted.
+
+
+.. _appendix-old-upgrades-600:
+.. _installation-upgrade-600:
+
+Upgrade to 6.0.0
+""""""""""""""""
+
+All properties that were deprecated in version 5.0.0 were removed and the
+backwards-compatibility layer was dropped. Please refer to the
+:ref:`5.0.0 upgrade instructions <installation-upgrade-500>` and check if you have applied
+all changes.
+
+All hooks were marked as deprecated. They will be removed in version 7.0.0.
+You should migrate your code to use either :ref:`custom process steps <developer-steps>`
+or the newly introduced :ref:`PSR-14 events <developer-events>`.
+See the :ref:`hooks chapter <developer-hooks>` for information about how to migrate
+each hook.
+
+External Import is now configured for using the standard (Symfony)
+dependency injection mechanism. This means it is not necessary to instantiate the
+:php:`\Cobweb\ExternalImport\Importer` class using Extbase's
+:php:`\TYPO3\CMS\Extbase\Object\ObjectManager` anymore when using the Importer
+as an API.
+
+The PHP code was cleaned up as much as possible and strict typing was declared
+in every class file. This may break your custom code if you were calling public methods
+without properly casting arguments.
+
+
 .. _appendix-old-upgrades-500:
 .. _installation-upgrade-500:
 

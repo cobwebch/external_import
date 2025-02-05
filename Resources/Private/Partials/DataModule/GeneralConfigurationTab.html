@@ -35,15 +35,18 @@
 					</tr>
 				</f:if>
 				<tr>
-					<td><f:translate id="group" /></td>
+					<td><f:translate id="groups" /></td>
 					<td>
-						<f:if condition="{generalConfiguration.group}">
+						<f:if condition="{generalConfiguration.groups}">
 							<f:then>
-								<f:translate id="{generalConfiguration.group}" default="{generalConfiguration.group}" />
+								<ex:implode array="{generalConfiguration.groups}"/>
 							</f:then>
 							<f:else>
 								<f:translate id="none" />
 							</f:else>
+						</f:if>
+						<f:if condition="{results.groups}">
+							<ex:displayValidationResult result="{results.groups}" />
 						</f:if>
 					</td>
 				</tr>

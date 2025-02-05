@@ -72,7 +72,7 @@ class AutomatedSyncTask extends AbstractTask
                 $configurations = $importer->getConfigurationRepository()->findOrderedConfigurations();
             } else {
                 $group = substr($this->table, 6);
-                $configurations = $importer->getConfigurationRepository()->findByGroup($group);
+                $configurations = $importer->getConfigurationRepository()->findByGroup($group, true);
             }
             // Exit early if no configuration was found
             if (count($configurations) === 0) {
