@@ -23,6 +23,8 @@ use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\ItemRepository;
 use Cobweb\ExternalImport\Event\GetExternalKeyEvent;
 use Cobweb\ExternalImport\Exception\InvalidConfigurationException;
+use Cobweb\ExternalImport\Exception\InvalidPayloadException;
+use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Exception\ReactionFailedException;
 use Cobweb\ExternalImport\Validator\GeneralConfigurationValidator;
 use Psr\Http\Message\ResponseInterface;
@@ -76,6 +78,56 @@ class DeleteReaction extends AbstractReaction implements ReactionInterface
                 400
             );
         }
+    }
+
+    /**
+     * Validates that the payload contains the proper structure for the External Import reaction
+     * and that the configuration exists.
+     */
+    protected function validatePayloadAndConfigurationKey(array $payload, string $configurationKey): ConfigurationKey
+    {
+        if (!isset($payload['data'])) {
+            throw new InvalidPayloadException(
+                'The payload does not contain any data to be deleted',
+                1740406649
+            );
+        }
+
+        if ($configurationKey === '') {
+            if (!isset($payload['table'], $payload['index'])) {
+                throw new InvalidPayloadException(
+                    'The payload must contain both a "table" and an "index" information',
+                    1681482506
+                );
+            }
+
+            $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
+
+            try {
+                $configurationRepository->findByTableAndIndex($payload['table'], $payload['index']);
+            } catch (NoConfigurationException $e) {
+                throw new InvalidPayloadException(
+                    'The "table" and "index" information given in the payload does not match an existing configuration',
+                    1681482838,
+                    $e
+                );
+            }
+
+            $configurationKeyObject = GeneralUtility::makeInstance(ConfigurationKey::class);
+            $configurationKeyObject->setTableAndIndex($payload['table'], (string)$payload['index']);
+        } else {
+            if (isset($payload['table'], $payload['index'])) {
+                throw new InvalidPayloadException(
+                    'The payload must not contain a "table" and an "index" information',
+                    1726559649
+                );
+            }
+
+            $configurationKeyObject = GeneralUtility::makeInstance(ConfigurationKey::class);
+            $configurationKeyObject->setConfigurationKey($configurationKey);
+        }
+
+        return $configurationKeyObject;
     }
 
     /**

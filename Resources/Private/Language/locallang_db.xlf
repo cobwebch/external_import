@@ -39,6 +39,9 @@
 			<trans-unit id="sys_reaction.external_import_configuration.description" xml:space="preserve">
 				<source>Choose a configuration to restrict this reaction to handling only this particular configuration. Leave empty to allow all configurations to be handled by the reaction.</source>
 			</trans-unit>
+			<trans-unit id="sys_reaction.external_import_configuration.groups" xml:space="preserve">
+				<source>Groups</source>
+			</trans-unit>
 			<trans-unit id="sys_reaction.external_import_configuration.synchronizable_tables" xml:space="preserve">
 				<source>Synchronizable tables</source>
 			</trans-unit>

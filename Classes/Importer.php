@@ -229,7 +229,7 @@ class Importer implements LoggerAwareInterface
      * @param mixed $index Index of the synchronisation configuration to use
      * @return array List of error or success messages
      */
-    public function synchronize(string $table, $index): array
+    public function synchronize(string $table, mixed $index): array
     {
         // Initialize message array
         $this->resetMessages();
@@ -283,7 +283,7 @@ class Importer implements LoggerAwareInterface
      * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
      * @return array List of error or success messages
      */
-    public function import(string $table, $index, $rawData): array
+    public function import(string $table, mixed $index, mixed $rawData): array
     {
         // Initialize message array
         $this->resetMessages();

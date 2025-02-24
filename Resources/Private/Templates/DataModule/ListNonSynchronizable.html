@@ -1,5 +1,6 @@
 <html data-namespace-typo3-fluid="true"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:ex="http://typo3.org/ns/Cobweb/ExternalImport/ViewHelpers"
 	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
 
 <f:layout name="Module" />
@@ -21,6 +22,9 @@
 						<th class="column-description">
 							<f:translate id="description" />
 						</th>
+						<th class="column-group">
+							<f:translate id="groups" />
+						</th>
 						<th class="column-actions">&nbsp;</th>
 					</tr>
 				</thead>
@@ -32,6 +36,14 @@
 							</td>
 							<td>{configuration.tableName} ({configuration.table})</td>
 							<td>[{configuration.index}] {configuration.description}</td>
+							<td>
+								<f:if condition="{configuration.groups}">
+									<f:then>
+										<ex:implode array="{configuration.groups}"/>
+									</f:then>
+									<f:else>-</f:else>
+								</f:if>
+							</td>
 							<td>
 								<div class="btn-group">
 									<f:link.action action="viewConfiguration" arguments="{table: configuration.table, index: configuration.index}" title="{f:translate(key: 'view_details')}" class="btn btn-default">

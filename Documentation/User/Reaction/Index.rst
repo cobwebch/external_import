@@ -81,6 +81,13 @@ table
 index
   The index of the targeted External Import configuration (not necessary when a configuration is explicitly defined).
 
+group
+  Instead of defining a table and an index, it is also possible to define a group. In such a case,
+  all configurations from the corresponding :ref:`group <administration-general-tca-properties-group>`
+  will be executed in order of increasing priority. This is used only for the "Import external data" reaction.
+  It is incompatible with a table and index definition. Defining both will trigger an error.
+  It is not necessary when a group has been explicitly defined.
+
 data
   The data to handle.
 

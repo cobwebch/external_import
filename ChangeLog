@@ -1,3 +1,7 @@
+2025-02-24 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Allow import reaction to target configuration group, resolves #367
+
 2025-02-05 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Make it possible to put configuration into several groups, resolves #366

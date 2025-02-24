@@ -32,7 +32,8 @@ Configurations can now be part of several groups. As such, the "group" property 
 and is replaced with the :ref:`groups <administration-general-tca-properties-groups>` property
 (with an array value rather than string).
 
-System extension "reactions" is now a requirement.
+System extension "reactions" is now a requirement. The "Import external data" reaction
+can now target a :ref:`group of configurations <administration-general-tca-properties-group>`.
 
 
 .. _installation-upgrade-730:

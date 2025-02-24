@@ -164,7 +164,7 @@ class ConfigurationRepository
      * @param bool $nonSynchronizable TRUE to get only groups from non-synchronizable configurations
      * @return array
      */
-    public function findByGroup(string $group, bool $synchronizable, bool $nonSynchronizable = false): array
+    public function findByGroup(string $group, bool $synchronizable = false, bool $nonSynchronizable = false): array
     {
         $externalTables = [];
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
