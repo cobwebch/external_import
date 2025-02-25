@@ -159,7 +159,7 @@ class ConfigurationRepositoryTest extends FunctionalTestCaseWithDatabaseTools
             ],
             'sync is false' => [
                 'sync' => false,
-                'expectedCount' => 1,
+                'expectedCount' => 2,
             ],
         ];
     }
