@@ -7,9 +7,12 @@ Child records configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The "children" property is used to create nested structures, generally
-MM tables where additional information needs to be stored. This will
-correspond to :ref:`inline-type ("IRRE") fields <t3tca:columns-inline>`
-with MM tables having a primary key field ("uid").
+MM tables where additional information needs to be stored.
+
+.. note::
+
+   This corresponds to :ref:`inline-type ("IRRE") fields <t3tca:columns-inline>`
+   with MM tables having a primary key field ("uid").
 
 See the :ref:`Mapping data <user-mapping-data>` chapter for an overview of import
 scenarios which may help understand this feature.
