@@ -51,42 +51,43 @@ class ExternalImportDataModule {
 	 */
 	buildTableForSynchronizableList() {
 		let columns = [
-			// Icon
 			{
+				name: 'icon',
 				targets: 'column-icon',
 				orderable: false
 			},
-			// Table
 			{
+				name: 'table',
 				targets: 'column-table',
 				orderable: true
 			},
-			// Description
 			{
+				name: 'description',
 				targets: 'column-description',
 				orderable: true
 			},
-			// Priority
 			{
+				name: 'priority',
 				targets: 'column-priority',
 				orderable: true
 			},
-			// Group
 			{
+				name: 'group',
 				targets: 'column-group',
 				orderable: true
 			},
-			// Action icons
 			{
+				name: 'actions',
 				targets: 'column-actions',
 				orderable: false
 			},
-			// Scheduler information and actions
 			{
+				name: 'scheduler-information',
 				targets: 'column-autosync',
 				orderable: true
 			},
 			{
+				name: 'scheduler-actions',
 				targets: 'column-autosync-actions',
 				orderable: false
 			}
@@ -103,9 +104,13 @@ class ExternalImportDataModule {
 			info: false,
 			paging: false,
 			ordering: true,
+			order: {
+				name: 'priority',
+				dir: 'asc'
+			},
 			columnDefs: columns
 		});
-		this.table.order([3, 'asc']).draw();
+		this.table.draw();
 		this.initializeSearchField();
 	}
 

@@ -61,9 +61,10 @@ class ExternalImportLogModule {
 				bottomEnd: null
 			},
 			// Default ordering is "date" column
-			order: [
-				[1, 'desc']
-			],
+			order: {
+				name: 'crdate',
+				dir: 'desc'
+			},
 			// NOTE: the "name" attribute is used to define column names that match Extbase naming conventions
 			// when column data is passed in the AJAX request and used server-side
 			// (see \Cobweb\ExternalImport\Domain\Repository\LogRepository)
