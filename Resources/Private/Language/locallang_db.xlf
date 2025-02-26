@@ -14,6 +14,9 @@
 			<trans-unit id="tx_externalimport_domain_model_log.cruser_id" xml:space="preserve">
 				<source>User</source>
 			</trans-unit>
+			<trans-unit id="tx_externalimport_domain_model_log.username" xml:space="preserve">
+				<source>User</source>
+			</trans-unit>
 			<trans-unit id="tx_externalimport_domain_model_log.configuration" xml:space="preserve">
 				<source>Configuration</source>
 			</trans-unit>

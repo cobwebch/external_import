@@ -90,14 +90,21 @@ class ReportingUtility implements LoggerAwareInterface
             $pid = (int)$this->extensionConfiguration['logStorage'];
 
             try {
-                $currentUser = $this->context->getPropertyFromAspect('backend.user', 'id');
+                $currentUserId = $this->context->getPropertyFromAspect('backend.user', 'id');
+                $currentUserName = $this->context->getPropertyFromAspect('backend.user', 'username');
                 // On the command-line, the context does not contain the backend user
                 // Get it directly from the global variable
-                if (empty($currentUser)) {
-                    $currentUser = $GLOBALS['BE_USER']->user['uid'];
+                if (empty($currentUserId)) {
+                    $currentUserId = $GLOBALS['BE_USER']->user['uid'];
+                    $currentUserName = $GLOBALS['BE_USER']->user['username'];
                 }
+                $currentUser = sprintf(
+                    '%s (%s)',
+                    $currentUserName,
+                    (int)$currentUserId
+                );
             } catch (AspectNotFoundException $e) {
-                $currentUser = null;
+                $currentUser = '';
             }
             foreach ($messages as $status => $messageList) {
                 foreach ($messageList as $message) {
@@ -108,14 +115,12 @@ class ReportingUtility implements LoggerAwareInterface
                         'pid' => $pid,
                         'status' => $status,
                         'crdate' => $now,
+                        'username' => $currentUser,
                         'configuration' => $configuration,
                         'context' => $importContext,
                         'message' => $message,
                         'duration'  => $this->importer->getEndTime() - $this->importer->getStartTime(),
                     ];
-                    if ($currentUser !== null) {
-                        $data['cruser_id'] = $currentUser;
-                    }
                     try {
                         $this->logRepository->insert($data);
                     } catch (\Exception $e) {

@@ -1,6 +1,6 @@
 tx_externalimport_domain_model_log,,,,,,,,
-,uid,pid,crdate,cruser_id,status,configuration,context,message
-,1,0,1529489282,1,0,tx_foo / import foos,cli,1 new record(s) inserted
-,2,0,1529589282,1,0,tx_foo / import foos,manual,2 new record(s) inserted
-,3,0,1529689282,1,0,tx_foo / import foos,cli,3 new record(s) inserted
-,4,0,1529789282,1,0,tx_foo / import foos,cli,4 new record(s) inserted
+,uid,pid,crdate,username,status,configuration,context,message
+,1,0,1529489282,_cli_,0,tx_foo / import foos,cli,1 new record(s) inserted
+,2,0,1529589282,_cli_,0,tx_foo / import foos,manual,2 new record(s) inserted
+,3,0,1529689282,_cli_,0,tx_foo / import foos,cli,3 new record(s) inserted
+,4,0,1529789282,_cli_,0,tx_foo / import foos,cli,4 new record(s) inserted

@@ -32,16 +32,12 @@ return [
                 'size' => 20,
             ],
         ],
-        'cruser_id' => [
+        'username' => [
             'exclude' => 0,
-            'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.cruser_id',
+            'label' => 'LLL:EXT:external_import/Resources/Private/Language/locallang_db.xlf:tx_externalimport_domain_model_log.username',
             'config' => [
                 'readOnly' => true,
-                'type' => 'select',
-                'renderType' => 'selectSingle',
-                'size' => 1,
-                'foreign_table' => 'be_users',
-                'maxitems' => 1,
+                'type' => 'input',
             ],
         ],
         'configuration' => [
@@ -82,7 +78,7 @@ return [
     ],
     'types' => [
         '0' => [
-            'showitem' => 'status, crdate, cruser_id, configuration, context, message, duration',
+            'showitem' => 'status, crdate, username, configuration, context, message, duration',
         ],
     ],
 ];

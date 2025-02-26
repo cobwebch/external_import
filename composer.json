@@ -28,6 +28,7 @@
 		"typo3/cms-extbase": "*",
 		"typo3/cms-scheduler": "^12.4 || ^13.4",
 		"typo3/cms-reactions": "^12.4 || ^13.4",
+		"typo3/cms-install": "^12.4 || ^13.4",
 		"typo3/coding-standards": "*",
 		"cobweb/svconnector": "^6.0"
 	},

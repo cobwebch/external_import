@@ -98,7 +98,7 @@ class ExternalImportLogModule {
 				{
 					targets: 'log-username',
 					data: 'username',
-					name: 'cruser_id'
+					name: 'username'
 				},
 				{
 					targets: 'log-configuration',

@@ -58,12 +58,11 @@ class LogAjaxController
             $logEntries = $logRepository->findBySearch($queryParameters);
             // The log count encompasses all matching entries, ignoring the limit
             $logCount = $logRepository->countBySearch($queryParameters);
-            /** @var \Cobweb\ExternalImport\Domain\Model\Log $logEntry */
             foreach ($logEntries as $logEntry) {
                 $logs[] = [
                     'status' => $logEntry['status'],
                     'crdate' => $logEntry['crdate'],
-                    'username' => (string)$logEntry['cruser_id'] . ' TODO: retrieve user name',
+                    'username' => $logEntry['username'],
                     'configuration' => $logEntry['configuration'],
                     'context' => $logEntry['context'],
                     'message' => $logEntry['message'],

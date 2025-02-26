@@ -35,6 +35,15 @@ and is replaced with the :ref:`groups <administration-general-tca-properties-gro
 System extension "reactions" is now a requirement. The "Import external data" reaction
 can now target a :ref:`group of configurations <administration-general-tca-properties-group>`.
 
+The logging mechanism has been changed to store the backend user's name rather than its id.
+This makes it much easier for the Log module and keeps working even if a user is removed.
+An update wizard is available for updating existing log records.
+
+.. warning::
+
+   Don't drop the "cruser_id" field before running the update wizard, or it won't be able
+   to do its job.
+
 
 .. _installation-upgrade-730:
 
