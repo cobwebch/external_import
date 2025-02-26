@@ -4,6 +4,7 @@
     * Restore visual cue for ordering, resolves #364
     * Suggest usage of coalesce operator in isEmpty property, resolves #357
     * Highlight relation between children property and IRRE-type fields, resolves #335
+    * Consider relation-type fields with no minimum items to be nullable, resolves #337
 
 2025-02-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 

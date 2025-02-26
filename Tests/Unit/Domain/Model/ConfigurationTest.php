@@ -123,6 +123,154 @@ class ConfigurationTest extends UnitTestCase
         );
     }
 
+    public static function isNullableProvider(): array
+    {
+        return [
+            'input field - simple' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'input',
+                ],
+                'nullable' => false,
+            ],
+            'input field - nullable' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'input',
+                    'nullable' => true,
+                ],
+                'nullable' => true,
+            ],
+            'input field - null eval' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'input',
+                    'eval' => 'trim, null',
+                ],
+                'nullable' => true,
+            ],
+            'text field - simple' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'text',
+                ],
+                'nullable' => false,
+            ],
+            'text field - nullable' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'text',
+                    'nullable' => true,
+                ],
+                'nullable' => true,
+            ],
+            'text field - null eval' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'text',
+                    'eval' => 'trim, null',
+                ],
+                'nullable' => true,
+            ],
+            'email field - simple' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'email',
+                ],
+                'nullable' => false,
+            ],
+            'email field - nullable' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'email',
+                    'nullable' => true,
+                ],
+                'nullable' => true,
+            ],
+            'select field - no minitems' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'select',
+                ],
+                'nullable' => true,
+            ],
+            'select field - minitems = 0' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'select',
+                    'minitems' => 0,
+                ],
+                'nullable' => true,
+            ],
+            'select field - minitems = 1' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'select',
+                    'minitems' => 1,
+                ],
+                'nullable' => false,
+            ],
+            'group field - no minitems' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'group',
+                ],
+                'nullable' => true,
+            ],
+            'group field - minitems = 0' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'group',
+                    'minitems' => 0,
+                ],
+                'nullable' => true,
+            ],
+            'group field - minitems = 1' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'group',
+                    'minitems' => 1,
+                ],
+                'nullable' => false,
+            ],
+            'inline field - no minitems' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'inline',
+                ],
+                'nullable' => true,
+            ],
+            'inline field - minitems = 0' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'inline',
+                    'minitems' => 0,
+                ],
+                'nullable' => true,
+            ],
+            'inline field - minitems = 1' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'inline',
+                    'minitems' => 1,
+                ],
+                'nullable' => false,
+            ],
+            'file field - no minitems' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'file',
+                ],
+                'nullable' => true,
+            ],
+            'file field - minitems = 0' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'file',
+                    'minitems' => 0,
+                ],
+                'nullable' => true,
+            ],
+            'file field - minitems = 1' => [
+                'tcaColumnConfiguration' => [
+                    'type' => 'file',
+                    'minitems' => 1,
+                ],
+                'nullable' => false,
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('isNullableProvider')]
+    public function isNullableReturnsBooleanFlag(array $tcaColumnConfiguration, bool $nullable): void
+    {
+        self::assertSame(
+            $nullable,
+            $this->subject->isNullable($tcaColumnConfiguration)
+        );
+    }
+
     #[Test]
     public function getParametersForStepInitiallyReturnsEmptyArray(): void
     {

@@ -44,6 +44,13 @@ An update wizard is available for updating existing log records.
    Don't drop the "cruser_id" field before running the update wizard, or it won't be able
    to do its job.
 
+In version 7.2.0, a change was introduced to preserve :code:`null` values from the imported data.
+It affected only fields with :code:`'eval' => 'null'` in their TCA. Since version 8.0.0,
+:code:`null` are preserved also for relation-type fields ("group", "select", "inline"
+and "file") which have no :code:`minitems` property or :code:`'minitems' => 0`. This makes
+it effectively possible to remove existing relations. This is an important change of behavior,
+which - although more correct - may have unexpected effects on your date.
+
 
 .. _installation-upgrade-730:
 

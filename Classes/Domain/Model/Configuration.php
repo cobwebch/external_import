@@ -113,7 +113,8 @@ class Configuration
                 }
             }
             // Check for nullable property
-            if ($this->isNullable($columnName)) {
+            $columnTca = $GLOBALS['TCA'][$this->table]['columns'][$columnName]['config'] ?? [];
+            if ($this->isNullable($columnTca)) {
                 $this->processedConfiguration->addNullableColumn($columnName);
             }
             // Process children configurations
@@ -519,20 +520,26 @@ class Configuration
     /**
      * Check in the TCA if the column definition indicates that a NULL value can be accepted
      * as a valid value to store in the database
-     *
-     * @param string $name
-     * @return bool
      */
-    protected function isNullable(string $name): bool
+    public function isNullable(array $columnTca): bool
     {
         $nullable = false;
-        $columnTca = $GLOBALS['TCA'][$this->table]['columns'][$name]['config'] ?? [];
         // Check for explicit nullable property (TYPO3 12+)
         if (array_key_exists('nullable', $columnTca)) {
             $nullable = (bool)$columnTca['nullable'];
+
             // If not defined, try for "null" evaluation (TYPO3 11)
+            // TODO: remove after support for v12 is dropped (it is still accepted, but deprecated)
         } elseif (array_key_exists('eval', $columnTca)) {
-            $nullable = GeneralUtility::inList($columnTca['eval'], 'null');
+            $evaluations = GeneralUtility::trimExplode(',', $columnTca['eval'], true);
+            $nullable = in_array('null', $evaluations, true);
+
+            // A relation-type column with minitems missing or equals 0 is also considered nullable
+        } elseif (
+            in_array($columnTca['type'] ?? '', ['select', 'group', 'inline', 'file'], true) &&
+            (!array_key_exists('minitems', $columnTca) || $columnTca['minitems'] === 0)
+        ) {
+            $nullable = true;
         }
         return $nullable;
     }
