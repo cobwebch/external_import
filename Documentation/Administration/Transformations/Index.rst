@@ -313,3 +313,8 @@ Description
      all values will be considered empty.
 
      Such events are logged (at notice-level).
+
+     This does not happen anymore with :code:`symfony/expression-language` 7.2 or above. Also,
+     with :code:`symfony/expression-language` 6.x or above, it is possible to use the
+     `coalesce operator <https://symfony.com/doc/current/reference/formats/expression_language.html#null-coalescing-operator>`_,
+     which will prevent the above-mentioned error.

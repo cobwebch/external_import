@@ -2,6 +2,7 @@
 
     * Store user name rather than uid in log records, resolves #363
     * Restore visual cue for ordering, resolves #364
+    * Suggest usage of coalesce operator in isEmpty property, resolves #357
 
 2025-02-24 Francois Suter (Idéative)  <typo3@ideative.ch>
 

@@ -308,6 +308,7 @@ class TransformDataStep extends AbstractStep
                     // because the main source of exceptions is when a value used in the expression is not present (hence "empty").
                     // An exception could also happen because the expression's syntax is invalid. Unfortunately the Expression Language
                     // does not distinguish between the two scenarios. The event is logged for further inspection.
+                    // TODO: this does not happen anymore with symfony/expression-language >= 7.2. Drop code once secure that TYPO3 Core relies on that version or above.
                 } catch (\Exception $e) {
                     $isEmpty = true;
                     $this->importer->debug(
