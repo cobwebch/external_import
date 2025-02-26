@@ -9,14 +9,9 @@
 	border: 1px solid #ffffff;
 	vertical-align: top;
 }
-.sorting,
-.sorting_asc,
-.sorting_desc {
-	cursor: pointer;
-}
-.table > thead > tr th.sorting_asc,
-.table > thead > tr th.sorting_desc {
-	background-color: #c9c9c9;
+.table > thead > tr th.dt-ordering-asc,
+.table > thead > tr th.dt-ordering-desc {
+	background-color: #eaeaea;
 }
 
 .typo3-TCEforms .tab-pane {
