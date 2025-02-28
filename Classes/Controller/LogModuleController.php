@@ -82,8 +82,7 @@ class LogModuleController extends ActionController
     {
         $this->loadResources();
 
-        $this->moduleTemplate->setContent($this->view->render());
-        return $this->htmlResponse($this->moduleTemplate->renderContent());
+        return $this->moduleTemplate->renderResponse('LogModule/List');
     }
 
     /**
