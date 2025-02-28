@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
+use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -55,7 +56,7 @@ class ConfigurationRepository
      * @param string $table Name of the table
      * @param string|int $index Key of the configuration
      * @return array The relevant TCA configuration
-     * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
+     * @throws NoConfigurationException
      */
     public function findByTableAndIndex(string $table, $index): array
     {
@@ -67,11 +68,22 @@ class ConfigurationRepository
 
         // General configuration
         if (isset($GLOBALS['TCA'][$table]['external']['general'][$index])) {
+            // Ignore disabled configuration
+            if ($GLOBALS['TCA'][$table]['external']['general'][$index]['disabled'] ?? false) {
+                throw new NoConfigurationException(
+                    sprintf(
+                        'Configuration for table %s and index %s is disabled',
+                        $table,
+                        $index
+                    ),
+                    1740733452
+                );
+            }
             $configuration['general'] = $this->processGeneralConfiguration(
                 $GLOBALS['TCA'][$table]['external']['general'][$index]
             );
         } else {
-            throw new \Cobweb\ExternalImport\Exception\NoConfigurationException(
+            throw new NoConfigurationException(
                 sprintf(
                     'No configuration found for table %s and index %s',
                     $table,
@@ -117,19 +129,23 @@ class ConfigurationRepository
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
-                foreach ($generalConfiguration as $index => $externalConfig) {
-                    if (!empty($externalConfig['connector'])) {
+                foreach ($generalConfiguration as $index => $externalConfiguration) {
+                    // Skip disabled configurations
+                    if ($externalConfiguration['disabled'] ?? false) {
+                        continue;
+                    }
+                    if (!empty($externalConfiguration['connector'])) {
                         // Default priority if not defined, set to very low
-                        $priority = $externalConfig['priority'] ?? Importer::DEFAULT_PRIORITY;
+                        $priority = $externalConfiguration['priority'] ?? Importer::DEFAULT_PRIORITY;
                         if (!isset($externalTables[$priority])) {
                             $externalTables[$priority] = [];
                         }
-                        if (is_array($externalConfig['groups'] ?? [])) {
-                            $groups = $externalConfig['groups'] ?? [];
+                        if (is_array($externalConfiguration['groups'] ?? [])) {
+                            $groups = $externalConfiguration['groups'] ?? [];
                             // TODO: drop support for the "group" property in the next major version
-                        } elseif (array_key_exists('group', $externalConfig)) {
+                        } elseif (array_key_exists('group', $externalConfiguration)) {
                             $groups = [
-                                $externalConfig['group'],
+                                $externalConfiguration['group'],
                             ];
                         } else {
                             $groups = [];
@@ -164,22 +180,26 @@ class ConfigurationRepository
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
-                foreach ($generalConfiguration as $index => $externalConfig) {
+                foreach ($generalConfiguration as $index => $externalConfiguration) {
+                    // Skip disabled configurations
+                    if ($externalConfiguration['disabled'] ?? false) {
+                        continue;
+                    }
                     // Skip the configurations we don't want, if either flag has been set
                     if (
-                        ($synchronizable && empty($externalConfig['connector'])) ||
-                        ($nonSynchronizable && !empty($externalConfig['connector']))
+                        ($synchronizable && empty($externalConfiguration['connector'])) ||
+                        ($nonSynchronizable && !empty($externalConfiguration['connector']))
                     ) {
                         continue;
                     }
                     // TODO: drop support for "group" property in the next major version
-                    $configuredGroups = $externalConfig['groups'] ?? [];
+                    $configuredGroups = $externalConfiguration['groups'] ?? [];
                     if (
-                        (array_key_exists('group', $externalConfig) && $externalConfig['group'] === $group) ||
+                        (array_key_exists('group', $externalConfiguration) && $externalConfiguration['group'] === $group) ||
                         (is_array($configuredGroups) && in_array($group, $configuredGroups, true))
                     ) {
                         // Default priority if not defined, set to very low
-                        $priority = $externalConfig['priority'] ?? Importer::DEFAULT_PRIORITY;
+                        $priority = $externalConfiguration['priority'] ?? Importer::DEFAULT_PRIORITY;
                         if (!isset($externalTables[$priority])) {
                             $externalTables[$priority] = [];
                         }
@@ -210,19 +230,23 @@ class ConfigurationRepository
         foreach ($GLOBALS['TCA'] as $tableName => $sections) {
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
-                foreach ($generalConfiguration as $index => $externalConfig) {
+                foreach ($generalConfiguration as $externalConfiguration) {
+                    // Skip disabled configurations
+                    if ($externalConfiguration['disabled'] ?? false) {
+                        continue;
+                    }
                     // Skip the configurations we don't want, if either flag has been set
                     if (
-                        ($synchronizable && empty($externalConfig['connector'])) ||
-                        ($nonSynchronizable && !empty($externalConfig['connector']))
+                        ($synchronizable && empty($externalConfiguration['connector'])) ||
+                        ($nonSynchronizable && !empty($externalConfiguration['connector']))
                     ) {
                         continue;
                     }
                     // TODO: remove support for "group" property in the next major version
-                    if (!empty($externalConfig['group'])) {
-                        $groups[] = $externalConfig['group'];
+                    if (!empty($externalConfiguration['group'])) {
+                        $groups[] = $externalConfiguration['group'];
                     }
-                    $configuredGroups = $externalConfig['groups'] ?? [];
+                    $configuredGroups = $externalConfiguration['groups'] ?? [];
                     if (is_array($configuredGroups) && count($configuredGroups) > 0) {
                         foreach ($configuredGroups as $group) {
                             $groups[] = $group;
@@ -243,7 +267,7 @@ class ConfigurationRepository
      * @param string|int $index Key of the configuration
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return Configuration
-     * @throws \Cobweb\ExternalImport\Exception\NoConfigurationException
+     * @throws NoConfigurationException
      */
     public function findConfigurationObject(string $table, $index, ?array $defaultSteps = null): Configuration
     {
@@ -293,6 +317,10 @@ class ConfigurationRepository
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 $hasWriteAccess = $backendUser->check('tables_modify', $tableName);
                 foreach ($generalConfiguration as $index => $externalConfiguration) {
+                    // Skip disabled configurations
+                    if ($externalConfiguration['disabled'] ?? false) {
+                        continue;
+                    }
                     // Synchronizable tables have a connector configuration
                     // Non-synchronizable tables don't
                     if (

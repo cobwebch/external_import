@@ -51,6 +51,9 @@ and "file") which have no :code:`minitems` property or :code:`'minitems' => 0`. 
 it effectively possible to remove existing relations. This is an important change of behavior,
 which - although more correct - may have unexpected effects on your date.
 
+A new :ref:`disabled flag <administration-general-tca-properties-disabled>` makes it possible
+to completely hide a configuration.
+
 
 .. _installation-upgrade-730:
 

@@ -431,4 +431,14 @@ class ConfigurationRepositoryTest extends FunctionalTestCaseWithDatabaseTools
             'bar'
         );
     }
+
+    #[Test]
+    public function findByTableAndIndexForDisabledConfigurationThrowsException(): void
+    {
+        $this->expectException(\Cobweb\ExternalImport\Exception\NoConfigurationException::class);
+        $this->subject->findByTableAndIndex(
+            'tx_externalimporttest_product',
+            'disabled'
+        );
+    }
 }

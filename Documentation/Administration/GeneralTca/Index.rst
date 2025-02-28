@@ -64,6 +64,7 @@ Properties
    data_                                 string            Read data
    dataHandler_                          string            Handle data
    description_                          string            Display
+   disabled_                             boolean           General
    disabledOperations_                   string            Store data
    disableLog_                           boolean           Store data
    enforcePid_                           boolean           Store data
@@ -158,6 +159,24 @@ Description
 
 Scope
   Handle data
+
+
+.. _administration-general-tca-properties-disabled:
+
+disabled
+~~~~~~~~
+
+Type
+  bool
+
+Description
+  A disabled configuration is completely ignored by External Import. It does not appear
+  in any listing, not will it ever by synchronized. This can be useful, for example,
+  when you share a package between TYPO3 installations, but do not need to run the imports
+  everywhere.
+
+Scope
+  General
 
 
 .. _administration-general-tca-properties-groups:
