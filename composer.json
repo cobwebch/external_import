@@ -44,7 +44,7 @@
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-main": "7.2.x-dev"
+			"dev-main": "8.0.x-dev"
 		},
 		"typo3/cms": {
 			"extension-key": "external_import",
