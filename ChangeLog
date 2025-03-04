@@ -1,3 +1,7 @@
+2025-03-04 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Release version 8.0.0
+
 2025-02-28 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Add possibility to disable a configuration, resolves #365

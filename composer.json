@@ -1,7 +1,7 @@
 {
 	"name": "cobweb/external_import",
 	"type": "typo3-cms-extension",
-	"description": "Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line tool, imports via URI call (Reaction) and an API.",
+	"description": "Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line tool, reactions and an API.",
 	"license": [
 		"GPL-2.0-or-later"
 	],
@@ -33,7 +33,7 @@
 		"cobweb/svconnector": "^6.0"
 	},
 	"require-dev": {
-		"cobweb/externalimport_test": "dev-next",
+		"cobweb/externalimport_test": "^0.15.0",
 		"cobweb/svconnector_csv": "^5.0",
 		"cobweb/svconnector_feed": "^5.0",
 		"cobweb/svconnector_json": "^5.0",

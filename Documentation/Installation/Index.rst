@@ -11,9 +11,7 @@ need to extend the TCA definition of some tables with the appropriate
 syntax and create specific connectors for the application you want to
 connect to.
 
-TYPO3 CMS 11 or 12 is required, as well as the "scheduler" system extension.
-
-For TYPO3 CMS 12, extension "reactions" is also suggested.
+TYPO3 CMS 12 or 13 is required, as well as the "scheduler" and "reactions" system extensions.
 
 
 .. _installation-compatibility:
