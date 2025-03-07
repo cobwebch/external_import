@@ -1,3 +1,7 @@
+2025-03-07 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Avoid error in case of missing sorting field
+
 2025-03-04 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Release version 8.0.0

@@ -690,7 +690,7 @@ class StoreDataStep extends AbstractStep
                     if (isset($denormalizedSorting[$name])) {
                         $multipleEntry = [
                             'value' => $record[$name],
-                            'sorting' => $record[$denormalizedSorting[$name]],
+                            'sorting' => $record[$denormalizedSorting[$name]] ?? 1,
                         ];
                     } else {
                         $multipleEntry = $record[$name];
