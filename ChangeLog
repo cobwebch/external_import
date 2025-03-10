@@ -1,6 +1,7 @@
 2025-03-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Add rector rule for migrating "group" property
+    * Release version 8.0.1
 
 2025-03-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
