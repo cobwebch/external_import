@@ -18,7 +18,6 @@ declare(strict_types=1);
 namespace Cobweb\ExternalImport\Rector;
 
 use PhpParser\Node;
-use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Scalar\String_;
@@ -120,7 +119,7 @@ CODE_SAMPLE
                         [
                             new ArrayItem(
                                 $item->value,
-                            )
+                            ),
                         ],
                     ),
                     new String_('groups')
