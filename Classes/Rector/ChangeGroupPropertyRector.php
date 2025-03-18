@@ -115,7 +115,6 @@ CODE_SAMPLE
     {
         foreach ($generalExternalConfigurationArray->items as $item) {
             if ($item->key instanceof String_ && $item->key->value === 'group') {
-                dump($item);
                 $newGroupConfiguration = new ArrayItem(
                     new Array_(
                         [
