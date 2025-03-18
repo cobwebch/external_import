@@ -40,11 +40,12 @@
 		"ergebnis/composer-normalize": "~2.45.0",
 		"friendsofphp/php-cs-fixer": "^3.52",
 		"typo3/testing-framework": "^8.2",
-		"phpstan/phpstan": "^1.10"
+		"phpstan/phpstan": "^1.10",
+		"ssch/typo3-rector": "^2.13"
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-main": "8.0.x-dev"
+			"dev-master": "8.0.x-dev"
 		},
 		"typo3/cms": {
 			"extension-key": "external_import",

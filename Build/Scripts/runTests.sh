@@ -335,7 +335,7 @@ fi
 
 handleDbmsOptions
 
-COMPOSER_ROOT_VERSION="7.2.0-dev"
+COMPOSER_ROOT_VERSION="8.0.0-dev"
 HOST_UID=$(id -u)
 USERSET=""
 if [ $(uname) != "Darwin" ]; then
