@@ -49,7 +49,6 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      *                   ['label']        => The label of the field (possibly localized)
      *                   ['cshKey']        => The CSH key for the field
      *                   ['cshLabel']    => The code of the CSH label
-     * @throws \TYPO3\CMS\Extbase\Object\Exception
      */
     public function getAdditionalFields(array &$taskInfo, $task, SchedulerModuleController $schedulerModule): array
     {
@@ -57,9 +56,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
 
         // Add field for items to synchronize
         if (empty($taskInfo[self::$itemFieldName])) {
-            if ($schedulerModule->getCurrentAction()->equals(Action::ADD)) {
+            if ($this->isAddAction($schedulerModule->getCurrentAction())) {
                 $taskInfo[self::$itemFieldName] = 'all';
-            } elseif ($schedulerModule->getCurrentAction()->equals(Action::EDIT)) {
+            } elseif ($this->isEditAction($schedulerModule->getCurrentAction())) {
                 // In case of edit, set to internal value if no data was submitted already
                 $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                 $configurationKey->setTableAndIndex($task->table, (string)$task->index);
@@ -130,9 +129,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
 
         // Add field for storage page override
         if (empty($taskInfo[self::$storageFieldName])) {
-            if ($schedulerModule->getCurrentAction()->equals(Action::ADD)) {
+            if ($this->isAddAction($schedulerModule->getCurrentAction())) {
                 $taskInfo[self::$storageFieldName] = '';
-            } elseif ($schedulerModule->getCurrentAction()->equals(Action::EDIT)) {
+            } elseif ($this->isEditAction($schedulerModule->getCurrentAction())) {
                 // In case of edit, set to internal value if no data was submitted already
                 $taskInfo[self::$storageFieldName] = $task->storage;
             }
@@ -181,6 +180,52 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $task->index = $configurationKey->getIndex();
         }
         $task->storage = (int)$submittedData[self::$storageFieldName];
+    }
+
+    /**
+     * Checks if the "add" action has been selected
+     *
+     * Temporary compatibility layer between TYPO3 enumerations (v12) and native enumerations (v13)
+     * TODO: remove once dropping compatibility with TYPO3 12
+     *
+     * @param mixed $action
+     * @return bool
+     */
+    protected function isAddAction(mixed $action): bool
+    {
+        if ($action instanceof \TYPO3\CMS\Scheduler\Task\Enumeration\Action) {
+            return $action->equals(\TYPO3\CMS\Scheduler\Task\Enumeration\Action::ADD);
+        }
+
+        if ($action instanceof \TYPO3\CMS\Scheduler\SchedulerManagementAction) {
+            return $action->value === \TYPO3\CMS\Scheduler\SchedulerManagementAction::ADD->value;
+        }
+
+        // The action should really be only one of the 2 above, so return false if we land here...
+        return false;
+    }
+
+    /**
+     * Checks if the "edit" action has been selected
+     *
+     * Temporary compatibility layer between TYPO3 enumerations (v12) and native enumerations (v13)
+     * TODO: remove once dropping compatibility with TYPO3 12
+     *
+     * @param mixed $action
+     * @return bool
+     */
+    protected function isEditAction(mixed $action): bool
+    {
+        if ($action instanceof \TYPO3\CMS\Scheduler\Task\Enumeration\Action) {
+            return $action->equals(\TYPO3\CMS\Scheduler\Task\Enumeration\Action::EDIT);
+        }
+
+        if ($action instanceof \TYPO3\CMS\Scheduler\SchedulerManagementAction) {
+            return $action->value === \TYPO3\CMS\Scheduler\SchedulerManagementAction::EDIT->value;
+        }
+
+        // The action should really be only one of the 2 above, so return false if we land here...
+        return false;
     }
 
     protected function getLanguageService(): ?LanguageService
