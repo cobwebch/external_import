@@ -3,6 +3,7 @@
     * Properly handle action class when adding a new Scheduler task in TYPO3 13, resolves #370
     * Correctly abort process when exception is thrown by step, resolves #371
     * Fix evaluation of global error status in Scheduler task
+    * Release version 8.0.2
 
 2025-03-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
