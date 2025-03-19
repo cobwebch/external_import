@@ -1,6 +1,7 @@
 2025-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Properly handle action class when adding a new Scheduler task in TYPO3 13, resolves #370
+    * Correctly abort process when exception is thrown by step, resolves #371
 
 2025-03-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 

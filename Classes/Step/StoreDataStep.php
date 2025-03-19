@@ -89,7 +89,6 @@ class StoreDataStep extends AbstractStep
      * Stores the data to the database using DataHandler.
      *
      * @throws MissingConfigurationException
-     * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     public function run(): void

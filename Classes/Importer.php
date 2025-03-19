@@ -353,36 +353,49 @@ class Importer implements LoggerAwareInterface
         }
         // Loop on all the process steps
         foreach ($steps as $stepClass) {
-            $this->resetPreviewData();
-            /** @var AbstractStep $step */
-            $step = GeneralUtility::makeInstance($stepClass);
-            if (!$this->isProcessAborted() || ($this->isProcessAborted() && $step->isExecuteDespiteAbort())) {
-                $step->setImporter($this);
-                $step->setData($this->currentData);
-                if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
-                    $step->setParameters($this->externalConfiguration->getParametersForStep($stepClass));
+            try {
+                $this->resetPreviewData();
+                /** @var AbstractStep $step */
+                $step = GeneralUtility::makeInstance($stepClass);
+                if (!$this->isProcessAborted() || ($this->isProcessAborted() && $step->isExecuteDespiteAbort())) {
+                    $step->setImporter($this);
+                    $step->setData($this->currentData);
+                    if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
+                        $step->setParameters($this->externalConfiguration->getParametersForStep($stepClass));
+                    }
+                    $step->run();
+                    // Abort process if step required it
+                    if ($step->isAbortFlag()) {
+                        $this->setProcessAborted(true);
+                        // Report about aborting
+                        $this->addMessage(
+                            $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted'),
+                            ContextualFeedbackSeverity::WARNING
+                        );
+                    }
+                    $this->currentData = $step->getData();
+                    // We set the end time after each step, so that we still capture a certain duration even if one step crashes unexpectedly
+                    $this->setEndTime(time());
                 }
-                $step->run();
-                // Abort process if step required it
-                if ($step->isAbortFlag()) {
-                    $this->setProcessAborted(true);
-                    // Report about aborting
-                    $this->addMessage(
-                        $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:importAborted'),
-                        ContextualFeedbackSeverity::WARNING
-                    );
+                // If preview is on and the step is matched, exit process
+                // NOTE: this happens after abort, as aborting means there's an underlying problem, which should be reported no matter what
+                if ($this->isPreview() && $this->getPreviewStep() === $stepClass) {
+                    if ($step->hasDownloadableData()) {
+                        $this->currentData->setDownloadable(true);
+                    }
+                    break;
                 }
-                $this->currentData = $step->getData();
-                // We set the end time after each step, so that we still capture a certain duration even if one step crashes unexpectedly
-                $this->setEndTime(time());
-            }
-            // If preview is on and the step is matched, exit process
-            // NOTE: this happens after abort, as aborting means there's an underlying problem, which should be reported no matter what
-            if ($this->isPreview() && $this->getPreviewStep() === $stepClass) {
-                if ($step->hasDownloadableData()) {
-                    $this->currentData->setDownloadable(true);
-                }
-                break;
+            } catch (\Throwable $e) {
+                // Catch any exception and mark process as aborted
+                $this->setProcessAborted(true);
+                $this->addMessage(
+                    sprintf(
+                        $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:stepError'),
+                        $stepClass,
+                        $e->getMessage(),
+                        $e->getCode()
+                    )
+                );
             }
         }
     }

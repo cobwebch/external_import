@@ -212,6 +212,9 @@
 			<trans-unit id="generalProcessError" xml:space="preserve">
 				<source>An error occurred. The process was interrupted. Message: %1$s [%2$d]</source>
 			</trans-unit>
+			<trans-unit id="stepError" xml:space="preserve">
+				<source>An error occurred. The process was interrupted at step %1$s. Message: %2$s [%3$d]</source>
+			</trans-unit>
 			<trans-unit id="wrongPreviewStep" xml:space="preserve">
 				<source>The requested preview step (%s) was not found among the current process steps. Process was aborted.</source>
 			</trans-unit>
