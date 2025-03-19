@@ -52,7 +52,6 @@ class AutomatedSyncTask extends AbstractTask
      */
     public function execute(): bool
     {
-        $result = true;
         $reportContent = '';
 
         // Instantiate the import object and call appropriate method depending on command
@@ -98,11 +97,11 @@ class AutomatedSyncTask extends AbstractTask
                     }
                 }
             }
+            if ($errorCount > 0) {
+                $globalStatus = 'ERROR';
+            }
             // If necessary, prepare a report with all messages
             if (!empty($extensionConfiguration['reportEmail'])) {
-                if ($errorCount > 0) {
-                    $globalStatus = 'ERROR';
-                }
                 // Assemble the subject and send the mail
                 $subject = empty($extensionConfiguration['reportSubject']) ? '' : $extensionConfiguration['reportSubject'];
                 $subject .= ' [' . $globalStatus . '] ' . 'Full synchronization';
@@ -110,6 +109,9 @@ class AutomatedSyncTask extends AbstractTask
             }
         } else {
             $messages = $importer->synchronize($this->table, $this->index);
+            if (count($messages[ContextualFeedbackSeverity::ERROR->value]) > 0) {
+                $globalStatus = 'ERROR';
+            }
             // If necessary, prepare a report with all messages
             if (!empty($extensionConfiguration['reportEmail'])) {
                 $reportContent .= $importer->getReportingUtility()->reportForTable(
@@ -117,23 +119,20 @@ class AutomatedSyncTask extends AbstractTask
                     $this->index,
                     $messages
                 );
-                if (count($messages[ContextualFeedbackSeverity::ERROR->value]) > 0) {
-                    $globalStatus = 'ERROR';
-                }
                 // Assemble the subject and send the mail
                 $subject = empty($extensionConfiguration['reportSubject']) ? '' : $extensionConfiguration['reportSubject'];
                 $subject .= ' [' . $globalStatus . '] ' . 'Synchronization of table ' . $this->table . ', index ' . $this->index;
                 $importer->getReportingUtility()->sendMail($subject, $reportContent);
             }
         }
-        // If any error happened, throw an exception
+        // If any error happened, throw an exception, otherwise return true
         if ($globalStatus !== 'OK') {
             throw new \Exception(
                 'One or more errors happened. Please consult the log.',
                 1258116760
             );
         }
-        return $result;
+        return true;
     }
 
     /**
