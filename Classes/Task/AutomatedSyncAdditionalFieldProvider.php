@@ -197,7 +197,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             return $action->equals(\TYPO3\CMS\Scheduler\Task\Enumeration\Action::ADD);
         }
 
+        // @phpstan-ignore class.notFound
         if ($action instanceof \TYPO3\CMS\Scheduler\SchedulerManagementAction) {
+            // @phpstan-ignore class.notFound
             return $action->value === \TYPO3\CMS\Scheduler\SchedulerManagementAction::ADD->value;
         }
 
@@ -220,7 +222,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             return $action->equals(\TYPO3\CMS\Scheduler\Task\Enumeration\Action::EDIT);
         }
 
+        // @phpstan-ignore class.notFound
         if ($action instanceof \TYPO3\CMS\Scheduler\SchedulerManagementAction) {
+            // @phpstan-ignore class.notFound
             return $action->value === \TYPO3\CMS\Scheduler\SchedulerManagementAction::EDIT->value;
         }
 
