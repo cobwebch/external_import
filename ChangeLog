@@ -1,5 +1,9 @@
 2025-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
+    * Improve delete reaction response when record is already deleted, resolves #372
+
+2025-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
+
     * Restore missing SQL definition for reactions table
     * Release version 8.0.3
 

@@ -158,3 +158,9 @@ is not used by the delete process. In fact the only properties that are used fro
   useful is a scenario where you would import the same records to different places in your
   TYPO3 installation, and thus have external primary keys which are unique only per pid.
 - :ref:`whereClause <administration-general-tca-properties-where-clause>`
+
+.. note::
+
+   If the delete reaction tries to delete an already deleted record, the operation will
+   be silently successful. On the contrary, trying to delete a record which doesn't exist at all,
+   triggers an error.

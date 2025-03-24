@@ -22,6 +22,7 @@ use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\ItemRepository;
 use Cobweb\ExternalImport\Event\GetExternalKeyEvent;
+use Cobweb\ExternalImport\Exception\DeletedRecordException;
 use Cobweb\ExternalImport\Exception\InvalidConfigurationException;
 use Cobweb\ExternalImport\Exception\InvalidPayloadException;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
@@ -171,32 +172,37 @@ class DeleteReaction extends AbstractReaction implements ReactionInterface
                         $constraints['pid'] = (int)$configuration->getStoragePid();
                     }
                     $itemRepository = GeneralUtility::makeInstance(ItemRepository::class);
-                    $itemId = $itemRepository->find(
-                        $configurationKey->getTable(),
-                        $constraints,
-                        $additionalConstraint
-                    );
-                    // Delete the selected record
-                    $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
-                    $dataHandler->start(
-                        [],
-                        [
-                            $configurationKey->getTable() => [
-                                $itemId => [
-                                    'delete' => 1,
+                    try {
+                        $itemId = $itemRepository->find(
+                            $configurationKey->getTable(),
+                            $constraints,
+                            $additionalConstraint
+                        );
+                        // Delete the selected record
+                        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+                        $dataHandler->start(
+                            [],
+                            [
+                                $configurationKey->getTable() => [
+                                    $itemId => [
+                                        'delete' => 1,
+                                    ],
                                 ],
                             ],
-                        ],
-                    );
-                    $dataHandler->process_cmdmap();
-                    // Check for errors
-                    if (count($dataHandler->errorLog) > 0) {
-                        throw new ReactionFailedException(
-                            'One or more errors occurred while trying to delete the item(s). Please refer to the TYPO3 log',
-                            1735291140
                         );
+                        $dataHandler->process_cmdmap();
+                        // Check for errors
+                        if (count($dataHandler->errorLog) > 0) {
+                            throw new ReactionFailedException(
+                                'One or more errors occurred while trying to delete the item(s). Please refer to the TYPO3 log',
+                                1735291140
+                            );
+                        }
+                        $deletedItems++;
+                    } catch (DeletedRecordException $e) {
+                        // If the record was found, but is already deleted, simply count it as deleted
+                        $deletedItems++;
                     }
-                    $deletedItems++;
                 }
             }
         } else {

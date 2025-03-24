@@ -17,9 +17,9 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Domain\Repository;
 
+use Cobweb\ExternalImport\Exception\DeletedRecordException;
 use Cobweb\ExternalImport\Exception\InvalidRecordException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -35,18 +35,13 @@ class ItemRepository
      * @throws \Doctrine\DBAL\Driver\Exception
      * @throws InvalidRecordException
      * @throws \Doctrine\DBAL\Exception
+     * @throws DeletedRecordException
      */
     public function find(string $table, array $constraints, string $additionalConstraint = ''): int
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
-        // Get any possible record, except an already deleted one
-        $queryBuilder->getRestrictions()
-            ->removeAll()
-            ->add(
-                GeneralUtility::makeInstance(
-                    DeletedRestriction::class
-                )
-            );
+        // Get any possible record, including deleted ones
+        $queryBuilder->getRestrictions()->removeAll();
         $queryConstraints = [];
         foreach ($constraints as $key => $value) {
             $queryConstraints[] = $queryBuilder->expr()->eq(
@@ -57,12 +52,32 @@ class ItemRepository
         if (!empty($additionalConstraint)) {
             $queryConstraints[] = $additionalConstraint;
         }
-        $result = $queryBuilder->select('uid')
+        $result = $queryBuilder->select('uid', 'deleted')
             ->from($table)
             ->where(...$queryConstraints)
-            ->executeQuery()
-            ->fetchOne();
-        if ($result === false) {
+            ->executeQuery();
+        $uid = 0;
+        $isDeleted = false;
+        while ($row = $result->fetchAssociative()) {
+            if ($row['deleted'] === 1) {
+                $isDeleted = true;
+            } else {
+                $uid = $row['uid'];
+            }
+        }
+        // No non-deleted record was found
+        if ($uid === 0) {
+            // If a deleted record was found, throw specific exception
+            if ($isDeleted) {
+                throw new DeletedRecordException(
+                    sprintf(
+                        'Deleted record found in table "%s" matching "%s',
+                        $table,
+                        serialize($constraints)
+                    ),
+                    1742805062
+                );
+            }
             throw new InvalidRecordException(
                 sprintf(
                     'No record found in table "%s" matching "%s',
@@ -72,6 +87,6 @@ class ItemRepository
                 1735288514
             );
         }
-        return $result;
+        return $uid;
     }
 }
