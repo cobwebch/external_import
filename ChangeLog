@@ -1,6 +1,7 @@
 2025-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Improve delete reaction response when record is already deleted, resolves #372
+    * Release version 8.0.4
 
 2025-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 

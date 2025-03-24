@@ -12,7 +12,7 @@
     />
     <project
             title="External Import"
-            release="8.0.3"
+            release="8.0.4"
             copyright="2007-2025"
     />
     <inventory id="svconnector" url="https://docs.typo3.org/p/cobweb/svconnector/main/en-us/"/>
