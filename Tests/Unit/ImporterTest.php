@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Tests\Unit;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
+use Cobweb\ExternalImport\Enum\CallType;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -123,21 +124,21 @@ class ImporterTest extends UnitTestCase
     }
 
     #[Test]
-    public function getContextInitiallyReturnsManualContext(): void
+    public function getCallTypeInitiallyReturnsOtherType(): void
     {
         self::assertSame(
-            'manual',
-            $this->subject->getContext()
+            CallType::Other,
+            $this->subject->getCallType()
         );
     }
 
     #[Test]
-    public function setContextSetsContext(): void
+    public function setCallTypeSetsCallType(): void
     {
-        $this->subject->setContext('cli');
+        $this->subject->setCallType(CallType::CommandLine);
         self::assertSame(
-            'cli',
-            $this->subject->getContext()
+            CallType::CommandLine,
+            $this->subject->getCallType()
         );
     }
 

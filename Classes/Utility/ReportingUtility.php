@@ -85,7 +85,7 @@ class ReportingUtility implements LoggerAwareInterface
         // Don't log in preview mode
         if (!$this->importer->isPreview()) {
             $messages = $this->importer->getMessages();
-            $importContext = $this->importer->getContext();
+            $callType = $this->importer->getCallType();
             $now = (int)$this->context->getPropertyFromAspect('date', 'timestamp');
             $pid = (int)$this->extensionConfiguration['logStorage'];
 
@@ -117,7 +117,7 @@ class ReportingUtility implements LoggerAwareInterface
                         'crdate' => $now,
                         'username' => $currentUser,
                         'configuration' => $configuration,
-                        'context' => $importContext,
+                        'context' => $callType->name,
                         'message' => $message,
                         'duration'  => $this->importer->getEndTime() - $this->importer->getStartTime(),
                     ];

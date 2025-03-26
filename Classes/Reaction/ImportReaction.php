@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Reaction;
 
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Enum\CallType;
 use Cobweb\ExternalImport\Exception\InvalidPayloadException;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
@@ -61,6 +62,7 @@ class ImportReaction extends AbstractReaction implements ReactionInterface
         try {
             $configurations = $this->validatePayloadAndConfigurationKey($payload, $configurationKey);
             $importer = GeneralUtility::makeInstance(Importer::class);
+            $importer->setCallType(CallType::Reaction);
             // Check if a storage pid was given
             if (MathUtility::canBeInterpretedAsInteger($payload['pid'] ?? null)) {
                 $importer->setForcedStoragePid((int)$payload['pid']);

@@ -147,6 +147,15 @@ setContext/getContext
   Any other value can be set, but will not be interpreted by the External Import extension.
   In the Log module, such values will be displayed as "Other".
 
+  .. warning::
+
+     :code:`setContext/getContext` is deprecated. Use :code:`setCallType/getCallType` instead.
+
+setCallType/getCallType
+  Define or retrieve the execution context. This is based on the :php:`\Cobweb\ExternalImport\Enum\CallType` enumeration.
+  It is normally set by External Import itself, but can be set from the outside, especially when using
+  External Import as an API (in which case, the call type should set to :code:`\Cobweb\ExternalImport\Enum\CallType::Api`).
+
 setDebug/getDebug
   Define or retrieve the debug flag. This makes it possible to programatically turn
   debugging on or off.

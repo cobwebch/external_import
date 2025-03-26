@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Controller;
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
+use Cobweb\ExternalImport\Enum\CallType;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\CsvUtility;
 use Psr\Http\Message\ResponseInterface;
@@ -174,7 +175,7 @@ class DataModuleController extends ActionController
     {
         // Synchronize the chosen data
         $importer = GeneralUtility::makeInstance(Importer::class);
-        $importer->setContext('manual');
+        $importer->setCallType(CallType::Manual);
         $messages = $importer->synchronize($table, $index);
         $this->prepareMessages($messages);
 
@@ -208,7 +209,7 @@ class DataModuleController extends ActionController
             if ($stepClass !== '') {
                 // Synchronize the chosen configuration in preview mode
                 $importer = GeneralUtility::makeInstance(Importer::class);
-                $importer->setContext('manual');
+                $importer->setCallType(CallType::Manual);
                 $importer->setPreviewStep($stepClass);
                 $messages = $importer->synchronize($table, $index);
                 $this->prepareMessages($messages, false);
@@ -263,7 +264,7 @@ class DataModuleController extends ActionController
         try {
             // Synchronize the chosen configuration in preview mode
             $importer = GeneralUtility::makeInstance(Importer::class);
-            $importer->setContext('manual');
+            $importer->setCallType(CallType::Manual);
             $importer->setPreviewStep($stepClass);
             $importer->synchronize($table, $index);
             // If the data is not supposed to be downloaded, throw an exception

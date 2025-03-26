@@ -21,6 +21,17 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-810:
+
+Upgrade to 8.1.0
+""""""""""""""""
+
+:code:`\Cobweb\ExternalImport\Importer::getContext()` and :code:`\Cobweb\ExternalImport\Importer::setContext()`
+have been deprecated in favor of :code:`\Cobweb\ExternalImport\Importer::getCallType()` and
+:code:`\Cobweb\ExternalImport\Importer::setCallType()`. These methods rely on the :php:`\Cobweb\ExternalImport\Enum\CallType`
+enumeration which is used more consistenty throughout External Import.
+
+
 .. _installation-upgrade-800:
 
 Upgrade to 8.0.0

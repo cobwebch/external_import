@@ -1,3 +1,7 @@
+2025-03-26 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Add call type, deprecate context, resolves #373
+
 2025-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Improve delete reaction response when record is already deleted, resolves #372

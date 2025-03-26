@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Command;
 use Cobweb\ExternalImport\Context\AbstractCallContext;
 use Cobweb\ExternalImport\Context\CommandLineCallContext;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Enum\CallType;
 use Cobweb\ExternalImport\Importer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -136,7 +137,7 @@ class ImportCommand extends Command
                 $this->printConfigurationList();
             } else {
                 $this->importer = GeneralUtility::makeInstance(Importer::class);
-                $this->importer->setContext('cli');
+                $this->importer->setCallType(CallType::CommandLine);
                 /** @var AbstractCallContext $callContext */
                 $callContext = GeneralUtility::makeInstance(
                     CommandLineCallContext::class,

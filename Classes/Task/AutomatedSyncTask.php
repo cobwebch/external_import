@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Task;
  */
 
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
+use Cobweb\ExternalImport\Enum\CallType;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -56,7 +57,7 @@ class AutomatedSyncTask extends AbstractTask
 
         // Instantiate the import object and call appropriate method depending on command
         $importer = GeneralUtility::makeInstance(Importer::class);
-        $importer->setContext('scheduler');
+        $importer->setCallType(CallType::Scheduler);
         // Override the storage page, if defined
         if ($this->storage > 0) {
             $importer->setForcedStoragePid($this->storage);

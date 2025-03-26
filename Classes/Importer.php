@@ -23,6 +23,7 @@ use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
+use Cobweb\ExternalImport\Enum\CallType;
 use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Step\AbstractStep;
@@ -89,6 +90,7 @@ class Importer implements LoggerAwareInterface
     protected string $context = 'manual';
 
     protected ?AbstractCallContext $callContext = null;
+    protected CallType $callType = CallType::Other;
 
     /**
      * @var bool Whether debugging is turned on or off
@@ -289,8 +291,10 @@ class Importer implements LoggerAwareInterface
         $this->resetMessages();
         // Reset abort status
         $this->setProcessAborted(false);
-        // Set context to API no matter what
-        $this->setContext('api');
+        // Set context to API if it has not been changed from default ("other")
+        if ($this->callType === CallType::Other) {
+            $this->setCallType(CallType::Api);
+        }
         try {
             $this->initialize(
                 $table,
@@ -590,9 +594,14 @@ class Importer implements LoggerAwareInterface
      * Returns the current execution context.
      *
      * @return string
+     * @deprecated getContext() is deprecated and will be removed in version 9. Use getCallType() instead.
      */
     public function getContext(): string
     {
+        trigger_error(
+            'get/setContext() is deprecated, use get/setCallType instead.',
+            E_USER_DEPRECATED
+        );
         return $this->context;
     }
 
@@ -600,10 +609,25 @@ class Importer implements LoggerAwareInterface
      * Sets the execution context.
      *
      * @param string $context
+     * @deprecated setContext() is deprecated and will be removed in version 9. Use setCallType() instead.
      */
     public function setContext(string $context): void
     {
+        trigger_error(
+            'get/setContext() is deprecated, use get/setCallType instead.',
+            E_USER_DEPRECATED
+        );
         $this->context = $context;
+    }
+
+    public function getCallType(): CallType
+    {
+        return $this->callType;
+    }
+
+    public function setCallType(CallType $callType): void
+    {
+        $this->callType = $callType;
     }
 
     /**
