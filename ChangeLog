@@ -3,6 +3,7 @@
     * Add call type, deprecate context, resolves #373
     * Add event for manipulating configuration at start of run, resolves #374
     * Restore visual indicator for sorting in Data module, resolves #369
+    * Release version 8.1.0
 
 2025-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 
