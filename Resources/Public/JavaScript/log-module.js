@@ -31,12 +31,12 @@ class ExternalImportLogModule {
 	async initialize() {
 		DocumentService.ready().then((document) => {
 			// Preload all icons, then finally build the dynamic table
-			Icons.getIcon('actions-info-circle-alt').then((icon) => {
+			Icons.getIcon('actions-info-circle-alt', Icons.sizes.small).then((icon) => {
 				this.icons[-2] = '<span class="log-icon-information">' + icon + '</span>';
 				this.icons[-1] = '<span class="log-icon-notification">' + icon + '</span>';
-				Icons.getIcon('actions-check-circle-alt').then((icon) => {
+				Icons.getIcon('actions-check-circle-alt', Icons.sizes.small).then((icon) => {
 					this.icons[-0] = '<span class="log-icon-success">' + icon + '</span>';
-					Icons.getIcon('actions-exclamation-circle-alt').then((icon) => {
+					Icons.getIcon('actions-exclamation-circle-alt', Icons.sizes.small).then((icon) => {
 						this.icons[1] = '<span class="log-icon-warning">' + icon + '</span>';
 						this.icons[2] = '<span class="log-icon-danger">' + icon + '</span>';
 						this.buildDynamicTable();
