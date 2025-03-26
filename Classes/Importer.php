@@ -24,10 +24,12 @@ use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Enum\CallType;
+use Cobweb\ExternalImport\Event\ChangeConfigurationBeforeRunEvent;
 use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Step\AbstractStep;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
@@ -176,7 +178,8 @@ class Importer implements LoggerAwareInterface
         ReportingUtility $reportingUtility,
         UidRepository $uidRepository,
         TemporaryKeyRepository $temporaryKeyRepository,
-        ExtensionConfiguration $extensionConfiguration
+        ExtensionConfiguration $extensionConfiguration,
+        protected EventDispatcherInterface $eventDispatcher
     ) {
         $this->configurationRepository = $configurationRepository;
         $this->reportingUtility = $reportingUtility;
@@ -197,14 +200,14 @@ class Importer implements LoggerAwareInterface
     }
 
     /**
-     * Stores information about the synchronized table into member variables.
+     * Store information about the synchronized table into member variables.
      *
      * @param string $table Name of the table to synchronise
      * @param mixed $index Index of the synchronisation configuration to use
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @throws NoConfigurationException
      */
-    protected function initialize(string $table, $index, ?array $defaultSteps): void
+    protected function initialize(string $table, mixed $index, ?array $defaultSteps): void
     {
         // Assign back-reference to reporting utility
         $this->reportingUtility->setImporter($this);
@@ -218,6 +221,16 @@ class Importer implements LoggerAwareInterface
         if ($this->forcedStoragePid !== null) {
             $this->externalConfiguration->setStoragePid($this->forcedStoragePid);
         }
+
+        // Allow for configuration manipulation
+        $event = $this->eventDispatcher->dispatch(
+            new ChangeConfigurationBeforeRunEvent(
+                $this,
+                $this->externalConfiguration
+            )
+        );
+        $this->externalConfiguration = $event->getConfiguration();
+
         // Initialize existing uids list
         $this->uidRepository->setConfiguration($this->externalConfiguration);
         $this->uidRepository->resetExistingUids();

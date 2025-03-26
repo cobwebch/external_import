@@ -1,6 +1,7 @@
 2025-03-26 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Add call type, deprecate context, resolves #373
+    * Add event for manipulating configuration at start of run, resolves #374
 
 2025-03-19 Francois Suter (Idéative)  <typo3@ideative.ch>
 

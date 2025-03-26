@@ -31,6 +31,10 @@ have been deprecated in favor of :code:`\Cobweb\ExternalImport\Importer::getCall
 :code:`\Cobweb\ExternalImport\Importer::setCallType()`. These methods rely on the :php:`\Cobweb\ExternalImport\Enum\CallType`
 enumeration which is used more consistenty throughout External Import.
 
+A new event :ref:`ChangeConfigurationBeforeRunEvent <developer-events-dhange-configuration-before-run>` makes
+it possible to modify the External Import configuration at run-time. This happens before any of the import
+steps is executed.
+
 
 .. _installation-upgrade-800:
 

@@ -25,6 +25,7 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -68,7 +69,8 @@ class ImporterTest extends UnitTestCase
             ),
             $this->getAccessibleMock(UidRepository::class),
             $this->getAccessibleMock(TemporaryKeyRepository::class),
-            $extensionConfiguration
+            $extensionConfiguration,
+            $this->getAccessibleMock(EventDispatcher::class)
         );
         $this->resetSingletonInstances = true;
     }

@@ -35,9 +35,16 @@ class Configuration
     protected ?string $table = null;
 
     /**
-     * @var int|string Index identifying the configuration for the given table
+     * @var int|string|null Index identifying the configuration for the given table
      */
-    protected $index;
+    protected string|int|null $index = null;
+
+    /**
+     * Store the raw configuration, as passed to the object from the repository
+     */
+    protected array $rawGeneralConfiguration = [];
+    protected array $rawAdditionalFieldsConfiguration = [];
+    protected array $rawColumnsConfiguration = [];
 
     /**
      * @var array General part of the External Import configuration
@@ -195,6 +202,7 @@ class Configuration
      */
     public function setGeneralConfiguration(array $generalConfiguration, ?array $defaultSteps = null): void
     {
+        $this->rawGeneralConfiguration = $generalConfiguration;
         $this->generalConfiguration = $generalConfiguration;
         // TODO: drop support for old "group" property in the next major version; for now automatically convert it
         if (array_key_exists('group', $generalConfiguration)) {
@@ -261,6 +269,7 @@ class Configuration
      */
     public function setColumnConfiguration(array $columnConfiguration): void
     {
+        $this->rawColumnsConfiguration = $columnConfiguration;
         // Merge with additional fields
         if (count($this->additionalFields) > 0) {
             $columnConfiguration = array_merge($columnConfiguration, $this->additionalFields);
@@ -349,6 +358,21 @@ class Configuration
         $this->storagePid = $storagePid;
     }
 
+    public function getRawGeneralConfiguration(): array
+    {
+        return $this->rawGeneralConfiguration;
+    }
+
+    public function getRawAdditionalFieldsConfiguration(): array
+    {
+        return $this->rawAdditionalFieldsConfiguration;
+    }
+
+    public function getRawColumnsConfiguration(): array
+    {
+        return $this->rawColumnsConfiguration;
+    }
+
     /**
      * @return array
      */
@@ -362,6 +386,7 @@ class Configuration
      */
     public function setAdditionalFields(array $additionalFields): void
     {
+        $this->rawAdditionalFieldsConfiguration = $additionalFields;
         foreach ($additionalFields as $fieldName => $fieldConfiguration) {
             $additionalFields[$fieldName][self::DO_NOT_SAVE_KEY] = true;
         }

@@ -19,6 +19,49 @@ will just be logged (depending on your logging configuration).
 For usage, see the :ref:`core documentation about PSR-14 events <t3coreapi:EventDispatcher>`.
 
 
+.. _developer-events-dhange-configuration-before-run:
+
+Change configuration before run
+"""""""""""""""""""""""""""""""
+
+.. php:namespace:: Cobweb\ExternalImport\Event
+
+.. php:class:: ChangeConfigurationBeforeRunEvent
+
+   This event makes it possible to change the External Import at run-time, just before
+   any of the import steps are executed. Since the :php:`\Cobweb\ExternalImport\Domain\Model\Configuration`
+   model class does not have accessor methods for every single property of the External Import
+   configuration, it is not possible to change a single property.
+
+   Basically, the :php:`\Cobweb\ExternalImport\Domain\Model\Configuration` object keeps a copy of the
+   general configuration, the additional fields configuration and the columns configuration.
+   The best way to change any of them is to retrieve that raw copy, modify it and set it again
+   using the accessor methods provided by the event.
+
+   .. php:method:: getImporter()
+
+      Current instance of :php:`\Cobweb\ExternalImport\Importer`.
+
+   .. php:method:: getConfiguration()
+
+      Current instance of :php:`\Cobweb\ExternalImport\Domain\Model\Configuration`.
+
+   .. php:method:: setGeneralConfiguration()
+
+      Used to set the modified version of the general configuration, previously retrieved
+      using :code:`$this->getConfiguration()->getRawGeneralConfiguration()`.
+
+   .. php:method:: setAdditionalFieldsConfiguration()
+
+      Used to set the modified version of the additional fields configuration, previously retrieved
+      using :code:`$this->getConfiguration()->getRawAdditionalFieldsConfiguration()`.
+
+   .. php:method:: setColumnsConfiguration()
+
+      Used to set the modified version of the columns configuration, previously retrieved
+      using :code:`$this->getConfiguration()->getRawColumnsConfiguration()`.
+
+
 .. _developer-events-process-connector-parameters:
 
 Process connector parameters
