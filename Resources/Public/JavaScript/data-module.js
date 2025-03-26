@@ -18,6 +18,7 @@ import DocumentService from "@typo3/core/document-service.js";
 import Modal from "@typo3/backend/modal.js";
 import Notification from "@typo3/backend/notification.js";
 import "@typo3/backend/input/clearable.js";
+import Icons from "@typo3/backend/icons.js";
 
 class ExternalImportDataModule {
 	constructor() {
@@ -110,6 +111,8 @@ class ExternalImportDataModule {
 			},
 			columnDefs: columns
 		});
+		// React to the DataTables order event to update the sorting icons
+		this.table.on('order', this.changeOrderIcons);
 		this.table.draw();
 		this.initializeSearchField();
 	}
@@ -154,8 +157,48 @@ class ExternalImportDataModule {
 			ordering: true,
 			columnDefs: columns
 		});
-		this.table.order([1, 'asc']).draw();
+		this.table.order([1, 'asc']);
+		// React to the DataTables order event to update the sorting icons
+		this.table.on('order', this.changeOrderIcons);
+		this.table.draw();
 		this.initializeSearchField();
+	}
+
+	/**
+	 * Updates the sorting icons in reaction to DataTables' order event
+	 */
+	changeOrderIcons(event) {
+		let columnIndex = event.dt.order()[0][0];
+		let columnDirection = event.dt.order()[0][1];
+		let defaultIconIdentifier = 'actions-sort-amount';
+		let activeIconIdentifier = '';
+		if (columnDirection === 'asc') {
+		    activeIconIdentifier = 'actions-sort-amount-down';
+		} else if (columnDirection === 'desc') {
+		    activeIconIdentifier = 'actions-sort-amount-up';
+		}
+
+		// This function gives a global context so that variables defined above can be used within promise returns
+		const updateSortingIcons = (defaultIcon, activeIcon, activeColumnIndex) => {
+		    const columns = document.getElementById('tx_externalimport_list').getElementsByTagName('th');
+			// Reset all columns to default icon
+		    Icons.getIcon(defaultIcon, Icons.sizes.small).then(iconMarkup => {
+		        for (let i = 0; i < columns.length; i++) {
+		            let elements = columns[i].getElementsByClassName('sorting-icon');
+		            if (elements.length > 0) {
+		                elements[0].innerHTML = iconMarkup;
+		            }
+		        }
+		        // Update active column's icon if an active identifier is provided
+		        if (activeIcon) {
+		            const activatedColumn = columns[activeColumnIndex];
+		            Icons.getIcon(activeIcon, Icons.sizes.small).then(activeIconMarkup => {
+		                activatedColumn.getElementsByClassName('sorting-icon')[0].innerHTML = activeIconMarkup;
+		            });
+		        }
+		    });
+		};
+		updateSortingIcons(defaultIconIdentifier, activeIconIdentifier, columnIndex);
 	}
 
 	/**

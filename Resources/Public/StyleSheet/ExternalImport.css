@@ -9,9 +9,9 @@
 	border: 1px solid #ffffff;
 	vertical-align: top;
 }
-.table > thead > tr th.dt-ordering-asc,
-.table > thead > tr th.dt-ordering-desc {
-	background-color: #eaeaea;
+.dt-ordering-asc .icon,
+.dt-ordering-desc .icon {
+	color: var(--typo3-light-primary-color);
 }
 
 .typo3-TCEforms .tab-pane {
