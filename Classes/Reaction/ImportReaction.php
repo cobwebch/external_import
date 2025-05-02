@@ -129,7 +129,7 @@ class ImportReaction extends AbstractReaction implements ReactionInterface
             }
             return $this->jsonResponse($responseBody);
 
-        } catch (InvalidPayloadException $e) {
+        } catch (\Throwable $e) {
             return $this->jsonResponse(
                 [
                     'success' => false,
