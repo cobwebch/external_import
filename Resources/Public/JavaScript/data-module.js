@@ -252,7 +252,7 @@ class ExternalImportDataModule {
 		for (let i = 0; i < syncButtons.length; i++) {
 			syncButtons[i].addEventListener('click', function (event) {
 				Notification.info(TYPO3.lang.syncRunning, TYPO3.lang.doNotLeaveWindow, 0);
-				event.currentTarget.querySelector('svg').classList.add('active');
+				event.currentTarget.querySelector('span.t3js-icon').classList.add('icon-spin');
 			});
 		}
 	};
