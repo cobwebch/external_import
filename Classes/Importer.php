@@ -407,10 +407,12 @@ class Importer implements LoggerAwareInterface
                 $this->setProcessAborted(true);
                 $this->addMessage(
                     sprintf(
-                        $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:stepError'),
+                        $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:stepErrorImproved'),
                         $stepClass,
                         $e->getMessage(),
-                        $e->getCode()
+                        $e->getCode(),
+                        $e->getFile(),
+                        $e->getLine(),
                     )
                 );
             }
