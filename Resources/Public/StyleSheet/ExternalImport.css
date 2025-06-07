@@ -44,21 +44,6 @@ a.next {
 	border-top-right-radius: 2px;
 }
 
-.sync-button svg.active {
-	animation-name: merrygoround;
-	animation-duration: 2s;
-	animation-iteration-count: infinite;
-	animation-timing-function: linear;
-}
-@keyframes merrygoround {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
-}
-
 .external-import-messages {
 	margin-top: 0.25rem;
 }
