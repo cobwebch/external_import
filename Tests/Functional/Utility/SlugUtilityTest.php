@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Functional\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\SlugUtility;
 use PHPUnit\Framework\Attributes\Test;
@@ -50,6 +51,7 @@ class SlugUtilityTest extends FunctionalTestCase
                 Importer::class,
                 callOriginalConstructor: false
             ),
+            $this->get(TcaRepositoryInterface::class)
         );
     }
 
