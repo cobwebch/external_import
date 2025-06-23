@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Step;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Step\StoreDataStep;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -50,7 +51,8 @@ class StoreDataStepTest extends UnitTestCase
                 [],
                 '',
                 false
-            )
+            ),
+            self::createStub(TcaRepositoryInterface::class)
         );
     }
 

@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Validator;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Exception\InvalidCustomStepConfiguration;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\StepUtility;
@@ -44,7 +45,7 @@ class GeneralConfigurationValidator
     protected StepUtility $stepUtility;
     protected ConnectorRegistry $connectorRegistry;
 
-    public function __construct(ValidationResult $result, StepUtility $stepUtility, ConnectorRegistry $connectorRegistry)
+    public function __construct(ValidationResult $result, StepUtility $stepUtility, ConnectorRegistry $connectorRegistry, protected TcaRepositoryInterface $tcaRepository)
     {
         $this->results = $result;
         $this->stepUtility = $stepUtility;
@@ -303,7 +304,7 @@ class GeneralConfigurationValidator
     {
         $property = (int)$property;
         // TCA property rootLevel defaults to 0
-        $rootLevelFlag = $GLOBALS['TCA'][$this->table]['ctrl']['rootLevel'] ?? 0;
+        $rootLevelFlag = $this->tcaRepository->getTca()[$this->table]['ctrl']['rootLevel'] ?? 0;
         // If the pid is 0, data will be stored on root page.
         if ($property === 0) {
             // Table is allowed on root page, just issue notice to make sure pid was not forgotten

@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
@@ -42,8 +43,10 @@ class SlugUtility
      */
     protected array $slugFieldNamesPerTable = [];
 
-    public function __construct(Importer $importer)
-    {
+    public function __construct(
+        Importer $importer,
+        protected TcaRepositoryInterface $tcaRepository
+    ) {
         $this->importer = $importer;
     }
 
@@ -69,7 +72,7 @@ class SlugUtility
         $newSlugs = [];
         foreach ($fieldsToUpdate as $field) {
             $newSlugs[$field] = [];
-            $fieldConfiguration = $GLOBALS['TCA'][$table]['columns'][$field]['config'];
+            $fieldConfiguration = $this->tcaRepository->getTca()[$table]['columns'][$field]['config'];
             foreach ($records as $record) {
                 $slug = $this->generateSlug($table, $field, $fieldConfiguration, $record);
                 // Check that the slug is really different, if yes save it to database
@@ -177,7 +180,7 @@ class SlugUtility
 
         return $this->slugFieldNamesPerTable[$tableName] = array_keys(
             array_filter(
-                $GLOBALS['TCA'][$tableName]['columns'] ?? [],
+                $this->tcaRepository->getTca()[$tableName]['columns'] ?? [],
                 function (array $settings) {
                     return ($settings['config']['type'] ?? null) === 'slug';
                 }

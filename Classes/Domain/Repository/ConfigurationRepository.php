@@ -43,7 +43,7 @@ class ConfigurationRepository
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
-    public function __construct()
+    public function __construct(protected TcaRepositoryInterface $tcaRepository)
     {
         $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get(
             'external_import'
@@ -67,9 +67,10 @@ class ConfigurationRepository
         ];
 
         // General configuration
-        if (isset($GLOBALS['TCA'][$table]['external']['general'][$index])) {
+        $tca = $this->tcaRepository->getTca();
+        if (isset($tca[$table]['external']['general'][$index])) {
             // Ignore disabled configuration
-            if ($GLOBALS['TCA'][$table]['external']['general'][$index]['disabled'] ?? false) {
+            if ($tca[$table]['external']['general'][$index]['disabled'] ?? false) {
                 throw new NoConfigurationException(
                     sprintf(
                         'Configuration for table %s and index %s is disabled',
@@ -80,7 +81,7 @@ class ConfigurationRepository
                 );
             }
             $configuration['general'] = $this->processGeneralConfiguration(
-                $GLOBALS['TCA'][$table]['external']['general'][$index]
+                $tca[$table]['external']['general'][$index]
             );
         } else {
             throw new NoConfigurationException(
@@ -94,15 +95,15 @@ class ConfigurationRepository
         }
 
         // Load additional fields configuration
-        if (isset($GLOBALS['TCA'][$table]['external']['additionalFields'][$index])) {
-            $configuration['additionalFields'] = $GLOBALS['TCA'][$table]['external']['additionalFields'][$index];
+        if (isset($tca[$table]['external']['additionalFields'][$index])) {
+            $configuration['additionalFields'] = $tca[$table]['external']['additionalFields'][$index];
         }
 
         // Load columns configuration
         // Override the configuration index for columns, if so defined
         $alternateIndex = $configuration['general']['useColumnIndex'] ?? '';
-        if (isset($GLOBALS['TCA'][$table]['columns'])) {
-            $columnsConfiguration = $GLOBALS['TCA'][$table]['columns'];
+        if (isset($tca[$table]['columns'])) {
+            $columnsConfiguration = $tca[$table]['columns'];
             ksort($columnsConfiguration);
             foreach ($columnsConfiguration as $columnName => $columnData) {
                 // If a configuration for the given column and index exists, it always takes precedence,
@@ -126,7 +127,7 @@ class ConfigurationRepository
     public function findOrderedConfigurations(): array
     {
         $externalTables = [];
-        foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+        foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 foreach ($generalConfiguration as $index => $externalConfiguration) {
@@ -177,7 +178,7 @@ class ConfigurationRepository
     public function findByGroup(string $group, bool $synchronizable = false, bool $nonSynchronizable = false): array
     {
         $externalTables = [];
-        foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+        foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 foreach ($generalConfiguration as $index => $externalConfiguration) {
@@ -227,7 +228,7 @@ class ConfigurationRepository
     public function findAllGroups(bool $synchronizable = false, bool $nonSynchronizable = false): array
     {
         $groups = [];
-        foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+        foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
             if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
                 $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
                 foreach ($generalConfiguration as $externalConfiguration) {
@@ -310,7 +311,7 @@ class ConfigurationRepository
 
         // Loop on all tables and extract external_import-related information from them
         $backendUser = $this->getBackendUser();
-        foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+        foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
             // Check if table has external info and user has at least read-access to it
             if ((isset($sections['external']['general']) || isset($sections['ctrl']['external'])) &&
                 $backendUser->check('tables_select', $tableName)) {
@@ -419,7 +420,7 @@ class ConfigurationRepository
             // Loop on all tables and extract external_import-related information from them
             $noAccessCount = 0;
             $numberOfTables = 0;
-            foreach ($GLOBALS['TCA'] as $tableName => $sections) {
+            foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
                 // Check if table has external info
                 if (isset($sections['ctrl']['external'])) {
                     $numberOfTables++;

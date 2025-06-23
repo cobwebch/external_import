@@ -1,3 +1,7 @@
+2025-06-23 Daniel Siepmann (Codappix GmbH)  <daniel.siepmann@codappix.com>
+
+    * Centralize TCA access to allow modification, resolves #382
+
 2025-06-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Improve main exception reporting, references #380

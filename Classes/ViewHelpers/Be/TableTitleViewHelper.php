@@ -17,6 +17,8 @@ namespace Cobweb\ExternalImport\ViewHelpers\Be;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -47,8 +49,10 @@ class TableTitleViewHelper extends AbstractViewHelper
         \Closure $renderChildrenClosure,
         RenderingContextInterface $renderingContext
     ): string {
+        $tcaTitle = 'Unknown';
+        $tcaRepository = GeneralUtility::makeInstance(TcaRepositoryInterface::class);
         try {
-            $tcaTitle = $GLOBALS['TCA'][$arguments['table']]['ctrl']['title'] ?? 'Unknown';
+            $tcaTitle = $tcaRepository->getTca()[$arguments['table']]['ctrl']['title'] ?? $tcaTitle;
             $title = LocalizationUtility::translate(
                 $tcaTitle,
                 ''

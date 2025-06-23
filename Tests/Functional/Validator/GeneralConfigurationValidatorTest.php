@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Tests\Functional\Validator;
  */
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Testing\FunctionalTestCaseWithDatabaseTools;
 use Cobweb\ExternalImport\Utility\StepUtility;
@@ -52,7 +53,8 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCaseWithDatabaseTo
         $this->subject = new GeneralConfigurationValidator(
             new ValidationResult(),
             new StepUtility(),
-            new ConnectorRegistry([])
+            new ConnectorRegistry([]),
+            $this->get(TcaRepositoryInterface::class)
         );
     }
 

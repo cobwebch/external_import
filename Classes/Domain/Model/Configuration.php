@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Domain\Model;
 
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\StepUtility;
 use Cobweb\Svconnector\Service\ConnectorBase;
@@ -119,8 +120,9 @@ class Configuration
                     $this->processedConfiguration->addFieldExcludedFromUpdates($columnName);
                 }
             }
+            $tcaRepository = GeneralUtility::makeInstance(TcaRepositoryInterface::class);
             // Check for nullable property
-            $columnTca = $GLOBALS['TCA'][$this->table]['columns'][$columnName]['config'] ?? [];
+            $columnTca = $tcaRepository->getTca()[$this->table]['columns'][$columnName]['config'] ?? [];
             if ($this->isNullable($columnTca)) {
                 $this->processedConfiguration->addNullableColumn($columnName);
             }

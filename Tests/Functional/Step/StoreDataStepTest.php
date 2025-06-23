@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Tests\Functional\Step;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Importer;
@@ -60,7 +61,8 @@ class StoreDataStepTest extends FunctionalTestCase
                 EventDispatcher::class,
                 callOriginalConstructor: false
             ),
-            new ChildrenSorting()
+            new ChildrenSorting(),
+            $this->get(TcaRepositoryInterface::class)
         );
         $this->subject->setData(new Data());
     }
