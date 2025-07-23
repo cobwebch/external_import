@@ -2,6 +2,7 @@
 
     * Consider only live records in mapping utility, resolves #384
     * Prevent upgrade wizard from crashing when cruser_id field has been removed, resolves #381
+    * Release version 8.1.2
 
 2025-06-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
