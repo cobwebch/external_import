@@ -85,11 +85,28 @@ final class LogUsernameMigration implements UpgradeWizardInterface, ChattyInterf
         return true;
     }
 
+    /**
+     * Ensure that the cruser_id field is still there (the user might have already dropped it)
+     */
     public function updateNecessary(): bool
     {
-        // It's hard to check whether an update is really necessary or not, and since the implications
-        // are minimal, let's just always do it
-        return true;
+        $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(self::TABLE_NAME);
+        try {
+            $result = $connection->executeQuery(
+                sprintf(
+                    'SHOW COLUMNS FROM %s;',
+                    self::TABLE_NAME
+                )
+            );
+            while ($row = $result->fetchAssociative()) {
+                if ($row['Field'] === 'cruser_id') {
+                    return true;
+                }
+            }
+        } catch (\Throwable $e) {
+            return false;
+        }
+        return false;
     }
 
     public function getPrerequisites(): array
