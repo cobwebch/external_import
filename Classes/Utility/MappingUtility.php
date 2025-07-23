@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -204,6 +205,11 @@ class MappingUtility implements ImporterAwareInterface
                 ->add(
                     GeneralUtility::makeInstance(
                         DeletedRestriction::class
+                    )
+                )
+                ->add(
+                    GeneralUtility::makeInstance(
+                        WorkspaceRestriction::class
                     )
                 );
             $result = $queryBuilder->selectLiteral($referenceField, $valueField)
