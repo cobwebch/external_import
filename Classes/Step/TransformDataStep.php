@@ -53,6 +53,8 @@ class TransformDataStep extends AbstractStep
     /**
      * Applies all transformation properties to the existing data set, like mapping to foreign tables,
      * forcing constant values, running user-defined functions, etc.
+     *
+     * @throws \Doctrine\DBAL\Exception
      */
     public function run(): void
     {
@@ -162,6 +164,7 @@ class TransformDataStep extends AbstractStep
      * @param array $configuration Transformation configuration
      * @param array $records Data to transform
      * @return array
+     * @throws \Doctrine\DBAL\Exception
      */
     public function applyMapping(string $name, array $configuration, array $records): array
     {
