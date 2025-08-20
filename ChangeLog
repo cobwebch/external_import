@@ -1,6 +1,7 @@
 2025-08-20 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Consider only live records in uid repository, resolves #387
+    * Add documentation about reaction response, resolves #386
 
 2025-07-23 Francois Suter (Idéative)  <typo3@ideative.ch>
 

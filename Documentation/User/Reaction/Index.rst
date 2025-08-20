@@ -164,3 +164,18 @@ is not used by the delete process. In fact the only properties that are used fro
    If the delete reaction tries to delete an already deleted record, the operation will
    be silently successful. On the contrary, trying to delete a record which doesn't exist at all,
    triggers an error.
+
+
+.. _user-reaction-response:
+
+Reaction response
+"""""""""""""""""
+
+The response contains a :code:`success` entry with value :code:`true` or :code:`false`.
+
+If the :code:`success` is :code:`false`, the response will contain a :code:`error` entry (string) for the delete reaction
+or an :code:`errors` entry (array of strings) for the import reaction. These contain information about what went wrong.
+
+If the :code:`success` is :code:`true`, the response will contain a :code:`message` entry (string) for the delete reaction
+or an :code:`messages` entry (array of strings) for the import reaction. These contain information about the number of
+operations performed.
