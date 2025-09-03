@@ -76,6 +76,14 @@ class XmlHandlerTest extends UnitTestCase
                 ],
                 'result' => 'foo',
             ],
+            'attribute value' => [
+                'structure' => '<item id="1">foo</item>',
+                'configuration' => [
+                    'field' => 'item',
+                    'attribute' => 'id',
+                ],
+                'result' => '1',
+            ],
             'xpath value' => [
                 'structure' => '<item><bar>foo</bar></item>',
                 'configuration' => [
@@ -124,7 +132,21 @@ class XmlHandlerTest extends UnitTestCase
         return [
             [
                 // Test elements are always wrapped in an <item> tag
-                'structure' => '<items><item><foo>me</foo><bar><who>you</who></bar><baz>them</baz></item><item><foo>me2</foo><bar><who>you2</who></bar><baz>them2</baz></item></items>',
+                'structure' => <<<'EOF'
+<items>
+    <item>
+        <foo id="1">me</foo>
+        <bar><who>you</who></bar>
+        <baz>them</baz>
+    </item>
+    <item>
+        <foo id="2">me2</foo>
+        <bar><who>you2</who></bar>
+        <baz>them2</baz>
+    </item>
+</items>
+EOF
+,
                 'configuration' => [
                     'first' => [
                         'field' => 'foo',
@@ -135,15 +157,21 @@ class XmlHandlerTest extends UnitTestCase
                     'third' => [
                         'field' => 'unknown',
                     ],
+                    'fourth' => [
+                        'field' => 'foo',
+                        'attribute' => 'id',
+                    ],
                 ],
                 'result' => [
                     [
                         'first' => 'me',
                         'second' => 'you',
+                        'fourth' => '1',
                     ],
                     [
                         'first' => 'me2',
                         'second' => 'you2',
+                        'fourth' => '2',
                     ],
                 ],
             ],
