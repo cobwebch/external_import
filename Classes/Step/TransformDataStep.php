@@ -23,6 +23,7 @@ use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\Utility\MappingUtility;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -238,6 +239,11 @@ class TransformDataStep extends AbstractStep
                 } catch (InvalidRecordException $e) {
                     // This exception means that the record must be removed from the dataset entirely
                     unset($records[$index]);
+
+                    $this->importer->addMessage(
+                        $e->getMessage(),
+                        AbstractMessage::WARNING
+                    );
                     $this->importer->debug(
                         sprintf(
                             $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:invalidRecordRemoved'),
@@ -253,6 +259,11 @@ class TransformDataStep extends AbstractStep
                 } catch (\Exception $e) {
                     // If the value could not be transformed, remove it from the imported dataset
                     unset($records[$index][$name]);
+
+                    $this->importer->addMessage(
+                        $e->getMessage(),
+                        AbstractMessage::WARNING
+                    );
                     $this->importer->debug(
                         sprintf(
                             $this->importer->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:transformationFailedWithMessage'),
