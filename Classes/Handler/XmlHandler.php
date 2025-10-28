@@ -226,11 +226,15 @@ class XmlHandler implements DataHandlerInterface
                     $columnConfiguration['xpath'],
                     $record
                 );
-                $selectedNode = $nodes->item(0);
-                $value = $this->extractValueFromNode(
-                    $selectedNode,
-                    $columnConfiguration
-                );
+                if ($nodes instanceof \DOMNodeList) {
+                    $selectedNode = $nodes->item(0);
+                    $value = $this->extractValueFromNode(
+                        $selectedNode,
+                        $columnConfiguration
+                    );
+                } elseif (is_string($nodes)) {
+                    $value = $nodes;
+                }
             } else {
                 $value = $this->extractValueFromNode(
                     $record,
@@ -353,13 +357,13 @@ class XmlHandler implements DataHandlerInterface
      * @param \DOMXPath $xPathObject Instantiated DOMXPath object
      * @param string $xPath XPath query to evaluate
      * @param \DOMNode|null $context Node giving the context of the XPath query (null for root node)
-     * @return \DOMNodeList List of found nodes
+     * @return \DOMNodeList|string List of found nodes or resolved value.
      * @throws \Exception
      */
-    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context = null): \DOMNodeList
+    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context = null): string|\DOMNodeList
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
-        if ($resultNodes->length > 0) {
+        if (is_string($resultNodes) || ($resultNodes instanceof \DOMNodeList && $resultNodes->length > 0) ) {
             return $resultNodes;
         }
         throw new \Exception(
