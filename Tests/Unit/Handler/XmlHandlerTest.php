@@ -146,7 +146,7 @@ class XmlHandlerTest extends UnitTestCase
     </item>
 </items>
 EOF
-,
+                ,
                 'configuration' => [
                     'first' => [
                         'field' => 'foo',
@@ -187,12 +187,64 @@ EOF
         // Load the XML into a DOM object
         $dom = new \DOMDocument();
         $dom->loadXML($structure, LIBXML_PARSEHUGE);
-        // Instantiate a XPath object and load with any defined namespaces
         $xPathObject = new \DOMXPath($dom);
         $nodeList = $dom->getElementsByTagName('item');
         self::assertSame(
             $result,
             $this->subject->getSubstructureValues($nodeList, $configuration, $xPathObject)
+        );
+    }
+
+    public static function getNodeListProvider(): array
+    {
+        return [
+            [
+                'structure' => <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<item>
+    <media>
+      <images>
+        <image name="xxl_1234_01.jpg" position="1" updatedDateTime="2025-02-20 15:44:57"/>
+        <image name="xxl_1234_02.jpg" position="2" updatedDateTime="2025-02-20 15:44:57"/>
+        <image name="xxl_1234_03.jpg" position="3" updatedDateTime="2025-02-20 15:44:58"/>
+      </images>
+    </media>
+</item>
+XML
+                ,
+                'configuration' => [
+                    'xpath' => 'media/images/image',
+                ],
+                'result' => <<<XML
+<?xml version="1.0"?>
+<image name="xxl_1234_01.jpg" position="1" updatedDateTime="2025-02-20 15:44:57"/>
+<image name="xxl_1234_02.jpg" position="2" updatedDateTime="2025-02-20 15:44:57"/>
+<image name="xxl_1234_03.jpg" position="3" updatedDateTime="2025-02-20 15:44:58"/>
+
+XML
+                ,
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('getNodeListProvider')]
+    public function getNodeListReturnsExpectedList(string $structure, array $configuration, string $result): void
+    {
+        // Load the XML into a DOM object
+        $dom = new \DOMDocument();
+        $dom->loadXML($structure, LIBXML_PARSEHUGE);
+        $records = $dom->getElementsByTagName('item');
+        $xPathObject = new \DOMXPath($dom);
+        $nodeList = $this->subject->getNodeList($records->item(0), $configuration, $xPathObject);
+        $resultingDocument = new \DOMDocument();
+        // Test the result by writing the selected nodes to a new document
+        foreach ($nodeList as $node) {
+            $node = $resultingDocument->importNode($node, true);
+            $resultingDocument->appendChild($node);
+        }
+        self::assertSame(
+            $result,
+            $resultingDocument->saveXML()
         );
     }
 }
