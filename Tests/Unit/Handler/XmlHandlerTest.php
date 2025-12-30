@@ -261,6 +261,31 @@ XML
 XML
                 ,
             ],
+            'field and xpath with function' => [
+                'structure' => <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<item>
+    <media>
+      <images>
+        <image name="xxl_1234_01.jpg" position="1" updatedDateTime="2025-02-20 15:44:57"/>
+        <image name="xxl_1234_02.jpg" position="2" updatedDateTime="2025-02-20 15:44:57"/>
+        <image name="xxl_1234_03.jpg" position="3" updatedDateTime="2025-02-20 15:44:58"/>
+      </images>
+    </media>
+</item>
+XML
+                ,
+                'configuration' => [
+                    'field' => 'media',
+                    'xpath' => 'images/image[contains(@position, "2")]',
+                ],
+                'result' => <<<XML
+<?xml version="1.0"?>
+<image name="xxl_1234_02.jpg" position="2" updatedDateTime="2025-02-20 15:44:57"/>
+
+XML
+                ,
+            ],
         ];
     }
 
