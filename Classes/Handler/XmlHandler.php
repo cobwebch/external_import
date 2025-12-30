@@ -287,7 +287,14 @@ class XmlHandler implements DataHandlerInterface
                     $record
                 );
             } else {
-                $nodeList = $record;
+                // Create a DOMNodeList by querying the current node (record) itself with XPath
+                // (weird, but the alternative is to create a new DOMDocument and import the node into it,
+                // which is not really any better)
+                $nodeList = $this->selectNodeWithXpath(
+                    $xPathObject,
+                    '.',
+                    $record
+                );
             }
         }
         return $nodeList;

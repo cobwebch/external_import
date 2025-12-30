@@ -198,7 +198,17 @@ EOF
     public static function getNodeListProvider(): array
     {
         return [
-            [
+            'node itself' => [
+                'structure' => '<?xml version="1.0" encoding="UTF-8"?><item>Foo</item>',
+                'configuration' => [],
+                'result' => <<<XML
+<?xml version="1.0"?>
+<item>Foo</item>
+
+XML
+                ,
+            ],
+            'only xpath' => [
                 'structure' => <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
@@ -214,6 +224,33 @@ XML
                 ,
                 'configuration' => [
                     'xpath' => 'media/images/image',
+                ],
+                'result' => <<<XML
+<?xml version="1.0"?>
+<image name="xxl_1234_01.jpg" position="1" updatedDateTime="2025-02-20 15:44:57"/>
+<image name="xxl_1234_02.jpg" position="2" updatedDateTime="2025-02-20 15:44:57"/>
+<image name="xxl_1234_03.jpg" position="3" updatedDateTime="2025-02-20 15:44:58"/>
+
+XML
+                ,
+            ],
+            'field and xpath' => [
+                'structure' => <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<item>
+    <media>
+      <images>
+        <image name="xxl_1234_01.jpg" position="1" updatedDateTime="2025-02-20 15:44:57"/>
+        <image name="xxl_1234_02.jpg" position="2" updatedDateTime="2025-02-20 15:44:57"/>
+        <image name="xxl_1234_03.jpg" position="3" updatedDateTime="2025-02-20 15:44:58"/>
+      </images>
+    </media>
+</item>
+XML
+                ,
+                'configuration' => [
+                    'field' => 'media',
+                    'xpath' => 'images/image',
                 ],
                 'result' => <<<XML
 <?xml version="1.0"?>
