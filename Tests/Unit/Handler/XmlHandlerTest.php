@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\XpathSelectionFailedException;
 use Cobweb\ExternalImport\Handler\XmlHandler;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -36,6 +37,114 @@ class XmlHandlerTest extends UnitTestCase
         $this->subject = new XmlHandler(
             $this->getMockBuilder(EventDispatcher::class)->disableOriginalConstructor()->getMock()
         );
+    }
+
+    public static function selectWithXpathValidProvider(): array
+    {
+        return [
+            'node selection without context' => [
+                'structure' => <<<'XML'
+<items>
+    <item>foo</item>
+    <item>bar</item>
+</items>
+XML,
+                'xpath' => 'item',
+                'context' => '',
+                'result' => <<<XML
+<?xml version="1.0"?>
+<item>foo</item>
+<item>bar</item>
+
+XML,
+            ],
+            'node selection with context' => [
+                'structure' => <<<'XML'
+<items>
+    <good>
+        <item>foo</item>
+    </good>
+    <bad>
+        <item>bar</item>
+    </bad>
+</items>
+XML,
+                'xpath' => 'item',
+                'context' => 'good',
+                'result' => <<<XML
+<?xml version="1.0"?>
+<item>foo</item>
+
+XML,
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('selectWithXpathValidProvider')]
+    public function selectWithXpathReturnsNodeListOrStringWithValidPath(string $structure, string $xpath, string $context, string $result): void
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML($structure, LIBXML_PARSEHUGE);
+        $xPathObject = new \DOMXPath($dom);
+        $contextNode = null;
+        if (!empty($context)) {
+            $contextNode = $dom->getElementsByTagName($context)->item(0);
+        }
+        $nodeList = $this->subject->selectNodeWithXpath($xPathObject, $xpath, $contextNode);
+        $resultingDocument = new \DOMDocument();
+        // Test the result by writing the selected nodes to a new document
+        foreach ($nodeList as $node) {
+            $node = $resultingDocument->importNode($node, true);
+            $resultingDocument->appendChild($node);
+        }
+        self::assertSame(
+            $result,
+            $resultingDocument->saveXML()
+        );
+    }
+
+    public static function selectWithXpathInvalidProvider(): array
+    {
+        return [
+            'not existing node' => [
+                'structure' => <<<'XML'
+<items>
+    <item>foo</item>
+    <item>bar</item>
+</items>
+XML,
+                'xpath' => 'blob',
+                'context' => '',
+            ],
+            'wrong context' => [
+                'structure' => <<<'XML'
+<items>
+    <good>
+        <goodItem>foo</goodItem>
+    </good>
+    <bad>
+        <badItem>bar</badItem>
+    </bad>
+</items>
+XML,
+                'xpath' => 'badItem',
+                'context' => 'good',
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('selectWithXpathInvalidProvider')]
+    public function selectWithXpathThrowsExceptionWithInvalidPath(string $structure, string $xpath, string $context): void
+    {
+        $this->expectException(XpathSelectionFailedException::class);
+        $dom = new \DOMDocument();
+        $dom->loadXML($structure, LIBXML_PARSEHUGE);
+        $xPathObject = new \DOMXPath($dom);
+        $contextNode = null;
+        if (!empty($context)) {
+            $contextNode = $dom->getElementsByTagName($context)->item(0);
+        }
+        $this->subject->selectNodeWithXpath($xPathObject, $xpath, $contextNode);
     }
 
     public static function getValueSuccessProvider(): array
@@ -115,10 +224,8 @@ class XmlHandlerTest extends UnitTestCase
     #[Test] #[DataProvider('getValueSuccessProvider')]
     public function getValueReturnsValueIfFound(string $structure, array $configuration, mixed $result): void
     {
-        // Load the XML into a DOM object
         $dom = new \DOMDocument();
         $dom->loadXML($structure, LIBXML_PARSEHUGE);
-        // Instantiate a XPath object and load with any defined namespaces
         $xPathObject = new \DOMXPath($dom);
         $value = $this->subject->getValue($dom, $configuration, $xPathObject);
         self::assertSame(
@@ -184,7 +291,6 @@ EOF
     #[Test] #[DataProvider('getSubstructureProvider')]
     public function getSubstructureValuesReturnsExpectedRows(string $structure, array $configuration, array $result): void
     {
-        // Load the XML into a DOM object
         $dom = new \DOMDocument();
         $dom->loadXML($structure, LIBXML_PARSEHUGE);
         $xPathObject = new \DOMXPath($dom);
@@ -292,7 +398,6 @@ XML
     #[Test] #[DataProvider('getNodeListProvider')]
     public function getNodeListReturnsExpectedList(string $structure, array $configuration, string $result): void
     {
-        // Load the XML into a DOM object
         $dom = new \DOMDocument();
         $dom->loadXML($structure, LIBXML_PARSEHUGE);
         $records = $dom->getElementsByTagName('item');

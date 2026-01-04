@@ -1,3 +1,11 @@
+2026-01-04 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Expand test coverage of XmlHandler, references #389
+
+2025-12-30 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Fix bug in XmlHandler and improve test coverage
+
 2025-08-20 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Consider only live records in uid repository, resolves #387

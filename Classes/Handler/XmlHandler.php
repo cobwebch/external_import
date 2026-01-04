@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Handler;
 
 use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
+use Cobweb\ExternalImport\Exception\XpathSelectionFailedException;
 use Cobweb\ExternalImport\Importer;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -361,16 +362,22 @@ class XmlHandler implements DataHandlerInterface
      * @param string $xPath XPath query to evaluate
      * @param \DOMNode|null $context Node giving the context of the XPath query (null for root node)
      * @return \DOMNodeList List of found nodes
-     * @throws \Exception
+     * @throws XpathSelectionFailedException
      */
     public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context = null): \DOMNodeList
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
+        if ($resultNodes === false) {
+            throw new XpathSelectionFailedException(
+                'An error occurred trying to select with xPath: ' . $xPath,
+                1767541086
+            );
+        }
         if ($resultNodes->length > 0) {
             return $resultNodes;
         }
-        throw new \Exception(
-            'No node found with xPath: ' . $xPath,
+        throw new XpathSelectionFailedException(
+            'No node(s) found with xPath: ' . $xPath,
             1399497464
         );
     }
