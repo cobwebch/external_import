@@ -1,3 +1,7 @@
+2026-01-07 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Allow XPath functions to directly return a result, resolves #389
+
 2026-01-04 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Expand test coverage of XmlHandler, references #389

@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
 use Cobweb\ExternalImport\Exception\XpathSelectionFailedException;
 use Cobweb\ExternalImport\Importer;
+use DOMNodeList;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
@@ -69,10 +70,16 @@ class XmlHandler implements DataHandlerInterface
         $records = [];
         if (array_key_exists('nodepath', $generalConfiguration)) {
             try {
-                $records = $this->selectNodeWithXpath(
+                $records = $this->selectWithXpath(
                     $xPathObject,
                     $generalConfiguration['nodepath']
                 );
+                // Only a node list makes sense in this context, log an error if anything else was returned
+                if (!($records instanceof \DomNodeList)) {
+                    $importer->addMessage(
+                        'No nodes could be selected with existing configuration',
+                    );
+                }
             } catch (\Exception $e) {
                 $importer->addMessage(
                     $e->getMessage(),
@@ -201,11 +208,15 @@ class XmlHandler implements DataHandlerInterface
                 $selectedNode = $nodeList->item(0);
                 // If an XPath expression is defined, apply it (relative to currently selected node)
                 if (!empty($columnConfiguration['xpath'])) {
-                    $nodes = $this->selectNodeWithXpath(
+                    $nodes = $this->selectWithXpath(
                         $xPathObject,
                         $columnConfiguration['xpath'],
                         $selectedNode
                     );
+                    // If result is a string, return it as is
+                    if (is_string($nodes)) {
+                        return $nodes;
+                    }
                     $selectedNode = $nodes->item(0);
                 }
                 $value = $this->extractValueFromNode(
@@ -222,11 +233,15 @@ class XmlHandler implements DataHandlerInterface
         } else {
             // If an XPath expression is defined, apply it (relative to current node)
             if (!empty($columnConfiguration['xpath'])) {
-                $nodes = $this->selectNodeWithXpath(
+                $nodes = $this->selectWithXpath(
                     $xPathObject,
                     $columnConfiguration['xpath'],
                     $record
                 );
+                // If result is a string, return it as is
+                if (is_string($nodes)) {
+                    return $nodes;
+                }
                 $selectedNode = $nodes->item(0);
                 $value = $this->extractValueFromNode(
                     $selectedNode,
@@ -267,7 +282,7 @@ class XmlHandler implements DataHandlerInterface
 
             if ($nodeList->length > 0 && !empty($columnConfiguration['xpath'])) {
                 $selectedNode = $nodeList->item(0);
-                $nodeList = $this->selectNodeWithXpath(
+                $nodeList = $this->selectWithXpath(
                     $xPathObject,
                     $columnConfiguration['xpath'],
                     $selectedNode
@@ -282,7 +297,7 @@ class XmlHandler implements DataHandlerInterface
         } else {
             // If an XPath expression is defined, apply it (relative to current node)
             if (!empty($columnConfiguration['xpath'])) {
-                $nodeList = $this->selectNodeWithXpath(
+                $nodeList = $this->selectWithXpath(
                     $xPathObject,
                     $columnConfiguration['xpath'],
                     $record
@@ -291,12 +306,16 @@ class XmlHandler implements DataHandlerInterface
                 // Create a DOMNodeList by querying the current node (record) itself with XPath
                 // (weird, but the alternative is to create a new DOMDocument and import the node into it,
                 // which is not really any better)
-                $nodeList = $this->selectNodeWithXpath(
+                $nodeList = $this->selectWithXpath(
                     $xPathObject,
                     '.',
                     $record
                 );
             }
+        }
+        // Only a node list makes sense in this context, create an empty list if anything else was returned
+        if (!($nodeList instanceof \DomNodeList)) {
+            $nodeList = new \DomNodeList();
         }
         return $nodeList;
     }
@@ -361,10 +380,10 @@ class XmlHandler implements DataHandlerInterface
      * @param \DOMXPath $xPathObject Instantiated DOMXPath object
      * @param string $xPath XPath query to evaluate
      * @param \DOMNode|null $context Node giving the context of the XPath query (null for root node)
-     * @return \DOMNodeList List of found nodes
+     * @return \DOMNodeList|string List of found nodes
      * @throws XpathSelectionFailedException
      */
-    public function selectNodeWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context = null): \DOMNodeList
+    public function selectWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context = null): \DOMNodeList|string
     {
         $resultNodes = $xPathObject->evaluate($xPath, $context);
         if ($resultNodes === false) {
@@ -373,7 +392,7 @@ class XmlHandler implements DataHandlerInterface
                 1767541086
             );
         }
-        if ($resultNodes->length > 0) {
+        if (($resultNodes instanceof \DOMNodeList && $resultNodes->length > 0) || is_string($resultNodes)) {
             return $resultNodes;
         }
         throw new XpathSelectionFailedException(

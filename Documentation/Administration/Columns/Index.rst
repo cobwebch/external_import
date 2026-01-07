@@ -218,6 +218,7 @@ Description
   The value will be taken from the first node returned by the query.
   If the :ref:`attribute <administration-columns-properties-attribute>` property is
   also defined, it will be applied to the node returned by the XPath query.
+  If the XPath query is just a function (without selector), the resulting string will be returned.
 
   Please see the :ref:`namespaces <administration-general-tca-properties-namespaces>`
   property for declaring namespaces to use in a XPath query.

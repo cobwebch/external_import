@@ -77,6 +77,16 @@ XML,
 
 XML,
             ],
+            'string selection' => [
+                'structure' => <<<'XML'
+<items>
+    <item id="foo1" quality="poor">foo</item>
+</items>
+XML,
+                'xpath' => 'concat(@id, \'-\', @quality)',
+                'context' => 'item',
+                'result' => 'foo1-poor',
+            ],
         ];
     }
 
@@ -90,16 +100,21 @@ XML,
         if (!empty($context)) {
             $contextNode = $dom->getElementsByTagName($context)->item(0);
         }
-        $nodeList = $this->subject->selectNodeWithXpath($xPathObject, $xpath, $contextNode);
-        $resultingDocument = new \DOMDocument();
-        // Test the result by writing the selected nodes to a new document
-        foreach ($nodeList as $node) {
-            $node = $resultingDocument->importNode($node, true);
-            $resultingDocument->appendChild($node);
+        $nodeList = $this->subject->selectWithXpath($xPathObject, $xpath, $contextNode);
+        if (is_string($nodeList)) {
+            $effectiveResult = $nodeList;
+        } else {
+            $resultingDocument = new \DOMDocument();
+            // Test the result by writing the selected nodes to a new document
+            foreach ($nodeList as $node) {
+                $node = $resultingDocument->importNode($node, true);
+                $resultingDocument->appendChild($node);
+            }
+            $effectiveResult = $resultingDocument->saveXML();
         }
         self::assertSame(
             $result,
-            $resultingDocument->saveXML()
+            $effectiveResult,
         );
     }
 
@@ -144,7 +159,7 @@ XML,
         if (!empty($context)) {
             $contextNode = $dom->getElementsByTagName($context)->item(0);
         }
-        $this->subject->selectNodeWithXpath($xPathObject, $xpath, $contextNode);
+        $this->subject->selectWithXpath($xPathObject, $xpath, $contextNode);
     }
 
     public static function getValueSuccessProvider(): array
@@ -199,6 +214,14 @@ XML,
                     'xpath' => 'item/bar',
                 ],
                 'result' => 'foo',
+            ],
+            'xpath value, with function' => [
+                'structure' => '<item id="bar1" name="Foo">foo</item>',
+                'configuration' => [
+                    'field' => 'item',
+                    'xpath' => 'concat(@id, \'-\', @name)',
+                ],
+                'result' => 'bar1-Foo',
             ],
             'substructure as string' => [
                 'structure' => '<item><foo>me</foo><bar>you</bar></item>',
