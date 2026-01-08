@@ -22,6 +22,7 @@ use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\ItemRepository;
 use Cobweb\ExternalImport\Event\GetExternalKeyEvent;
+use Cobweb\ExternalImport\Event\ModifyReactionResponseEvent;
 use Cobweb\ExternalImport\Exception\DeletedRecordException;
 use Cobweb\ExternalImport\Exception\InvalidConfigurationException;
 use Cobweb\ExternalImport\Exception\InvalidPayloadException;
@@ -54,6 +55,7 @@ class DeleteReaction extends AbstractReaction implements ReactionInterface
 
     public function react(ServerRequestInterface $request, array $payload, ReactionInstruction $reaction): ResponseInterface
     {
+        $responseCode = 200;
         $configurationKey = (string)($reaction->toArray()['external_import_configuration'] ?? '');
         try {
             $configurationKeyObject = $this->validatePayloadAndConfigurationKey($payload, $configurationKey);
@@ -65,20 +67,34 @@ class DeleteReaction extends AbstractReaction implements ReactionInterface
                     $deletedItems
                 ),
             ];
-            return $this->jsonResponse($responseBody);
         } catch (\Throwable $e) {
-            return $this->jsonResponse(
-                [
-                    'success' => false,
-                    'error' => sprintf(
-                        '%s [%d]',
-                        $e->getMessage(),
-                        $e->getCode()
-                    ),
-                ],
-                400
-            );
+            $responseBody = [
+                'success' => false,
+                'error' => sprintf(
+                    '%s [%d]',
+                    $e->getMessage(),
+                    $e->getCode()
+                ),
+            ];
+            $responseCode = 400;
         }
+
+        // Fire event to modify response body and/or code
+        $event = $this->eventDispatcher->dispatch(
+            new ModifyReactionResponseEvent(
+                $this,
+                $responseBody,
+                $responseCode,
+                isset($configurationKeyObject) ? [$configurationKeyObject] : []
+            )
+        );
+        $responseBody = $event->getResponseBody();
+        $responseCode = $event->getResponseCode();
+
+        return $this->jsonResponse(
+            $responseBody,
+            $responseCode
+        );
     }
 
     /**

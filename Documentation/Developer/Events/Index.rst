@@ -6,6 +6,12 @@
 Events
 ^^^^^^
 
+
+.. _developer-import-events:
+
+Import-related events
+~~~~~~~~~~~~~~~~~~~~~
+
 Several events are triggered during the external import process in order
 to provide entry points for custom actions, improving the flexibility of
 the whole tool. Some events are not triggered when running in
@@ -326,17 +332,23 @@ Report
       Current instance of :php:`\Cobweb\ExternalImport\Importer`.
 
 
+.. _developer-reaction-events:
+
+Reaction-related events
+~~~~~~~~~~~~~~~~~~~~~
+
+The following events are triggered during the execution of reactions.
+
 .. _developer-events-get-external-key:
 
-Report
-""""""
+Get external key
+""""""""""""""""
 
 .. php:namespace:: Cobweb\ExternalImport\Event
 
 .. php:class:: GetExternalKeyEvent
 
-   This event is not related to the import process. It is triggered by the
-   "Delete external data" reaction. It makes it possible to retrieve the key
+   This event is triggered by the "Delete external data" reaction. It makes it possible to retrieve the key
    to the external data, if it is not stored in the "external_id" field as expected.
 
    .. php:method:: getConfiguration()
@@ -354,3 +366,44 @@ Report
    .. php:method:: setExternalKey()
 
       Use this method to set the value of the external key, once you have performed your custom processing of the data.
+
+
+.. _developer-events-modify-response:
+
+Modify response
+"""""""""""""""
+
+.. php:namespace:: Cobweb\ExternalImport\Event
+
+.. php:class:: ModifyReactionResponseEvent
+
+   This event is triggered by both reactions. It makes it possible to modify the response body and/or
+   the response code, before the response is sent back.
+
+   .. php:method:: getReaction()
+
+      Instance of :php:`\Cobweb\ExternalImport\Reaction\AbstractReaction`, which can be an import or a delete reaction.
+
+   .. php:method:: getConfigurations()
+
+      Array of :php:`\Cobweb\ExternalImport\Domain\Model\ConfigurationKey` objects that were called up by the reaction.
+      In the case of the delete reaction, there's always only one configuration object.
+
+   .. php:method:: getResponseBody()
+
+      Value of the response body before the event is fired. It is an array containing a success status and
+      one or more sub-array with messages (success, error or warning messages).
+
+   .. php:method:: setResponseBody()
+
+      Use this method to set the value of the response body once you have modified it.
+
+   .. php:method:: getResponseCode()
+
+      Value of the response code before the event is fired. It will be either 200 or 400, depending on whether
+      the reaction completed successfully or not.
+
+   .. php:method:: setResponseCode()
+
+      Use this method to set the value of the response code once you have modified it. It should be a valid
+      `HTTP response code <https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status>`_.

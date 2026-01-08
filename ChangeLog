@@ -1,6 +1,7 @@
 2026-01-08 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Avoid overwriting existing list of child records to delete, resolves #391
+    * Add event to modify reaction response, resolves #392
 
 2026-01-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
