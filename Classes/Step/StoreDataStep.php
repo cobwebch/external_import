@@ -405,9 +405,7 @@ class StoreDataStep extends AbstractStep
         $deletes = 0;
         // Register all child records marked for deletion
         foreach ($this->childRecordsToDelete as $childTable => $childList) {
-            $tceDeleteCommands = [
-                $childTable => [],
-            ];
+            $tceDeleteCommands[$childTable] = [];
             foreach ($childList as $child) {
                 $tceDeleteCommands[$childTable][$child] = [
                     'delete' => 1,
