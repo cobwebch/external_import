@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Dto\ChildrenSorting;
 use Cobweb\ExternalImport\Domain\Model\ProcessedConfiguration;
 use Cobweb\ExternalImport\Domain\Repository\ChildrenRepository;
+use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Event\CmdmapPostprocessEvent;
 use Cobweb\ExternalImport\Event\DatamapPostprocessEvent;
 use Cobweb\ExternalImport\Event\DeleteRecordsPreprocessEvent;
@@ -76,7 +77,8 @@ class StoreDataStep extends AbstractStep
         /**
          * @var ChildrenSorting DTO object for storing children sorting data
          */
-        protected ChildrenSorting $childrenSortingInformation
+        protected ChildrenSorting $childrenSortingInformation,
+        protected TcaRepositoryInterface $tcaRepository
     ) {}
 
     public function setImporter(Importer $importer): void
@@ -312,7 +314,7 @@ class StoreDataStep extends AbstractStep
         // If the table has a sorting field, reverse the data array,
         // otherwise the first record will come last (because TCEmain
         // itself inverts the incoming order)
-        if (!empty($GLOBALS['TCA'][$mainTable]['ctrl']['sortby'])) {
+        if (!empty($this->tcaRepository->getTca()[$mainTable]['ctrl']['sortby'])) {
             $tce->reverseOrder = true;
         }
         // Non-multidimensional saved data is kept for backwards-compatibility
@@ -1119,7 +1121,7 @@ class StoreDataStep extends AbstractStep
      */
     public function updateSlugs(string $table, array $uids): void
     {
-        $slugUtility = GeneralUtility::makeInstance(SlugUtility::class, $this->importer);
+        $slugUtility = GeneralUtility::makeInstance(SlugUtility::class, $this->importer, $this->tcaRepository);
         $slugUtility->updateAll($table, $uids);
     }
 

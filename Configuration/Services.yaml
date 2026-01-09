@@ -26,6 +26,11 @@ services:
     public: true
     shared: false
 
+  # Make public, as there are some places where we use GeneralUtility::makeInstance(), e.g. in ViewHelper due to static method.
+  Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface:
+    alias: Cobweb\ExternalImport\Domain\Repository\TcaDirectAccessRepository
+    public: true
+
   Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository:
     public: true
     shared: false
