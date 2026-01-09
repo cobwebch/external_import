@@ -1,6 +1,35 @@
-2025-06-23 Daniel Siepmann (Codappix GmbH)  <daniel.siepmann@codappix.com>
+2026-01-09 Daniel Siepmann (Codappix GmbH)  <daniel.siepmann@codappix.com>
 
     * Centralize TCA access to allow modification, resolves #382
+
+2026-01-08 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Avoid overwriting existing list of child records to delete, resolves #391
+    * Add event to modify reaction response, resolves #392
+
+2026-01-07 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Allow XPath functions to directly return a result, resolves #389
+
+2026-01-04 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Expand test coverage of XmlHandler, references #389
+
+2025-12-30 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Fix bug in XmlHandler and improve test coverage
+
+2025-08-20 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Consider only live records in uid repository, resolves #387
+    * Add documentation about reaction response, resolves #386
+    * Release version 8.1.3
+
+2025-07-23 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Consider only live records in mapping utility, resolves #384
+    * Prevent upgrade wizard from crashing when cruser_id field has been removed, resolves #381
+    * Release version 8.1.2
 
 2025-06-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 

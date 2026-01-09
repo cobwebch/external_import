@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -81,6 +82,11 @@ class UidRepository
             ->add(
                 GeneralUtility::makeInstance(
                     DeletedRestriction::class
+                )
+            )
+            ->add(
+                GeneralUtility::makeInstance(
+                    WorkspaceRestriction::class
                 )
             );
         $queryBuilder->select($referenceUidField, 'uid', 'pid')

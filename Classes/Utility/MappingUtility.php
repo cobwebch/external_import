@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
+use TYPO3\CMS\Core\Database\Query\Restriction\WorkspaceRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -38,6 +39,7 @@ class MappingUtility implements ImporterAwareInterface
      * @param string $columnName Name of the column whose values must be mapped
      * @param array $mappingInformation Mapping configuration
      * @return array
+     * @throws \Doctrine\DBAL\Exception
      */
     public function mapData(array $records, string $table, string $columnName, array $mappingInformation): array
     {
@@ -167,6 +169,7 @@ class MappingUtility implements ImporterAwareInterface
      *
      * @param array $mappingData Data defining the mapping of fields
      * @return array Hash table for mapping
+     * @throws \Doctrine\DBAL\Exception
      */
     public function getMapping(array $mappingData): array
     {
@@ -204,6 +207,11 @@ class MappingUtility implements ImporterAwareInterface
                 ->add(
                     GeneralUtility::makeInstance(
                         DeletedRestriction::class
+                    )
+                )
+                ->add(
+                    GeneralUtility::makeInstance(
+                        WorkspaceRestriction::class
                     )
                 );
             $result = $queryBuilder->selectLiteral($referenceField, $valueField)

@@ -27,16 +27,11 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 abstract class AbstractReaction
 {
-    protected ResponseFactoryInterface $responseFactory;
-    protected StreamFactoryInterface $streamFactory;
-    protected EventDispatcherInterface $eventDispatcher;
-
-    public function __construct(ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory, EventDispatcherInterface $eventDispatcher)
-    {
-        $this->responseFactory = $responseFactory;
-        $this->streamFactory = $streamFactory;
-        $this->eventDispatcher = $eventDispatcher;
-    }
+    public function __construct(
+        protected ResponseFactoryInterface $responseFactory,
+        protected StreamFactoryInterface $streamFactory,
+        protected EventDispatcherInterface $eventDispatcher
+    ) {}
 
     /**
      * Prepares and returns the JSON response

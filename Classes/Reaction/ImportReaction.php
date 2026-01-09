@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Reaction;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Enum\CallType;
+use Cobweb\ExternalImport\Event\ModifyReactionResponseEvent;
 use Cobweb\ExternalImport\Exception\InvalidPayloadException;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
@@ -58,6 +59,7 @@ class ImportReaction extends AbstractReaction implements ReactionInterface
      */
     public function react(ServerRequestInterface $request, array $payload, ReactionInstruction $reaction): ResponseInterface
     {
+        $responseCode = 200;
         $configurationKey = (string)($reaction->toArray()['external_import_configuration'] ?? '');
         try {
             $configurations = $this->validatePayloadAndConfigurationKey($payload, $configurationKey);
@@ -108,40 +110,55 @@ class ImportReaction extends AbstractReaction implements ReactionInterface
                 }
             }
 
-            // Return response
+            // Prepare response
             if (count($errors) > 0) {
                 // If errors occurred, report only about errors
-                return $this->jsonResponse(
-                    [
-                        'success' => false,
-                        'errors' => $errors,
-                    ],
-                    400
-                );
+                $responseBody = [
+                    'success' => false,
+                    'errors' => $errors,
+                ];
+                $responseCode = 400;
+            } else {
+                // If import completed successfully, report about success and possible warnings
+                $responseBody = [
+                    'success' => true,
+                    'messages' => $successes,
+                ];
+                if (count($warnings) > 0) {
+                    $responseBody['warnings'] = $warnings;
+                }
             }
-            // If import completed successfully, report about success and possible warnings
-            $responseBody = [
-                'success' => true,
-                'messages' => $successes,
-            ];
-            if (count($warnings) > 0) {
-                $responseBody['warnings'] = $warnings;
-            }
-            return $this->jsonResponse($responseBody);
 
         } catch (\Throwable $e) {
-            return $this->jsonResponse(
-                [
-                    'success' => false,
-                    'error' => sprintf(
+            $responseBody = [
+                'success' => false,
+                'errors' => [
+                    sprintf(
                         '%s [%d]',
                         $e->getMessage(),
                         $e->getCode()
                     ),
                 ],
-                400
-            );
+            ];
+            $responseCode = 400;
         }
+
+        // Fire event to modify response body and/or code
+        $event = $this->eventDispatcher->dispatch(
+            new ModifyReactionResponseEvent(
+                $this,
+                $responseBody,
+                $responseCode,
+                $configurations ?? []
+            )
+        );
+        $responseBody = $event->getResponseBody();
+        $responseCode = $event->getResponseCode();
+
+        return $this->jsonResponse(
+            $responseBody,
+            $responseCode
+        );
     }
 
     /**
