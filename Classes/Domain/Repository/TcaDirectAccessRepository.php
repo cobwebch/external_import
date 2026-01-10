@@ -21,7 +21,7 @@ namespace Cobweb\ExternalImport\Domain\Repository;
  * Default implementation of the interface.
  * This is backwards compatible and directly accesses the globals TCA.
  */
-class TcaDirectAccessRepository implements TcaRepositoryInterface
+class TcaDirectAccessRepository extends AbstractTcaRepository
 {
     public function getTca(): array
     {

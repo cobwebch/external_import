@@ -33,4 +33,24 @@ interface TcaRepositoryInterface
      * Fetch the actual TCA configuration to use.
      */
     public function getTca(): array;
+
+    /**
+     * Fetch the general part of the External Import configuration for the given table and index combination.
+     */
+    public function getExternalGeneralConfigurationForTableAndIndex(string $table, int|string $index): ?array;
+
+    /**
+     * Fetch the additional fields part of the External Import configuration for the given table and index combination.
+     */
+    public function getExternalAdditionalFieldsConfigurationForTableAndIndex(string $table, int|string $index): ?array;
+
+    /**
+     * Fetch the External Import configuration for all columns of the given table and index combination.
+     */
+    public function getExternalColumnsConfigurationForTableAndIndex(string $table, int|string $index, int|string|null $alternateIndex): ?array;
+
+    /**
+     * Fetch the list of general parts for all existing External Import configurations
+     */
+    public function getAllGeneralExternalConfigurations(): array;
 }

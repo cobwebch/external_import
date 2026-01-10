@@ -67,10 +67,10 @@ class ConfigurationRepository
         ];
 
         // General configuration
-        $tca = $this->tcaRepository->getTca();
-        if (isset($tca[$table]['external']['general'][$index])) {
+        $generalTca = $this->tcaRepository->getExternalGeneralConfigurationForTableAndIndex($table, $index);
+        if ($generalTca !== null) {
             // Ignore disabled configuration
-            if ($tca[$table]['external']['general'][$index]['disabled'] ?? false) {
+            if ($generalTca['disabled'] ?? false) {
                 throw new NoConfigurationException(
                     sprintf(
                         'Configuration for table %s and index %s is disabled',
@@ -80,9 +80,7 @@ class ConfigurationRepository
                     1740733452
                 );
             }
-            $configuration['general'] = $this->processGeneralConfiguration(
-                $tca[$table]['external']['general'][$index]
-            );
+            $configuration['general'] = $this->processGeneralConfiguration($generalTca);
         } else {
             throw new NoConfigurationException(
                 sprintf(
@@ -95,26 +93,16 @@ class ConfigurationRepository
         }
 
         // Load additional fields configuration
-        if (isset($tca[$table]['external']['additionalFields'][$index])) {
-            $configuration['additionalFields'] = $tca[$table]['external']['additionalFields'][$index];
-        }
+        $configuration['additionalFields'] = $this->tcaRepository
+            ->getExternalAdditionalFieldsConfigurationForTableAndIndex($table, $index) ?? [];
 
         // Load columns configuration
-        // Override the configuration index for columns, if so defined
-        $alternateIndex = $configuration['general']['useColumnIndex'] ?? '';
-        if (isset($tca[$table]['columns'])) {
-            $columnsConfiguration = $tca[$table]['columns'];
-            ksort($columnsConfiguration);
-            foreach ($columnsConfiguration as $columnName => $columnData) {
-                // If a configuration for the given column and index exists, it always takes precedence,
-                // otherwise the alternate index is considered, if defined
-                if (isset($columnData['external'][$index])) {
-                    $configuration['columns'][$columnName] = $columnData['external'][$index];
-                } elseif ($alternateIndex !== '' && isset($columnData['external'][$alternateIndex])) {
-                    $configuration['columns'][$columnName] = $columnData['external'][$alternateIndex];
-                }
-            }
-        }
+        $configuration['columns'] = $this->tcaRepository
+            ->getExternalColumnsConfigurationForTableAndIndex(
+                $table,
+                $index,
+                $configuration['general']['useColumnIndex'] ?? null
+            );
 
         return $configuration;
     }
@@ -127,36 +115,34 @@ class ConfigurationRepository
     public function findOrderedConfigurations(): array
     {
         $externalTables = [];
-        foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
-            if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
-                $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
-                foreach ($generalConfiguration as $index => $externalConfiguration) {
-                    // Skip disabled configurations
-                    if ($externalConfiguration['disabled'] ?? false) {
-                        continue;
+        $allConfigurations = $this->tcaRepository->getAllGeneralExternalConfigurations();
+        foreach ($allConfigurations as $tableName => $externalConfigurations) {
+            foreach ($externalConfigurations as $index => $externalConfiguration) {
+                // Skip disabled configurations
+                if ($externalConfiguration['disabled'] ?? false) {
+                    continue;
+                }
+                if (!empty($externalConfiguration['connector'])) {
+                    // Default priority if not defined, set to very low
+                    $priority = $externalConfiguration['priority'] ?? Importer::DEFAULT_PRIORITY;
+                    if (!isset($externalTables[$priority])) {
+                        $externalTables[$priority] = [];
                     }
-                    if (!empty($externalConfiguration['connector'])) {
-                        // Default priority if not defined, set to very low
-                        $priority = $externalConfiguration['priority'] ?? Importer::DEFAULT_PRIORITY;
-                        if (!isset($externalTables[$priority])) {
-                            $externalTables[$priority] = [];
-                        }
-                        if (is_array($externalConfiguration['groups'] ?? [])) {
-                            $groups = $externalConfiguration['groups'] ?? [];
-                            // TODO: drop support for the "group" property in the next major version
-                        } elseif (array_key_exists('group', $externalConfiguration)) {
-                            $groups = [
-                                $externalConfiguration['group'],
-                            ];
-                        } else {
-                            $groups = [];
-                        }
-                        $externalTables[$priority][] = [
-                            'table' => $tableName,
-                            'index' => $index,
-                            'groups' => $groups,
+                    if (is_array($externalConfiguration['groups'] ?? [])) {
+                        $groups = $externalConfiguration['groups'] ?? [];
+                        // TODO: drop support for the "group" property in the next major version
+                    } elseif (array_key_exists('group', $externalConfiguration)) {
+                        $groups = [
+                            $externalConfiguration['group'],
                         ];
+                    } else {
+                        $groups = [];
                     }
+                    $externalTables[$priority][] = [
+                        'table' => $tableName,
+                        'index' => $index,
+                        'groups' => $groups,
+                    ];
                 }
             }
         }
@@ -178,37 +164,35 @@ class ConfigurationRepository
     public function findByGroup(string $group, bool $synchronizable = false, bool $nonSynchronizable = false): array
     {
         $externalTables = [];
-        foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
-            if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
-                $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
-                foreach ($generalConfiguration as $index => $externalConfiguration) {
-                    // Skip disabled configurations
-                    if ($externalConfiguration['disabled'] ?? false) {
-                        continue;
+        $allConfigurations = $this->tcaRepository->getAllGeneralExternalConfigurations();
+        foreach ($allConfigurations as $tableName => $externalConfigurations) {
+            foreach ($externalConfigurations as $index => $externalConfiguration) {
+                // Skip disabled configurations
+                if ($externalConfiguration['disabled'] ?? false) {
+                    continue;
+                }
+                // Skip the configurations we don't want, if either flag has been set
+                if (
+                    ($synchronizable && empty($externalConfiguration['connector'])) ||
+                    ($nonSynchronizable && !empty($externalConfiguration['connector']))
+                ) {
+                    continue;
+                }
+                // TODO: drop support for "group" property in the next major version
+                $configuredGroups = $externalConfiguration['groups'] ?? [];
+                if (
+                    (array_key_exists('group', $externalConfiguration) && $externalConfiguration['group'] === $group) ||
+                    (is_array($configuredGroups) && in_array($group, $configuredGroups, true))
+                ) {
+                    // Default priority if not defined, set to very low
+                    $priority = $externalConfiguration['priority'] ?? Importer::DEFAULT_PRIORITY;
+                    if (!isset($externalTables[$priority])) {
+                        $externalTables[$priority] = [];
                     }
-                    // Skip the configurations we don't want, if either flag has been set
-                    if (
-                        ($synchronizable && empty($externalConfiguration['connector'])) ||
-                        ($nonSynchronizable && !empty($externalConfiguration['connector']))
-                    ) {
-                        continue;
-                    }
-                    // TODO: drop support for "group" property in the next major version
-                    $configuredGroups = $externalConfiguration['groups'] ?? [];
-                    if (
-                        (array_key_exists('group', $externalConfiguration) && $externalConfiguration['group'] === $group) ||
-                        (is_array($configuredGroups) && in_array($group, $configuredGroups, true))
-                    ) {
-                        // Default priority if not defined, set to very low
-                        $priority = $externalConfiguration['priority'] ?? Importer::DEFAULT_PRIORITY;
-                        if (!isset($externalTables[$priority])) {
-                            $externalTables[$priority] = [];
-                        }
-                        $externalTables[$priority][] = [
-                            'table' => $tableName,
-                            'index' => $index,
-                        ];
-                    }
+                    $externalTables[$priority][] = [
+                        'table' => $tableName,
+                        'index' => $index,
+                    ];
                 }
             }
         }
@@ -228,30 +212,28 @@ class ConfigurationRepository
     public function findAllGroups(bool $synchronizable = false, bool $nonSynchronizable = false): array
     {
         $groups = [];
-        foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
-            if (isset($sections['external']['general']) || isset($sections['ctrl']['external'])) {
-                $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
-                foreach ($generalConfiguration as $externalConfiguration) {
-                    // Skip disabled configurations
-                    if ($externalConfiguration['disabled'] ?? false) {
-                        continue;
-                    }
-                    // Skip the configurations we don't want, if either flag has been set
-                    if (
-                        ($synchronizable && empty($externalConfiguration['connector'])) ||
-                        ($nonSynchronizable && !empty($externalConfiguration['connector']))
-                    ) {
-                        continue;
-                    }
-                    // TODO: remove support for "group" property in the next major version
-                    if (!empty($externalConfiguration['group'])) {
-                        $groups[] = $externalConfiguration['group'];
-                    }
-                    $configuredGroups = $externalConfiguration['groups'] ?? [];
-                    if (is_array($configuredGroups) && count($configuredGroups) > 0) {
-                        foreach ($configuredGroups as $group) {
-                            $groups[] = $group;
-                        }
+        $allConfigurations = $this->tcaRepository->getAllGeneralExternalConfigurations();
+        foreach ($allConfigurations as $externalConfigurations) {
+            foreach ($externalConfigurations as $externalConfiguration) {
+                // Skip disabled configurations
+                if ($externalConfiguration['disabled'] ?? false) {
+                    continue;
+                }
+                // Skip the configurations we don't want, if either flag has been set
+                if (
+                    ($synchronizable && empty($externalConfiguration['connector'])) ||
+                    ($nonSynchronizable && !empty($externalConfiguration['connector']))
+                ) {
+                    continue;
+                }
+                // TODO: remove support for "group" property in the next major version
+                if (!empty($externalConfiguration['group'])) {
+                    $groups[] = $externalConfiguration['group'];
+                }
+                $configuredGroups = $externalConfiguration['groups'] ?? [];
+                if (is_array($configuredGroups) && count($configuredGroups) > 0) {
+                    foreach ($configuredGroups as $group) {
+                        $groups[] = $group;
                     }
                 }
             }
@@ -311,13 +293,12 @@ class ConfigurationRepository
 
         // Loop on all tables and extract external_import-related information from them
         $backendUser = $this->getBackendUser();
-        foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
-            // Check if table has external info and user has at least read-access to it
-            if ((isset($sections['external']['general']) || isset($sections['ctrl']['external'])) &&
-                $backendUser->check('tables_select', $tableName)) {
-                $generalConfiguration = $sections['external']['general'] ?? $sections['ctrl']['external'];
+        $allConfigurations = $this->tcaRepository->getAllGeneralExternalConfigurations();
+        foreach ($allConfigurations as $tableName => $externalConfigurations) {
+            // Check if user has at least read-access to table
+            if ($backendUser->check('tables_select', $tableName)) {
                 $hasWriteAccess = $backendUser->check('tables_modify', $tableName);
-                foreach ($generalConfiguration as $index => $externalConfiguration) {
+                foreach ($externalConfigurations as $index => $externalConfiguration) {
                     // Skip disabled configurations
                     if ($externalConfiguration['disabled'] ?? false) {
                         continue;
@@ -342,11 +323,7 @@ class ConfigurationRepository
                                 $description = $externalConfiguration['description'];
                             }
                         }
-                        if (str_starts_with($sections['ctrl']['title'] ?? '', 'LLL:')) {
-                            $tableTitle = $GLOBALS['LANG']->sL($sections['ctrl']['title']);
-                        } else {
-                            $tableTitle = $sections['ctrl']['title'] ?? 'untitled';
-                        }
+                        $tableTitle = $this->getTableTitle($tableName);
                         // TODO: drop support for old "group" property in the next major version; for now automatically convert it
                         if (array_key_exists('group', $externalConfiguration)) {
                             $externalConfiguration['groups'] = [
@@ -419,22 +396,18 @@ class ConfigurationRepository
         } else {
             // Loop on all tables and extract external_import-related information from them
             $noAccessCount = 0;
-            $numberOfTables = 0;
-            foreach ($this->tcaRepository->getTca() as $tableName => $sections) {
-                // Check if table has external info
-                if (isset($sections['ctrl']['external'])) {
-                    $numberOfTables++;
-                    // Check if user has write rights on it
-                    if (!$backendUser->check('tables_modify', $tableName)) {
-                        $noAccessCount++;
-                    }
+            $allConfigurations = $this->tcaRepository->getAllGeneralExternalConfigurations();
+            foreach ($allConfigurations as $tableName => $externalConfigurations) {
+                // Check if user has write rights on the table
+                if (!$backendUser->check('tables_modify', $tableName)) {
+                    $noAccessCount++;
                 }
             }
             // If the user has no restriction, then access is full
             if ($noAccessCount === 0) {
                 $hasGlobalWriteAccess = 'all';
                 // Assess if user has rights to no table at all or at least to some
-            } elseif ($noAccessCount === $numberOfTables) {
+            } elseif ($noAccessCount === count($allConfigurations)) {
                 $hasGlobalWriteAccess = 'none';
             } else {
                 $hasGlobalWriteAccess = 'partial';
@@ -461,6 +434,17 @@ class ConfigurationRepository
         $configuration['pid'] = $pid;
 
         return $configuration;
+    }
+
+    protected function getTableTitle(string $table): string
+    {
+        $titleDefinition = $this->tcaRepository->getTca()[$table]['ctrl']['title'] ?? 'untitled';
+        if (str_starts_with($titleDefinition, 'LLL:')) {
+            $tableTitle = $GLOBALS['LANG']->sL($titleDefinition);
+        } else {
+            $tableTitle = $titleDefinition;
+        }
+        return $tableTitle;
     }
 
     /**
