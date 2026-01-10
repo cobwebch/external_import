@@ -21,6 +21,25 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-820:
+
+Upgrade to 8.2.0
+""""""""""""""""
+
+XPath functions can be used in the :ref:`columns configuration <administration-columns>`
+to directly return a string value. Previously XPath expressions could only be used
+to select a node or list of nodes in the XML structure.
+
+A new event :ref:`ModifyReactionResponseEvent <developer-events-modify-response>` is available
+to modify the response of a reaction before it is sent back. Both the response body
+and the HTTP return code may be changed.
+
+Loading of the TCA has been encapsulated into a repository class, making it easier to
+follow the evolutions of the TYPO3 Core and allowing developers who might need it
+to :ref:`dynamically manipulate the full TCA <developer-tca>` before the External Import
+configurations are extracted from it.
+
+
 .. _installation-upgrade-810:
 
 Upgrade to 8.1.0

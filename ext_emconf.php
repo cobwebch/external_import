@@ -8,7 +8,7 @@ $EM_CONF[$_EXTKEY] = [
     'author_email' => 'typo3@ideative.ch',
     'state' => 'stable',
     'author_company' => '',
-    'version' => '8.1.3',
+    'version' => '8.2.0',
     'constraints' =>
         [
             'depends' =>

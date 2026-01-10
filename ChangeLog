@@ -1,7 +1,11 @@
+2026-01-10 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Enhance TCA repository with process-related methods, resolves #393
+    * Release version 8.2.0
+
 2026-01-09 Daniel Siepmann (Codappix GmbH)  <daniel.siepmann@codappix.com>
 
     * Centralize TCA access to allow modification, resolves #382
-    * Enhance TCA repository with process-related methods, resolves #393
 
 2026-01-08 Francois Suter (Idéative)  <typo3@ideative.ch>
 
