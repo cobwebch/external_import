@@ -1,65 +1,69 @@
 {
-	"name": "cobweb/external_import",
-	"type": "typo3-cms-extension",
-	"description": "Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line tool, reactions and an API.",
-	"license": [
-		"GPL-2.0-or-later"
-	],
-	"authors": [
-		{
-			"name": "Francois Suter",
-			"role": "Developer",
-			"email": "typo3@ideative.ch",
-			"homepage": "https://www.ideative.ch/"
-		}
-	],
-	"support": {
-		"issues": "https://github.com/cobwebch/external_import/issues",
-		"docs": "https://docs.typo3.org/p/cobweb/external_import/master/en-us/"
-	},
-	"autoload": {
-		"psr-4": {
-			"Cobweb\\ExternalImport\\": "Classes/"
-		}
-	},
-	"require": {
-		"php": "^8.1 || ^8.2 || ^8.3 || ^8.4",
-		"typo3/cms-core": "^12.4 || ^13.4",
-		"typo3/cms-extbase": "*",
-		"typo3/cms-scheduler": "^12.4 || ^13.4",
-		"typo3/cms-reactions": "^12.4 || ^13.4",
-		"typo3/cms-install": "^12.4 || ^13.4",
-		"typo3/coding-standards": "*",
-		"cobweb/svconnector": "^6.0"
-	},
-	"require-dev": {
-		"cobweb/externalimport_test": "^0.15.0",
-		"cobweb/svconnector_csv": "^5.0",
-		"cobweb/svconnector_feed": "^5.0",
-		"cobweb/svconnector_json": "^5.0",
-		"ergebnis/composer-normalize": "~2.45.0",
-		"friendsofphp/php-cs-fixer": "^3.52",
-		"typo3/testing-framework": "^8.2",
-		"phpstan/phpstan": "^1.10",
-		"ssch/typo3-rector": "^2.13"
-	},
-	"extra": {
-		"branch-alias": {
-			"dev-master": "8.0.x-dev"
-		},
-		"typo3/cms": {
-			"extension-key": "external_import",
-			"web-dir": ".Build/web"
-		}
-	},
-	"config": {
-		"allow-plugins": {
-			"typo3/cms-composer-installers": true,
-			"typo3/class-alias-loader": true,
-			"ergebnis/composer-normalize": true
-		},
-		"bin-dir": ".Build/bin",
-		"sort-packages": true,
-		"vendor-dir": ".Build/vendor"
-	}
+  "name": "cobweb/external_import",
+  "type": "typo3-cms-extension",
+  "description": "External Import – Tool for importing data from external sources into the TYPO3 database, using an extended TCA syntax. Provides a BE module, a Scheduler task, a command-line tool, reactions and an API.",
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "authors": [
+    {
+      "name": "Francois Suter",
+      "role": "Developer",
+      "email": "typo3@ideative.ch",
+      "homepage": "https://www.ideative.ch/"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/cobwebch/external_import/issues",
+    "docs": "https://docs.typo3.org/p/cobweb/external_import/master/en-us/"
+  },
+  "autoload": {
+    "psr-4": {
+      "Cobweb\\ExternalImport\\": "Classes/"
+    }
+  },
+  "require": {
+    "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+    "typo3/cms-core": "^13.4 || ^14.3",
+    "typo3/cms-extbase": "*",
+    "typo3/cms-scheduler": "^13.4 || ^14.3",
+    "typo3/cms-reactions": "^13.4 || ^14.3",
+    "typo3/cms-install": "^13.4 || ^14.3",
+    "cobweb/svconnector": "dev-master"
+  },
+  "require-dev": {
+    "cobweb/externalimport_test": "dev-next",
+    "cobweb/svconnector_csv": "dev-master",
+    "cobweb/svconnector_feed": "dev-master",
+    "cobweb/svconnector_json": "dev-master",
+    "ergebnis/composer-normalize": "^2.51",
+    "friendsofphp/php-cs-fixer": "^3.95",
+    "typo3/coding-standards": "*",
+    "typo3/testing-framework": "^9.5",
+    "phpstan/phpstan": "^2.1"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "8.0.x-dev"
+    },
+    "typo3/cms": {
+      "extension-key": "external_import",
+      "web-dir": ".Build/web",
+      "version": "9.0.0-dev",
+      "Package": {
+        "providesPackages": {
+        }
+      }
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "typo3/cms-composer-installers": true,
+      "typo3/class-alias-loader": true,
+      "ergebnis/composer-normalize": true
+    },
+    "bin-dir": ".Build/bin",
+    "sort-packages": true,
+    "vendor-dir": ".Build/vendor"
+  }
 }
