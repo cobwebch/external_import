@@ -38,6 +38,7 @@ return [
             'config' => [
                 'readOnly' => true,
                 'type' => 'input',
+                'max' => 50,
             ],
         ],
         'configuration' => [
