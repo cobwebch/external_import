@@ -18,7 +18,6 @@ namespace Cobweb\ExternalImport\ViewHelpers;
  */
 
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -43,18 +42,10 @@ class DisplayValidationResultViewHelper extends AbstractViewHelper
 
     /**
      * Renders the validation result.
-     *
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
      */
-    public static function renderStatic(
-        array $arguments,
-        \Closure $renderChildrenClosure,
-        RenderingContextInterface $renderingContext
-    ): string {
-        $results = $arguments['result'];
+    public function render(): string
+    {
+        $results = $this->arguments['result'];
         $message = '<div><ul class="typo3-messages external-import-messages"><li class="alert alert-%1$s">%2$s</li></ul></div>';
         $output = '';
         if (is_array($results)) {

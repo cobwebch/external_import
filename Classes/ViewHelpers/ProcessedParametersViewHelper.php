@@ -20,8 +20,6 @@ namespace Cobweb\ExternalImport\ViewHelpers;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -30,6 +28,11 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 class ProcessedParametersViewHelper extends AbstractViewHelper
 {
+    public function __construct(
+        protected EventDispatcherInterface $eventDispatcher,
+    ) {
+    }
+
     /**
      * Do not escape output of child nodes.
      *
@@ -47,23 +50,13 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
 
     /**
      * Process parameters and set them as variable.
-     *
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     *
-     * @return string
      */
-    public static function renderStatic(
-        array $arguments,
-        \Closure $renderChildrenClosure,
-        RenderingContextInterface $renderingContext
-    ): string {
+    public function render(): string
+    {
         /** @var Configuration $configuration */
-        $configuration = $arguments['configuration'];
+        $configuration = $this->arguments['configuration'];
 
-        $eventDispatcher = GeneralUtility::getContainer()->get(EventDispatcherInterface::class);
-        $event = $eventDispatcher->dispatch(
+        $event = $this->eventDispatcher->dispatch(
             new ProcessConnectorParametersEvent(
                 $configuration->getGeneralConfigurationProperty('parameters'),
                 $configuration
@@ -71,10 +64,10 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
         );
         $processedParameters = $event->getParameters();
 
-        $templateVariableContainer = $renderingContext->getVariableProvider();
+        $templateVariableContainer = $this->renderingContext->getVariableProvider();
         $templateVariableContainer->add('processedParameters', $processedParameters);
 
-        $output = $renderChildrenClosure();
+        $output = $this->renderChildren();
 
         $templateVariableContainer->remove('processedParameters');
 

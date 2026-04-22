@@ -19,8 +19,6 @@ namespace Cobweb\ExternalImport\ViewHelpers;
 
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -34,6 +32,11 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
      * @var bool
      */
     protected $escapeOutput = false;
+
+    public function __construct(
+        protected ColumnConfigurationValidator $configurationValidator,
+    ) {
+    }
 
     /**
      * Initializes the arguments of the ViewHelper.
@@ -52,30 +55,20 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
 
     /**
      * Runs the validation and loads the results.
-     *
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     *
-     * @return string
      */
-    public static function renderStatic(
-        array $arguments,
-        \Closure $renderChildrenClosure,
-        RenderingContextInterface $renderingContext
-    ): string {
-        $configurationValidator = GeneralUtility::makeInstance(ColumnConfigurationValidator::class);
-        $configurationValidator->isValid(
-            $arguments['configuration'],
-            $arguments['column']
+    public function render(): string
+    {
+        $this->configurationValidator->isValid(
+            $this->arguments['configuration'],
+            $this->arguments['column']
         );
-        $templateVariableContainer = $renderingContext->getVariableProvider();
+        $templateVariableContainer = $this->renderingContext->getVariableProvider();
         $templateVariableContainer->add(
-            $arguments['as'],
-            $configurationValidator->getResults()->getAll()
+            $this->arguments['as'],
+            $this->configurationValidator->getResults()->getAll()
         );
-        $output = $renderChildrenClosure();
-        $templateVariableContainer->remove($arguments['as']);
+        $output = $this->renderChildren();
+        $templateVariableContainer->remove($this->arguments['as']);
         return $output;
     }
 }

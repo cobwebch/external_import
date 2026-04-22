@@ -1,3 +1,7 @@
+2026-04-22 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Change all view helpers to use render method and constructor DI, resolves #394
+
 2026-01-10 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Enhance TCA repository with process-related methods, resolves #393
