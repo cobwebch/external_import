@@ -17,7 +17,6 @@ namespace Cobweb\ExternalImport\Command;
  * The TYPO3 project - inspiring people to share!
  */
 
-use Cobweb\ExternalImport\Context\AbstractCallContext;
 use Cobweb\ExternalImport\Context\CommandLineCallContext;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Enum\CallType;
@@ -138,7 +137,6 @@ class ImportCommand extends Command
             } else {
                 $this->importer = GeneralUtility::makeInstance(Importer::class);
                 $this->importer->setCallType(CallType::CommandLine);
-                /** @var AbstractCallContext $callContext */
                 $callContext = GeneralUtility::makeInstance(
                     CommandLineCallContext::class,
                     $this->importer

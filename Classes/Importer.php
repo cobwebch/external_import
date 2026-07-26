@@ -47,6 +47,37 @@ class Importer implements LoggerAwareInterface
     public const DEFAULT_PRIORITY = 1000;
 
     /**
+     * @var array List of default steps for the synchronize data process
+     */
+    public const SYNCHRONYZE_DATA_STEPS = [
+        Step\CheckPermissionsStep::class,
+        Step\ValidateConfigurationStep::class,
+        Step\ValidateConnectorStep::class,
+        Step\ReadDataStep::class,
+        Step\HandleDataStep::class,
+        Step\ValidateDataStep::class,
+        Step\TransformDataStep::class,
+        Step\StoreDataStep::class,
+        Step\ClearCacheStep::class,
+        Step\ConnectorCallbackStep::class,
+        Step\ReportStep::class,
+    ];
+
+    /**
+     * @var array List of default steps for the import data process
+     */
+    public const IMPORT_DATA_STEPS = [
+        Step\CheckPermissionsStep::class,
+        Step\ValidateConfigurationStep::class,
+        Step\HandleDataStep::class,
+        Step\ValidateDataStep::class,
+        Step\TransformDataStep::class,
+        Step\StoreDataStep::class,
+        Step\ClearCacheStep::class,
+        Step\ReportStep::class,
+    ];
+
+    /**
      * @var array Extension configuration
      */
     protected array $extensionConfiguration = [];
@@ -117,7 +148,7 @@ class Importer implements LoggerAwareInterface
     /**
      * @var string|array Data to be returned as preview data
      */
-    protected $previewData;
+    protected $previewData = '';
 
     // Data object from the current step
     protected ?Data $currentData = null;
@@ -136,37 +167,6 @@ class Importer implements LoggerAwareInterface
      * @var int End time of the current run
      */
     protected int $endTime = 0;
-
-    /**
-     * @var array List of default steps for the synchronize data process
-     */
-    public const SYNCHRONYZE_DATA_STEPS = [
-        Step\CheckPermissionsStep::class,
-        Step\ValidateConfigurationStep::class,
-        Step\ValidateConnectorStep::class,
-        Step\ReadDataStep::class,
-        Step\HandleDataStep::class,
-        Step\ValidateDataStep::class,
-        Step\TransformDataStep::class,
-        Step\StoreDataStep::class,
-        Step\ClearCacheStep::class,
-        Step\ConnectorCallbackStep::class,
-        Step\ReportStep::class,
-    ];
-
-    /**
-     * @var array List of default steps for the import data process
-     */
-    public const IMPORT_DATA_STEPS = [
-        Step\CheckPermissionsStep::class,
-        Step\ValidateConfigurationStep::class,
-        Step\HandleDataStep::class,
-        Step\ValidateDataStep::class,
-        Step\TransformDataStep::class,
-        Step\StoreDataStep::class,
-        Step\ClearCacheStep::class,
-        Step\ReportStep::class,
-    ];
 
     /**
      * Importer constructor.
@@ -374,7 +374,7 @@ class Importer implements LoggerAwareInterface
                 $this->resetPreviewData();
                 /** @var AbstractStep $step */
                 $step = GeneralUtility::makeInstance($stepClass);
-                if (!$this->isProcessAborted() || ($this->isProcessAborted() && $step->isExecuteDespiteAbort())) {
+                if (!$this->isProcessAborted() || $step->isExecuteDespiteAbort()) {
                     $step->setImporter($this);
                     $step->setData($this->currentData);
                     if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
@@ -472,9 +472,9 @@ class Importer implements LoggerAwareInterface
      *
      * @param string $message The debug message
      * @param int $severity The severity of the issue
-     * @param null $data Data associated with the debugging information
+     * @param mixed $data Data associated with the debugging information
      */
-    public function debug(string $message, int $severity = 0, $data = null): void
+    public function debug(string $message, int $severity = 0, mixed $data = []): void
     {
         if ($this->isDebug()) {
             $data = is_array($data) ? $data : [$data];
@@ -772,17 +772,17 @@ class Importer implements LoggerAwareInterface
      *
      * @param mixed $previewData
      */
-    public function setPreviewData($previewData): void
+    public function setPreviewData(mixed $previewData): void
     {
         $this->previewData = $previewData;
     }
 
     /**
-     * Resets the preview data to null.
+     * Resets the preview data to an empty string.
      */
     public function resetPreviewData(): void
     {
-        $this->previewData = null;
+        $this->previewData = '';
     }
 
     /**
@@ -836,10 +836,8 @@ class Importer implements LoggerAwareInterface
     public function setTestMode(bool $mode): void
     {
         $this->testMode = $mode;
-        // Cascade the test mode to the temporary key repository (if initialized)
-        if ($this->temporaryKeyRepository) {
-            $this->temporaryKeyRepository->setTestMode($mode);
-        }
+        // Cascade the test mode to the temporary key repository
+        $this->temporaryKeyRepository->setTestMode($mode);
     }
 
     /**

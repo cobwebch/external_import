@@ -52,20 +52,12 @@ class ImporterTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(
             Importer::class,
             $this->getAccessibleMock(
-                ConfigurationRepository::class,
-                [],
-                [],
-                '',
-                // Don't call the original constructor to avoid a cascade of dependencies
-                false
+                originalClassName: ConfigurationRepository::class,
+                callOriginalConstructor: false
             ),
             $this->getAccessibleMock(
-                ReportingUtility::class,
-                [],
-                [],
-                '',
-                // Don't call the original constructor to avoid a cascade of dependencies
-                false
+                originalClassName: ReportingUtility::class,
+                callOriginalConstructor: false
             ),
             $this->getAccessibleMock(UidRepository::class),
             $this->getAccessibleMock(TemporaryKeyRepository::class),
@@ -215,7 +207,10 @@ class ImporterTest extends UnitTestCase
     #[Test]
     public function getPreviewDataInitiallyReturnsNull(): void
     {
-        self::assertNull($this->subject->getPreviewData());
+        self::assertEquals(
+            '',
+            $this->subject->getPreviewData()
+        );
     }
 
     public static function previewDataProvider(): array
@@ -244,10 +239,11 @@ class ImporterTest extends UnitTestCase
     }
 
     #[Test]
-    public function resetPreviewDataSetsPreviewDataToNull(): void
+    public function resetPreviewDataSetsPreviewDataToEmptyString(): void
     {
         $this->subject->resetPreviewData();
-        self::assertNull(
+        self::assertSame(
+            '',
             $this->subject->getPreviewData()
         );
     }

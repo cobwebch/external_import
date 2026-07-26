@@ -54,8 +54,8 @@ class LogModuleController extends ActionController
     {
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $this->moduleTemplate->setTitle(
-            'External Import - ' .
-            $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/LogModule.xlf:mlang_tabs_tab')
+            'External Import - '
+            . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/LogModule.xlf:mlang_tabs_tab')
         );
     }
 

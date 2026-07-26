@@ -35,8 +35,7 @@ class ValidateColumnConfigurationViewHelper extends AbstractViewHelper
 
     public function __construct(
         protected ColumnConfigurationValidator $configurationValidator,
-    ) {
-    }
+    ) {}
 
     /**
      * Initializes the arguments of the ViewHelper.

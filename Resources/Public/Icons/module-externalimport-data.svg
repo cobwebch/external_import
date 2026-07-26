@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with DrawBerry (http://raphaelbost.free.fr/) -->
+
+<svg
+   width="64"
+   height="64"
+   version="1.1"
+   id="svg2"
+   sodipodi:docname="module-externalimport-data.svg"
+   viewBox="0 0 64 64"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="11.454173"
+     inkscape:cx="26.715154"
+     inkscape:cy="29.421592"
+     inkscape:window-width="1496"
+     inkscape:window-height="909"
+     inkscape:window-x="13"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="New Layer" />
+  <g
+     inkscape:label="New Layer"
+     inkscape:groupmode="layer"
+     id="New Layer">
+    <path
+       style="fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 48.094063,16.456396 C 37.346053,22.586266 37.434697,26.978417 37.434697,26.978417 L 48.094063,27.110341 32.097214,39.495842 16.158887,27.089037 26.784049,26.953212 c 0,0 0.157594,-4.329889 -10.709197,-10.627026 7.093295,0.08584 25.913869,-0.046 32.019211,0.130213 z"
+       id="path2"
+       sodipodi:nodetypes="sccccccss" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:var(--icon-color-accent, #ff8700);stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 15.700019,47.495789 H 48.299981 V 46.94537 H 15.700019 Z"
+       id="path4" />
+  </g>
+  <g
+     inkscape:label="Background"
+     inkscape:groupmode="layer"
+     id="Background" />
+</svg>

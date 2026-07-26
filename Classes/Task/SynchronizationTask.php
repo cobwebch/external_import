@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Task;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Enum\CallType;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
@@ -28,21 +29,14 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 /**
  * This class executes Scheduler events for automatic synchronisations of external data
  */
-class AutomatedSyncTask extends AbstractTask
+class SynchronizationTask extends AbstractTask
 {
-    /**
-     * @var string Name of the table to synchronize ("all" for all tables)
-     */
-    public string $table;
-
-    /**
-     * @var mixed Index of the particular synchronization
-     */
-    public $index;
-
-    /**
-     * @var int Uid of a page for storage (overrides TCA and extension setting)
-     */
+    protected string $sync_item = '';
+    protected string $sync_storage = '';
+    protected bool $synchronizeAll = false;
+    protected string $group = '';
+    protected string $table = '';
+    protected mixed $index = '';
     public int $storage = 0;
 
     /**
@@ -137,23 +131,43 @@ class AutomatedSyncTask extends AbstractTask
     }
 
     /**
+     * Post-process values coming from DB record
+     *
+     * @param array $parameters Values from TCA fields
+     */
+    public function setTaskParameters(array $parameters): void
+    {
+        parent::setTaskParameters($parameters);
+        if ($this->sync_item === 'all') {
+            $this->synchronizeAll = true;
+        } elseif (str_starts_with($this->sync_item, 'group:')) {
+            $this->group = substr($this->table, 6);
+        } else {
+            $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
+            $configurationKey->setConfigurationKey($this->sync_item);
+            $this->table = $configurationKey->getTable();
+            $this->index = $configurationKey->getIndex();
+        }
+        $this->storage = (int)$this->sync_storage;
+    }
+
+    /**
      * Returns additional information for display in the Scheduler BE module.
      *
      * @return string Information to display
      */
     public function getAdditionalInformation(): string
     {
-        if ($this->table === 'all') {
+        if ($this->synchronizeAll) {
             $info = $this->getLanguageService()->sL(
                 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:allTables'
             );
-        } elseif (str_starts_with($this->table, 'group:')) {
-            $group = substr($this->table, 6);
+        } elseif (!empty($this->group)) {
             $info = sprintf(
                 $this->getLanguageService()->sL(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:selectedGroup'
                 ),
-                $group
+                $this->group
             );
         } else {
             try {
@@ -197,6 +211,6 @@ class AutomatedSyncTask extends AbstractTask
 
     public function isSynchronizeAll(): bool
     {
-        return $this->table === 'all';
+        return $this->synchronizeAll;
     }
 }

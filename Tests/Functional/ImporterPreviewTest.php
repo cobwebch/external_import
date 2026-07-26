@@ -32,7 +32,7 @@ use Cobweb\ExternalImport\Testing\FunctionalTestCaseWithDatabaseTools;
 use Cobweb\ExternalImport\Transformation\ImageTransformation;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Core\Bootstrap;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -42,6 +42,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
 {
     protected array $coreExtensionsToLoad = [
+        'reactions',
         'scheduler',
     ];
 
@@ -61,7 +62,7 @@ class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
         parent::setUp();
         try {
             $this->initializeBackendUser();
-            Bootstrap::initializeLanguageObject();
+            $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('en');
 
             $this->subject = GeneralUtility::makeInstance(Importer::class);
             $this->subject->setTestMode(true);
@@ -100,7 +101,8 @@ class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
             'tx_externalimporttest_tag',
             0
         );
-        self::assertNull(
+        self::assertEquals(
+            '',
             $this->subject->getPreviewData()
         );
     }
@@ -113,7 +115,8 @@ class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
             'tx_externalimporttest_tag',
             0
         );
-        self::assertNull(
+        self::assertEquals(
+            '',
             $this->subject->getPreviewData()
         );
     }
@@ -126,7 +129,8 @@ class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
             'tx_externalimporttest_tag',
             0
         );
-        self::assertNull(
+        self::assertEquals(
+            '',
             $this->subject->getPreviewData()
         );
     }
@@ -359,7 +363,8 @@ class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
             'tx_externalimporttest_tag',
             0
         );
-        self::assertNull(
+        self::assertEquals(
+            '',
             $this->subject->getPreviewData()
         );
     }
@@ -970,7 +975,8 @@ class ImporterPreviewTest extends FunctionalTestCaseWithDatabaseTools
             'tx_externalimporttest_tag',
             0
         );
-        self::assertNull(
+        self::assertEquals(
+            '',
             $this->subject->getPreviewData()
         );
     }

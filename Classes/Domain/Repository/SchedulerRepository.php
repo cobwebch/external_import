@@ -20,10 +20,12 @@ namespace Cobweb\ExternalImport\Domain\Repository;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Exception\SchedulerRepositoryException;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
+use Cobweb\ExternalImport\Task\SynchronizationTask;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand;
 use TYPO3\CMS\Scheduler\Domain\Repository\SchedulerTaskRepository;
 use TYPO3\CMS\Scheduler\Exception\InvalidTaskException;
@@ -49,8 +51,11 @@ class SchedulerRepository implements SingletonInterface
      */
     protected array $tasks = [];
 
-    public function __construct(protected SchedulerTaskRepository $schedulerTaskRepository, protected TaskSerializer $taskSerializer)
-    {
+    public function __construct(
+        protected SchedulerTaskRepository $schedulerTaskRepository,
+        protected TaskSerializer $taskSerializer,
+        protected ConnectionPool $connectionPool,
+    ) {
         $this->loadAllSynchronisationTasks();
     }
 
@@ -64,10 +69,10 @@ class SchedulerRepository implements SingletonInterface
     public function fetchAllTasks(): array
     {
         $taskList = [];
-        /** @var $taskObject AutomatedSyncTask */
+        /** @var AutomatedSyncTask|SynchronizationTask $taskObject */
         foreach ($this->tasks as $taskObject) {
             $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
-            $configurationKey->setTableAndIndex($taskObject->table, (string)$taskObject->index);
+            $configurationKey->setTableAndIndex($taskObject->getTable(), (string)$taskObject->getIndex());
             $key = $configurationKey->getConfigurationKey();
             $taskList[$key] = $this->assembleTaskInformation($taskObject);
         }
@@ -83,7 +88,7 @@ class SchedulerRepository implements SingletonInterface
      */
     public function fetchTaskByUid(int $uid): array
     {
-        /** @var $taskObject AutomatedSyncTask */
+        /** @var AutomatedSyncTask|SynchronizationTask $taskObject */
         foreach ($this->tasks as $taskObject) {
             if ($taskObject->getTaskUid() === $uid) {
                 return $this->assembleTaskInformation($taskObject);
@@ -105,9 +110,9 @@ class SchedulerRepository implements SingletonInterface
     public function fetchFullSynchronizationTask(): array
     {
         // Check all tasks object to find the one with the "all" keyword as a table
-        /** @var $taskObject AutomatedSyncTask */
+        /** @var AutomatedSyncTask|SynchronizationTask $taskObject */
         foreach ($this->tasks as $taskObject) {
-            if ($taskObject->table === 'all') {
+            if ($taskObject->isSynchronizeAll()) {
                 return $this->assembleTaskInformation($taskObject);
             }
         }
@@ -128,7 +133,7 @@ class SchedulerRepository implements SingletonInterface
             0 => '',
         ];
         try {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            $queryBuilder = $this->connectionPool
                 ->getQueryBuilderForTable('tx_scheduler_task_group');
             $rows = $queryBuilder->select('uid', 'groupName')
                 ->from('tx_scheduler_task_group')
@@ -150,12 +155,11 @@ class SchedulerRepository implements SingletonInterface
      */
     public function loadAllSynchronisationTasks(): void
     {
-        $tasks = [];
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+        $queryBuilder = $this->connectionPool
             ->getQueryBuilderForTable('tx_scheduler_task');
 
         $queryBuilder
-            ->select('serialized_task_object')
+            ->select('*')
             ->from('tx_scheduler_task')
             ->where(
                 $queryBuilder->expr()->eq('deleted', $queryBuilder->createNamedParameter(0, Connection::PARAM_INT))
@@ -163,16 +167,24 @@ class SchedulerRepository implements SingletonInterface
 
         $result = $queryBuilder->executeQuery();
         while ($row = $result->fetchAssociative()) {
-            try {
-                $task = $this->taskSerializer->deserialize($row['serialized_task_object']);
-            } catch (InvalidTaskException) {
-                continue;
-            }
-
-            // Add the task to the list only if it is valid
-            if (get_class($task) === self::$taskClassName && (new TaskValidator())->isValid($task)) {
-                $task->setScheduler();
+            if (($row['tasktype'] ?? '') === SynchronizationTask::class) {
+                $task = GeneralUtility::makeInstance(SynchronizationTask::class);
+                $task->setTaskUid($row['uid']);
+                $task->setTaskParameters($row);
                 $this->tasks[] = $task;
+            } else {
+                try {
+                    $task = $this->taskSerializer->deserialize($row['serialized_task_object']);
+                    // Add the task to the list only if it is valid
+                    if (get_class($task) === self::$taskClassName && (new TaskValidator())->isValid($task)) {
+                        if (method_exists($task, 'setScheduler')) {
+                            $task->setScheduler();
+                        }
+                        $this->tasks[] = $task;
+                    }
+                } catch (InvalidTaskException) {
+                    continue;
+                }
             }
         }
     }
@@ -183,23 +195,53 @@ class SchedulerRepository implements SingletonInterface
      * @param AutomatedSyncTask $taskObject The task to handle
      * @return array The information about the task
      */
-    protected function assembleTaskInformation(AutomatedSyncTask $taskObject): array
+    protected function assembleTaskInformation(AutomatedSyncTask|SynchronizationTask $taskObject): array
     {
-        $cronCommand = $taskObject->getExecution()->getCronCmd();
-        $interval = $taskObject->getExecution()->getInterval();
         $displayFormat = $GLOBALS['TYPO3_CONF_VARS']['SYS']['ddmmyy'] . ' ' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['hhmm'];
         // TODO: this used to be configured according to $GLOBALS['TYPO3_CONF_VARS']['SYS']['USdateFormat']. Something else may emerge in the future.
         // Reference: https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/12.0/Breaking-96550-TYPO3_CONF_VARSSYSUSdateFormatRemoved.html
         $editFormat = 'H:i d-m-Y';
 
+        // TODO: remove when dropping compatibility with TYPO3 13
+        $version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
+        if ($version['version_main'] >= 14) {
+            $queryBuilder = $this->connectionPool->getQueryBuilderForTable('tx_scheduler_task');
+            try {
+                // Not all information is available via the task object, get it from the database
+                $additionalInformation = $queryBuilder->select('*')
+                    ->from('tx_scheduler_task')
+                    ->where(
+                        $queryBuilder->expr()->eq('uid', $taskObject->getTaskUid()),
+                    )
+                    ->executeQuery()->fetchAssociative();
+                $executionDetails = json_decode(
+                    $additionalInformation['execution_details'],
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+                $cronCommand = $executionDetails['cronCmd'];
+                $interval = $executionDetails['interval'];
+                $nextExecutionTime = $additionalInformation['nextexecution'];
+            } catch (\Throwable) {
+                $cronCommand = '';
+                $interval = 0;
+                $nextExecutionTime = 0;
+            }
+        } else {
+            $cronCommand = $taskObject->getExecution()->getCronCmd();
+            $interval = $taskObject->getExecution()->getInterval();
+            $nextExecutionTime = $taskObject->getExecutionTime();
+        }
+
         $startTimestamp = $taskObject->getExecution()->getStart();
         return [
             'uid' => $taskObject->getTaskUid(),
-            'table' => $taskObject->table,
-            'index' => $taskObject->index,
+            'table' => $taskObject->getTable(),
+            'index' => $taskObject->getIndex(),
             'disabled' => $taskObject->isDisabled(),
             // Format date as needed for display
-            'nextexecution' => date($displayFormat, (int)$taskObject->getExecutionTime()),
+            'nextexecution' => date($displayFormat, $nextExecutionTime),
             'interval' => $interval,
             'croncmd' => $cronCommand,
             'frequency' => ($cronCommand !== '') ? $cronCommand : $interval,
@@ -229,7 +271,7 @@ class SchedulerRepository implements SingletonInterface
     {
         if ($taskData['uid'] === 0) {
             // Create a new task instance and register the execution
-            /** @var $task AutomatedSyncTask */
+            /** @var AutomatedSyncTask $taskObject */
             $task = GeneralUtility::makeInstance(self::$taskClassName);
             $task->registerRecurringExecution(
                 $taskData['start'] ?? 0,

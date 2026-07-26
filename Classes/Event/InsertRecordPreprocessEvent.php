@@ -28,11 +28,11 @@ final class InsertRecordPreprocessEvent
         /**
          * @var array The record currently being prepared for insert
          */
-        protected array $record,
+        private array $record,
         /**
          * @var Importer Back-reference to the calling Importer instance
          */
-        protected Importer $importer
+        private Importer $importer
     ) {}
 
     /**

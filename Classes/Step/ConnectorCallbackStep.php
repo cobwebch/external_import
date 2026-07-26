@@ -44,7 +44,6 @@ class ConnectorCallbackStep extends AbstractStep
                 $errorStatus = true;
             }
             $this->importer->getExternalConfiguration()->getConnector()->postProcessOperations(
-                [],
                 $errorStatus
             );
         }

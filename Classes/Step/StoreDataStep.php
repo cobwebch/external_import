@@ -302,7 +302,6 @@ class StoreDataStep extends AbstractStep
         );
 
         // Create an instance of DataHandler and process the data
-        /** @var $tce DataHandler */
         $tce = GeneralUtility::makeInstance(DataHandler::class);
         // Check if TCEmain logging should be turned on or off
         $extensionConfiguration = $this->importer->getExtensionConfiguration();
@@ -996,7 +995,6 @@ class StoreDataStep extends AbstractStep
      * that we are retrieving the right messages, not to decipher their meaning.
      *
      * @param array $errorLog
-     * @throws \Doctrine\DBAL\DBALException
      * @throws \Doctrine\DBAL\Driver\Exception
      */
     protected function reportTceErrors(array $errorLog): void

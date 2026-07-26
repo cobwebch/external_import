@@ -38,7 +38,6 @@ class HandleDataStep extends AbstractStep
         // Check for custom data handlers
         if (!empty($generalConfiguration['dataHandler'])) {
             try {
-                /** @var $dataHandler DataHandlerInterface */
                 $dataHandler = GeneralUtility::makeInstance($generalConfiguration['dataHandler']);
                 if ($dataHandler instanceof DataHandlerInterface) {
                     $records = $dataHandler->handleData(

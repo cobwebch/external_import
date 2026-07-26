@@ -74,18 +74,18 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $selected = ' selected="selected"';
         }
         // Add "all" selector
-        $fieldCode .= '<option value="all"' . $selected . '>' .
-            $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all') .
-            '</option>';
+        $fieldCode .= '<option value="all"' . $selected . '>'
+            . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:all')
+            . '</option>';
         // Get configuration repository for fetching values
         $configurationRepository = GeneralUtility::makeInstance(ConfigurationRepository::class);
 
         // Add groups selection
         $groups = $configurationRepository->findAllGroups(true);
         if (count($groups) > 0) {
-            $fieldCode .= '<optgroup label="' .
-                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.groups') .
-                '">';
+            $fieldCode .= '<optgroup label="'
+                . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.groups')
+                . '">';
             foreach ($groups as $group) {
                 $id = 'group:' . $group;
                 $selected = '';
@@ -100,21 +100,21 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         // Add individual configurations
         $configurations = $configurationRepository->findBySync(true);
         if (count($configurations) > 0) {
-            $fieldCode .= '<optgroup label="' .
-                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.configurations') .
-                '">';
+            $fieldCode .= '<optgroup label="'
+                . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:options.configurations')
+                . '">';
             foreach ($configurations as $configuration) {
                 $id = $configuration['id'];
                 $selected = '';
                 if ($taskInfo[self::$itemFieldName] === $id) {
                     $selected = ' selected="selected"';
                 }
-                $label = $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table') .
-                    ': ' . $configuration['table'];
-                $label .= ', ' . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index') .
-                    ': ' . $configuration['index'];
-                $label .= ', ' . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority') .
-                    ': ' . $configuration['priority'];
+                $label = $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:table')
+                    . ': ' . $configuration['table'];
+                $label .= ', ' . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:index')
+                    . ': ' . $configuration['index'];
+                $label .= ', ' . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:priority')
+                    . ': ' . $configuration['priority'];
                 $fieldCode .= '<option value="' . $id . '"' . $selected . '>' . $label . '</option>';
             }
             $fieldCode .= '</optgroup>';
@@ -193,13 +193,13 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      */
     protected function isAddAction(mixed $action): bool
     {
+        // @phpstan-ignore class.notFound
         if ($action instanceof \TYPO3\CMS\Scheduler\Task\Enumeration\Action) {
+            // @phpstan-ignore class.notFound
             return $action->equals(\TYPO3\CMS\Scheduler\Task\Enumeration\Action::ADD);
         }
 
-        // @phpstan-ignore class.notFound
         if ($action instanceof \TYPO3\CMS\Scheduler\SchedulerManagementAction) {
-            // @phpstan-ignore class.notFound
             return $action->value === \TYPO3\CMS\Scheduler\SchedulerManagementAction::ADD->value;
         }
 
@@ -218,13 +218,13 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      */
     protected function isEditAction(mixed $action): bool
     {
+        // @phpstan-ignore class.notFound
         if ($action instanceof \TYPO3\CMS\Scheduler\Task\Enumeration\Action) {
+            // @phpstan-ignore class.notFound
             return $action->equals(\TYPO3\CMS\Scheduler\Task\Enumeration\Action::EDIT);
         }
 
-        // @phpstan-ignore class.notFound
         if ($action instanceof \TYPO3\CMS\Scheduler\SchedulerManagementAction) {
-            // @phpstan-ignore class.notFound
             return $action->value === \TYPO3\CMS\Scheduler\SchedulerManagementAction::EDIT->value;
         }
 

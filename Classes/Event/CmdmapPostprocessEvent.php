@@ -27,12 +27,12 @@ final class CmdmapPostprocessEvent
     /**
      * @var Importer Back-reference to the calling Importer instance
      */
-    protected Importer $importer;
+    private Importer $importer;
 
     /**
      * @var array List of records that were deleted (primary keys)
      */
-    protected array $records = [];
+    private array $records = [];
 
     public function __construct(array $records, Importer $importer)
     {

@@ -204,7 +204,7 @@ class XmlHandler implements DataHandlerInterface
             }
 
             if ($nodeList->length > 0) {
-                /** @var $selectedNode \DOMNode */
+                /** @var \DOMNode $selectedNode */
                 $selectedNode = $nodeList->item(0);
                 // If an XPath expression is defined, apply it (relative to currently selected node)
                 if (!empty($columnConfiguration['xpath'])) {

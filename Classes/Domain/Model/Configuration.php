@@ -122,8 +122,8 @@ class Configuration
             }
             $tcaRepository = GeneralUtility::makeInstance(TcaRepositoryInterface::class);
             // Check for nullable property
-            $columnTca = $tcaRepository->getTca()[$this->table]['columns'][$columnName]['config'] ?? [];
-            if ($this->isNullable($columnTca)) {
+            $columnTca = $tcaRepository->getTca()[$this->table]['columns'][$columnName]['config'] ?? null;
+            if (is_array($columnTca) && $this->isNullable($columnTca)) {
                 $this->processedConfiguration->addNullableColumn($columnName);
             }
             // Process children configurations
@@ -206,12 +206,6 @@ class Configuration
     {
         $this->rawGeneralConfiguration = $generalConfiguration;
         $this->generalConfiguration = $generalConfiguration;
-        // TODO: drop support for old "group" property in the next major version; for now automatically convert it
-        if (array_key_exists('group', $generalConfiguration)) {
-            $this->generalConfiguration['groups'] = [
-                $generalConfiguration['group'],
-            ];
-        }
         $stepUtility = GeneralUtility::makeInstance(StepUtility::class);
         // Define the process default steps, depending on process type or the predefined value
         // NOTE: normally default steps should always be defined
@@ -563,8 +557,8 @@ class Configuration
 
             // A relation-type column with minitems missing or equals 0 is also considered nullable
         } elseif (
-            in_array($columnTca['type'] ?? '', ['select', 'group', 'inline', 'file'], true) &&
-            (!array_key_exists('minitems', $columnTca) || $columnTca['minitems'] === 0)
+            in_array($columnTca['type'] ?? '', ['select', 'group', 'inline', 'file'], true)
+            && (!array_key_exists('minitems', $columnTca) || $columnTca['minitems'] === 0)
         ) {
             $nullable = true;
         }

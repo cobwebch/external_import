@@ -28,11 +28,11 @@ final class ProcessConnectorParametersEvent
         /**
          * @var array Connector parameters
          */
-        protected array $parameters,
+        private array $parameters,
         /**
          * @var Configuration Current External Import configuration
          */
-        protected Configuration $externalConfiguration
+        private Configuration $externalConfiguration
     ) {}
 
     /**

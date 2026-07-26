@@ -51,7 +51,6 @@ class ClearCacheStep extends AbstractStep
             );
             // Use DataHandler to clear the designated caches, if not in preview mode
             if (count($caches) > 0 && !$this->importer->isPreview()) {
-                /** @var $tce DataHandler */
                 $tce = GeneralUtility::makeInstance(DataHandler::class);
                 $tce->start([], []);
                 foreach ($caches as $cacheId) {

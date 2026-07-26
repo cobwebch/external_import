@@ -34,7 +34,7 @@ return RectorConfig::configure()
     ->withSets([
         Typo3SetList::CODE_QUALITY,
         Typo3SetList::GENERAL,
-        Typo3LevelSetList::UP_TO_TYPO3_12,
+        Typo3LevelSetList::UP_TO_TYPO3_13,
     ])
     ->withImportNames(importShortClasses: false, removeUnusedImports: true)
     // To have a better analysis from PHPStan, we teach it here some more things
@@ -46,13 +46,9 @@ return RectorConfig::configure()
         ConvertImplicitVariablesToExplicitGlobalsRector::class,
     ])
     ->withConfiguredRule(ExtEmConfRector::class, [
-        ExtEmConfRector::TYPO3_VERSION_CONSTRAINT => '12.4.0-13.4.99',
+        ExtEmConfRector::TYPO3_VERSION_CONSTRAINT => '13.4.0-14.3.99',
         ExtEmConfRector::ADDITIONAL_VALUES_TO_BE_REMOVED => [],
     ])
     // If you use importNames(), you should consider excluding some TYPO3 files.
-    ->withSkip([
-        // AddLiteralSeparatorToNumberRector would make the exception codes more readable.
-        // But as they are just timestamps this is not needed/wanted.
-        AddLiteralSeparatorToNumberRector::class,
-    ])
+    ->withSkip([])
 ;

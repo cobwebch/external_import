@@ -147,7 +147,7 @@
 					<td><f:translate id="storage_pid" /></td>
 					<td>
 						<f:if condition="{storageRecord}">
-							<a href="{be:moduleLink(route: 'web_list', arguments:'{id: generalConfiguration.pid}')}">
+							<a href="{be:moduleLink(route: 'web_list', arguments:'{id: generalConfiguration.pid}')}" target="_top">
 								<core:iconForRecord table="pages" row="{storageRecord}"/>
 								{storageRecord.title}
 							</a>

@@ -30,6 +30,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 class MappingUtilityTest extends FunctionalTestCase
 {
     protected array $coreExtensionsToLoad = [
+        'reactions',
         'scheduler',
     ];
 

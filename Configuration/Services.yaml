@@ -86,3 +86,7 @@ services:
   Cobweb\ExternalImport\Validator\ValidationResult:
     public: true
     shared: false
+
+  Cobweb\ExternalImport\Processors\ConfigurationsProcessor:
+    public: true
+    shared: false

@@ -53,9 +53,14 @@ class CsvUtility
         $headerRow = [];
         // Loop on all rows to ensure that we have all possible array keys, since some rows
         // may miss various keys
-        foreach ($array as $item) {
+        foreach ($array as $counter => $item) {
             $arrayKeys = array_keys($item);
-            // Check which items may be missing from the list of columns
+            // On the first pass, just take all available keys as a basis
+            if ($counter === 0) {
+                $headerRow = $arrayKeys;
+                continue;
+            }
+            // On each successive pass, check which keys may be missing from the list of columns
             foreach ($arrayKeys as $index => $key) {
                 if (!in_array($key, $headerRow, true)) {
                     array_splice($headerRow, $index, 0, $key);

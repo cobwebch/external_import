@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Testing;
 
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Core\SystemEnvironmentBuilder;
+use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Http\NormalizedParams;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -50,7 +51,7 @@ class FunctionalTestCaseWithDatabaseTools extends FunctionalTestCase
     {
         $queryBuilder = $this->getConnectionPool()->getQueryBuilderForTable($table);
         if ($includeHiddenRecords) {
-            $queryBuilder->getRestrictions()->removeByType(\TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction::class);
+            $queryBuilder->getRestrictions()->removeByType(HiddenRestriction::class);
         }
         $queryBuilder->count($field)
             ->from($table);

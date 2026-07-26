@@ -7,7 +7,6 @@ return [
         'crdate' => 'crdate',
         'rootLevel' => -1,
         'default_sortby' => 'ORDER BY crdate DESC',
-        'searchFields' => 'configuration',
         'typeicon_classes' => [
             'default' => 'tx_external_import-log',
         ],

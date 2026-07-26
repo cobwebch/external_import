@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Tests\Domain\Repository;
 
 use Cobweb\ExternalImport\Domain\Repository\SchedulerRepository;
 use PHPUnit\Framework\Attributes\Test;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Scheduler\Domain\Repository\SchedulerTaskRepository;
 use TYPO3\CMS\Scheduler\Task\TaskSerializer;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -29,6 +30,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 class SchedulerRepositoryTest extends FunctionalTestCase
 {
     protected array $coreExtensionsToLoad = [
+        'reactions',
         'scheduler',
     ];
 
@@ -38,10 +40,9 @@ class SchedulerRepositoryTest extends FunctionalTestCase
     {
         parent::setUp();
         $this->subject = new SchedulerRepository(
-            new SchedulerTaskRepository(
-                new TaskSerializer()
-            ),
-            new TaskSerializer()
+            $this->getContainer()->get(SchedulerTaskRepository::class),
+            $this->getContainer()->get(TaskSerializer::class),
+            $this->getContainer()->get(ConnectionPool::class)
         );
     }
 

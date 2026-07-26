@@ -23,6 +23,7 @@ use Cobweb\ExternalImport\Step\StoreDataStep;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Mail\Mailer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -40,21 +41,17 @@ class ReportingUtilityTest extends UnitTestCase
         $this->subject = GeneralUtility::makeInstance(
             ReportingUtility::class,
             $this->getAccessibleMock(
-                LogRepository::class,
-                [],
-                [],
-                '',
-                // Don't call the original constructor to avoid a cascade of dependencies
-                false
+                originalClassName: LogRepository::class,
+                callOriginalConstructor: false
             ),
             $this->getAccessibleMock(Context::class),
             $this->getAccessibleMock(
-                BackendUserRepository::class,
-                [],
-                [],
-                '',
-                // Don't call the original constructor to avoid a cascade of dependencies
-                false
+                originalClassName: BackendUserRepository::class,
+                callOriginalConstructor: false
+            ),
+            $this->getAccessibleMock(
+                originalClassName: Mailer::class,
+                callOriginalConstructor: false,
             )
         );
     }

@@ -69,10 +69,10 @@ class ImportReaction extends AbstractReaction implements ReactionInterface
             if (MathUtility::canBeInterpretedAsInteger($payload['pid'] ?? null)) {
                 $importer->setForcedStoragePid((int)$payload['pid']);
             }
-            /** @var ConfigurationKey $configuration */
             $successes = [];
             $errors = [];
             $warnings = [];
+            /** @var ConfigurationKey $configuration */
             foreach ($configurations as $configuration) {
                 $messages = $importer->import(
                     $configuration->getTable(),

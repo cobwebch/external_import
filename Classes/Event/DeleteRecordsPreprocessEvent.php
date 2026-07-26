@@ -28,11 +28,11 @@ final class DeleteRecordsPreprocessEvent
         /**
          * @var array List of records to be deleted (primary keys)
          */
-        protected array $records,
+        private array $records,
         /**
          * @var Importer Back-reference to the calling Importer instance
          */
-        protected Importer $importer
+        private Importer $importer
     ) {}
 
     /**

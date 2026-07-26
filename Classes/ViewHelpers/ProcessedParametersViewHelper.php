@@ -28,17 +28,16 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 class ProcessedParametersViewHelper extends AbstractViewHelper
 {
-    public function __construct(
-        protected EventDispatcherInterface $eventDispatcher,
-    ) {
-    }
-
     /**
      * Do not escape output of child nodes.
      *
      * @var bool
      */
     protected $escapeOutput = false;
+
+    public function __construct(
+        protected EventDispatcherInterface $eventDispatcher,
+    ) {}
 
     /**
      * Initializes the arguments of the ViewHelper.

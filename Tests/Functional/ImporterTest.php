@@ -22,8 +22,8 @@ use Cobweb\ExternalImport\Step\StoreDataStep;
 use Cobweb\ExternalImport\Testing\FunctionalTestCaseWithDatabaseTools;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Core\Bootstrap;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -33,6 +33,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ImporterTest extends FunctionalTestCaseWithDatabaseTools
 {
     protected array $coreExtensionsToLoad = [
+        'reactions',
         'scheduler',
     ];
 
@@ -52,7 +53,7 @@ class ImporterTest extends FunctionalTestCaseWithDatabaseTools
         parent::setUp();
         try {
             $this->initializeBackendUser();
-            Bootstrap::initializeLanguageObject();
+            $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('en');
 
             $this->subject = GeneralUtility::makeInstance(Importer::class);
             $this->importCSVDataSet(__DIR__ . '/Fixtures/StoragePage.csv');
@@ -157,8 +158,8 @@ class ImporterTest extends FunctionalTestCaseWithDatabaseTools
     #[Test]
     public function importBaseProductsWithImporterStoresTwoRecordsAndCreatesRelations(): void
     {
-        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
-        $storage = $resourceFactory->getDefaultStorage();
+        $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
+        $storage = $storageRepository->getDefaultStorage();
         if (!$storage->hasFolder('imported_images')) {
             $storage->createFolder('imported_images');
         }

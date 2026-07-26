@@ -127,9 +127,7 @@ class UidRepositoryTest extends FunctionalTestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getExistingUidsWithoutConfigurationThrowsException(): void
     {
         $this->expectException(\Cobweb\ExternalImport\Exception\MissingConfigurationException::class);

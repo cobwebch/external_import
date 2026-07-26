@@ -87,8 +87,8 @@ class ColumnConfigurationValidator
         }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
-        return $this->results->countForSeverity(ContextualFeedbackSeverity::ERROR) +
-            $this->results->countForSeverity(ContextualFeedbackSeverity::WARNING) === 0;
+        return $this->results->countForSeverity(ContextualFeedbackSeverity::ERROR)
+            + $this->results->countForSeverity(ContextualFeedbackSeverity::WARNING) === 0;
     }
 
     /**

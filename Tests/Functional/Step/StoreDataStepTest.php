@@ -39,6 +39,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 class StoreDataStepTest extends FunctionalTestCase
 {
     protected array $coreExtensionsToLoad = [
+        'reactions',
         'scheduler',
     ];
 
@@ -452,10 +453,10 @@ class StoreDataStepTest extends FunctionalTestCase
     {
         /** @var Configuration $configuration */
         $configuration = GeneralUtility::makeInstance(Configuration::class);
+        $configuration->setTable('foo');
         $configuration->setGeneralConfiguration($generalConfiguration);
         $configuration->setColumnConfiguration($columnConfiguration);
         $configuration->processConfiguration();
-        $configuration->setTable('foo');
         $this->subject->getData()->setRecords($input);
         $uidRepository = $this->createMock(UidRepository::class);
         $uidRepository->method('getExistingUids')->willReturn($existingUids);

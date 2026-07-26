@@ -54,6 +54,35 @@
 			<trans-unit id="sys_reaction.palette.additional" xml:space="preserve">
 				<source>Additional configuration</source>
 			</trans-unit>
+
+			<trans-unit id="tx_scheduler_task.sync_item" xml:space="preserve">
+				<source>Item to synchronize</source>
+			</trans-unit>
+			<trans-unit id="tx_scheduler_task.sync_item.all" xml:space="preserve">
+				<source>All</source>
+			</trans-unit>
+			<trans-unit id="tx_scheduler_task.sync_item.groups" xml:space="preserve">
+				<source>Groups</source>
+			</trans-unit>
+			<trans-unit id="tx_scheduler_task.sync_item.configurations" xml:space="preserve">
+				<source>Configurations</source>
+			</trans-unit>
+			<trans-unit id="tx_scheduler_task.sync_item.configuration.label" xml:space="preserve">
+				<source>Table: %1$s, index: %2$s, priority: %3$s</source>
+			</trans-unit>
+			<trans-unit id="tx_scheduler_task.sync_storage" xml:space="preserve">
+				<source>Storage page</source>
+			</trans-unit>
+			<trans-unit id="tx_scheduler_task.sync_storage.description" xml:space="preserve">
+				<source>Overrides TCA and extension setting for storage pid</source>
+			</trans-unit>
+
+			<trans-unit id="task.title" xml:space="preserve">
+				<source>External import</source>
+			</trans-unit>
+			<trans-unit id="task.description" xml:space="preserve">
+				<source>This task can be used to set up automated executions of external imports, be it for all tables in one go or for a single table.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with DrawBerry (http://raphaelbost.free.fr/) -->
+
+<svg
+   width="64"
+   height="64"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="module-externalimport-log.svg"
+   viewBox="0 0 64 64"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="11.21512"
+     inkscape:cx="22.246753"
+     inkscape:cy="23.495068"
+     inkscape:window-width="1805"
+     inkscape:window-height="1186"
+     inkscape:window-x="3097"
+     inkscape:window-y="231"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="New Layer" />
+  <g
+     inkscape:label="New Layer"
+     inkscape:groupmode="layer"
+     id="New Layer">
+    <path
+       style="fill:none;fill-opacity:1;stroke:currentColor;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 15.700019,15.550419 H 48.299981 V 15 H 15.700019 Z"
+       id="path2" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:currentColor;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 15.700019,32.550419 H 48.299981 V 32 H 15.700019 Z"
+       id="path3" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:var(--icon-color-accent, #ff8700);stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 15.700019,24.050419 H 48.299981 V 23.5 H 15.700019 Z"
+       id="path4" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:currentColor;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="m 15.700019,41.050419 h 32.599962 v -0.55042 H 15.700019 Z"
+       id="path5" />
+    <path
+       style="fill:none;fill-opacity:1;stroke:currentColor;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       d="M 15.700019,49.550419 H 48.299981 V 49 H 15.700019 Z"
+       id="path6" />
+  </g>
+  <g
+     inkscape:label="Background"
+     inkscape:groupmode="layer"
+     id="Background" />
+</svg>

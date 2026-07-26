@@ -28,15 +28,15 @@ final class DatamapPostprocessEvent
         /**
          * @var array Stored data, structured as TCE datamap with additional information
          */
-        protected array $data,
+        private array $data,
         /**
          * @var array Stored data, *really* structured as TCE datamap, i.e. first array dimension is table name, then records with additional information
          */
-        protected array $structuredData,
+        private array $structuredData,
         /**
          * @var Importer Back-reference to the calling Importer instance
          */
-        protected Importer $importer
+        private Importer $importer
     ) {}
 
     public function getImporter(): Importer

@@ -28,8 +28,8 @@ use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
-use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
@@ -74,8 +74,8 @@ class DataModuleController extends ActionController
     {
         $this->moduleTemplate = $this->moduleTemplateFactory->create($this->request);
         $this->moduleTemplate->setTitle(
-            'External Import - ' .
-            $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/DataModule.xlf:mlang_tabs_tab')
+            'External Import - '
+            . $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/DataModule.xlf:mlang_tabs_tab')
         );
     }
 
@@ -257,7 +257,6 @@ class DataModuleController extends ActionController
      * @param string $stepClass
      * @return ResponseInterface
      * @throws PropagateResponseException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
     public function downloadPreviewAction(string $table, string $index, string $stepClass): ResponseInterface
     {
@@ -629,7 +628,7 @@ class DataModuleController extends ActionController
      */
     protected function prepareCloseButton(string $returnAction): void
     {
-        $closeIcon = $this->iconFactory->getIcon('actions-close', Icon::SIZE_SMALL);
+        $closeIcon = $this->iconFactory->getIcon('actions-close', IconSize::SMALL);
         $closeButton = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar()->makeLinkButton()
             ->setIcon($closeIcon)
             ->setTitle(LocalizationUtility::translate('back_to_list', 'external_import'))

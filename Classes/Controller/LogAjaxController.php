@@ -32,9 +32,6 @@ class LogAjaxController
     /**
      * Returns the list of all log entries, in JSON format.
      *
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface|null $response
-     * @return ResponseInterface
      * @throws \JsonException
      */
     public function getAction(ServerRequestInterface $request): ResponseInterface

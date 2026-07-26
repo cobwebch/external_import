@@ -173,16 +173,16 @@ class ConfigurationRepository
                 }
                 // Skip the configurations we don't want, if either flag has been set
                 if (
-                    ($synchronizable && empty($externalConfiguration['connector'])) ||
-                    ($nonSynchronizable && !empty($externalConfiguration['connector']))
+                    ($synchronizable && empty($externalConfiguration['connector']))
+                    || ($nonSynchronizable && !empty($externalConfiguration['connector']))
                 ) {
                     continue;
                 }
                 // TODO: drop support for "group" property in the next major version
                 $configuredGroups = $externalConfiguration['groups'] ?? [];
                 if (
-                    (array_key_exists('group', $externalConfiguration) && $externalConfiguration['group'] === $group) ||
-                    (is_array($configuredGroups) && in_array($group, $configuredGroups, true))
+                    (array_key_exists('group', $externalConfiguration) && $externalConfiguration['group'] === $group)
+                    || (is_array($configuredGroups) && in_array($group, $configuredGroups, true))
                 ) {
                     // Default priority if not defined, set to very low
                     $priority = $externalConfiguration['priority'] ?? Importer::DEFAULT_PRIORITY;
@@ -221,8 +221,8 @@ class ConfigurationRepository
                 }
                 // Skip the configurations we don't want, if either flag has been set
                 if (
-                    ($synchronizable && empty($externalConfiguration['connector'])) ||
-                    ($nonSynchronizable && !empty($externalConfiguration['connector']))
+                    ($synchronizable && empty($externalConfiguration['connector']))
+                    || ($nonSynchronizable && !empty($externalConfiguration['connector']))
                 ) {
                     continue;
                 }
@@ -287,7 +287,6 @@ class ConfigurationRepository
         $configurations = [];
 
         // Get a list of all external import Scheduler tasks
-        $tasks = [];
         $schedulerRepository = GeneralUtility::makeInstance(SchedulerRepository::class);
         $tasks = $schedulerRepository->fetchAllTasks();
 
@@ -306,8 +305,8 @@ class ConfigurationRepository
                     // Synchronizable tables have a connector configuration
                     // Non-synchronizable tables don't
                     if (
-                        ($isSynchronizable && !empty($externalConfiguration['connector'])) ||
-                        (!$isSynchronizable && empty($externalConfiguration['connector']))
+                        ($isSynchronizable && !empty($externalConfiguration['connector']))
+                        || (!$isSynchronizable && empty($externalConfiguration['connector']))
                     ) {
                         // If priority is not defined, set to very low
                         // NOTE: the priority doesn't matter for non-synchronizable tables

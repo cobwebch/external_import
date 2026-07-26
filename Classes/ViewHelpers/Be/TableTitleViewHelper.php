@@ -28,8 +28,7 @@ class TableTitleViewHelper extends AbstractViewHelper
 {
     public function __construct(
         protected TcaRepositoryInterface $tcaRepository
-    ) {
-    }
+    ) {}
 
     /**
      * Initializes the arguments of the ViewHelper.

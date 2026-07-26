@@ -29,6 +29,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 class LogRepositoryTest extends FunctionalTestCase
 {
     protected array $coreExtensionsToLoad = [
+        'reactions',
         'scheduler',
     ];
 

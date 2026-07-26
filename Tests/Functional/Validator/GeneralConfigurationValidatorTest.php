@@ -27,13 +27,14 @@ use Cobweb\ExternalImport\Validator\ValidationResult;
 use Cobweb\Svconnector\Registry\ConnectorRegistry;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use TYPO3\CMS\Core\Core\Bootstrap;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class GeneralConfigurationValidatorTest extends FunctionalTestCaseWithDatabaseTools
 {
     protected array $coreExtensionsToLoad = [
+        'reactions',
         'scheduler',
     ];
 
@@ -48,7 +49,7 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCaseWithDatabaseTo
     {
         parent::setUp();
         $this->initializeBackendUser();
-        Bootstrap::initializeLanguageObject();
+        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('en');
 
         $this->subject = new GeneralConfigurationValidator(
             new ValidationResult(),
@@ -403,11 +404,5 @@ class GeneralConfigurationValidatorTest extends FunctionalTestCaseWithDatabaseTo
         $configurationObject->setGeneralConfiguration($configuration);
         $configurationObject->setColumnConfiguration($columnConfiguration);
         return $configurationObject;
-    }
-
-    public function tearDown(): void
-    {
-        parent::tearDown();
-        restore_error_handler();
     }
 }

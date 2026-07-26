@@ -89,8 +89,7 @@ class GeneralConfigurationValidator
             $generalConfiguration
         );
         $this->validateGroupsProperty(
-            $generalConfiguration['groups'] ?? null,
-            $generalConfiguration['group'] ?? null,
+            $generalConfiguration['groups'] ?? [],
         );
 
         // Validate properties for pull-only configurations
@@ -113,8 +112,8 @@ class GeneralConfigurationValidator
         }
         // Return the global validation result
         // Consider that the configuration does not validate if there's at least one error or one warning
-        return $this->results->countForSeverity(ContextualFeedbackSeverity::ERROR) +
-            $this->results->countForSeverity(ContextualFeedbackSeverity::WARNING) === 0;
+        return $this->results->countForSeverity(ContextualFeedbackSeverity::ERROR)
+            + $this->results->countForSeverity(ContextualFeedbackSeverity::WARNING) === 0;
     }
 
     /**
@@ -376,7 +375,7 @@ class GeneralConfigurationValidator
     /**
      * Validates the "columnsOrder" property.
      *
-     * @param mixed $property Property value
+     * @param string $property Property value
      * @param array $columns List of column configurations
      */
     public function validateColumnsOrderProperty(string $property, array $columns): void
@@ -417,12 +416,12 @@ class GeneralConfigurationValidator
     /**
      * Validates the "customSteps" property.
      *
-     * @param array|null $property Property value
+     * @param mixed $property Property value
      * @param array $ctrlConfiguration Full "ctrl" configuration
      */
-    public function validateCustomStepsProperty(?array $property, array $ctrlConfiguration): void
+    public function validateCustomStepsProperty(mixed $property, array $ctrlConfiguration): void
     {
-        if ($property !== null && is_array($property) && count($property) > 0) {
+        if (is_array($property) && count($property) > 0) {
             // Define the process default steps, depending on process type
             if (array_key_exists('connector', $ctrlConfiguration)) {
                 $steps = Importer::SYNCHRONYZE_DATA_STEPS;
@@ -451,22 +450,12 @@ class GeneralConfigurationValidator
 
     /**
      * Validate the "groups" property.
-     * Send deprecation notice about the old "group" property, until it is dropped
      *
-     * @param array|null $property The "groups" property
-     * @param string|null $oldProperty The "group" property
+     * @param mixed $property The "groups" property
      */
-    public function validateGroupsProperty(?array $property = null, ?string $oldProperty = null): void
+    public function validateGroupsProperty(mixed $property): void
     {
-        // TODO: drop checking deprecated "group" property in the next major version
-        if (!empty($oldProperty)) {
-            $this->results->add(
-                'groups',
-                $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:deprecatedGroupProperty'),
-                ContextualFeedbackSeverity::NOTICE
-            );
-        }
-        if ($property !== null && !is_array($property)) {
+        if (!is_array($property)) {
             $this->results->add(
                 'groups',
                 $this->getLanguageService()->sL('LLL:EXT:external_import/Resources/Private/Language/Validator.xlf:invalidGroupsProperty'),

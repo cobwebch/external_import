@@ -3,3 +3,5 @@
 /composer.lock
 /composer.json.testing
 /.ddev/
+/var/
+/packages/

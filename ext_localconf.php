@@ -4,15 +4,19 @@
 use Cobweb\ExternalImport\Task\AutomatedSyncAdditionalFieldProvider;
 use Cobweb\ExternalImport\Task\AutomatedSyncTask;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Scheduler\Task\TableGarbageCollectionTask;
 
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][AutomatedSyncTask::class] = [
-    'extension' => 'external_import',
-    'title' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:scheduler.title',
-    'description' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:scheduler.description',
-    'additionalFields' => AutomatedSyncAdditionalFieldProvider::class,
-];
-
+// TODO: remove registration when dropping compatibility with TYPO3 13
+$version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
+if ($version['version_main'] < 14) {
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][AutomatedSyncTask::class] = [
+        'extension' => 'external_import',
+        'title' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:scheduler.title',
+        'description' => 'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:scheduler.description',
+        'additionalFields' => AutomatedSyncAdditionalFieldProvider::class,
+    ];
+}
 // Set up garbage collection
 if (!is_array($GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][TableGarbageCollectionTask::class]['options']['tables']['tx_externalimport_domain_model_log'] ?? null)) {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][TableGarbageCollectionTask::class]['options']['tables']['tx_externalimport_domain_model_log'] = [

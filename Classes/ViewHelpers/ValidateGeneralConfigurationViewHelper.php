@@ -26,17 +26,16 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
  */
 class ValidateGeneralConfigurationViewHelper extends AbstractViewHelper
 {
-    public function __construct(
-        protected GeneralConfigurationValidator $configurationValidator,
-    ) {
-    }
-
     /**
      * Do not escape output of child nodes.
      *
      * @var bool
      */
     protected $escapeOutput = false;
+
+    public function __construct(
+        protected GeneralConfigurationValidator $configurationValidator,
+    ) {}
 
     /**
      * Initializes the arguments of the ViewHelper.

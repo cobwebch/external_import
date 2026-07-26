@@ -26,6 +26,7 @@ use Psr\Log\LoggerAwareTrait;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Mail\MailerInterface;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -51,18 +52,12 @@ class ReportingUtility implements LoggerAwareInterface
      */
     protected array $reportingValues = [];
 
-    protected LogRepository $logRepository;
-
-    protected Context $context;
-
-    protected BackendUserRepository $userRepository;
-
-    public function __construct(LogRepository $logRepository, Context $context, BackendUserRepository $userRepository)
-    {
-        $this->logRepository = $logRepository;
-        $this->context = $context;
-        $this->userRepository = $userRepository;
-    }
+    public function __construct(
+        protected LogRepository $logRepository,
+        protected Context $context,
+        protected BackendUserRepository $userRepository,
+        protected MailerInterface $mailer
+    ) {}
 
     /**
      * Sets a back-reference to the Importer object.
@@ -108,9 +103,9 @@ class ReportingUtility implements LoggerAwareInterface
             }
             foreach ($messages as $status => $messageList) {
                 foreach ($messageList as $message) {
-                    $configuration = $this->importer->getExternalConfiguration() ?
-                        $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex() :
-                        'Invalid configuration';
+                    $configuration = $this->importer->getExternalConfiguration()
+                        ? $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()
+                        : 'Invalid configuration';
                     $data = [
                         'pid' => $pid,
                         'status' => $status,
@@ -175,7 +170,6 @@ class ReportingUtility implements LoggerAwareInterface
      */
     public function sendMail(string $subject, string $body): void
     {
-        $result = 0;
         $recipientMail = is_array($this->extensionConfiguration['reportEmail'])
             ? $this->extensionConfiguration['reportEmail']
             : GeneralUtility::trimExplode(',', $this->extensionConfiguration['reportEmail'], true);
@@ -189,7 +183,6 @@ class ReportingUtility implements LoggerAwareInterface
             // Proceed with sending the mail
         } else {
             // Instantiate and initialize the mail object
-            /** @var $mailObject MailMessage */
             $mailObject = GeneralUtility::makeInstance(MailMessage::class);
             try {
                 $sender = [
@@ -201,19 +194,20 @@ class ReportingUtility implements LoggerAwareInterface
                 $mailObject->setSubject($subject);
                 $mailObject->text($body);
                 // Send mail
-                $result = $mailObject->send();
+                $this->mailer->send($mailObject);
                 $message = '';
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $message = $e->getMessage() . '[' . $e->getCode() . ']';
             }
         }
 
         // Report error in log, if any
-        if ($result === 0) {
-            $comment = 'Reporting mail could not be sent to ' . implode(', ', $recipientMail);
-            if (!empty($message)) {
-                $comment .= ' (' . $message . ')';
-            }
+        if (!empty($message)) {
+            $comment = sprintf(
+                'Reporting mail could not be sent to %s (%s)',
+                implode(', ', $recipientMail),
+                $message
+            );
             $this->logger->error($comment);
         }
     }
