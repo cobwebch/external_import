@@ -174,7 +174,7 @@ class SchedulerRepository implements SingletonInterface
                 $this->tasks[] = $task;
             } else {
                 try {
-                    $task = $this->taskSerializer->deserialize($row['serialized_task_object']);
+                    $task = $this->taskSerializer->deserialize($row);
                     // Add the task to the list only if it is valid
                     if (get_class($task) === self::$taskClassName && (new TaskValidator())->isValid($task)) {
                         if (method_exists($task, 'setScheduler')) {
