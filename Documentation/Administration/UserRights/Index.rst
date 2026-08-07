@@ -31,6 +31,12 @@ Scheduler tasks. This is found at the bottom of the "Access Lists" tab.
 
     Setting specific permissions for the BE module
 
+.. warning::
+
+   As of TYPO3 14, only admin users can add, edit or remove Scheduler tasks using
+   the External Import backend module. This is because the Scheduler is now fully configured
+   using TCA. Thus the "Define Scheduler tasks" option has no meaning anymore.
+
 
 DB mount points are not checked at this point, so the user may be
 able to start a synchronization and still get error messages if not

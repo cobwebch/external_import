@@ -1,8 +1,18 @@
 <html data-namespace-typo3-fluid="true"
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+	  xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
 	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
 
-	<f:link.action action="newTask" arguments="{table: table, index: index}" title="{f:translate(key: 'add_sync')}" class="btn btn-default">
-		<core:icon identifier="actions-add" />
-	</f:link.action>
+<f:if condition="{isVersion13}">
+    <f:then>
+		<f:link.action action="newTask" arguments="{table: table, index: index}" title="{f:translate(key: 'add_sync')}" class="btn btn-default">
+			<core:icon identifier="actions-add" />
+		</f:link.action>
+	</f:then>
+    <f:else>
+		<be:link.newRecord pid="8" table="tx_scheduler_task" defaultValues="{tx_scheduler_task: {tasktype: 'Cobweb\\ExternalImport\\Task\\SynchronizationTask', sync_item: key}}" class="btn btn-default">
+			<core:icon identifier="actions-add" />
+		</be:link.newRecord>
+    </f:else>
+</f:if>
 </html>

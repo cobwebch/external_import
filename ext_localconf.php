@@ -37,6 +37,7 @@ ArrayUtility::mergeRecursiveWithOverrule(
                     'actions-refresh',
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:bemodulePermissions.runSync.description',
                 ],
+                // TODO: remove when dropping compatibility with TYPO3 13, only admins can then manage Scheduler tasks
                 'scheduler' => [
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:bemodulePermissions.scheduler',
                     'mimetypes-x-tx_scheduler_task_group',

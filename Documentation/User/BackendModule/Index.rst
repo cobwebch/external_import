@@ -34,6 +34,11 @@ various features are summarized in the picture below.
    or without write access to a given table will not see the synchronize and preview buttons,
    nor the actions related to the Scheduler.
 
+.. warning::
+
+   As of TYPO3 14, only admin users can add, edit or remove Scheduler tasks using
+   the External Import backend module. This is because the Scheduler is now fully configured
+   using TCA.
 
 .. _user-backend-module-synchronizable-details:
 

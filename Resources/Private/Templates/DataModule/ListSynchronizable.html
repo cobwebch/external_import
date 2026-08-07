@@ -21,14 +21,14 @@
 							</f:then>
 							<f:else>
 								<p><f:translate id="next_full_autosync" arguments="{0: fullSynchronizationTask.frequencyText, 1: fullSynchronizationTask.nextexecution}" /></p>
-								<f:render partial="DataModule/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid}" />
+								<f:render partial="DataModule/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid, isVersion13: isVersion13}" />
 								<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid}" />
 							</f:else>
 						</f:if>
 					</f:then>
 					<f:else>
 						<p><f:translate id="no_full_autosync" /></p>
-						<f:render partial="DataModule/Actions/AddButton" arguments="{table: 'all', index: ''}" />
+						<f:render partial="DataModule/Actions/AddButton" arguments="{table: 'all', index: '', key: '{ex:configurationKey(table: \'all\')}', isVersion13: isVersion13}" />
 					</f:else>
 				</f:if>
 			</f:be.infobox>
@@ -147,7 +147,7 @@
 															<f:then>&nbsp;</f:then>
 															<f:else>
 																<div class="btn-group input-group-btn">
-																	<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid}" />
+																	<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid, isVersion13: isVersion13}" />
 																	<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
 																</div>
 															</f:else>
@@ -157,7 +157,7 @@
 											</f:then>
 											<f:else>
 												<div class="btn-group">
-													<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index}" />
+													<f:render partial="DataModule/Actions/AddButton" arguments="{table: configuration.table, index: configuration.index, key: '{ex:configurationKey(table: \'{configuration.table}\', index: \'{configuration.index}\')}', isVersion13: isVersion13}" />
 												</div>
 											</f:else>
 										</f:if>

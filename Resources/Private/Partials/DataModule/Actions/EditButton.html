@@ -1,8 +1,18 @@
 <html data-namespace-typo3-fluid="true"
-	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+      xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
 
-	<f:link.action action="editTask" arguments="{uid: uid}" title="{f:translate(key: 'edit_sync')}" class="btn btn-default">
-		<core:icon identifier="actions-open" />
-	</f:link.action>
+<f:if condition="{isVersion13}">
+    <f:then>
+        <f:link.action action="editTask" arguments="{uid: uid}" title="{f:translate(key: 'edit_sync')}" class="btn btn-default">
+            <core:icon identifier="actions-open"/>
+        </f:link.action>
+    </f:then>
+    <f:else>
+        <be:link.editRecord uid="{uid}" table="tx_scheduler_task" class="btn btn-default">
+            <core:icon identifier="actions-open"/>
+        </be:link.editRecord>
+    </f:else>
+</f:if>
 </html>

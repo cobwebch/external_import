@@ -27,6 +27,7 @@ use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Imaging\IconSize;
@@ -36,6 +37,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
@@ -110,20 +112,29 @@ class DataModuleController extends ActionController
         } catch (\Exception $e) {
             $fullSynchronizationTask = null;
         }
+        // TODO: remove when dropping compatibility with TYPO3 14
+        $version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
+        $rights = [
+            'sync' => $this->getBackendUser()->check(
+                'custom_options',
+                'tx_externalimport_bemodule_actions:sync'
+            ),
+        ];
+        // With TYPO3 14, only admin users can act on Scheduler tasks
+        if ($version['version_main'] < 14) {
+            $rights['scheduler'] = $this->getBackendUser()->check(
+                'custom_options',
+                'tx_externalimport_bemodule_actions:scheduler'
+            );
+        } else {
+            $rights['scheduler'] = $this->getBackendUser()->isAdmin();
+        }
         $this->moduleTemplate->assignMultiple(
             [
                 'configurations' => $configurations,
                 'fullSynchronizationTask' => $fullSynchronizationTask,
-                'rights' => [
-                    'sync' => $this->getBackendUser()->check(
-                        'custom_options',
-                        'tx_externalimport_bemodule_actions:sync'
-                    ),
-                    'scheduler' => $this->getBackendUser()->check(
-                        'custom_options',
-                        'tx_externalimport_bemodule_actions:scheduler'
-                    ),
-                ],
+                'rights' => $rights,
+                'isVersion13' => $version['version_main'] < 14,
             ]
         );
 
@@ -528,26 +539,61 @@ class DataModuleController extends ActionController
      */
     public function deleteTaskAction(int $uid): ResponseInterface
     {
-        try {
-            $this->schedulerRepository->deleteTask($uid);
-            $this->addFlashMessage(
-                LocalizationUtility::translate(
-                    'delete_done',
-                    'external_import'
-                )
-            );
-        } catch (\Exception $e) {
-            $this->addFlashMessage(
-                LocalizationUtility::translate(
-                    'delete_failed',
-                    'external_import',
-                    [
-                        $e->getMessage(),
-                    ]
-                ),
-                '',
-                ContextualFeedbackSeverity::ERROR
-            );
+        // With TYPO3 14+, use TCE delete command for deleting. Remove older way when dropping compatibility with TYPO3 13
+        $version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
+        if ($version['version_main'] >= 14) {
+            $cmdMap = [
+                'tx_scheduler_task' => [
+                    $uid => [
+                        'delete' => 1,
+                    ],
+                ],
+            ];
+            $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+            $dataHandler->start([], $cmdMap);
+            $dataHandler->process_cmdmap();
+            if (count($dataHandler->errorLog) === 0) {
+                $this->addFlashMessage(
+                    LocalizationUtility::translate(
+                        'delete_done',
+                        'external_import'
+                    )
+                );
+            } else {
+                $this->addFlashMessage(
+                    LocalizationUtility::translate(
+                        'delete_failed',
+                        'external_import',
+                        [
+                            implode(', ', $dataHandler->errorLog),
+                        ]
+                    ),
+                    '',
+                    ContextualFeedbackSeverity::ERROR
+                );
+            }
+        } else {
+            try {
+                $this->schedulerRepository->deleteTask($uid);
+                $this->addFlashMessage(
+                    LocalizationUtility::translate(
+                        'delete_done',
+                        'external_import'
+                    )
+                );
+            } catch (\Exception $e) {
+                $this->addFlashMessage(
+                    LocalizationUtility::translate(
+                        'delete_failed',
+                        'external_import',
+                        [
+                            $e->getMessage(),
+                        ]
+                    ),
+                    '',
+                    ContextualFeedbackSeverity::ERROR
+                );
+            }
         }
         return $this->redirect('listSynchronizable');
     }

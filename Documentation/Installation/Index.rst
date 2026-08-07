@@ -11,7 +11,7 @@ need to extend the TCA definition of some tables with the appropriate
 syntax and create specific connectors for the application you want to
 connect to.
 
-TYPO3 CMS 12 or 13 is required, as well as the "scheduler" and "reactions" system extensions.
+TYPO3 CMS 13 or 14 is required, as well as the "scheduler" and "reactions" system extensions.
 
 
 .. _installation-compatibility:
@@ -19,6 +19,17 @@ TYPO3 CMS 12 or 13 is required, as well as the "scheduler" and "reactions" syste
 
 Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. _installation-upgrade-900:
+
+Upgrade to 9.0.0
+""""""""""""""""
+
+Since TYPO3 14, Scheduler tasks are entirely defined using TCA and are thus strictly restricted
+to admin users. Rather than trying to work around this even more than what was done up to now,
+adding, editing and deleting Scheduler tasks from the External Import backend module has been
+restricted to admin users.
 
 
 .. _installation-upgrade-820:
