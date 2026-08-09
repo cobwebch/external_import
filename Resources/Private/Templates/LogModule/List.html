@@ -9,14 +9,14 @@
 	<h1><f:translate id="logList" /></h1>
 
 	<div id="tx_externalimport_loglist_wrapper" class="hidden">
-		<form name="searchAndFilter">
-			<div class="form-group">
-				<f:form.textfield name="externalimport-searchfield" placeholder="{f:translate(key:'search')}"
-								  id="tx_externalimport_search"
-								  class="form-control t3js-externalimport-searchfield"/>
-			</div>
-
-		</form>
+		<div class="form-group">
+			<input
+					name="externalimport-searchfield"
+					placeholder="{f:translate(key:'search')}"
+					id="tx_externalimport_search"
+					class="form-control t3js-externalimport-searchfield"
+			>
+		</div>
 		<div class="table-fit">
 			<table class="table table-striped table-hover" id="tx_externalimport_loglist">
 				<thead>
