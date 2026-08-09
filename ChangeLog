@@ -1,6 +1,7 @@
 2026-08-08 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Add migration wizard for switching to new Scheduler task class, resolves #403
+    * Prevent form submission in Log module, resolves #398 (thanks to Mathias Brodala)
 
 2026-08-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
