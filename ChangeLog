@@ -1,3 +1,7 @@
+2026-08-08 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Add migration wizard for switching to new Scheduler task class, resolves #403
+
 2026-08-07 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Support TYPO3 14, adapt to Scheduler changes, resolves #396

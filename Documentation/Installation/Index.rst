@@ -31,6 +31,16 @@ to admin users. Rather than trying to work around this even more than what was d
 adding, editing and deleting Scheduler tasks from the External Import backend module has been
 restricted to admin users.
 
+Another consequence of this restructuring is that a new Scheduler task :php:`Cobweb\ExternalImport\Task\SynchronizationTask`
+replacing :php:`Cobweb\ExternalImport\Task\AutomatedSyncTask` with a cleaner structure.
+An upgrade wizard is provided for migrating registered Scheduler task from the old type to the new type.
+General Scheduler migration wizard must have been run before.
+
+.. figure:: ../Images/SchedulerTaskMigration.png
+    :alt: Scheduler task upgrade wizard
+
+    Upgrade wizard indicating that there are old synchronization tasks to migrate
+
 
 .. _installation-upgrade-820:
 
