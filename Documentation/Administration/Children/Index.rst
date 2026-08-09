@@ -54,16 +54,13 @@ scenarios which may help understand this feature.
                       'fieldname' => [
                           'value' => 'pictures'
                       ],
-                      'table_local' => [
-                          'value' => 'sys_file'
-                      ]
                   ],
                   'sorting' => [
                       'source' => 'picture_order',
                       'target' => 'sorting_foreign'
                   ],
-                  'controlColumnsForUpdate' => 'uid_local, uid_foreign, tablenames, fieldname, table_local',
-                  'controlColumnsForDelete' => 'uid_foreign, tablenames, fieldname, table_local'
+                  'controlColumnsForUpdate' => 'uid_local, uid_foreign, tablenames, fieldname',
+                  'controlColumnsForDelete' => 'uid_foreign, tablenames, fieldname'
               ]
              ...
          ]
@@ -154,7 +151,7 @@ Description
 
   .. code-block:: php
 
-      'controlColumnsForUpdate' => 'uid_local, uid_foreign, tablenames, fieldname, table_local',
+      'controlColumnsForUpdate' => 'uid_local, uid_foreign, tablenames, fieldname',
 
   These are all the columns that need to be queried in the "sys_file_reference" table to be sure
   that we are targeting the right record in the database. Any missing information might mean retrieving
