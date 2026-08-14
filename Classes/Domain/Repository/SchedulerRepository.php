@@ -167,16 +167,24 @@ class SchedulerRepository implements SingletonInterface
 
         $result = $queryBuilder->executeQuery();
         while ($row = $result->fetchAssociative()) {
-            if (($row['tasktype'] ?? '') === SynchronizationTask::class) {
+            $taskType = $row['tasktype'] ?? '';
+            if ($taskType === SynchronizationTask::class) {
                 $task = GeneralUtility::makeInstance(SynchronizationTask::class);
                 $task->setTaskUid($row['uid']);
                 $task->setTaskParameters($row);
                 $this->tasks[] = $task;
-            } else {
+                // TODO: remove when dropping compatibility with TYPO3 13
+            } elseif ($taskType === self::$taskClassName) {
                 try {
-                    $task = $this->taskSerializer->deserialize($row['serialized_task_object']);
+                    $version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
+                    if ($version['version_main'] >= 14) {
+                        $item = $row;
+                    } else {
+                        $item = $row['serialized_task_object'];
+                    }
+                    $task = $this->taskSerializer->deserialize($item);
                     // Add the task to the list only if it is valid
-                    if (get_class($task) === self::$taskClassName && (new TaskValidator())->isValid($task)) {
+                    if ((new TaskValidator())->isValid($task)) {
                         if (method_exists($task, 'setScheduler')) {
                             $task->setScheduler();
                         }
