@@ -37,7 +37,7 @@ final class SchedulerTaskMigration implements UpgradeWizardInterface
 {
     public function __construct(
         private ConnectionPool $connectionPool,
-        protected TaskSerializer $taskSerializer,
+        private TaskSerializer $taskSerializer,
     ) {}
 
     public function getTitle(): string
@@ -117,7 +117,7 @@ final class SchedulerTaskMigration implements UpgradeWizardInterface
         return [DatabaseUpdatedPrerequisite::class];
     }
 
-    protected function getQueryBuilder(): QueryBuilder
+    private function getQueryBuilder(): QueryBuilder
     {
         return $this->connectionPool->getQueryBuilderForTable('tx_scheduler_task');
     }
