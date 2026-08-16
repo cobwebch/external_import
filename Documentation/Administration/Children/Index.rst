@@ -15,7 +15,9 @@ MM tables where additional information needs to be stored.
    with MM tables having a primary key field ("uid").
 
 See the :ref:`Mapping data <user-mapping-data>` chapter for an overview of import
-scenarios which may help understand this feature.
+scenarios which may help understand this feature. Also check out the
+:ref:`Substructures and child records <import-configuration-examples-substructure-children>`
+example which shows the combined usage of "children" and "substructureFields" properties.
 
 
 **Example:**

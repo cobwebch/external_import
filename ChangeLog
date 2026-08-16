@@ -1,3 +1,7 @@
+2026-08-16 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Improve substructure fields documentation, resolves #395
+
 2026-08-08 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Add migration wizard for switching to new Scheduler task class, resolves #403

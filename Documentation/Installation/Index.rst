@@ -41,6 +41,9 @@ General Scheduler migration wizard must have been run before.
 
     Upgrade wizard indicating that there are old synchronization tasks to migrate
 
+A new :ref:`examples chapter <import-configuration-examples>` (with just one example
+for now) provides detailed examples for the most complex configurations.
+
 
 .. _installation-upgrade-820:
 

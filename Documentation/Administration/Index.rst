@@ -42,4 +42,5 @@ each example (in the Tutorial).
    Mapping/Index
    Children/Index
    ArrayPath/Index
+   Examples/Index
    LogCleanup/Index

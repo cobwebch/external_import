@@ -299,85 +299,12 @@ Type
   array
 
 Description
-   Makes it possible to read several values that are located inside nested data structures.
-   Consider the following data source:
+   Makes it possible to read several values that are located inside nested data structures,
+   creating one row per element in the nested structure.
 
-   .. code:: json
-
-        [
-          {
-            "order": "000001",
-            "date": "2014-08-07",
-            "customer": "Conan the Barbarian",
-            "products": [
-              {
-                "product": "000001",
-                "qty": 3
-              },
-              {
-                "product": "000005",
-                "qty": 1
-              },
-              {
-                "product": "000101",
-                "qty": 10
-              },
-              {
-                "product": "000102",
-                "qty": 2
-              }
-            ]
-          },
-          {
-            "order": "000002",
-            "date": "2014-08-08",
-            "customer": "Sonja the Red",
-            "products": [
-              {
-                "product": "000001",
-                "qty": 1
-              },
-              {
-                "product": "000005",
-                "qty": 2
-              },
-              {
-                "product": "000202",
-                "qty": 1
-              }
-            ]
-          }
-        ]
-
-   The "products" field is actually a nested structure, from which we want to fetch the values
-   from both `product` and `qty`. This can be achieved with the following configuration:
-
-   .. code:: php
-
-        'products' => [
-         'exclude' => 0,
-         'label' => 'Products',
-         'config' => [
-            ...
-         ],
-         'external' => [
-            0 => [
-               'field' => 'products',
-               'substructureFields' => [
-                  'products' => [
-                     'field' => 'product'
-                  ],
-                  'quantity' => [
-                     'field' => 'qty'
-                  ]
-               ],
-               ...
-            ]
-         ]
-        ]
-
-   The keys to the configuration array correspond to the names of the columns where the values will be
-   stored. The configuration for each element can use all the existing properties for retrieving data:
+   The configuration is an associative array where the keys correspond to the names of the columns
+   where the values must be stored. The configuration for each element can use all the
+   existing properties for retrieving data:
 
    - :ref:`field <administration-columns-properties-field>`
    - :ref:`fieldNS <administration-columns-properties-fieldns>`
@@ -388,51 +315,17 @@ Description
    - :ref:`xpath <administration-columns-properties-xpath>`
    - :ref:`xmlValue <administration-columns-properties-xmlvalue>`
 
-   The substructure fields are searched for inside the structure selected with the "main" data pointer.
-   In the example above, the whole "products" structure is first fetched, then the `product` and `qty`
-   are searched for inside that structure.
+   The substructure fields are searched for inside the structure selected for the column itself.
 
-   The above example will read the values in the `product` nested field and put it into "products" column. Same for
-   `qty` and "quantity". The fact that there are several entries will multiply imported records, actually
-   denormalising the data on the fly. The result would be something like:
-
-   +--------+------------+---------------------+----------+----------+
-   | order  | date       | customer            | products | quantity |
-   +========+============+=====================+==========+==========+
-   | 000001 | 2014-08-07 | Conan the Barbarian | 000001   | 3        |
-   +--------+------------+---------------------+----------+----------+
-   | 000001 | 2014-08-07 | Conan the Barbarian | 000005   | 1        |
-   +--------+------------+---------------------+----------+----------+
-   | 000001 | 2014-08-07 | Conan the Barbarian | 000101   | 10       |
-   +--------+------------+---------------------+----------+----------+
-   | 000001 | 2014-08-07 | Conan the Barbarian | 000102   | 2        |
-   +--------+------------+---------------------+----------+----------+
-   | 000002 | 2014-08-08 | Sonja the Red       | 000001   | 1        |
-   +--------+------------+---------------------+----------+----------+
-   | 000002 | 2014-08-08 | Sonja the Red       | 000005   | 2        |
-   +--------+------------+---------------------+----------+----------+
-   | 000002 | 2014-08-08 | Sonja the Red       | 000202   | 1        |
-   +--------+------------+---------------------+----------+----------+
-
-   Obviously if you have a single element in the nested structure, no denormalisation happens.
-   Due to this denormalisation you probably want to use this property in conjunction with the
-   :ref:`multipleRows <administration-columns-properties-multiple-rows>` or
+   Since this process generally creates several rows, you probably want to use this property
+   in conjunction with the :ref:`multipleRows <administration-columns-properties-multiple-rows>` or
    :ref:`children <administration-columns-properties-children>` properties.
 
-   .. note::
+   .. warning::
 
-      In such scenarios you will generally want to have one of the nested fields "take the main role",
-      i.e. have its value fill a column bearing the name of TYPO3 column which contains the substructure
-      configuration. In the above example, the `product` field is matched to the "products" column name.
-      In such a case, this nested field will go through any :ref:`transformations <administration-transformations>`
-      defined for the column.
-
-      If you need to apply :ref:`transformations <administration-transformations>` to other substructure fields,
-      map them to :ref:`additional fields <administration-additionalfields>`. In order for this to work, you need
-      to write some value into each additional field, otherwise it will result in a configuration error. So you
-      need to set some dummy value, that is overridden by the values pointed to by the `substructureFields`
-      configuration, but take care that if such a value is missing, the dummy value will remain and may produce
-      unwanted results, depending on the rest of your configuration.
+      Correctly using this property is not trivial. Please read
+      :ref:`the full example <import-configuration-examples-substructure-children>` provided in this manual
+      as a complement to the description above.
 
 Scope
   Handle data
