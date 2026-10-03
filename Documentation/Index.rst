@@ -20,7 +20,7 @@ External Import
    en
 
 :Author:
-   François Suter (Idéative), `typo3@ideative.ch <typo3@ideative.ch>`_
+   François Suter (Idéative), typo3@ideative.ch
 
 :License:
    This document is published under the `Open Publication License <http://www.opencontent.org/openpub/>`_.

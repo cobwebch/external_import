@@ -42,9 +42,9 @@ class ConfigurationKey
     protected string $table = '';
 
     /**
-     * @var string Configuration index
+     * @var int|string Configuration index
      */
-    protected string $index = '';
+    protected int|string $index = '';
 
     /**
      * Returns the configuration key.
@@ -73,9 +73,9 @@ class ConfigurationKey
      * Sets the table, the index and the configuration key.
      *
      * @param string $table
-     * @param string $index
+     * @param int|string $index
      */
-    public function setTableAndIndex(string $table, string $index): void
+    public function setTableAndIndex(string $table, int|string $index): void
     {
         $this->table = $table;
         $this->index = $index;
