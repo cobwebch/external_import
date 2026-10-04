@@ -69,11 +69,16 @@ class SchedulerRepository implements SingletonInterface
     public function fetchAllTasks(): array
     {
         $taskList = [];
+        // TODO: remove handling of AutomatedSyncTask when dropping compatibility with TYPO3 13
         /** @var AutomatedSyncTask|SynchronizationTask $taskObject */
         foreach ($this->tasks as $taskObject) {
-            $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
-            $configurationKey->setTableAndIndex($taskObject->getTable(), (string)$taskObject->getIndex());
-            $key = $configurationKey->getConfigurationKey();
+            if ($taskObject instanceof AutomatedSyncTask) {
+                $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
+                $configurationKey->setTableAndIndex($taskObject->getTable(), (string)$taskObject->getIndex());
+                $key = $configurationKey->getConfigurationKey();
+            } else {
+                $key = $taskObject->getTaskParameters()['sync_item'];
+            }
             $taskList[$key] = $this->assembleTaskInformation($taskObject);
         }
         return $taskList;
