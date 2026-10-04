@@ -2,6 +2,7 @@
 	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
 	  xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers">
 
+<f:if condition="{isVersion13}">
 	<f:link.action
 		action="deleteTask"
 		arguments="{uid: uid}"
@@ -17,4 +18,5 @@
 	>
 		<core:icon identifier="actions-delete" />
 	</f:link.action>
+</f:if>
 </html>

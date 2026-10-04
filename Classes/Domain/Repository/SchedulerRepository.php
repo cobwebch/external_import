@@ -166,29 +166,27 @@ class SchedulerRepository implements SingletonInterface
             );
 
         $result = $queryBuilder->executeQuery();
+        $version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
         while ($row = $result->fetchAssociative()) {
-            $taskType = $row['tasktype'] ?? '';
-            if ($taskType === SynchronizationTask::class) {
-                $task = GeneralUtility::makeInstance(SynchronizationTask::class);
-                $task->setTaskUid($row['uid']);
-                $task->setTaskParameters($row);
-                $this->tasks[] = $task;
+            if ($version['version_main'] >= 14) {
+                if (($row['tasktype'] ?? '') === SynchronizationTask::class) {
+                    $task = GeneralUtility::makeInstance(SynchronizationTask::class);
+                    $task->setTaskUid($row['uid']);
+                    $task->setTaskParameters($row);
+                    $this->tasks[] = $task;
+                }
                 // TODO: remove when dropping compatibility with TYPO3 13
-            } elseif ($taskType === self::$taskClassName) {
+            } else {
                 try {
-                    $version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
-                    if ($version['version_main'] >= 14) {
-                        $item = $row;
-                    } else {
-                        $item = $row['serialized_task_object'];
-                    }
-                    $task = $this->taskSerializer->deserialize($item);
-                    // Add the task to the list only if it is valid
-                    if ((new TaskValidator())->isValid($task)) {
-                        if (method_exists($task, 'setScheduler')) {
-                            $task->setScheduler();
+                    $task = $this->taskSerializer->deserialize($row['serialized_task_object'] ?? '');
+                    if ($task instanceof self::$taskClassName) {
+                        // Add the task to the list only if it is valid
+                        if ((new TaskValidator())->isValid($task)) {
+                            if (method_exists($task, 'setScheduler')) {
+                                $task->setScheduler();
+                            }
+                            $this->tasks[] = $task;
                         }
-                        $this->tasks[] = $task;
                     }
                 } catch (InvalidTaskException) {
                     continue;

@@ -22,7 +22,7 @@
 							<f:else>
 								<p><f:translate id="next_full_autosync" arguments="{0: fullSynchronizationTask.frequencyText, 1: fullSynchronizationTask.nextexecution}" /></p>
 								<f:render partial="DataModule/Actions/EditButton" arguments="{uid: fullSynchronizationTask.uid, isVersion13: isVersion13}" />
-								<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid}" />
+								<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: fullSynchronizationTask.uid, isVersion13: isVersion13}" />
 							</f:else>
 						</f:if>
 					</f:then>
@@ -148,7 +148,7 @@
 															<f:else>
 																<div class="btn-group input-group-btn">
 																	<f:render partial="DataModule/Actions/EditButton" arguments="{uid: configuration.task.uid, isVersion13: isVersion13}" />
-																	<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid}" />
+																	<f:render partial="DataModule/Actions/DeleteButton" arguments="{uid: configuration.task.uid, isVersion13: isVersion13}" />
 																</div>
 															</f:else>
 														</f:if>
