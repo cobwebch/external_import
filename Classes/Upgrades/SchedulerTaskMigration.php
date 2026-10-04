@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Upgrades\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Core\Upgrades\UpgradeWizardInterface;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Scheduler\Task\TaskSerializer;
 
 /**
@@ -92,12 +93,18 @@ final class SchedulerTaskMigration implements UpgradeWizardInterface
     }
 
     /**
-     * Return true if at least on task of type AutomatedSyncTask is found
+     * Return true if at least one task of type AutomatedSyncTask is found
      *
      * @throws \Doctrine\DBAL\Exception
      */
     public function updateNecessary(): bool
     {
+        // Skip entirely if not running TYPO3 14+
+        $version = VersionNumberUtility::convertVersionStringToArray(VersionNumberUtility::getCurrentTypo3Version());
+        if ($version['version_main'] < 14) {
+            return false;
+        }
+
         $queryBuilder = $this->getQueryBuilder();
         $tasks = $queryBuilder->count('tasktype')
             ->from('tx_scheduler_task')
