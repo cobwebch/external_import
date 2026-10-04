@@ -1,5 +1,9 @@
 2026-08-16 Francois Suter (Idéative)  <typo3@ideative.ch>
 
+    * Remove deprecated "group" property, references #396
+
+2026-08-16 Francois Suter (Idéative)  <typo3@ideative.ch>
+
     * Improve substructure fields documentation, resolves #395
 
 2026-08-08 Francois Suter (Idéative)  <typo3@ideative.ch>

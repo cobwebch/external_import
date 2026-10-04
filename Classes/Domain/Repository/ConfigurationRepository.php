@@ -130,11 +130,6 @@ class ConfigurationRepository
                     }
                     if (is_array($externalConfiguration['groups'] ?? [])) {
                         $groups = $externalConfiguration['groups'] ?? [];
-                        // TODO: drop support for the "group" property in the next major version
-                    } elseif (array_key_exists('group', $externalConfiguration)) {
-                        $groups = [
-                            $externalConfiguration['group'],
-                        ];
                     } else {
                         $groups = [];
                     }
@@ -323,20 +318,12 @@ class ConfigurationRepository
                             }
                         }
                         $tableTitle = $this->getTableTitle($tableName);
-                        // TODO: drop support for old "group" property in the next major version; for now automatically convert it
-                        if (array_key_exists('group', $externalConfiguration)) {
-                            $externalConfiguration['groups'] = [
-                                $externalConfiguration['group'],
-                            ];
-                        } else {
-                            $externalConfiguration['groups'] = $externalConfiguration['groups'] ?? [];
-                        }
                         // Store the base configuration
                         $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                         $configurationKey->setTableAndIndex($tableName, (string)$index);
                         $taskId = $configurationKey->getConfigurationKey();
                         $groupKeys = [];
-                        if (count($externalConfiguration['groups']) > 0) {
+                        if (count($externalConfiguration['groups'] ?? []) > 0) {
                             foreach ($externalConfiguration['groups'] as $group) {
                                 $groupKeys[] = 'group:' . $group;
                             }
@@ -347,7 +334,7 @@ class ConfigurationRepository
                             'tableName' => $tableTitle,
                             'index' => $index,
                             'priority' => $priority,
-                            'groups' => $externalConfiguration['groups'],
+                            'groups' => $externalConfiguration['groups'] ?? [],
                             'description' => htmlspecialchars($description),
                             'writeAccess' => $hasWriteAccess,
                         ];

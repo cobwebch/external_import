@@ -83,7 +83,7 @@ index
 
 group
   Instead of defining a table and an index, it is also possible to define a group. In such a case,
-  all configurations from the corresponding :ref:`group <administration-general-tca-properties-group>`
+  all configurations from the corresponding :ref:`groups <administration-general-tca-properties-groups>`
   will be executed in order of increasing priority. This is used only for the "Import external data" reaction.
   It is incompatible with a table and index definition. Defining both will trigger an error.
   It is not necessary when a group has been explicitly defined.

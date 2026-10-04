@@ -17,7 +17,7 @@ List all configurations available for synchronization
 Synchronize everything
   :code:`path/to/php path/to/bin/typo3 externalimport:sync --all`.
 
-Synchronize a :ref:`group of configurations <administration-general-tca-properties-group>`
+Synchronize a :ref:`group of configurations <administration-general-tca-properties-groups>`
   :code:`path/to/php path/to/bin/typo3 externalimport:sync --group=(group name)`.
 
 Synchronize a single configuration

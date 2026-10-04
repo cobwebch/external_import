@@ -41,6 +41,14 @@ General Scheduler migration wizard must have been run before.
 
     Upgrade wizard indicating that there are old synchronization tasks to migrate
 
+.. note::
+
+   All of the above applies only with TYPO3 14. Upgrade to External Import 9.0 while still
+   running TYPO3 13 does not change anything to Scheduler tasks.
+
+The :code:`group` property was definitely removed. If you still used it, you need to switch
+to the :ref:`groups <administration-general-tca-properties-groups>` property instead.
+
 A new :ref:`examples chapter <import-configuration-examples>` (with just one example
 for now) provides detailed examples for the most complex configurations.
 
@@ -105,7 +113,7 @@ and is replaced with the :ref:`groups <administration-general-tca-properties-gro
 
 
 System extension "reactions" is now a requirement. The "Import external data" reaction
-can now target a :ref:`group of configurations <administration-general-tca-properties-group>`.
+can now target a :ref:`group of configurations <administration-general-tca-properties-groups>`.
 
 The logging mechanism has been changed to store the backend user's name rather than its id.
 This makes it much easier for the Log module and keeps working even if a user is removed.
