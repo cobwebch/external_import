@@ -28,13 +28,13 @@
     "typo3/cms-extbase": "*",
     "typo3/cms-scheduler": "^13.4 || ^14.3",
     "typo3/cms-reactions": "^13.4 || ^14.3",
-    "cobweb/svconnector": "^7.0 || dev-master"
+    "cobweb/svconnector": "^7.0"
   },
   "require-dev": {
-    "cobweb/externalimport_test": "dev-next",
-    "cobweb/svconnector_csv": "^7.0 || dev-master",
-    "cobweb/svconnector_feed": "^7.0 || dev-master",
-    "cobweb/svconnector_json": "^7.0 || dev-master",
+    "cobweb/externalimport_test": "dev-master",
+    "cobweb/svconnector_csv": "^6.0",
+    "cobweb/svconnector_feed": "^6.0",
+    "cobweb/svconnector_json": "^6.0",
     "ergebnis/composer-normalize": "^2.51",
     "friendsofphp/php-cs-fixer": "^3.95",
     "typo3/coding-standards": "*",
@@ -43,12 +43,12 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "8.0.x-dev"
+      "dev-master": "9.0.x-dev"
     },
     "typo3/cms": {
       "extension-key": "external_import",
       "web-dir": ".Build/web",
-      "version": "9.0.0-dev",
+      "version": "9.0.0",
       "Package": {
         "providesPackages": {
         }

@@ -1,4 +1,8 @@
-2026-08-16 Francois Suter (Idéative)  <typo3@ideative.ch>
+2026-10-10 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Release version 9.0.0
+
+2026-10-04 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Remove deprecated "group" property, references #396
 
