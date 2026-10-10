@@ -26,6 +26,8 @@ Upgrading and what's new
 Upgrade to 9.0.0
 """"""""""""""""
 
+Version 9.0.0 adds support for TYPO3 14, while dropping support for TYPO3 12.
+
 Since TYPO3 14, Scheduler tasks are entirely defined using TCA and are thus strictly restricted
 to admin users. Rather than trying to work around this even more than what was done up to now,
 adding, editing and deleting Scheduler tasks from the External Import backend module has been
@@ -33,24 +35,32 @@ restricted to admin users.
 
 Another consequence of this restructuring is that a new Scheduler task :php:`Cobweb\ExternalImport\Task\SynchronizationTask`
 replacing :php:`Cobweb\ExternalImport\Task\AutomatedSyncTask` with a cleaner structure.
-An upgrade wizard is provided for migrating registered Scheduler task from the old type to the new type.
-General Scheduler migration wizard must have been run before.
+See details below about the upgrade/migration process.
 
-.. figure:: ../Images/SchedulerTaskMigration.png
-    :alt: Scheduler task upgrade wizard
-
-    Upgrade wizard indicating that there are old synchronization tasks to migrate
-
-.. note::
-
-   All of the above applies only with TYPO3 14. Upgrade to External Import 9.0 while still
-   running TYPO3 13 does not change anything to Scheduler tasks.
-
-The :code:`group` property was definitely removed. If you still used it, you need to switch
+The deprecated :code:`group` property was definitely removed. If you still used it, you need to switch
 to the :ref:`groups <administration-general-tca-properties-groups>` property instead.
 
 A new :ref:`examples chapter <import-configuration-examples>` (with just one example
-for now) provides detailed examples for the most complex configurations.
+for now) provides detailed explanations for the most complex configurations.
+
+
+.. _installation-upgrade-900-scheduler:
+
+Scheduler tasks upgrade/migration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Please follow these steps for upgrading properly:
+
+..  rst-class:: bignums-important
+
+1. If you are running TYPO3 13, ignore this whole process. The new Scheduler task
+   exists only for TYPO3 14 and above.
+
+2. Run the upgrade wizard "Migrate the contents of the tx_scheduler_task database table into a more structured form."
+   provided by the TYPO3 Core.
+
+3. Run the upgrade wizard "Migrate old AutomatedSyncTask to newer SynchronizationTask"
+   provided by External Import.
 
 
 .. _installation-upgrade-820:
@@ -133,69 +143,6 @@ which - although more correct - may have unexpected effects on your date.
 
 A new :ref:`disabled flag <administration-general-tca-properties-disabled>` makes it possible
 to completely hide a configuration.
-
-
-.. _installation-upgrade-730:
-
-Upgrade to 7.3.0
-""""""""""""""""
-
-This version introduces a new reaction dedicated to deleting already import data.
-
-
-.. _installation-upgrade-720:
-
-Upgrade to 7.2.0
-""""""""""""""""
-
-The :php:`HandleDataStep` process now keeps :code:`null` values found in the imported data.
-This is an important change, but is has a concrete effect only if the target field is nullable
-(i.e. it has an :code:`eval` property including :code:`null` or has property :code:`nullable`
-set to :code:`true` in its TCA configuration). In such cases, existing values will be set to
-:code:`null` where they would have been left untouched before. It may also affect user functions
-in transformations where a :code:`null` value was not expected to be found until now.
-
-
-.. _installation-upgrade-710:
-
-Upgrade to 7.1.0
-""""""""""""""""
-
-External Import now supports PHP 8.2.
-
-When running the preview mode from the backend module, some steps now provide
-a download button, to retrieve the data being handled in its current state.
-
-When setting a fixed value, the new :ref:`column configuration property <administration-columns-properties-value>`
-should be preferred over the historical :ref:`transformation property <administration-transformations-properties-value>`.
-
-It is now possible to define explicitly :ref:`the order in which columns are processed <administration-general-tca-properties-columnsorder>`.
-
-
-.. _installation-upgrade-700:
-
-Upgrade to 7.0.0
-""""""""""""""""
-
-Support for old-style Connector services was droppped (i.e. connectors registered
-as TYPO3 Core Services). If you use custom connector services, make sure to update
-them (see the :ref:`update instructions <cobweb/svconnector:installation-updating-500>`
-provided by extension "svconnector").
-
-When editing Scheduler tasks in the External Import backend module, it is no longer
-possible to define a start date (this tiny feature was a lot of hassle to maintain
-across TYPO3 versions).
-
-All hooks were removed. If you were still using hooks, please refer to the
-:ref:`archived page about hooks <appendix-hooks>`
-to find replacement instructions.
-
-A new :php:`ReportStep` has been introduced, which triggers a webhook reporting about
-the just finished import run. In order for this step to run (and do the reporting) even
-when the process is aborted, a new possibility has been added for steps to run despite
-the interruption. This actually fixes a bug with the :php:`ConnectorCallbackStep` which
-was never called when the process was aborted. If you use such a post-processing,
-you can now report about failed imports if needed.
 
 
 .. _installation-upgrade-600-new:

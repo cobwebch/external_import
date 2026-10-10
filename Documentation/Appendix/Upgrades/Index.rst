@@ -7,6 +7,73 @@ Upgrading instructions for older versions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _appendix-old-upgrades-730:
+.. _installation-upgrade-730:
+
+Upgrade to 7.3.0
+""""""""""""""""
+
+This version introduces a new reaction dedicated to deleting already imported data.
+
+
+.. _appendix-old-upgrades-720:
+.. _installation-upgrade-720:
+
+Upgrade to 7.2.0
+""""""""""""""""
+
+The :php:`HandleDataStep` process now keeps :code:`null` values found in the imported data.
+This is an important change, but is has a concrete effect only if the target field is nullable
+(i.e. it has an :code:`eval` property including :code:`null` or has property :code:`nullable`
+set to :code:`true` in its TCA configuration). In such cases, existing values will be set to
+:code:`null` where they would have been left untouched before. It may also affect user functions
+in transformations where a :code:`null` value was not expected to be found until now.
+
+
+.. _appendix-old-upgrades-710:
+.. _installation-upgrade-710:
+
+Upgrade to 7.1.0
+""""""""""""""""
+
+External Import now supports PHP 8.2.
+
+When running the preview mode from the backend module, some steps now provide
+a download button, to retrieve the data being handled in its current state.
+
+When setting a fixed value, the new :ref:`column configuration property <administration-columns-properties-value>`
+should be preferred over the historical :ref:`transformation property <administration-transformations-properties-value>`.
+
+It is now possible to define explicitly :ref:`the order in which columns are processed <administration-general-tca-properties-columnsorder>`.
+
+
+.. _appendix-old-upgrades-700:
+.. _installation-upgrade-700:
+
+Upgrade to 7.0.0
+""""""""""""""""
+
+Support for old-style Connector services was droppped (i.e. connectors registered
+as TYPO3 Core Services). If you use custom connector services, make sure to update
+them (see the :ref:`update instructions <cobweb/svconnector:installation-updating-500>`
+provided by extension "svconnector").
+
+When editing Scheduler tasks in the External Import backend module, it is no longer
+possible to define a start date (this tiny feature was a lot of hassle to maintain
+across TYPO3 versions).
+
+All hooks were removed. If you were still using hooks, please refer to the
+:ref:`archived page about hooks <appendix-hooks>`
+to find replacement instructions.
+
+A new :php:`ReportStep` has been introduced, which triggers a webhook reporting about
+the just finished import run. In order for this step to run (and do the reporting) even
+when the process is aborted, a new possibility has been added for steps to run despite
+the interruption. This actually fixes a bug with the :php:`ConnectorCallbackStep` which
+was never called when the process was aborted. If you use such a post-processing,
+you can now report about failed imports if needed.
+
+
 .. _appendix-old-upgrades-630:
 .. _installation-upgrade-630:
 
