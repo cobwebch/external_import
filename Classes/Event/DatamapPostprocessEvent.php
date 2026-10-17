@@ -45,10 +45,14 @@ final class DatamapPostprocessEvent
     }
 
     /**
-     * TODO: deprecate in next major version, remove in following major version
+     * @deprecated since 9.1, will be removed in 10.0. Use getStructuredData() instead.
      */
     public function getData(): array
     {
+        trigger_error(
+            'DatamapPostprocessEvent::getData() is deprecated, use getStructuredData() instead.',
+            E_USER_DEPRECATED
+        );
         return $this->data;
     }
 

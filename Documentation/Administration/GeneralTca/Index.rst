@@ -428,7 +428,9 @@ Description
               'uri' => 'EXT:externalimport_test/Resources/Private/ImportData/Test/StableProducts.xml',
               'encoding' => 'utf8'
           ],
-          'group' => 'Products',
+          'groups' => [
+              'Products',
+          ],
           'data' => 'xml',
           'nodetype' => 'products',
           'referenceUid' => 'sku',

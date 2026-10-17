@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Tests\Unit\Event;
 
 use Cobweb\ExternalImport\Event\DatamapPostprocessEvent;
 use Cobweb\ExternalImport\Importer;
+use PHPUnit\Framework\Attributes\IgnoreDeprecations;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -47,9 +48,10 @@ class DatamapPostprocessEventTest extends UnitTestCase
         );
     }
 
-    #[Test]
+    #[Test] #[IgnoreDeprecations]
     public function getDataInitiallyReturnsEmptyArray(): void
     {
+        $this->expectUserDeprecationMessage('DatamapPostprocessEvent::getData() is deprecated, use getStructuredData() instead.');
         self::assertSame(
             [],
             $this->subject->getData()

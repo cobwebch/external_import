@@ -26,7 +26,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 /**
- * This class executes Scheduler events for automatic synchronisations of external data
+ * This class executes Scheduler events for automatic synchronizations of external data
  */
 class AutomatedSyncTask extends AbstractTask
 {

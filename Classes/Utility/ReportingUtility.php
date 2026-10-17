@@ -130,7 +130,7 @@ class ReportingUtility implements LoggerAwareInterface
      * Assembles a synchronization report for a given table/index.
      *
      * @param string $table Name of the table
-     * @param mixed $index Index of the synchronisation configuration
+     * @param mixed $index Index of the synchronization configuration
      * @param array $messages List of messages for the given table
      * @return string Formatted text of the report
      */

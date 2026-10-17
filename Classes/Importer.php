@@ -49,7 +49,7 @@ class Importer implements LoggerAwareInterface
     /**
      * @var array List of default steps for the synchronize data process
      */
-    public const SYNCHRONYZE_DATA_STEPS = [
+    public const SYNCHRONIZE_DATA_STEPS = [
         Step\CheckPermissionsStep::class,
         Step\ValidateConfigurationStep::class,
         Step\ValidateConnectorStep::class,
@@ -62,6 +62,12 @@ class Importer implements LoggerAwareInterface
         Step\ConnectorCallbackStep::class,
         Step\ReportStep::class,
     ];
+
+    /**
+     * @var array List of default steps for the synchronize data process
+     * @deprecated since 9.1, will be removed in 10.0. Use SYNCHRONIZE_DATA_STEPS instead.
+     */
+    public const SYNCHRONYZE_DATA_STEPS = self::SYNCHRONIZE_DATA_STEPS;
 
     /**
      * @var array List of default steps for the import data process
@@ -116,11 +122,6 @@ class Importer implements LoggerAwareInterface
      * @var int|null Externally enforced id of a page where the records should be stored (overrides "pid", used for testing)
      */
     protected ?int $forcedStoragePid = null;
-
-    /**
-     * @var string Context in which the import run is executed
-     */
-    protected string $context = 'manual';
 
     protected ?AbstractCallContext $callContext = null;
     protected CallType $callType = CallType::Other;
@@ -202,8 +203,8 @@ class Importer implements LoggerAwareInterface
     /**
      * Store information about the synchronized table into member variables.
      *
-     * @param string $table Name of the table to synchronise
-     * @param mixed $index Index of the synchronisation configuration to use
+     * @param string $table Name of the table to synchronize
+     * @param mixed $index Index of the synchronization configuration to use
      * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @throws NoConfigurationException
      */
@@ -240,8 +241,8 @@ class Importer implements LoggerAwareInterface
     /**
      * Calls on the distant data source and synchronizes the data into the TYPO3 database.
      *
-     * @param string $table Name of the table to synchronise
-     * @param mixed $index Index of the synchronisation configuration to use
+     * @param string $table Name of the table to synchronize
+     * @param mixed $index Index of the synchronization configuration to use
      * @return array List of error or success messages
      */
     public function synchronize(string $table, mixed $index): array
@@ -254,7 +255,7 @@ class Importer implements LoggerAwareInterface
             $this->initialize(
                 $table,
                 $index,
-                self::SYNCHRONYZE_DATA_STEPS
+                self::SYNCHRONIZE_DATA_STEPS
             );
 
             $this->currentData = GeneralUtility::makeInstance(Data::class);
@@ -294,7 +295,7 @@ class Importer implements LoggerAwareInterface
      * Receives raw data from some external source, transforms it and stores it into the TYPO3 database.
      *
      * @param string $table Name of the table to import into
-     * @param mixed $index Index of the synchronisation configuration to use
+     * @param mixed $index Index of the synchronization configuration to use
      * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
      * @return array List of error or success messages
      */
@@ -603,36 +604,6 @@ class Importer implements LoggerAwareInterface
     public function setForcedStoragePid($pid): void
     {
         $this->forcedStoragePid = (int)$pid;
-    }
-
-    /**
-     * Returns the current execution context.
-     *
-     * @return string
-     * @deprecated getContext() is deprecated and will be removed in version 9. Use getCallType() instead.
-     */
-    public function getContext(): string
-    {
-        trigger_error(
-            'get/setContext() is deprecated, use get/setCallType instead.',
-            E_USER_DEPRECATED
-        );
-        return $this->context;
-    }
-
-    /**
-     * Sets the execution context.
-     *
-     * @param string $context
-     * @deprecated setContext() is deprecated and will be removed in version 9. Use setCallType() instead.
-     */
-    public function setContext(string $context): void
-    {
-        trigger_error(
-            'get/setContext() is deprecated, use get/setCallType instead.',
-            E_USER_DEPRECATED
-        );
-        $this->context = $context;
     }
 
     public function getCallType(): CallType

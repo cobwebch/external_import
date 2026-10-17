@@ -21,6 +21,25 @@ Upgrading and what's new
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+.. _installation-upgrade-910:
+
+Upgrade to 9.1.0
+""""""""""""""""
+
+:code:`\Cobweb\ExternalImport\Importer::getContext()` and :code:`\Cobweb\ExternalImport\Importer::setContext()`,
+deprecated since version 8.1.0, have been removed. Use :code:`\Cobweb\ExternalImport\Importer::getCallType()`
+and :code:`\Cobweb\ExternalImport\Importer::setCallType()` instead.
+
+The :code:`\Cobweb\ExternalImport\Importer::SYNCHRONYZE_DATA_STEPS` constant has been renamed to
+:code:`\Cobweb\ExternalImport\Importer::SYNCHRONIZE_DATA_STEPS` (fixing a typo). The old name is
+deprecated and will be removed in version 10.0.0.
+
+:code:`\Cobweb\ExternalImport\Event\DatamapPostprocessEvent::getData()` is deprecated and will be removed
+in version 10.0.0. Use :code:`getStructuredData()` instead.
+
+Support for the old :code:`group` property was not entirely removed in version 9.0.0. This is now done.
+
+
 .. _installation-upgrade-900:
 
 Upgrade to 9.0.0

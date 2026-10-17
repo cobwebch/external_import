@@ -211,7 +211,7 @@ class Configuration
         // NOTE: normally default steps should always be defined
         if ($defaultSteps === null) {
             if (array_key_exists('connector', $generalConfiguration)) {
-                $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+                $steps = Importer::SYNCHRONIZE_DATA_STEPS;
             } else {
                 $steps = Importer::IMPORT_DATA_STEPS;
             }

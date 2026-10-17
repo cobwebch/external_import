@@ -337,7 +337,7 @@ class ConfigurationTest extends UnitTestCase
             $this->subject->getStoragePid()
         );
         self::assertSame(
-            Importer::SYNCHRONYZE_DATA_STEPS,
+            Importer::SYNCHRONIZE_DATA_STEPS,
             $this->subject->getSteps()
         );
     }

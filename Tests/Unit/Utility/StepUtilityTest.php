@@ -42,7 +42,7 @@ class StepUtilityTest extends UnitTestCase
     {
         return [
             'insert step before first step' => [
-                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'currentSteps' => Importer::SYNCHRONIZE_DATA_STEPS,
                 'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'before:' . Step\CheckPermissionsStep::class,
@@ -63,7 +63,7 @@ class StepUtilityTest extends UnitTestCase
                 ],
             ],
             'insert step after transform data' => [
-                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'currentSteps' => Importer::SYNCHRONIZE_DATA_STEPS,
                 'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'after:' . Step\TransformDataStep::class,
@@ -102,7 +102,7 @@ class StepUtilityTest extends UnitTestCase
                 ],
             ],
             'insert step after last step' => [
-                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'currentSteps' => Importer::SYNCHRONIZE_DATA_STEPS,
                 'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'after:' . Step\ReportStep::class,
@@ -144,26 +144,26 @@ class StepUtilityTest extends UnitTestCase
     {
         return [
             'insert step with missing class information' => [
-                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'currentSteps' => Importer::SYNCHRONIZE_DATA_STEPS,
                 'configuration' => [
                     'position' => 'after:' . Step\TransformDataStep::class,
                 ],
             ],
             'insert step with missing position information' => [
-                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'currentSteps' => Importer::SYNCHRONIZE_DATA_STEPS,
                 'configuration' => [
                     'class' => Step\HandleDataStep::class,
                 ],
             ],
             'insert step with wrong syntax for position' => [
-                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'currentSteps' => Importer::SYNCHRONIZE_DATA_STEPS,
                 'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => Step\TransformDataStep::class,
                 ],
             ],
             'insert step with wrong keyword for position' => [
-                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'currentSteps' => Importer::SYNCHRONIZE_DATA_STEPS,
                 'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'next:' . Step\TransformDataStep::class,
@@ -184,7 +184,7 @@ class StepUtilityTest extends UnitTestCase
                 ],
             ],
             'insert step after unknown step' => [
-                'currentSteps' => Importer::SYNCHRONYZE_DATA_STEPS,
+                'currentSteps' => Importer::SYNCHRONIZE_DATA_STEPS,
                 'configuration' => [
                     'class' => Step\HandleDataStep::class,
                     'position' => 'before:Not\\Known\\Step',

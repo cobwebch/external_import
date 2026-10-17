@@ -173,12 +173,8 @@ class ConfigurationRepository
                 ) {
                     continue;
                 }
-                // TODO: drop support for "group" property in the next major version
                 $configuredGroups = $externalConfiguration['groups'] ?? [];
-                if (
-                    (array_key_exists('group', $externalConfiguration) && $externalConfiguration['group'] === $group)
-                    || (is_array($configuredGroups) && in_array($group, $configuredGroups, true))
-                ) {
+                if (is_array($configuredGroups) && in_array($group, $configuredGroups, true)) {
                     // Default priority if not defined, set to very low
                     $priority = $externalConfiguration['priority'] ?? Importer::DEFAULT_PRIORITY;
                     if (!isset($externalTables[$priority])) {
@@ -220,10 +216,6 @@ class ConfigurationRepository
                     || ($nonSynchronizable && !empty($externalConfiguration['connector']))
                 ) {
                     continue;
-                }
-                // TODO: remove support for "group" property in the next major version
-                if (!empty($externalConfiguration['group'])) {
-                    $groups[] = $externalConfiguration['group'];
                 }
                 $configuredGroups = $externalConfiguration['groups'] ?? [];
                 if (is_array($configuredGroups) && count($configuredGroups) > 0) {

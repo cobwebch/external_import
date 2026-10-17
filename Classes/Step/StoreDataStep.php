@@ -317,7 +317,7 @@ class StoreDataStep extends AbstractStep
             $tce->reverseOrder = true;
         }
         // Non-multidimensional saved data is kept for backwards-compatibility
-        // TODO: drop this support in the next major version
+        // TODO: drop in version 10.0, together with DatamapPostprocessEvent::getData()
         $savedData = [];
         $savedDataSingleDimension = [];
 

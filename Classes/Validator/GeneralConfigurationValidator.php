@@ -424,7 +424,7 @@ class GeneralConfigurationValidator
         if (is_array($property) && count($property) > 0) {
             // Define the process default steps, depending on process type
             if (array_key_exists('connector', $ctrlConfiguration)) {
-                $steps = Importer::SYNCHRONYZE_DATA_STEPS;
+                $steps = Importer::SYNCHRONIZE_DATA_STEPS;
             } else {
                 $steps = Importer::IMPORT_DATA_STEPS;
             }

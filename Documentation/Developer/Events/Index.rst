@@ -257,8 +257,8 @@ Datamap Postprocess
 
          This structure is one-dimensional, which is buggy when multiple tables are handled by the import
          (when using the "children" property), because records with the same primary key will override each
-         other. Use :code:`getStructuredData()` instead. Don't use :code:`getData()` anymore, it will be
-         dropped in the future.
+         other. Use :code:`getStructuredData()` instead. :code:`getData()` is deprecated since version 9.1.0
+         and will be removed in version 10.0.0.
 
    .. php:method:: getStructuredData()
 

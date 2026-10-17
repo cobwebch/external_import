@@ -23,8 +23,8 @@ use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Scheduler\AdditionalFieldProviderInterface;
 use TYPO3\CMS\Scheduler\Controller\SchedulerModuleController;
+use TYPO3\CMS\Scheduler\SchedulerManagementAction;
 use TYPO3\CMS\Scheduler\Task\AbstractTask;
-use TYPO3\CMS\Scheduler\Task\Enumeration\Action;
 
 /**
  * Additional fields provider class for the Scheduler.
@@ -56,9 +56,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
 
         // Add field for items to synchronize
         if (empty($taskInfo[self::$itemFieldName])) {
-            if ($this->isAddAction($schedulerModule->getCurrentAction())) {
+            if ($schedulerModule->getCurrentAction() === SchedulerManagementAction::ADD) {
                 $taskInfo[self::$itemFieldName] = 'all';
-            } elseif ($this->isEditAction($schedulerModule->getCurrentAction())) {
+            } elseif ($schedulerModule->getCurrentAction() === SchedulerManagementAction::EDIT) {
                 // In case of edit, set to internal value if no data was submitted already
                 $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                 $configurationKey->setTableAndIndex($task->table, (string)$task->index);
@@ -129,9 +129,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
 
         // Add field for storage page override
         if (empty($taskInfo[self::$storageFieldName])) {
-            if ($this->isAddAction($schedulerModule->getCurrentAction())) {
+            if ($schedulerModule->getCurrentAction() === SchedulerManagementAction::ADD) {
                 $taskInfo[self::$storageFieldName] = '';
-            } elseif ($this->isEditAction($schedulerModule->getCurrentAction())) {
+            } elseif ($schedulerModule->getCurrentAction() === SchedulerManagementAction::EDIT) {
                 // In case of edit, set to internal value if no data was submitted already
                 $taskInfo[self::$storageFieldName] = $task->storage;
             }
@@ -180,56 +180,6 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
             $task->index = $configurationKey->getIndex();
         }
         $task->storage = (int)$submittedData[self::$storageFieldName];
-    }
-
-    /**
-     * Checks if the "add" action has been selected
-     *
-     * Temporary compatibility layer between TYPO3 enumerations (v12) and native enumerations (v13)
-     * TODO: remove once dropping compatibility with TYPO3 12
-     *
-     * @param mixed $action
-     * @return bool
-     */
-    protected function isAddAction(mixed $action): bool
-    {
-        // @phpstan-ignore class.notFound
-        if ($action instanceof \TYPO3\CMS\Scheduler\Task\Enumeration\Action) {
-            // @phpstan-ignore class.notFound
-            return $action->equals(\TYPO3\CMS\Scheduler\Task\Enumeration\Action::ADD);
-        }
-
-        if ($action instanceof \TYPO3\CMS\Scheduler\SchedulerManagementAction) {
-            return $action->value === \TYPO3\CMS\Scheduler\SchedulerManagementAction::ADD->value;
-        }
-
-        // The action should really be only one of the 2 above, so return false if we land here...
-        return false;
-    }
-
-    /**
-     * Checks if the "edit" action has been selected
-     *
-     * Temporary compatibility layer between TYPO3 enumerations (v12) and native enumerations (v13)
-     * TODO: remove once dropping compatibility with TYPO3 12
-     *
-     * @param mixed $action
-     * @return bool
-     */
-    protected function isEditAction(mixed $action): bool
-    {
-        // @phpstan-ignore class.notFound
-        if ($action instanceof \TYPO3\CMS\Scheduler\Task\Enumeration\Action) {
-            // @phpstan-ignore class.notFound
-            return $action->equals(\TYPO3\CMS\Scheduler\Task\Enumeration\Action::EDIT);
-        }
-
-        if ($action instanceof \TYPO3\CMS\Scheduler\SchedulerManagementAction) {
-            return $action->value === \TYPO3\CMS\Scheduler\SchedulerManagementAction::EDIT->value;
-        }
-
-        // The action should really be only one of the 2 above, so return false if we land here...
-        return false;
     }
 
     protected function getLanguageService(): ?LanguageService
