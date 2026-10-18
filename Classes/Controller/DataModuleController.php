@@ -689,7 +689,7 @@ class DataModuleController extends ActionController
      *
      * The list is trimmed if there are too many messages.
      *
-     * @param array $messages List of messages from an External Import run
+     * @param array<int, list<string>> $messages List of messages from an External Import run
      * @param bool $storeInSession Whether to store the flash messages in session or not
      */
     protected function prepareMessages(array $messages, bool $storeInSession = true): void

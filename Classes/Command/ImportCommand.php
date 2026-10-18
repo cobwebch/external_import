@@ -265,7 +265,7 @@ class ImportCommand extends Command
     /**
      * Outputs messages returned by the import process.
      *
-     * @param array $messages
+     * @param array<int, list<string>> $messages
      */
     protected function reportResults(array $messages): void
     {

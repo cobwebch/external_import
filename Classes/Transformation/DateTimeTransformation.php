@@ -17,12 +17,15 @@ namespace Cobweb\ExternalImport\Transformation;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**
  * Example transformation functions for the 'external_import' extension
+ *
+ * @phpstan-import-type Record from Data
  */
 class DateTimeTransformation implements SingletonInterface, ImporterAwareInterface
 {
@@ -38,9 +41,9 @@ class DateTimeTransformation implements SingletonInterface, ImporterAwareInterfa
      * and will return a formatted string using either date() or strftime() and a format parameter
      * or simply the Unix timestamp if no formatting function was defined.
      *
-     * @param array $record The full record that is being transformed
+     * @param Record $record The full record that is being transformed
      * @param string $index The index of the field to transform
-     * @param array $params Additional parameters from the TCA
+     * @param array<string, mixed> $params Additional parameters from the TCA
      * @return mixed Timestamp or formatted date string
      */
     public function parseDate(array $record, string $index, array $params)

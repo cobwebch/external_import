@@ -30,10 +30,13 @@ final class CmdmapPostprocessEvent
     private Importer $importer;
 
     /**
-     * @var array List of records that were deleted (primary keys)
+     * @var array<int|string, int> List of records that were deleted (primary keys, indexed by external key)
      */
     private array $records = [];
 
+    /**
+     * @param array<int|string, int> $records
+     */
     public function __construct(array $records, Importer $importer)
     {
         $this->records = $records;
@@ -49,7 +52,7 @@ final class CmdmapPostprocessEvent
     }
 
     /**
-     * @return array
+     * @return array<int|string, int>
      */
     public function getRecords(): array
     {

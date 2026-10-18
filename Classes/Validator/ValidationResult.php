@@ -22,10 +22,13 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 /**
  * Utility class used to store validation results.
  */
+/**
+ * @phpstan-type Result array{severity: ContextualFeedbackSeverity, message: string}
+ */
 class ValidationResult
 {
     /**
-     * @var array List of validation results
+     * @var array<string, list<Result>> List of validation results
      */
     protected array $results = [];
 
@@ -58,7 +61,7 @@ class ValidationResult
     /**
      * Returns all the validation results.
      *
-     * @return array
+     * @return array<string, list<Result>>
      */
     public function getAll(): array
     {
@@ -70,7 +73,7 @@ class ValidationResult
      * Returns the validation results for the given property.
      *
      * @param string $property Name of the property
-     * @return array|null
+     * @return list<Result>|null
      */
     public function getForProperty(string $property): ?array
     {
@@ -93,7 +96,7 @@ class ValidationResult
      * Returns all results for a given severity level.
      *
      * @param ContextualFeedbackSeverity $severity Severity level
-     * @return array
+     * @return array<string, list<string>>
      */
     public function getForSeverity(ContextualFeedbackSeverity $severity): array
     {
@@ -116,7 +119,7 @@ class ValidationResult
      *
      * @param string $property Name of the property
      * @param ContextualFeedbackSeverity $severity Severity level
-     * @return array
+     * @return list<string>
      */
     public function getForPropertyAndSeverity(string $property, ContextualFeedbackSeverity $severity): array
     {
@@ -175,8 +178,8 @@ class ValidationResult
      * NOTE: the higher the severity value the more important it is (see \TYPO3\CMS\Core\Type\ContextualFeedbackSeverity).
      * So in terms of values, we want to sort by decreasing values of severity.
      *
-     * @param array $a
-     * @param array $b
+     * @param Result $a
+     * @param Result $b
      * @return int
      */
     public static function compareSeverity(array $a, array $b): int

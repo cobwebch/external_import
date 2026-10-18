@@ -23,17 +23,17 @@ namespace Cobweb\ExternalImport\Domain\Model;
 class ChildrenConfiguration
 {
     /**
-     * @var array Unprocessed children configuration
+     * @var array<string, mixed> Unprocessed children configuration
      */
     protected array $baseData = [];
 
     /**
-     * @var array List of columns used to check for entries to update
+     * @var list<string> List of columns used to check for entries to update
      */
     protected array $controlColumnsForUpdate = [];
 
     /**
-     * @var array List of columns used to check for entries to delete
+     * @var list<string> List of columns used to check for entries to delete
      */
     protected array $controlColumnsForDelete = [];
 
@@ -44,10 +44,13 @@ class ChildrenConfiguration
     protected bool $updateAllowed = true;
     protected bool $deleteAllowed = true;
 
+    /**
+     * @var array<string, mixed>
+     */
     protected array $sorting = [];
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getBaseData(): array
     {
@@ -55,7 +58,7 @@ class ChildrenConfiguration
     }
 
     /**
-     * @param array $baseData
+     * @param array<string, mixed> $baseData
      */
     public function setBaseData(array $baseData): void
     {
@@ -74,7 +77,7 @@ class ChildrenConfiguration
     }
 
     /**
-     * @return array
+     * @return list<string>
      */
     public function getControlColumnsForUpdate(): array
     {
@@ -82,7 +85,7 @@ class ChildrenConfiguration
     }
 
     /**
-     * @param array $controlColumnsForUpdate
+     * @param list<string> $controlColumnsForUpdate
      */
     public function setControlColumnsForUpdate(array $controlColumnsForUpdate): void
     {
@@ -90,7 +93,7 @@ class ChildrenConfiguration
     }
 
     /**
-     * @return array
+     * @return list<string>
      */
     public function getControlColumnsForDelete(): array
     {
@@ -98,7 +101,7 @@ class ChildrenConfiguration
     }
 
     /**
-     * @param array $controlColumnsForDelete
+     * @param list<string> $controlColumnsForDelete
      */
     public function setControlColumnsForDelete(array $controlColumnsForDelete): void
     {
@@ -175,7 +178,7 @@ class ChildrenConfiguration
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSorting(): array
     {
@@ -183,7 +186,7 @@ class ChildrenConfiguration
     }
 
     /**
-     * @param array $sorting
+     * @param array<string, mixed> $sorting
      */
     public function setSorting(array $sorting): void
     {

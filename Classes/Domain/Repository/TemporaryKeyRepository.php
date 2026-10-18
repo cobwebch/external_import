@@ -31,7 +31,7 @@ class TemporaryKeyRepository
     protected static int $forcedTemporaryKeySerial = 0;
 
     /**
-     * @var array List of temporary keys created on the fly for new records
+     * @var array<string, array<array-key, string>> List of temporary keys created on the fly for new records
      */
     protected array $temporaryKeys = [];
 
@@ -81,7 +81,7 @@ class TemporaryKeyRepository
     /**
      * Returns the list of all temporary keys.
      *
-     * @return array
+     * @return array<string, array<array-key, string>>
      */
     public function getTemporaryKeys(): array
     {

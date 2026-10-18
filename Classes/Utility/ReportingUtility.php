@@ -43,7 +43,7 @@ class ReportingUtility implements LoggerAwareInterface
     protected Importer $importer;
 
     /**
-     * @var array Extension configuration
+     * @var array<string, mixed> Extension configuration
      */
     protected array $extensionConfiguration = [];
 
@@ -131,7 +131,7 @@ class ReportingUtility implements LoggerAwareInterface
      *
      * @param string $table Name of the table
      * @param mixed $index Index of the synchronization configuration
-     * @param array $messages List of messages for the given table
+     * @param array<int, list<string>> $messages List of messages for the given table
      * @return string Formatted text of the report
      */
     public function reportForTable(string $table, $index, array $messages): string

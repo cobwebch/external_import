@@ -26,7 +26,7 @@ final class DeleteRecordsPreprocessEvent
 {
     public function __construct(
         /**
-         * @var array List of records to be deleted (primary keys)
+         * @var array<int|string, int> List of records to be deleted (primary keys, indexed by external key)
          */
         private array $records,
         /**
@@ -44,7 +44,7 @@ final class DeleteRecordsPreprocessEvent
     }
 
     /**
-     * @return array
+     * @return array<int|string, int>
      */
     public function getRecords(): array
     {
@@ -52,7 +52,7 @@ final class DeleteRecordsPreprocessEvent
     }
 
     /**
-     * @param array $records
+     * @param array<int|string, int> $records
      */
     public function setRecords(array $records): void
     {

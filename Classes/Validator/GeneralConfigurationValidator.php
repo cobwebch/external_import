@@ -33,6 +33,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * and reports errors and other glitches.
  *
  * NOTE: this is not a strict Extbase Validator.
+ *
+ * @phpstan-import-type GeneralConfiguration from Configuration
+ * @phpstan-import-type ColumnConfiguration from Configuration
  */
 class GeneralConfigurationValidator
 {
@@ -174,7 +177,7 @@ class GeneralConfigurationValidator
      * Validates the "parameters" property.
      *
      * @param string $connector Type of connector
-     * @param array $property Parameters for the connector
+     * @param array<string, mixed> $property Parameters for the connector
      * @see \Cobweb\ExternalImport\Validator\GeneralConfigurationValidator::validateConnectorProperty
      */
     public function validateConnectorConfigurationProperty(string $connector, array $property): void
@@ -353,7 +356,7 @@ class GeneralConfigurationValidator
      * Validates the "useColumnIndex" property.
      *
      * @param mixed $property Property value
-     * @param array $columns List of column configurations
+     * @param array<string, ColumnConfiguration> $columns List of column configurations
      */
     public function validateUseColumnIndexProperty($property, array $columns): void
     {
@@ -376,7 +379,7 @@ class GeneralConfigurationValidator
      * Validates the "columnsOrder" property.
      *
      * @param string $property Property value
-     * @param array $columns List of column configurations
+     * @param array<string, ColumnConfiguration> $columns List of column configurations
      */
     public function validateColumnsOrderProperty(string $property, array $columns): void
     {
@@ -417,7 +420,7 @@ class GeneralConfigurationValidator
      * Validates the "customSteps" property.
      *
      * @param mixed $property Property value
-     * @param array $ctrlConfiguration Full "ctrl" configuration
+     * @param GeneralConfiguration $ctrlConfiguration Full "ctrl" configuration
      */
     public function validateCustomStepsProperty(mixed $property, array $ctrlConfiguration): void
     {

@@ -44,7 +44,7 @@ abstract class AbstractStep implements ImporterAwareInterface
     protected bool $executeDespiteAbort = false;
 
     /**
-     * @var array List of parameters specific to the step. NOTE: this is for custom steps. Standard steps never have any parameter.
+     * @var array<mixed> List of parameters specific to the step. NOTE: this is for custom steps. Standard steps never have any parameter.
      */
     protected array $parameters = [];
 
@@ -95,6 +95,8 @@ abstract class AbstractStep implements ImporterAwareInterface
 
     /**
      * Sets the list of parameters for the (custom) step.
+     *
+     * @param array<mixed> $parameters
      */
     public function setParameters(array $parameters): void
     {
@@ -103,6 +105,8 @@ abstract class AbstractStep implements ImporterAwareInterface
 
     /**
      * Returns the list of parameters.
+     *
+     * @return array<mixed>
      */
     public function getParameters(): array
     {

@@ -17,16 +17,19 @@ namespace Cobweb\ExternalImport\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Importer;
 
 /**
  * Event for manipulating the data of a single record before it is inserted into the database.
+ *
+ * @phpstan-import-type Record from Data
  */
 final class InsertRecordPreprocessEvent
 {
     public function __construct(
         /**
-         * @var array The record currently being prepared for insert
+         * @var Record The record currently being prepared for insert
          */
         private array $record,
         /**
@@ -44,7 +47,7 @@ final class InsertRecordPreprocessEvent
     }
 
     /**
-     * @return array
+     * @return Record
      */
     public function getRecord(): array
     {
@@ -52,7 +55,7 @@ final class InsertRecordPreprocessEvent
     }
 
     /**
-     * @param array $record
+     * @param Record $record
      */
     public function setRecord(array $record): void
     {

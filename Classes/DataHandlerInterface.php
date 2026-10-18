@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport;
 
+use Cobweb\ExternalImport\Domain\Model\Data;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *
@@ -21,6 +23,8 @@ namespace Cobweb\ExternalImport;
  * Interface which defines the method to implement when creating a custom data handler for External Import
  *
  * Interface DataHandlerInterface
+ *
+ * @phpstan-import-type RecordList from Data
  */
 interface DataHandlerInterface
 {
@@ -29,7 +33,7 @@ interface DataHandlerInterface
      *
      * @param mixed $rawData Data to handle. Could be of any type, as suited for the data handler.
      * @param Importer $importer Back-reference to the current Importer instance
-     * @return array The handled data, as PHP array
+     * @return RecordList The handled data, as PHP array
      */
     public function handleData($rawData, Importer $importer): array;
 }

@@ -40,7 +40,7 @@ use TYPO3\CMS\Scheduler\Validation\Validator\TaskValidator;
 class SchedulerRepository implements SingletonInterface
 {
     /**
-     * @var string Name of the related task class
+     * @var class-string<AutomatedSyncTask> Name of the related task class
      */
     public static string $taskClassName = AutomatedSyncTask::class;
 

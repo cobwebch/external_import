@@ -18,6 +18,8 @@ namespace Cobweb\ExternalImport\Handler;
  */
 
 use Cobweb\ExternalImport\DataHandlerInterface;
+use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
 use Cobweb\ExternalImport\Exception\XpathSelectionFailedException;
 use Cobweb\ExternalImport\Importer;
@@ -27,6 +29,9 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
  * Remaps data from an XML structure to an array mapped to TCA columns.
+ *
+ * @phpstan-import-type ColumnConfiguration from Configuration
+ * @phpstan-import-type RecordList from Data
  */
 class XmlHandler implements DataHandlerInterface
 {
@@ -45,7 +50,7 @@ class XmlHandler implements DataHandlerInterface
      *
      * @param mixed $rawData Data to handle. Could be of any type, as suited for the data handler.
      * @param Importer $importer Back-reference to the current Importer instance
-     * @return array
+     * @return RecordList
      */
     public function handleData($rawData, Importer $importer): array
     {
@@ -181,7 +186,7 @@ class XmlHandler implements DataHandlerInterface
      * Searches for a value inside the record using the given configuration.
      *
      * @param \DOMNode $record Data record
-     * @param array $columnConfiguration External Import configuration for a single column
+     * @param ColumnConfiguration $columnConfiguration External Import configuration for a single column
      * @param \DOMXPath $xPathObject
      * @return mixed
      * @throws \Exception
@@ -268,9 +273,9 @@ class XmlHandler implements DataHandlerInterface
      * Searches for a value inside the record using the given configuration.
      *
      * @param \DOMNode $record Data record
-     * @param array $columnConfiguration External Import configuration for a single column
+     * @param ColumnConfiguration $columnConfiguration External Import configuration for a single column
      * @param \DOMXPath $xPathObject
-     * @return \DOMNodeList
+     * @return \DOMNodeList<\DOMNode|\DOMNameSpaceNode>
      * @throws \Exception
      */
     public function getNodeList(\DOMNode $record, array $columnConfiguration, \DOMXPath $xPathObject): \DOMNodeList
@@ -339,7 +344,7 @@ class XmlHandler implements DataHandlerInterface
      * based on the configuration received.
      *
      * @param \DOMNode $node Currently handled XML node
-     * @param array $columnConfiguration Handling information for the XML node
+     * @param ColumnConfiguration $columnConfiguration Handling information for the XML node
      * @return mixed The extracted value
      */
     public function extractValueFromNode(\DOMNode $node, array $columnConfiguration)
@@ -394,7 +399,7 @@ class XmlHandler implements DataHandlerInterface
      * @param \DOMXPath $xPathObject Instantiated DOMXPath object
      * @param string $xPath XPath query to evaluate
      * @param \DOMNode|null $context Node giving the context of the XPath query (null for root node)
-     * @return \DOMNodeList|string List of found nodes
+     * @return \DOMNodeList<\DOMNode|\DOMNameSpaceNode>|string List of found nodes
      * @throws XpathSelectionFailedException
      */
     public function selectWithXpath(\DOMXPath $xPathObject, string $xPath, ?\DOMNode $context = null): \DOMNodeList|string
@@ -419,10 +424,10 @@ class XmlHandler implements DataHandlerInterface
      * Extracts data from a substructure, i.e. when a value is not just a simple type but contains
      * related data.
      *
-     * @param \DOMNodeList $structure Data structure
-     * @param array $columnConfiguration External Import configuration for a single column
+     * @param \DOMNodeList<\DOMNode|\DOMNameSpaceNode> $structure Data structure
+     * @param array<string, ColumnConfiguration> $columnConfiguration External Import configuration for each field of the substructure
      * @param \DOMXPath $xPathObject
-     * @return mixed
+     * @return list<array<string, mixed>>
      */
     public function getSubstructureValues(\DOMNodeList $structure, array $columnConfiguration, \DOMXPath $xPathObject)
     {

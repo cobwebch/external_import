@@ -17,6 +17,10 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Domain\Repository;
 
+use Cobweb\ExternalImport\Domain\Model\BackendUser;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
+/**
+ * @extends Repository<BackendUser>
+ */
 class BackendUserRepository extends Repository {}

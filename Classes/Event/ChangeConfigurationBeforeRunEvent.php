@@ -25,6 +25,9 @@ use Cobweb\ExternalImport\Importer;
  *
  * Note that this means in particular that the modified configuration will go through the
  * ValidateConfigurationStep, so changes need to respect the enforced checks.
+ *
+ * @phpstan-import-type GeneralConfiguration from Configuration
+ * @phpstan-import-type ColumnConfiguration from Configuration
  */
 class ChangeConfigurationBeforeRunEvent
 {
@@ -40,16 +43,25 @@ class ChangeConfigurationBeforeRunEvent
         return $this->configuration;
     }
 
+    /**
+     * @param GeneralConfiguration $generalConfiguration
+     */
     public function setGeneralConfiguration(array $generalConfiguration): void
     {
         $this->configuration->setGeneralConfiguration($generalConfiguration);
     }
 
+    /**
+     * @param array<string, ColumnConfiguration> $columnsConfiguration
+     */
     public function setColumnsConfiguration(array $columnsConfiguration): void
     {
         $this->configuration->setColumnConfiguration($columnsConfiguration);
     }
 
+    /**
+     * @param array<string, ColumnConfiguration> $additionalFieldsConfiguration
+     */
     public function setAdditionalFieldsConfiguration(array $additionalFieldsConfiguration): void
     {
         $this->configuration->setAdditionalFields($additionalFieldsConfiguration);

@@ -18,6 +18,8 @@ namespace Cobweb\ExternalImport\Handler;
  */
 
 use Cobweb\ExternalImport\DataHandlerInterface;
+use Cobweb\ExternalImport\Domain\Model\Configuration;
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
 use Cobweb\ExternalImport\Importer;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -26,6 +28,9 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
  * Remaps data from a "raw" PHP array to an array mapped to TCA columns.
+ *
+ * @phpstan-import-type ColumnConfiguration from Configuration
+ * @phpstan-import-type RecordList from Data
  */
 class ArrayHandler implements DataHandlerInterface
 {
@@ -50,7 +55,7 @@ class ArrayHandler implements DataHandlerInterface
      *
      * @param mixed $rawData Data to handle. Could be of any type, as suited for the data handler.
      * @param Importer $importer Back-reference to the current Importer instance
-     * @return array
+     * @return RecordList
      */
     public function handleData($rawData, Importer $importer): array
     {
@@ -186,8 +191,8 @@ class ArrayHandler implements DataHandlerInterface
     /**
      * Searches for a value inside the record using the given configuration.
      *
-     * @param array $record Data record
-     * @param array $columnConfiguration External Import configuration for a single column
+     * @param array<mixed> $record Data record
+     * @param ColumnConfiguration $columnConfiguration External Import configuration for a single column
      * @return mixed
      */
     public function getValue(array $record, array $columnConfiguration)
@@ -229,9 +234,9 @@ class ArrayHandler implements DataHandlerInterface
      * Extracts data from a substructure, i.e. when a value is not just a simple type but contains
      * related data.
      *
-     * @param array $structure Data structure
-     * @param array $columnConfiguration External Import configuration for a single column
-     * @return array
+     * @param array<mixed> $structure Data structure
+     * @param array<string, ColumnConfiguration> $columnConfiguration External Import configuration for each field of the substructure
+     * @return list<array<string, mixed>>
      */
     public function getSubstructureValues(array $structure, array $columnConfiguration): array
     {
@@ -254,8 +259,8 @@ class ArrayHandler implements DataHandlerInterface
     /**
      * Extracts part of a PHP array, using an array path (e.g. "foo/bar") and conditions.
      *
-     * @param array $array The array to parse
-     * @param array $segments The parts of the path
+     * @param array<mixed> $array The array to parse
+     * @param list<string> $segments The parts of the path
      * @param bool $flattenResults Whether results that are of a simple type should be preserved as such
      * @return mixed
      */

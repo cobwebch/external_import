@@ -17,20 +17,23 @@ namespace Cobweb\ExternalImport\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Importer;
 
 /**
  * Event called after imported data is stored to the database (updates or inserts).
+ *
+ * @phpstan-import-type Record from Data
  */
 final class DatamapPostprocessEvent
 {
     public function __construct(
         /**
-         * @var array Stored data, structured as TCE datamap with additional information
+         * @var array<int|string, Record> Stored data, structured as TCE datamap with additional information
          */
         private array $data,
         /**
-         * @var array Stored data, *really* structured as TCE datamap, i.e. first array dimension is table name, then records with additional information
+         * @var array<string, array<int|string, Record>> Stored data, *really* structured as TCE datamap, i.e. first array dimension is table name, then records with additional information
          */
         private array $structuredData,
         /**
@@ -46,6 +49,7 @@ final class DatamapPostprocessEvent
 
     /**
      * @deprecated since 9.1, will be removed in 10.0. Use getStructuredData() instead.
+     * @return array<int|string, Record>
      */
     public function getData(): array
     {
@@ -56,6 +60,9 @@ final class DatamapPostprocessEvent
         return $this->data;
     }
 
+    /**
+     * @return array<string, array<int|string, Record>>
+     */
     public function getStructuredData(): array
     {
         return $this->structuredData;

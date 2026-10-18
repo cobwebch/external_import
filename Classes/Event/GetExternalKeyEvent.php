@@ -21,10 +21,20 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 
 final class GetExternalKeyEvent
 {
+    /**
+     * @var array<string, mixed>
+     */
     private array $data;
     private Configuration $configuration;
+    /**
+     * @var mixed
+     */
     private $externalKey;
 
+    /**
+     * @param array<string, mixed> $data
+     * @param mixed $externalKey
+     */
     public function __construct(array $data, Configuration $configuration, $externalKey = null)
     {
         $this->data = $data;
@@ -32,6 +42,9 @@ final class GetExternalKeyEvent
         $this->externalKey = $externalKey;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getData(): array
     {
         return $this->data;
@@ -42,11 +55,17 @@ final class GetExternalKeyEvent
         return $this->configuration;
     }
 
+    /**
+     * @return mixed
+     */
     public function getExternalKey()
     {
         return $this->externalKey;
     }
 
+    /**
+     * @param mixed $externalKey
+     */
     public function setExternalKey($externalKey): void
     {
         $this->externalKey = $externalKey;

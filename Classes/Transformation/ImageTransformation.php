@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Transformation;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -29,6 +30,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * during an import process. Use as is or as an inspiration for your own needs.
  *
  * The critical part is that the function is expected to return the uid of a sys_file record.
+ *
+ * @phpstan-import-type Record from Data
  */
 class ImageTransformation implements SingletonInterface, ImporterAwareInterface
 {
@@ -63,9 +66,9 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
      *      - "nameField": the external data field from which the name for the file should be taken. If empty, the file's basename is used
      *      - "defaultExtension": a file extension in case it cannot be found in the URI (e.g. "jpg")
      *
-     * @param array $record The full record that is being transformed
+     * @param Record $record The full record that is being transformed
      * @param string $index The index of the field to transform
-     * @param array $parameters Additional parameters from the TCA
+     * @param array<string, mixed> $parameters Additional parameters from the TCA
      * @return mixed Uid of the saved sys_file record (or a message in preview mode)
      * @throws \TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException
      * @throws \TYPO3\CMS\Core\Resource\Exception\ExistingTargetFileNameException
@@ -175,9 +178,9 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
      *      - "nameField": the external data field from which the name for the file should be taken. If empty, the file's basename is used
      *      - "defaultExtension": a file extension in case it cannot be found in the URI (e.g. "jpg")
      *
-     * @param array $record The full record that is being transformed
+     * @param Record $record The full record that is being transformed
      * @param string $index The index of the field to transform
-     * @param array $parameters Additional parameters from the TCA
+     * @param array<string, mixed> $parameters Additional parameters from the TCA
      * @return mixed Uid of the saved sys_file record (or a message in preview mode)
      */
     public function saveImageFromBase64(array $record, string $index, array $parameters)

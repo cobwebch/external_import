@@ -31,9 +31,9 @@ class StepUtility
      *
      * If the custom step configuration is invalid, the list of steps is returned unchanged.
      *
-     * @param array $currentSteps List of current steps
-     * @param array $configuration Configuration for the new step
-     * @return array Modified list of steps
+     * @param list<class-string<AbstractStep>> $currentSteps List of current steps
+     * @param array<string, mixed> $configuration Configuration for the new step
+     * @return list<class-string<AbstractStep>> Modified list of steps
      */
     public function insertStep(array $currentSteps, array $configuration): ?array
     {
@@ -65,9 +65,9 @@ class StepUtility
     /**
      * Validates a custom step configuration against the list of current steps.
      *
-     * @param array $currentSteps List of current steps
-     * @param array $configuration Configuration for the new step
-     * @return array Validated configuration
+     * @param list<class-string<AbstractStep>> $currentSteps List of current steps
+     * @param array<string, mixed> $configuration Configuration for the new step
+     * @return array{class: class-string<AbstractStep>, position: 'before'|'after', reference: class-string<AbstractStep>} Validated configuration
      * @throws InvalidCustomStepConfiguration
      */
     public function validateCustomStepConfiguration(array $currentSteps, array $configuration): array

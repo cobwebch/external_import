@@ -26,7 +26,7 @@ final class ProcessConnectorParametersEvent
 {
     public function __construct(
         /**
-         * @var array Connector parameters
+         * @var array<string, mixed> Connector parameters
          */
         private array $parameters,
         /**
@@ -38,7 +38,7 @@ final class ProcessConnectorParametersEvent
     /**
      * Returns the parameters.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getParameters(): array
     {
@@ -48,7 +48,7 @@ final class ProcessConnectorParametersEvent
     /**
      * Sets the parameters.
      *
-     * @param array $parameters
+     * @param array<string, mixed> $parameters
      */
     public function setParameters(array $parameters): void
     {

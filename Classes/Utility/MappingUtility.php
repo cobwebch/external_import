@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace Cobweb\ExternalImport\Utility;
 
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -26,6 +27,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Tools for mapping imported data to existing database relations.
+ *
+ * @phpstan-import-type RecordList from Data
  */
 class MappingUtility implements ImporterAwareInterface
 {
@@ -34,11 +37,11 @@ class MappingUtility implements ImporterAwareInterface
     /**
      * Takes a record set and maps a given field to some existing database relation.
      *
-     * @param array $records Records to handle
+     * @param RecordList $records Records to handle
      * @param string $table Name of the table the records belong to
      * @param string $columnName Name of the column whose values must be mapped
-     * @param array $mappingInformation Mapping configuration
-     * @return array
+     * @param array<string, mixed> $mappingInformation Mapping configuration
+     * @return RecordList
      * @throws \Doctrine\DBAL\Exception
      */
     public function mapData(array $records, string $table, string $columnName, array $mappingInformation): array
@@ -167,8 +170,8 @@ class MappingUtility implements ImporterAwareInterface
     /**
      * Retrieves a single mapping.
      *
-     * @param array $mappingData Data defining the mapping of fields
-     * @return array Hash table for mapping
+     * @param array<string, mixed> $mappingData Data defining the mapping of fields
+     * @return array<array-key, mixed> Hash table for mapping
      * @throws \Doctrine\DBAL\Exception
      */
     public function getMapping(array $mappingData): array
@@ -237,8 +240,8 @@ class MappingUtility implements ImporterAwareInterface
      * Tries to match a single value to a table of mappings.
      *
      * @param mixed $externalValue The value to match
-     * @param array $mappingInformation Mapping configuration
-     * @param array $mappingTable Value map
+     * @param array<string, mixed> $mappingInformation Mapping configuration
+     * @param array<array-key, mixed> $mappingTable Value map
      * @return mixed The matched value
      * @throws \UnexpectedValueException
      */

@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Exception\InvalidRecordException;
 use Cobweb\ExternalImport\Importer;
@@ -29,11 +30,13 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * This step takes the structured data and transforms the values it contains according to whatever
  * relevant properties were defined, bringing the data to a near final state, ready for saving
  * to the database.
+ *
+ * @phpstan-import-type RecordList from Data
  */
 class TransformDataStep extends AbstractStep
 {
     /**
-     * @var array List of transformation properties
+     * @var list<string> List of transformation properties
      */
     public static array $transformationProperties = ['trim', 'mapping', 'value', 'rteEnabled', 'userFunction'];
 
@@ -141,8 +144,8 @@ class TransformDataStep extends AbstractStep
      *
      * @param string $name Name of the column being transformed
      * @param mixed $configuration Transformation configuration
-     * @param array $records Data to transform
-     * @return array
+     * @param RecordList $records Data to transform
+     * @return RecordList
      */
     public function applyTrim(string $name, mixed $configuration, array $records): array
     {
@@ -161,9 +164,9 @@ class TransformDataStep extends AbstractStep
      * Applies the "mapping" transformation to the current set of records.
      *
      * @param string $name Name of the column being transformed
-     * @param array $configuration Transformation configuration
-     * @param array $records Data to transform
-     * @return array
+     * @param array<string, mixed> $configuration Transformation configuration
+     * @param RecordList $records Data to transform
+     * @return RecordList
      * @throws \Doctrine\DBAL\Exception
      */
     public function applyMapping(string $name, array $configuration, array $records): array
@@ -181,8 +184,8 @@ class TransformDataStep extends AbstractStep
      *
      * @param string $name Name of the column being transformed
      * @param mixed $configuration Transformation configuration
-     * @param array $records Data to transform
-     * @return array
+     * @param RecordList $records Data to transform
+     * @return RecordList
      */
     public function applyValue(string $name, mixed $configuration, array $records): array
     {
@@ -197,8 +200,8 @@ class TransformDataStep extends AbstractStep
      *
      * @param string $name Name of the column being transformed
      * @param mixed $configuration Transformation configuration
-     * @param array $records Data to transform
-     * @return array
+     * @param RecordList $records Data to transform
+     * @return RecordList
      */
     public function applyRteEnabledFlag(string $name, mixed $configuration, array $records): array
     {
@@ -214,9 +217,9 @@ class TransformDataStep extends AbstractStep
      * Applies a user function to the current set of records.
      *
      * @param string $name Name of the column being transformed
-     * @param array $configuration Transformation configuration
-     * @param array $records Data to transform
-     * @return array
+     * @param array<string, mixed> $configuration Transformation configuration
+     * @param RecordList $records Data to transform
+     * @return RecordList
      * @throws CriticalFailureException
      */
     public function applyUserFunction(string $name, array $configuration, array $records): array
@@ -285,9 +288,9 @@ class TransformDataStep extends AbstractStep
      * Checks if the value for the given column is empty and acts accordingly.
      *
      * @param string $name Name of the column being transformed
-     * @param array $configuration Transformation configuration
-     * @param array $records Data to transform
-     * @return array
+     * @param array<string, mixed> $configuration Transformation configuration
+     * @param RecordList $records Data to transform
+     * @return RecordList
      */
     public function applyIsEmpty(string $name, array $configuration, array $records): array
     {

@@ -20,27 +20,27 @@ namespace Cobweb\ExternalImport\Domain\Model;
 class ProcessedConfiguration
 {
     /**
-     * @var array List of columns for which the "insert" operation is disabled
+     * @var list<string> List of columns for which the "insert" operation is disabled
      */
     protected array $fieldsExcludedFromInserts = [];
 
     /**
-     * @var array List of columns for which the "update" operation is disabled
+     * @var list<string> List of columns for which the "update" operation is disabled
      */
     protected array $fieldsExcludedFromUpdates = [];
 
     /**
-     * @var ChildrenConfiguration[] Restructured information for every column with a "children" property
+     * @var array<string, ChildrenConfiguration> Restructured information for every column with a "children" property
      */
     protected array $childColumns = [];
 
     /**
-     * @var array List of columns for which a NULL value can be accepted
+     * @var list<string> List of columns for which a NULL value can be accepted
      */
     protected array $nullableColumns = [];
 
     /**
-     * @return array
+     * @return list<string>
      */
     public function getFieldsExcludedFromInserts(): array
     {
@@ -56,7 +56,7 @@ class ProcessedConfiguration
     }
 
     /**
-     * @param array $fieldsExcludedFromInserts
+     * @param list<string> $fieldsExcludedFromInserts
      */
     public function setFieldsExcludedFromInserts(array $fieldsExcludedFromInserts): void
     {
@@ -64,7 +64,7 @@ class ProcessedConfiguration
     }
 
     /**
-     * @return array
+     * @return list<string>
      */
     public function getFieldsExcludedFromUpdates(): array
     {
@@ -80,7 +80,7 @@ class ProcessedConfiguration
     }
 
     /**
-     * @param array $fieldsExcludedFromUpdates
+     * @param list<string> $fieldsExcludedFromUpdates
      */
     public function setFieldsExcludedFromUpdates(array $fieldsExcludedFromUpdates): void
     {
@@ -88,7 +88,7 @@ class ProcessedConfiguration
     }
 
     /**
-     * @return array
+     * @return array<string, ChildrenConfiguration>
      */
     public function getChildColumns(): array
     {
@@ -105,7 +105,7 @@ class ProcessedConfiguration
     }
 
     /**
-     * @param array $childColumns
+     * @param array<string, ChildrenConfiguration> $childColumns
      */
     public function setChildColumns(array $childColumns): void
     {
@@ -122,11 +122,17 @@ class ProcessedConfiguration
         return count($this->childColumns) > 0;
     }
 
+    /**
+     * @return list<string>
+     */
     public function getNullableColumns(): array
     {
         return $this->nullableColumns;
     }
 
+    /**
+     * @param list<string> $nullableColumns
+     */
     public function setNullableColumns(array $nullableColumns): void
     {
         $this->nullableColumns = $nullableColumns;

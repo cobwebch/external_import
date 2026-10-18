@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Step\AbstractStep;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -30,11 +31,14 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * This is not a true repository in the Extbase sense of the term, as it relies on reading its information
  * from the TCA and not a database. It also does not provide any persistence.
+ *
+ * @phpstan-import-type GeneralConfiguration from Configuration
+ * @phpstan-import-type ColumnConfiguration from Configuration
  */
 class ConfigurationRepository
 {
     /**
-     * @var array Extension configuration
+     * @var array<string, mixed> Extension configuration
      */
     protected array $extensionConfiguration = [];
 
@@ -55,7 +59,7 @@ class ConfigurationRepository
      *
      * @param string $table Name of the table
      * @param string|int $index Key of the configuration
-     * @return array The relevant TCA configuration
+     * @return array{general: GeneralConfiguration, additionalFields: array<string, ColumnConfiguration>, columns: array<string, ColumnConfiguration>|null} The relevant TCA configuration
      * @throws NoConfigurationException
      */
     public function findByTableAndIndex(string $table, $index): array
@@ -110,7 +114,7 @@ class ConfigurationRepository
     /**
      * Finds all synchronizable configurations and returns them ordered by priority.
      *
-     * @return array
+     * @return array<array-key, list<array{table: string, index: int|string, groups: array<mixed>}>>
      */
     public function findOrderedConfigurations(): array
     {
@@ -154,7 +158,7 @@ class ConfigurationRepository
      * @param string $group Name of the group to look up
      * @param bool $synchronizable TRUE to get only groups from synchronizable configurations
      * @param bool $nonSynchronizable TRUE to get only groups from non-synchronizable configurations
-     * @return array
+     * @return array<array-key, list<array{table: string, index: int|string}>>
      */
     public function findByGroup(string $group, bool $synchronizable = false, bool $nonSynchronizable = false): array
     {
@@ -198,7 +202,7 @@ class ConfigurationRepository
      *
      * @param bool $synchronizable TRUE to get only groups from synchronizable configurations
      * @param bool $nonSynchronizable TRUE to get only groups from non-synchronizable configurations
-     * @return array
+     * @return list<string>
      */
     public function findAllGroups(bool $synchronizable = false, bool $nonSynchronizable = false): array
     {
@@ -235,7 +239,7 @@ class ConfigurationRepository
      *
      * @param string $table Name of the table
      * @param string|int $index Key of the configuration
-     * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
+     * @param list<class-string<AbstractStep>>|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @return Configuration
      * @throws NoConfigurationException
      */
@@ -397,8 +401,8 @@ class ConfigurationRepository
     /**
      * Performs some processing on the general configuration, like taking global values into account.
      *
-     * @param array $configuration The external import configuration to process
-     * @return array The processed configuration
+     * @param GeneralConfiguration $configuration The external import configuration to process
+     * @return GeneralConfiguration The processed configuration
      */
     protected function processGeneralConfiguration(array $configuration): array
     {

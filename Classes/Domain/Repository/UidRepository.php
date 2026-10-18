@@ -35,12 +35,12 @@ class UidRepository
     protected ?Configuration $configuration = null;
 
     /**
-     * @var array|null List of retrieved UIDs
+     * @var array<int|string, int>|null List of retrieved UIDs, indexed by external key
      */
     protected ?array $existingUids = null;
 
     /**
-     * @var array|null List of current PIDs
+     * @var array<int|string, int>|null List of current PIDs, indexed by external key
      */
     protected ?array $currentPids = null;
 
@@ -117,7 +117,7 @@ class UidRepository
     /**
      * Returns the list of primary keys of existing records in the database.
      *
-     * @return array|null
+     * @return array<int|string, int>|null
      * @throws MissingConfigurationException
      */
     public function getExistingUids(): ?array
@@ -140,7 +140,7 @@ class UidRepository
     /**
      * Returns the list of storage PIDs of existing records in the database.
      *
-     * @return array|null
+     * @return array<int|string, int>|null
      * @throws MissingConfigurationException
      */
     public function getCurrentPids(): ?array

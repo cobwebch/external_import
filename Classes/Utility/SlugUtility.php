@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Utility;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -30,6 +31,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * NOTE: I know I have taken parts of this code from somewhere, but I don't remember where.
  * If you recognize your baby, please raise you hand so that I can duly credit you.
+ *
+ * @phpstan-import-type Record from Data
  */
 class SlugUtility
 {
@@ -39,7 +42,7 @@ class SlugUtility
     protected Importer $importer;
 
     /**
-     * @var array
+     * @var array<string, list<string>>
      */
     protected array $slugFieldNamesPerTable = [];
 
@@ -54,7 +57,7 @@ class SlugUtility
      * Generates and updates slugs for the given records of the given table.
      *
      * @param string $table Name of the affected table
-     * @param array $uids List of primary keys of records to update
+     * @param list<int> $uids List of primary keys of records to update
      */
     public function updateAll(string $table, array $uids): void
     {
@@ -92,8 +95,8 @@ class SlugUtility
      *
      * @param string $table
      * @param string $field
-     * @param array $fieldConfiguration
-     * @param array $record
+     * @param array<string, mixed> $fieldConfiguration
+     * @param Record $record
      * @return string
      */
     public function generateSlug(string $table, string $field, array $fieldConfiguration, array $record): string

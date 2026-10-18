@@ -58,7 +58,7 @@ class StoreDataStep extends AbstractStep
     protected array $idToExternalIdMap = [];
 
     /**
-     * @var array List of records from the main table that need to be deleted
+     * @var array<int|string, int> List of records from the main table that need to be deleted
      */
     protected array $mainRecordsToDelete = [];
 
@@ -1115,7 +1115,7 @@ class StoreDataStep extends AbstractStep
      * Updates the slug fields for the given records of the given table.
      *
      * @param string $table Name of the affected table
-     * @param array $uids List of primary keys of records to update
+     * @param list<int> $uids List of primary keys of records to update
      */
     public function updateSlugs(string $table, array $uids): void
     {

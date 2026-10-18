@@ -19,12 +19,16 @@ namespace Cobweb\ExternalImport\Domain\Model;
 
 use Cobweb\ExternalImport\Domain\Repository\TcaRepositoryInterface;
 use Cobweb\ExternalImport\Importer;
+use Cobweb\ExternalImport\Step\AbstractStep;
 use Cobweb\ExternalImport\Utility\StepUtility;
 use Cobweb\Svconnector\Service\ConnectorBase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Pseudo-domain model for a single External Import configuration.
+ *
+ * @phpstan-type GeneralConfiguration array<string, mixed>
+ * @phpstan-type ColumnConfiguration array<string, mixed>
  */
 class Configuration
 {
@@ -43,17 +47,20 @@ class Configuration
     /**
      * Store the raw configuration, as passed to the object from the repository
      */
+    /** @var GeneralConfiguration */
     protected array $rawGeneralConfiguration = [];
+    /** @var array<string, ColumnConfiguration> */
     protected array $rawAdditionalFieldsConfiguration = [];
+    /** @var array<string, ColumnConfiguration> */
     protected array $rawColumnsConfiguration = [];
 
     /**
-     * @var array General part of the External Import configuration
+     * @var GeneralConfiguration General part of the External Import configuration
      */
     protected array $generalConfiguration = [];
 
     /**
-     * @var array External Import configuration for each column
+     * @var array<string, ColumnConfiguration> External Import configuration for each column
      */
     protected array $columnConfiguration = [];
 
@@ -63,7 +70,7 @@ class Configuration
     protected ?int $storagePid = null;
 
     /**
-     * @var array List of fields that must be read from distant source, but will not be stored to DB
+     * @var array<string, ColumnConfiguration> List of fields that must be read from distant source, but will not be stored to DB
      */
     protected array $additionalFields = [];
 
@@ -73,22 +80,22 @@ class Configuration
     protected int $countAdditionalFields = 0;
 
     /**
-     * @var array List of steps that the process will go through (depends on process type)
+     * @var list<class-string<AbstractStep>> List of steps that the process will go through (depends on process type)
      */
     protected array $steps = [];
 
     /**
-     * @var array List of default steps for the process
+     * @var list<class-string<AbstractStep>> List of default steps for the process
      */
     protected array $defaultSteps = [];
 
     /**
-     * @var array List of all custom steps (valid or not)
+     * @var list<string> List of all custom steps (valid or not)
      */
     protected array $customSteps = [];
 
     /**
-     * @var array List of parameters associated with custom steps (if any)
+     * @var array<string, array<mixed>> List of parameters associated with custom steps (if any), per step class
      */
     protected array $stepParameters = [];
 
@@ -188,7 +195,7 @@ class Configuration
     /**
      * Returns the general external configuration
      *
-     * @return array
+     * @return GeneralConfiguration
      */
     public function getGeneralConfiguration(): array
     {
@@ -199,8 +206,8 @@ class Configuration
      * Sets the general configuration and performs extra processing
      * on some properties.
      *
-     * @param array $generalConfiguration
-     * @param array|null $defaultSteps List of default steps (if null will be guessed by the repository)
+     * @param GeneralConfiguration $generalConfiguration
+     * @param list<class-string<AbstractStep>>|null $defaultSteps List of default steps (if null will be guessed by the repository)
      */
     public function setGeneralConfiguration(array $generalConfiguration, ?array $defaultSteps = null): void
     {
@@ -242,7 +249,7 @@ class Configuration
     /**
      * Returns a specific property from the "ctrl" configuration.
      *
-     * @param $key
+     * @param string $key
      * @return mixed|null
      */
     public function getGeneralConfigurationProperty($key)
@@ -251,7 +258,7 @@ class Configuration
     }
 
     /**
-     * @return array
+     * @return array<string, ColumnConfiguration>
      */
     public function getColumnConfiguration(): array
     {
@@ -261,7 +268,7 @@ class Configuration
     /**
      * Sets the column configurations and processes some data.
      *
-     * @param array $columnConfiguration
+     * @param array<string, ColumnConfiguration> $columnConfiguration
      */
     public function setColumnConfiguration(array $columnConfiguration): void
     {
@@ -281,7 +288,7 @@ class Configuration
      * Returns the External import configuration for a single column.
      *
      * @param string $column Name of the column
-     * @return array
+     * @return ColumnConfiguration
      */
     public function getConfigurationForColumn(string $column): array
     {
@@ -301,7 +308,7 @@ class Configuration
     /**
      * Returns the list of columns that must not be saved to the database.
      *
-     * @return array
+     * @return list<string>
      */
     public function getColumnsExcludedFromSaving(): array
     {
@@ -354,23 +361,32 @@ class Configuration
         $this->storagePid = $storagePid;
     }
 
+    /**
+     * @return GeneralConfiguration
+     */
     public function getRawGeneralConfiguration(): array
     {
         return $this->rawGeneralConfiguration;
     }
 
+    /**
+     * @return array<string, ColumnConfiguration>
+     */
     public function getRawAdditionalFieldsConfiguration(): array
     {
         return $this->rawAdditionalFieldsConfiguration;
     }
 
+    /**
+     * @return array<string, ColumnConfiguration>
+     */
     public function getRawColumnsConfiguration(): array
     {
         return $this->rawColumnsConfiguration;
     }
 
     /**
-     * @return array
+     * @return array<string, ColumnConfiguration>
      */
     public function getAdditionalFields(): array
     {
@@ -378,7 +394,7 @@ class Configuration
     }
 
     /**
-     * @param array $additionalFields
+     * @param array<string, ColumnConfiguration> $additionalFields
      */
     public function setAdditionalFields(array $additionalFields): void
     {
@@ -411,7 +427,7 @@ class Configuration
      *
      * NOTE: an equivalent setter does not exist as steps should never be defined from the outside.
      *
-     * @return array
+     * @return list<class-string<AbstractStep>>
      */
     public function getSteps(): array
     {
@@ -423,7 +439,7 @@ class Configuration
      *
      * This is used in the configuration detail view in the backend module, for visual feedback.
      *
-     * @return array
+     * @return array<class-string<AbstractStep>, 'default'|'custom'>
      */
     public function getDifferentiatedSteps(): array
     {
@@ -445,7 +461,7 @@ class Configuration
      *
      * This is used in the configuration detail view in the backend module, for visual feedback.
      *
-     * @return array
+     * @return array<int, string>
      */
     public function getInvalidSteps(): array
     {
@@ -468,7 +484,7 @@ class Configuration
      * Returns the parameters for the given step.
      *
      * @param string $step Name of a step class
-     * @return array
+     * @return array<mixed>
      */
     public function getParametersForStep(string $step): array
     {
@@ -478,7 +494,7 @@ class Configuration
     /**
      * Sets the list of parameters for the given step.
      *
-     * @param array $parameters List of parameters
+     * @param array<mixed> $parameters List of parameters
      * @param string $step Name of a step class
      */
     public function setParametersForStep(array $parameters, string $step): void
@@ -502,6 +518,10 @@ class Configuration
         $this->connector = $connector;
     }
 
+    /**
+     * @param array<string, ColumnConfiguration> $columns
+     * @return array<string, ColumnConfiguration>
+     */
     public function sortColumns(array $columns, string $sorting = ''): array
     {
         if (empty($sorting)) {
@@ -541,6 +561,8 @@ class Configuration
     /**
      * Check in the TCA if the column definition indicates that a NULL value can be accepted
      * as a valid value to store in the database
+     *
+     * @param array<string, mixed> $columnTca
      */
     public function isNullable(array $columnTca): bool
     {

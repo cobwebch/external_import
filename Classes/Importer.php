@@ -47,7 +47,7 @@ class Importer implements LoggerAwareInterface
     public const DEFAULT_PRIORITY = 1000;
 
     /**
-     * @var array List of default steps for the synchronize data process
+     * @var list<class-string<AbstractStep>> List of default steps for the synchronize data process
      */
     public const SYNCHRONIZE_DATA_STEPS = [
         Step\CheckPermissionsStep::class,
@@ -64,13 +64,13 @@ class Importer implements LoggerAwareInterface
     ];
 
     /**
-     * @var array List of default steps for the synchronize data process
+     * @var list<class-string<AbstractStep>> List of default steps for the synchronize data process
      * @deprecated since 9.1, will be removed in 10.0. Use SYNCHRONIZE_DATA_STEPS instead.
      */
     public const SYNCHRONYZE_DATA_STEPS = self::SYNCHRONIZE_DATA_STEPS;
 
     /**
-     * @var array List of default steps for the import data process
+     * @var list<class-string<AbstractStep>> List of default steps for the import data process
      */
     public const IMPORT_DATA_STEPS = [
         Step\CheckPermissionsStep::class,
@@ -84,12 +84,12 @@ class Importer implements LoggerAwareInterface
     ];
 
     /**
-     * @var array Extension configuration
+     * @var array<string, mixed> Extension configuration
      */
     protected array $extensionConfiguration = [];
 
     /**
-     * @var array List of result messages
+     * @var array<int, list<string>> List of result messages, per severity
      */
     protected array $messages = [];
 
@@ -147,7 +147,7 @@ class Importer implements LoggerAwareInterface
     protected string $previewStep = '';
 
     /**
-     * @var string|array Data to be returned as preview data
+     * @var mixed Data to be returned as preview data
      */
     protected $previewData = '';
 
@@ -205,7 +205,7 @@ class Importer implements LoggerAwareInterface
      *
      * @param string $table Name of the table to synchronize
      * @param mixed $index Index of the synchronization configuration to use
-     * @param array|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
+     * @param list<class-string<AbstractStep>>|null $defaultSteps List of default steps (if null will be guessed by the Configuration object)
      * @throws NoConfigurationException
      */
     protected function initialize(string $table, mixed $index, ?array $defaultSteps): void
@@ -243,7 +243,7 @@ class Importer implements LoggerAwareInterface
      *
      * @param string $table Name of the table to synchronize
      * @param mixed $index Index of the synchronization configuration to use
-     * @return array List of error or success messages
+     * @return array<int, list<string>> List of error or success messages, per severity
      */
     public function synchronize(string $table, mixed $index): array
     {
@@ -297,7 +297,7 @@ class Importer implements LoggerAwareInterface
      * @param string $table Name of the table to import into
      * @param mixed $index Index of the synchronization configuration to use
      * @param mixed $rawData Data in the format provided by the external source (XML string, PHP array, etc.)
-     * @return array List of error or success messages
+     * @return array<int, list<string>> List of error or success messages, per severity
      */
     public function import(string $table, mixed $index, mixed $rawData): array
     {
@@ -459,7 +459,7 @@ class Importer implements LoggerAwareInterface
      *
      * It is used to avoid reading it multiple times from the various components of this extension.
      *
-     * @return array The extension's configuration
+     * @return array<string, mixed> The extension's configuration
      */
     public function getExtensionConfiguration(): array
     {
@@ -543,9 +543,9 @@ class Importer implements LoggerAwareInterface
     }
 
     /**
-     * Returns the list of all messages.
+     * Returns the list of all messages, per severity.
      *
-     * @return array
+     * @return array<int, list<string>>
      */
     public function getMessages(): array
     {

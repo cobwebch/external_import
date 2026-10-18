@@ -20,6 +20,10 @@ namespace Cobweb\ExternalImport\Domain\Model;
 /**
  * Pseudo-domain model for the data being handled by the import process.
  */
+/**
+ * @phpstan-type Record array<string, mixed>
+ * @phpstan-type RecordList list<Record>
+ */
 class Data
 {
     /**
@@ -28,12 +32,17 @@ class Data
     protected $rawData;
 
     /**
-     * @var array Array available for storing any kind of data that will be passed from step to step
+     * @var array<string, mixed> Array available for storing any kind of data that will be passed from step to step
      */
     protected array $extraData = [];
 
     /**
-     * @var array Array of data being imported
+     * Array of data being imported
+     *
+     * NOTE: this is a list of records until the StoreDataStep, which replaces it with
+     * the list of stored records for each table (the table name being the key)
+     *
+     * @var RecordList|array<string, RecordList>
      */
     protected array $records = [];
 
@@ -58,7 +67,7 @@ class Data
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getExtraData(): array
     {
@@ -66,7 +75,7 @@ class Data
     }
 
     /**
-     * @param array $extraData
+     * @param array<string, mixed> $extraData
      */
     public function setExtraData(array $extraData): void
     {
@@ -83,7 +92,7 @@ class Data
     }
 
     /**
-     * @return array
+     * @return RecordList|array<string, RecordList>
      */
     public function getRecords(): array
     {
@@ -91,7 +100,7 @@ class Data
     }
 
     /**
-     * @param array $records
+     * @param RecordList|array<string, RecordList> $records
      */
     public function setRecords(array $records): void
     {

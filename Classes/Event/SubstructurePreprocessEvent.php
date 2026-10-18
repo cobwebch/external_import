@@ -17,10 +17,13 @@ namespace Cobweb\ExternalImport\Event;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Importer;
 
 /**
  * Event for manipulating a single substructure before it is accessed with the keys defined with the "substructureFields" property.
+ *
+ * @phpstan-import-type ColumnConfiguration from Configuration
  */
 final class SubstructurePreprocessEvent
 {
@@ -30,12 +33,12 @@ final class SubstructurePreprocessEvent
     private Importer $importer;
 
     /**
-     * @var array|\DOMNodeList The substructure to handle
+     * @var array<mixed>|\DOMNodeList<\DOMNode|\DOMNameSpaceNode> The substructure to handle
      */
     private $substructure;
 
     /**
-     * @var array The current substructure configuration
+     * @var array<string, ColumnConfiguration> The current substructure configuration
      */
     private array $substructureConfiguration = [];
 
@@ -49,6 +52,10 @@ final class SubstructurePreprocessEvent
      */
     private string $dataType = '';
 
+    /**
+     * @param array<mixed>|\DOMNodeList<\DOMNode|\DOMNameSpaceNode> $substructure
+     * @param array<string, ColumnConfiguration> $substructureConfiguration
+     */
     public function __construct($substructure, array $substructureConfiguration, string $column, string $dataType, Importer $importer)
     {
         $this->substructure = $substructure;
@@ -67,7 +74,7 @@ final class SubstructurePreprocessEvent
     }
 
     /**
-     * @return array
+     * @return array<string, ColumnConfiguration>
      */
     public function getSubstructureConfiguration(): array
     {
@@ -91,7 +98,7 @@ final class SubstructurePreprocessEvent
     }
 
     /**
-     * @return array|\DOMNodeList
+     * @return array<mixed>|\DOMNodeList<\DOMNode|\DOMNameSpaceNode>
      */
     public function getSubstructure()
     {
@@ -99,7 +106,7 @@ final class SubstructurePreprocessEvent
     }
 
     /**
-     * @param array|\DOMNodeList $substructure
+     * @param array<mixed>|\DOMNodeList<\DOMNode|\DOMNameSpaceNode> $substructure
      */
     public function setSubstructure($substructure): void
     {

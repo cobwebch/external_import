@@ -33,7 +33,7 @@ class ChildrenRepository
      * Return all existing records in the given table for the given condition.
      *
      * @param string $table Table to query
-     * @param array $conditions Conditions to apply (field-value pairs)
+     * @param array<string, mixed> $conditions Conditions to apply (field-value pairs)
      * @return array
      * @throws \Doctrine\DBAL\Exception
      */
@@ -55,7 +55,7 @@ class ChildrenRepository
      * We don't consider other records if that is not the case.
      *
      * @param string $table Table to query
-     * @param array $conditions Conditions to apply (field-value pairs)
+     * @param array<string, mixed> $conditions Conditions to apply (field-value pairs)
      * @return int
      * @throws NoSuchRecordException
      * @throws \Doctrine\DBAL\Exception
@@ -78,7 +78,7 @@ class ChildrenRepository
      * Prepares the query builder for the given table and applies the given constraints.
      *
      * @param string $table Table to query
-     * @param array $conditions Conditions to apply (field-value pairs)
+     * @param array<string, mixed> $conditions Conditions to apply (field-value pairs)
      * @return QueryBuilder
      */
     protected function prepareQueryBuilder(string $table, array $conditions): QueryBuilder

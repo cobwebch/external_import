@@ -27,6 +27,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * and reports errors and other glitches.
  *
  * NOTE: this is not a strict Extbase Validator.
+ *
+ * @phpstan-import-type GeneralConfiguration from Configuration
+ * @phpstan-import-type ColumnConfiguration from Configuration
  */
 class ColumnConfigurationValidator
 {
@@ -100,8 +103,8 @@ class ColumnConfigurationValidator
      * even if the "value" property is considered to be a transformation property.
      * Users should be made aware of such potential conflicts.
      *
-     * @param array $generalConfiguration General configuration to check
-     * @param array $columnConfiguration Column configuration to check (unused when checking a "ctrl" configuration)
+     * @param GeneralConfiguration $generalConfiguration General configuration to check
+     * @param ColumnConfiguration $columnConfiguration Column configuration to check (unused when checking a "ctrl" configuration)
      */
     public function validateDataSettingProperties(array $generalConfiguration, array $columnConfiguration): void
     {
@@ -287,8 +290,8 @@ class ColumnConfigurationValidator
     /**
      * Validates the "substructureField" property.
      *
-     * @param array $generalConfiguration External Import general configuration
-     * @param array $property substructureFields configuration
+     * @param GeneralConfiguration $generalConfiguration External Import general configuration
+     * @param array<string, ColumnConfiguration> $property substructureFields configuration
      */
     public function validateSubstructureFieldsProperty(array $generalConfiguration, array $property): void
     {
@@ -361,7 +364,7 @@ class ColumnConfigurationValidator
     /**
      * Checks if the value property is set or if the "transformations" properties contain the "value" property.
      *
-     * @param array $columnConfiguration
+     * @param ColumnConfiguration $columnConfiguration
      * @return bool
      */
     public function hasValueProperty(array $columnConfiguration): bool
