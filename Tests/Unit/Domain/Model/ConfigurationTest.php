@@ -139,13 +139,6 @@ class ConfigurationTest extends UnitTestCase
                 ],
                 'nullable' => true,
             ],
-            'input field - null eval' => [
-                'tcaColumnConfiguration' => [
-                    'type' => 'input',
-                    'eval' => 'trim, null',
-                ],
-                'nullable' => true,
-            ],
             'text field - simple' => [
                 'tcaColumnConfiguration' => [
                     'type' => 'text',
@@ -156,13 +149,6 @@ class ConfigurationTest extends UnitTestCase
                 'tcaColumnConfiguration' => [
                     'type' => 'text',
                     'nullable' => true,
-                ],
-                'nullable' => true,
-            ],
-            'text field - null eval' => [
-                'tcaColumnConfiguration' => [
-                    'type' => 'text',
-                    'eval' => 'trim, null',
                 ],
                 'nullable' => true,
             ],

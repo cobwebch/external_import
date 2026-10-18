@@ -567,15 +567,9 @@ class Configuration
     public function isNullable(array $columnTca): bool
     {
         $nullable = false;
-        // Check for explicit nullable property (TYPO3 12+)
+        // Check for explicit nullable property
         if (array_key_exists('nullable', $columnTca)) {
             $nullable = (bool)$columnTca['nullable'];
-
-            // If not defined, try for "null" evaluation (TYPO3 11)
-            // TODO: remove after support for v12 is dropped (it is still accepted, but deprecated)
-        } elseif (array_key_exists('eval', $columnTca)) {
-            $evaluations = GeneralUtility::trimExplode(',', $columnTca['eval'], true);
-            $nullable = in_array('null', $evaluations, true);
 
             // A relation-type column with minitems missing or equals 0 is also considered nullable
         } elseif (
