@@ -1,6 +1,481 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Variable \\$tceDeleteCommands on left side of \\?\\? always exists and is not nullable\\.$#"
+			message: '#^Method Cobweb\\ExternalImport\\Command\\ImportCommand\:\:runSynchronization\(\) has parameter \$configurations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Command/ImportCommand.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Controller\\DataModuleController\:\:prepareCsvLine\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Controller/DataModuleController.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Model\\Dto\\ChildrenSorting\:\:getSortingInformation\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Model/Dto/ChildrenSorting.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Model\\Dto\\ChildrenSorting\:\:replaceAllNewIds\(\) has parameter \$replacements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Model/Dto/ChildrenSorting.php
+
+		-
+			message: '#^Property Cobweb\\ExternalImport\\Domain\\Model\\Dto\\ChildrenSorting\:\:\$sortingInformation type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Model/Dto/ChildrenSorting.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Model\\Dto\\QueryParameters\:\:__construct\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Model/Dto/QueryParameters.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Model\\Dto\\QueryParameters\:\:getSearchColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Model/Dto/QueryParameters.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Model\\Dto\\QueryParameters\:\:setAllParameters\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Model/Dto/QueryParameters.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Model\\Dto\\QueryParameters\:\:setSearchColumns\(\) has parameter \$searchColumns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Model/Dto/QueryParameters.php
+
+		-
+			message: '#^Property Cobweb\\ExternalImport\\Domain\\Model\\Dto\\QueryParameters\:\:\$searchColumns type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Model/Dto/QueryParameters.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\ChildrenRepository\:\:findAllExistingRecords\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/ChildrenRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\ConfigurationRepository\:\:findBySync\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/ConfigurationRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\ItemRepository\:\:find\(\) has parameter \$constraints with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/ItemRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\LogRepository\:\:assembleSearchConditions\(\) has parameter \$searchColumns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/LogRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\LogRepository\:\:assembleSearchConditions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/LogRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\LogRepository\:\:findBySearch\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/LogRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\LogRepository\:\:insert\(\) has parameter \$logData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/LogRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\SchedulerRepository\:\:assembleTaskInformation\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/SchedulerRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\SchedulerRepository\:\:fetchAllGroups\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/SchedulerRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\SchedulerRepository\:\:fetchAllTasks\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/SchedulerRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\SchedulerRepository\:\:fetchFullSynchronizationTask\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/SchedulerRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\SchedulerRepository\:\:fetchTaskByUid\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/SchedulerRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\SchedulerRepository\:\:prepareTaskData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/SchedulerRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Domain\\Repository\\SchedulerRepository\:\:saveTask\(\) has parameter \$taskData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/SchedulerRepository.php
+
+		-
+			message: '#^Property Cobweb\\ExternalImport\\Domain\\Repository\\SchedulerRepository\:\:\$tasks type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Domain/Repository/SchedulerRepository.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Event\\ModifyReactionResponseEvent\:\:__construct\(\) has parameter \$responseBody with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Event/ModifyReactionResponseEvent.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Event\\ModifyReactionResponseEvent\:\:getResponseBody\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Event/ModifyReactionResponseEvent.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Event\\ModifyReactionResponseEvent\:\:setResponseBody\(\) has parameter \$responseBody with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Event/ModifyReactionResponseEvent.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\ImporterAwareInterface\:\:setImporter\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: ../../Classes/ImporterAwareInterface.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Message\\AfterImportMessage\:\:jsonSerialize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Message/AfterImportMessage.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\AbstractReaction\:\:jsonResponse\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/AbstractReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\DeleteReaction\:\:deleteItems\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/DeleteReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\DeleteReaction\:\:getExternalKey\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: ../../Classes/Reaction/DeleteReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\DeleteReaction\:\:getExternalKey\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/DeleteReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\DeleteReaction\:\:react\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/DeleteReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\DeleteReaction\:\:validatePayloadAndConfigurationKey\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/DeleteReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\ImportReaction\:\:react\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/ImportReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\ImportReaction\:\:retrieveGroupedConfigurations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/ImportReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\ImportReaction\:\:validatePayloadAndConfigurationKey\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/ImportReaction.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Reaction\\ImportReaction\:\:validatePayloadAndConfigurationKey\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Reaction/ImportReaction.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to static method TYPO3\\CMS\\Core\\Utility\\GeneralUtility\:\:makeInstance\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: ../../Classes/Step/HandleDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\ReadDataStep\:\:processParameters\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/ReadDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\ReadDataStep\:\:processParameters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/ReadDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:assembleChildrenDeletionInformation\(\) has parameter \$childConfiguration with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:assembleChildrenDeletionInformation\(\) has parameter \$controlColumnsForDelete with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:assembleChildrenDeletionInformation\(\) has parameter \$parentData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:extractLevelPages\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:extractLevelPages\(\) has parameter \$levelPages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:extractLevelPages\(\) has parameter \$sortedData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:extractLevelPages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:prepareChildStructure\(\) has parameter \$childConfiguration with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:prepareChildStructure\(\) has parameter \$parentData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:prepareChildStructure\(\) has parameter \$sortingInformation with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:prepareChildStructure\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:prepareDataToStore\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:reportTceErrors\(\) has parameter \$errorLog with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:reviewChildRecords\(\) has parameter \$dataToStore with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:reviewChildRecords\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:sortPagesData\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:sortPagesData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Property Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:\$childRecordsToDelete type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Property Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:\$childrenReferenceValues type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Property Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:\$idToExternalIdMap type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Property Cobweb\\ExternalImport\\Step\\StoreDataStep\:\:\$valuesExcludedFromSaving type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Variable \$tceDeleteCommands on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Unable to resolve the template type T in call to static method TYPO3\\CMS\\Core\\Utility\\GeneralUtility\:\:makeInstance\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: ../../Classes/Step/TransformDataStep.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Task\\AutomatedSyncAdditionalFieldProvider\:\:getAdditionalFields\(\) has parameter \$taskInfo with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Task/AutomatedSyncAdditionalFieldProvider.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Task\\AutomatedSyncAdditionalFieldProvider\:\:getAdditionalFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Task/AutomatedSyncAdditionalFieldProvider.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Task\\AutomatedSyncAdditionalFieldProvider\:\:saveAdditionalFields\(\) has parameter \$submittedData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Task/AutomatedSyncAdditionalFieldProvider.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Task\\AutomatedSyncAdditionalFieldProvider\:\:validateAdditionalFields\(\) has parameter \$submittedData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Task/AutomatedSyncAdditionalFieldProvider.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Task\\SynchronizationTask\:\:setTaskParameters\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Task/SynchronizationTask.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\UserFunction\\ConfigurationItems\:\:listConfigurationItems\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/UserFunction/ConfigurationItems.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Utility\\ChildrenSortingUtility\:\:updateChildrenSortingField\(\) has parameter \$sorting with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Utility/ChildrenSortingUtility.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Utility\\CsvUtility\:\:ensureCompleteStructure\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Utility/CsvUtility.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Utility\\CsvUtility\:\:ensureCompleteStructure\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Utility/CsvUtility.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Utility\\CsvUtility\:\:prepareCsvData\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Utility/CsvUtility.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Utility\\DebugUtility\:\:dumpArray\(\) has parameter \$array with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Utility/DebugUtility.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Utility\\DebugUtility\:\:dumpTwinArrays\(\) has parameter \$copyArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Utility/DebugUtility.php
+
+		-
+			message: '#^Method Cobweb\\ExternalImport\\Utility\\DebugUtility\:\:dumpTwinArrays\(\) has parameter \$referenceArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Utility/DebugUtility.php
+
+		-
+			message: '#^Property Cobweb\\ExternalImport\\Utility\\ReportingUtility\:\:\$reportingValues type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../Classes/Utility/ReportingUtility.php
