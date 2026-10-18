@@ -282,8 +282,10 @@ class SchedulerRepository implements SingletonInterface
     {
         if ($taskData['uid'] === 0) {
             // Create a new task instance and register the execution
-            /** @var AutomatedSyncTask $taskObject */
+            /** @var AutomatedSyncTask $task */
             $task = GeneralUtility::makeInstance(self::$taskClassName);
+            // TODO: this code is used only with TYPO3 13, drop it in the next major version (and drop the ignore annotations)
+            // @phpstan-ignore method.notFound
             $task->registerRecurringExecution(
                 $taskData['start'] ?? 0,
                 $taskData['interval'],
@@ -299,8 +301,10 @@ class SchedulerRepository implements SingletonInterface
         } else {
             $task = $this->schedulerTaskRepository->findByUid((int)$taskData['uid']);
             // Stop any existing execution(s)...
+            // @phpstan-ignore method.notFound
             $task->stop();
             /// ...and replace it(them) by a new one
+            // @phpstan-ignore method.notFound
             $task->registerRecurringExecution(
                 $taskData['start'] ?? 0,
                 $taskData['interval'],
@@ -309,6 +313,7 @@ class SchedulerRepository implements SingletonInterface
                 $taskData['croncmd']
             );
             $task->setTaskGroup($taskData['group']);
+            // @phpstan-ignore method.notFound
             $result = $task->save();
         }
         if ($result === false) {

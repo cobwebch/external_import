@@ -193,6 +193,13 @@ class XmlHandler implements DataHandlerInterface
 
             // If a "field" is defined, refine the selection to get the correct node
         } elseif (isset($columnConfiguration['field'])) {
+            // Only elements (and documents) have children that can be searched by tag name
+            if (!($record instanceof \DOMElement || $record instanceof \DOMDocument)) {
+                throw new \InvalidArgumentException(
+                    'No value found',
+                    1534166267
+                );
+            }
             // Use namespace or not
             if (empty($columnConfiguration['fieldNS'])) {
                 $nodeList = $record->getElementsByTagName($columnConfiguration['field']);
@@ -270,6 +277,13 @@ class XmlHandler implements DataHandlerInterface
     {
         // If a "field" is defined, refine the selection to get the correct node
         if (isset($columnConfiguration['field'])) {
+            // Only elements (and documents) have children that can be searched by tag name
+            if (!($record instanceof \DOMElement || $record instanceof \DOMDocument)) {
+                throw new \InvalidArgumentException(
+                    'No value found',
+                    1534166267
+                );
+            }
             // Use namespace or not
             if (empty($columnConfiguration['fieldNS'])) {
                 $nodeList = $record->getElementsByTagName($columnConfiguration['field']);

@@ -26,7 +26,6 @@ use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Upgrades\DatabaseUpdatedPrerequisite;
 use TYPO3\CMS\Core\Upgrades\UpgradeWizardInterface;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
-use TYPO3\CMS\Scheduler\Task\TaskSerializer;
 
 /**
  * Migrate from old to new synchronization task.
@@ -38,7 +37,6 @@ final class SchedulerTaskMigration implements UpgradeWizardInterface
 {
     public function __construct(
         private ConnectionPool $connectionPool,
-        private TaskSerializer $taskSerializer,
     ) {}
 
     public function getTitle(): string

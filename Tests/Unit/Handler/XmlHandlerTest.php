@@ -257,6 +257,17 @@ XML,
         );
     }
 
+    #[Test]
+    public function getValueWithFieldThrowsExceptionIfRecordIsNotAnElement(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $dom = new \DOMDocument();
+        $dom->loadXML('<item>foo</item>');
+        $xPathObject = new \DOMXPath($dom);
+        // The text node inside the "item" element has no children that can be searched by tag name
+        $this->subject->getValue($dom->documentElement->firstChild, ['field' => 'name'], $xPathObject);
+    }
+
     public static function getSubstructureProvider(): array
     {
         return [
@@ -436,5 +447,16 @@ XML
             $result,
             $resultingDocument->saveXML()
         );
+    }
+
+    #[Test]
+    public function getNodeListWithFieldThrowsExceptionIfRecordIsNotAnElement(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $dom = new \DOMDocument();
+        $dom->loadXML('<item>foo</item>');
+        $xPathObject = new \DOMXPath($dom);
+        // The text node inside the "item" element has no children that can be searched by tag name
+        $this->subject->getNodeList($dom->documentElement->firstChild, ['field' => 'name'], $xPathObject);
     }
 }

@@ -40,7 +40,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      * In this case, it adds several options related to External Import usage.
      *
      * @param array $taskInfo Reference to the array containing the info used in the add/edit form
-     * @param AbstractTask $task When editing, reference to the current task object. Null when adding.
+     * @param AutomatedSyncTask|null $task When editing, reference to the current task object. Null when adding.
      * @param SchedulerModuleController $schedulerModule Reference to the calling object (Scheduler's BE module)
      * @return array Array containing all the information pertaining to the additional fields
      *               The array is multidimensional, keyed to the task class name and each field's id
@@ -58,7 +58,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         if (empty($taskInfo[self::$itemFieldName])) {
             if ($schedulerModule->getCurrentAction() === SchedulerManagementAction::ADD) {
                 $taskInfo[self::$itemFieldName] = 'all';
-            } elseif ($schedulerModule->getCurrentAction() === SchedulerManagementAction::EDIT) {
+            } elseif ($schedulerModule->getCurrentAction() === SchedulerManagementAction::EDIT && $task instanceof AutomatedSyncTask) {
                 // In case of edit, set to internal value if no data was submitted already
                 $configurationKey = GeneralUtility::makeInstance(ConfigurationKey::class);
                 $configurationKey->setTableAndIndex($task->table, (string)$task->index);
@@ -131,7 +131,7 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         if (empty($taskInfo[self::$storageFieldName])) {
             if ($schedulerModule->getCurrentAction() === SchedulerManagementAction::ADD) {
                 $taskInfo[self::$storageFieldName] = '';
-            } elseif ($schedulerModule->getCurrentAction() === SchedulerManagementAction::EDIT) {
+            } elseif ($schedulerModule->getCurrentAction() === SchedulerManagementAction::EDIT && $task instanceof AutomatedSyncTask) {
                 // In case of edit, set to internal value if no data was submitted already
                 $taskInfo[self::$storageFieldName] = $task->storage;
             }
@@ -169,6 +169,9 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
      */
     public function saveAdditionalFields(array $submittedData, AbstractTask $task): void
     {
+        if (!$task instanceof AutomatedSyncTask) {
+            return;
+        }
         $fieldValue = $submittedData[self::$itemFieldName];
         if ($fieldValue === 'all' || str_starts_with($fieldValue, 'group:')) {
             $task->table = $fieldValue;
