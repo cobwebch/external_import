@@ -39,7 +39,7 @@
     "friendsofphp/php-cs-fixer": "^3.95",
     "typo3/coding-standards": "*",
     "typo3/testing-framework": "^9.5",
-    "phpstan/phpstan": "^2.1"
+    "phpstan/phpstan": "^2.3"
   },
   "extra": {
     "branch-alias": {
