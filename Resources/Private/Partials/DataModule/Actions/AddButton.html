@@ -10,7 +10,7 @@
 		</f:link.action>
 	</f:then>
     <f:else>
-		<be:link.newRecord pid="8" table="tx_scheduler_task" defaultValues="{tx_scheduler_task: {tasktype: 'Cobweb\\ExternalImport\\Task\\SynchronizationTask', sync_item: key}}" class="btn btn-default">
+		<be:link.newRecord table="tx_scheduler_task" defaultValues="{tx_scheduler_task: {tasktype: 'Cobweb\\ExternalImport\\Task\\SynchronizationTask', sync_item: key}}" class="btn btn-default">
 			<core:icon identifier="actions-add" />
 		</be:link.newRecord>
     </f:else>
