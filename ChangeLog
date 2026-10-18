@@ -1,6 +1,7 @@
 2026-10-18 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Raise PHPStan version
+    * Update Composer root version in test script
 
 2026-10-17 Francois Suter (Idéative)  <typo3@ideative.ch>
 
