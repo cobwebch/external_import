@@ -224,6 +224,7 @@ class Importer implements LoggerAwareInterface
         }
 
         // Allow for configuration manipulation
+        /** @var ChangeConfigurationBeforeRunEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ChangeConfigurationBeforeRunEvent(
                 $this,

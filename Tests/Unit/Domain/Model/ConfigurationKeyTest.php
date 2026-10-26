@@ -103,4 +103,13 @@ class ConfigurationKeyTest extends UnitTestCase
         $this->subject->setTableAndIndex($table, (string)$index);
         self::assertEquals($key, $this->subject->getConfigurationKey());
     }
+
+    #[Test]
+    public function setTableAndIndexPreservesIndexType(): void
+    {
+        $this->subject->setTableAndIndex('foo', 1);
+        self::assertSame(1, $this->subject->getIndex());
+        $this->subject->setTableAndIndex('foo', 'bar');
+        self::assertSame('bar', $this->subject->getIndex());
+    }
 }

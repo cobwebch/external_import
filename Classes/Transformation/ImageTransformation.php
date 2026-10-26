@@ -101,7 +101,16 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         }
         // Assemble a file name
         $urlParts = parse_url($record[$index]);
-        $pathParts = pathinfo($urlParts['path']);
+        if ($urlParts === false) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Value "%s" is not a valid URL',
+                    $record[$index]
+                ),
+                1793045254
+            );
+        }
+        $pathParts = pathinfo($urlParts['path'] ?? '');
         if (isset($parameters['nameField'], $record[$parameters['nameField']])) {
             $fileName = $record[$parameters['nameField']];
             if (isset($pathParts['extension'])) {
@@ -202,8 +211,8 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         $imageContent = base64_decode($record[$index]);
 
         $fileInformation = finfo_open();
-        $mimeType = finfo_buffer($fileInformation, $imageContent, FILEINFO_MIME_TYPE);
-        $result = preg_match('/image\/(.*)/', $mimeType, $matches);
+        $mimeType = $fileInformation === false ? false : finfo_buffer($fileInformation, $imageContent, FILEINFO_MIME_TYPE);
+        $result = $mimeType === false ? 0 : preg_match('/image\/(.*)/', $mimeType, $matches);
         if ($result === 1) {
             $extension = $matches[1];
             // Handle special MIME type for SVG

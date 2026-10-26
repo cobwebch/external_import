@@ -34,7 +34,7 @@ class CsvUtility
         foreach ($array as $index => $item) {
             // Header row with array keys
             if ($index === 0) {
-                $keys = array_keys($item);
+                $keys = array_map(strval(...), array_keys($item));
                 $lines[] = \TYPO3\CMS\Core\Utility\CsvUtility::csvValues($keys, ';');
             }
             $lines[] = \TYPO3\CMS\Core\Utility\CsvUtility::csvValues($item, ';');

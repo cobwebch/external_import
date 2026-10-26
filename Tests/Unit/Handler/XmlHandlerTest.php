@@ -17,8 +17,10 @@ namespace Cobweb\ExternalImport\Tests\Unit\Handler;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Exception\XpathSelectionFailedException;
 use Cobweb\ExternalImport\Handler\XmlHandler;
+use Cobweb\ExternalImport\Importer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
@@ -268,6 +270,34 @@ XML,
         $this->subject->getValue($dom->documentElement->firstChild, ['field' => 'name'], $xPathObject);
     }
 
+    public static function getValueWithNamespaceNodeProvider(): array
+    {
+        return [
+            'with field and XPath' => [
+                'configuration' => [
+                    'field' => 'name',
+                    'xpath' => 'namespace::*',
+                ],
+            ],
+            'with XPath only' => [
+                'configuration' => [
+                    'xpath' => 'namespace::*',
+                ],
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('getValueWithNamespaceNodeProvider')]
+    public function getValueThrowsExceptionIfSelectedNodeIsNamespaceNode(array $configuration): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $dom = new \DOMDocument();
+        $dom->loadXML('<item xmlns:foo="https://example.com/foo"><name>foo</name></item>');
+        $xPathObject = new \DOMXPath($dom);
+        // The "namespace" axis selects DOMNameSpaceNode objects, which are not DOMNode objects
+        $this->subject->getValue($dom->documentElement, $configuration, $xPathObject);
+    }
+
     public static function getSubstructureProvider(): array
     {
         return [
@@ -332,6 +362,20 @@ EOF
         self::assertSame(
             $result,
             $this->subject->getSubstructureValues($nodeList, $configuration, $xPathObject)
+        );
+    }
+
+    #[Test]
+    public function getSubstructureValuesSkipsNamespaceNodes(): void
+    {
+        $dom = new \DOMDocument();
+        $dom->loadXML('<item xmlns:foo="https://example.com/foo"><name>foo</name></item>');
+        $xPathObject = new \DOMXPath($dom);
+        // The "namespace" axis selects DOMNameSpaceNode objects, which are not DOMNode objects
+        $nodeList = $xPathObject->query('namespace::*', $dom->documentElement);
+        self::assertSame(
+            [],
+            $this->subject->getSubstructureValues($nodeList, ['first' => ['xpath' => '.']], $xPathObject)
         );
     }
 
@@ -458,5 +502,58 @@ XML
         $xPathObject = new \DOMXPath($dom);
         // The text node inside the "item" element has no children that can be searched by tag name
         $this->subject->getNodeList($dom->documentElement->firstChild, ['field' => 'name'], $xPathObject);
+    }
+
+    /**
+     * Prepares a mocked Importer returning a configuration with the given general and column configurations.
+     *
+     * @param array<string, mixed> $generalConfiguration
+     * @param array<string, array<string, mixed>> $columnConfiguration
+     */
+    protected function prepareImporter(array $generalConfiguration, array $columnConfiguration): Importer&\PHPUnit\Framework\MockObject\MockObject
+    {
+        $configuration = new Configuration();
+        $configuration->setGeneralConfiguration($generalConfiguration, []);
+        $configuration->setColumnConfiguration($columnConfiguration);
+        $importer = $this->createMock(Importer::class);
+        $importer->method('getExternalConfiguration')->willReturn($configuration);
+        return $importer;
+    }
+
+    #[Test]
+    public function handleDataReturnsRecords(): void
+    {
+        $importer = $this->prepareImporter(
+            ['nodetype' => 'item'],
+            ['title' => ['field' => 'name']]
+        );
+        self::assertSame(
+            [
+                ['title' => 'foo'],
+                ['title' => 'bar'],
+            ],
+            $this->subject->handleData(
+                '<items><item><name>foo</name></item><item><name>bar</name></item></items>',
+                $importer
+            )
+        );
+    }
+
+    #[Test]
+    public function handleDataReturnsEmptyArrayIfNodepathDoesNotSelectNodes(): void
+    {
+        $importer = $this->prepareImporter(
+            // This XPath expression returns a string and not a list of nodes
+            ['nodepath' => 'string(//name)'],
+            ['title' => ['field' => 'name']]
+        );
+        $importer->expects($this->once())->method('addMessage');
+        self::assertSame(
+            [],
+            $this->subject->handleData(
+                '<items><item><name>foo</name></item></items>',
+                $importer
+            )
+        );
     }
 }

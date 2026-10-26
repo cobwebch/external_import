@@ -47,6 +47,10 @@ class StepUtility
                 $currentSteps,
                 true
             );
+            // NOTE: this cannot happen, as the reference step was validated
+            if ($index === false) {
+                return $currentSteps;
+            }
             if ($validatedConfiguration['position'] === 'after') {
                 $index++;
             }
@@ -142,18 +146,18 @@ class StepUtility
                 1501357796
             );
         }
+        if (!is_a($stepClass, AbstractStep::class, true)) {
+            throw new InvalidCustomStepConfiguration(
+                sprintf(
+                    'Custom step class does not inherit from %1$s (value received: %2$s)',
+                    AbstractStep::class,
+                    $stepClass
+                ),
+                1500830527
+            );
+        }
         try {
-            $step = GeneralUtility::makeInstance($stepClass);
-            if (!($step instanceof AbstractStep)) {
-                throw new InvalidCustomStepConfiguration(
-                    sprintf(
-                        'Custom step class does not inherit from %1$s (value received: %2$s)',
-                        AbstractStep::class,
-                        $stepClass
-                    ),
-                    1500830527
-                );
-            }
+            GeneralUtility::makeInstance($stepClass);
         } catch (\InvalidArgumentException $e) {
             throw new InvalidCustomStepConfiguration(
                 sprintf(

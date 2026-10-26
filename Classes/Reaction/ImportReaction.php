@@ -144,6 +144,7 @@ class ImportReaction extends AbstractReaction implements ReactionInterface
         }
 
         // Fire event to modify response body and/or code
+        /** @var ModifyReactionResponseEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ModifyReactionResponseEvent(
                 $this,

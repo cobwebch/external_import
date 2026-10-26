@@ -7,12 +7,6 @@ parameters:
 			path: ../../Classes/Command/ImportCommand.php
 
 		-
-			message: '#^Method Cobweb\\ExternalImport\\Controller\\DataModuleController\:\:prepareCsvLine\(\) has parameter \$array with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../../Classes/Controller/DataModuleController.php
-
-		-
 			message: '#^Method Cobweb\\ExternalImport\\Domain\\Model\\Dto\\ChildrenSorting\:\:getSortingInformation\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -389,6 +383,42 @@ parameters:
 			identifier: nullCoalesce.variable
 			count: 1
 			path: ../../Classes/Step/StoreDataStep.php
+
+		-
+			message: '#^Parameter \#3 \$records of method Cobweb\\ExternalImport\\Step\\TransformDataStep\:\:applyIsEmpty\(\) expects list\<array\<string, mixed\>\>, array\<int\<0, max\>\|string, array\<int\<0, max\>\|string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../Classes/Step/TransformDataStep.php
+
+		-
+			message: '#^Parameter \#3 \$records of method Cobweb\\ExternalImport\\Step\\TransformDataStep\:\:applyMapping\(\) expects list\<array\<string, mixed\>\>, array\<int\<0, max\>\|string, array\<int\<0, max\>\|string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../Classes/Step/TransformDataStep.php
+
+		-
+			message: '#^Parameter \#3 \$records of method Cobweb\\ExternalImport\\Step\\TransformDataStep\:\:applyRteEnabledFlag\(\) expects list\<array\<string, mixed\>\>, array\<int\<0, max\>\|string, array\<int\<0, max\>\|string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../Classes/Step/TransformDataStep.php
+
+		-
+			message: '#^Parameter \#3 \$records of method Cobweb\\ExternalImport\\Step\\TransformDataStep\:\:applyTrim\(\) expects list\<array\<string, mixed\>\>, array\<int\<0, max\>\|string, array\<int\<0, max\>\|string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../Classes/Step/TransformDataStep.php
+
+		-
+			message: '#^Parameter \#3 \$records of method Cobweb\\ExternalImport\\Step\\TransformDataStep\:\:applyUserFunction\(\) expects list\<array\<string, mixed\>\>, array\<int\<0, max\>\|string, array\<int\<0, max\>\|string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../Classes/Step/TransformDataStep.php
+
+		-
+			message: '#^Parameter \#3 \$records of method Cobweb\\ExternalImport\\Step\\TransformDataStep\:\:applyValue\(\) expects list\<array\<string, mixed\>\>, array\<int\<0, max\>\|string, array\<int\<0, max\>\|string, mixed\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../Classes/Step/TransformDataStep.php
 
 		-
 			message: '#^Unable to resolve the template type T in call to static method TYPO3\\CMS\\Core\\Utility\\GeneralUtility\:\:makeInstance\(\)$#'

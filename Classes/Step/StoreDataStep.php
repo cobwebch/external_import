@@ -729,7 +729,7 @@ class StoreDataStep extends AbstractStep
                         $this->assembleChildrenDeletionInformation(
                             $mainColumnName,
                             $childColumnConfiguration->getControlColumnsForDelete(),
-                            $id,
+                            (int)$id,
                             $record,
                             $childTable,
                             $childConfiguration

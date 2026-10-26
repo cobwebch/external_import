@@ -723,27 +723,6 @@ class DataModuleController extends ActionController
     }
 
     /**
-     * Return the given array as a CSV-structured line
-     *
-     * @param array $array
-     * @return string
-     */
-    protected function prepareCsvLine(array $array): string
-    {
-        $file = fopen('php://memory', 'rb+');
-        if (fputcsv($file, $array, ';') === false) {
-            throw new \RuntimeException(
-                'Could not transform given array to CSV. Line skipped.',
-                1688990967
-            );
-        }
-        rewind($file);
-        $csvLine = stream_get_contents($file);
-        fclose($file);
-        return rtrim($csvLine);
-    }
-
-    /**
      * Overrides parent method to avoid displaying default error message.
      *
      * @return bool

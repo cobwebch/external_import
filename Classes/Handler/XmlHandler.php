@@ -94,6 +94,10 @@ class XmlHandler implements DataHandlerInterface
         } else {
             $records = $dom->getElementsByTagName($generalConfiguration['nodetype']);
         }
+        // Without a list of nodes, there is nothing to handle
+        if (!($records instanceof \DOMNodeList)) {
+            return [];
+        }
         for ($i = 0; $i < $records->length; $i++) {
             $referenceCounter = $counter;
             $data[$referenceCounter] = [];
@@ -231,6 +235,13 @@ class XmlHandler implements DataHandlerInterface
                     }
                     $selectedNode = $nodes->item(0);
                 }
+                // Namespace nodes are not DOMNode objects and cannot be handled
+                if (!($selectedNode instanceof \DOMNode)) {
+                    throw new \InvalidArgumentException(
+                        'No value found',
+                        1534166267
+                    );
+                }
                 $value = $this->extractValueFromNode(
                     $selectedNode,
                     $columnConfiguration
@@ -255,6 +266,13 @@ class XmlHandler implements DataHandlerInterface
                     return $nodes;
                 }
                 $selectedNode = $nodes->item(0);
+                // Namespace nodes are not DOMNode objects and cannot be handled
+                if (!($selectedNode instanceof \DOMNode)) {
+                    throw new \InvalidArgumentException(
+                        'No value found',
+                        1534166267
+                    );
+                }
                 $value = $this->extractValueFromNode(
                     $selectedNode,
                     $columnConfiguration
@@ -434,6 +452,10 @@ class XmlHandler implements DataHandlerInterface
         $rows = [];
         for ($i = 0; $i < $structure->length; $i++) {
             $item = $structure->item($i);
+            // Namespace nodes are not DOMNode objects and cannot be handled
+            if (!($item instanceof \DOMNode)) {
+                continue;
+            }
             $row = [];
             foreach ($columnConfiguration as $key => $configuration) {
                 try {

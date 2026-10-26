@@ -102,9 +102,9 @@ class ConfigurationKey
     /**
      * Returns the index.
      *
-     * @return string
+     * @return int|string
      */
-    public function getIndex(): string
+    public function getIndex(): int|string
     {
         return $this->index;
     }

@@ -37,7 +37,7 @@ class ConfigurationsProcessor implements ItemsProcessorInterface
         // Add all configuration groups
         $groups = $this->configurationRepository->findAllGroups(true);
         if (count($groups) > 0) {
-            $itemGroup = $this->getLanguageService()->translate('tx_scheduler_task.sync_item.groups', 'external_import.db');
+            $itemGroup = (string)$this->getLanguageService()->translate('tx_scheduler_task.sync_item.groups', 'external_import.db');
             foreach ($groups as $group) {
                 $items->add(
                     new SelectItem(
@@ -52,10 +52,10 @@ class ConfigurationsProcessor implements ItemsProcessorInterface
 
         $configurations = $this->configurationRepository->findBySync(true);
         if (count($configurations) > 0) {
-            $itemGroup = $this->getLanguageService()->translate('tx_scheduler_task.sync_item.configurations', 'external_import.db');
+            $itemGroup = (string)$this->getLanguageService()->translate('tx_scheduler_task.sync_item.configurations', 'external_import.db');
             foreach ($configurations as $configuration) {
                 $label = sprintf(
-                    $this->getLanguageService()->translate('tx_scheduler_task.sync_item.configuration.label', 'external_import.db'),
+                    (string)$this->getLanguageService()->translate('tx_scheduler_task.sync_item.configuration.label', 'external_import.db'),
                     $configuration['table'],
                     $configuration['index'],
                     $configuration['priority']

@@ -55,6 +55,7 @@ class ProcessedParametersViewHelper extends AbstractViewHelper
         /** @var Configuration $configuration */
         $configuration = $this->arguments['configuration'];
 
+        /** @var ProcessConnectorParametersEvent $event */
         $event = $this->eventDispatcher->dispatch(
             new ProcessConnectorParametersEvent(
                 $configuration->getGeneralConfigurationProperty('parameters'),

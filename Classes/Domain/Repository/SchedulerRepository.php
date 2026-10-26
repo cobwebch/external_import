@@ -29,6 +29,7 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Scheduler\CronCommand\NormalizeCommand;
 use TYPO3\CMS\Scheduler\Domain\Repository\SchedulerTaskRepository;
 use TYPO3\CMS\Scheduler\Exception\InvalidTaskException;
+use TYPO3\CMS\Scheduler\Execution;
 use TYPO3\CMS\Scheduler\Task\TaskSerializer;
 use TYPO3\CMS\Scheduler\Validation\Validator\TaskValidator;
 
@@ -225,6 +226,12 @@ class SchedulerRepository implements SingletonInterface
                         $queryBuilder->expr()->eq('uid', $taskObject->getTaskUid()),
                     )
                     ->executeQuery()->fetchAssociative();
+                if ($additionalInformation === false) {
+                    throw new SchedulerRepositoryException(
+                        sprintf('Task %d could not be found in the database', $taskObject->getTaskUid()),
+                        1793045255
+                    );
+                }
                 $executionDetails = json_decode(
                     $additionalInformation['execution_details'],
                     true,
@@ -240,12 +247,15 @@ class SchedulerRepository implements SingletonInterface
                 $nextExecutionTime = 0;
             }
         } else {
-            $cronCommand = $taskObject->getExecution()->getCronCmd();
-            $interval = $taskObject->getExecution()->getInterval();
+            $execution = $taskObject->getExecution();
+            $cronCommand = $execution instanceof Execution ? $execution->getCronCmd() : '';
+            $interval = $execution instanceof Execution ? $execution->getInterval() : 0;
             $nextExecutionTime = $taskObject->getExecutionTime();
         }
 
-        $startTimestamp = $taskObject->getExecution()->getStart();
+        // The execution object may be missing, e.g. if the task could not be unserialized
+        $execution = $taskObject->getExecution();
+        $startTimestamp = $execution instanceof Execution ? $execution->getStart() : 0;
         return [
             'uid' => $taskObject->getTaskUid(),
             'table' => $taskObject->getTable(),
@@ -265,7 +275,7 @@ class SchedulerRepository implements SingletonInterface
             'startTimestamp' => $startTimestamp,
             'startDate' => empty($startTimestamp) ? '' : date(
                 $editFormat,
-                $taskObject->getExecution()->getStart()
+                $startTimestamp
             ),
         ];
     }
