@@ -1,3 +1,7 @@
+2026-10-26 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Prevent fatal error when a date cannot be parsed in DateTimeTransformation, resolves #408
+
 2026-10-18 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Raise PHPStan version

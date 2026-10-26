@@ -54,6 +54,15 @@ class DateTimeTransformation implements SingletonInterface, ImporterAwareInterfa
         }
 
         $value = strtotime((string)$record[$index]);
+        if ($value === false) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Value "%s" could not be parsed as a date',
+                    $record[$index]
+                ),
+                1793045253
+            );
+        }
         // Format value only if a function was defined
         if (isset($params['function'])) {
             // Use strftime for formatting
