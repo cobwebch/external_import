@@ -59,7 +59,7 @@ class ConfigurationRepository
      *
      * @param string $table Name of the table
      * @param string|int $index Key of the configuration
-     * @return array{general: GeneralConfiguration, additionalFields: array<string, ColumnConfiguration>, columns: array<string, ColumnConfiguration>|null} The relevant TCA configuration
+     * @return array{general: GeneralConfiguration, additionalFields: array<string, ColumnConfiguration>, columns: array<string, ColumnConfiguration>} The relevant TCA configuration
      * @throws NoConfigurationException
      */
     public function findByTableAndIndex(string $table, $index): array
@@ -106,7 +106,7 @@ class ConfigurationRepository
                 $table,
                 $index,
                 $configuration['general']['useColumnIndex'] ?? null
-            );
+            ) ?? [];
 
         return $configuration;
     }

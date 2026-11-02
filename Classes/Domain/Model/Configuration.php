@@ -35,14 +35,14 @@ class Configuration
     public const DO_NOT_SAVE_KEY = '_txexternalimport_doNotSave';
 
     /**
-     * @var string|null Name of the table to which the configuration applies
+     * @var string Name of the table to which the configuration applies
      */
-    protected ?string $table = null;
+    protected string $table = '';
 
     /**
-     * @var int|string|null Index identifying the configuration for the given table
+     * @var int|string Index identifying the configuration for the given table
      */
-    protected string|int|null $index = null;
+    protected string|int $index = '';
 
     /**
      * Store the raw configuration, as passed to the object from the repository
@@ -65,9 +65,9 @@ class Configuration
     protected array $columnConfiguration = [];
 
     /**
-     * @var int|null ID of storage page
+     * @var int ID of storage page
      */
-    protected ?int $storagePid = null;
+    protected int $storagePid = 0;
 
     /**
      * @var array<string, ColumnConfiguration> List of fields that must be read from distant source, but will not be stored to DB
@@ -161,9 +161,9 @@ class Configuration
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getTable(): ?string
+    public function getTable(): string
     {
         return $this->table;
     }
@@ -346,9 +346,9 @@ class Configuration
     }
 
     /**
-     * @return int|null
+     * @return int
      */
-    public function getStoragePid(): ?int
+    public function getStoragePid(): int
     {
         return $this->storagePid;
     }

@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -27,6 +28,8 @@ class ClearCacheStep extends AbstractStep
 {
     /**
      * Performs whatever cache clearing has been defined.
+     *
+     * @throws MissingConfigurationException
      */
     public function run(): void
     {

@@ -48,7 +48,7 @@ class DataModuleController extends ActionController
 {
     protected ModuleTemplateFactory $moduleTemplateFactory;
 
-    protected ?ModuleTemplate $moduleTemplate = null;
+    protected ModuleTemplate $moduleTemplate;
 
     protected PageRenderer $pageRenderer;
 
@@ -95,9 +95,8 @@ class DataModuleController extends ActionController
         if (count($configurations) === 0) {
             try {
                 $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                        'no_configurations_warning',
-                        'external_import'
+                    $this->translate(
+                        'no_configurations_warning'
                     ),
                     '',
                     ContextualFeedbackSeverity::INFO
@@ -155,9 +154,8 @@ class DataModuleController extends ActionController
         if (count($configurations) === 0) {
             try {
                 $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                        'no_configurations_warning',
-                        'external_import'
+                    $this->translate(
+                        'no_configurations_warning'
                     ),
                     '',
                     ContextualFeedbackSeverity::INFO
@@ -234,9 +232,8 @@ class DataModuleController extends ActionController
             }
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                LocalizationUtility::translate(
+                $this->translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurred',
-                    'external_import',
                     [
                         $e->getMessage(),
                         $e->getCode(),
@@ -291,9 +288,8 @@ class DataModuleController extends ActionController
             $data = $importer->getCurrentData()->getRecords();
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                LocalizationUtility::translate(
+                $this->translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurred',
-                    'external_import',
                     [
                         $e->getMessage(),
                         $e->getCode(),
@@ -350,9 +346,8 @@ class DataModuleController extends ActionController
             $connector = $configuration->getGeneralConfigurationProperty('connector');
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                LocalizationUtility::translate(
+                $this->translate(
                     'LLL:EXT:external_import/Resources/Private/Language/ExternalImport.xlf:exceptionOccurred',
-                    'external_import',
                     [
                         $e->getMessage(),
                         $e->getCode(),
@@ -377,7 +372,7 @@ class DataModuleController extends ActionController
                 'table' => $table,
                 'index' => $index,
                 'configuration' => $configuration,
-                'storageRecord' => BackendUtility::getRecord('pages', $configuration->getStoragePid()),
+                'storageRecord' => $configuration !== null ? BackendUtility::getRecord('pages', $configuration->getStoragePid()) : null,
             ],
         );
 
@@ -433,16 +428,14 @@ class DataModuleController extends ActionController
                 )
             );
             $this->addFlashMessage(
-                LocalizationUtility::translate(
-                    'autosync_saved',
-                    'external_import'
+                $this->translate(
+                    'autosync_saved'
                 )
             );
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                LocalizationUtility::translate(
+                $this->translate(
                     'autosync_save_failed',
-                    'external_import',
                     [
                         $e->getMessage(),
                     ]
@@ -475,9 +468,8 @@ class DataModuleController extends ActionController
             );
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                LocalizationUtility::translate(
-                    'error_invalid_task',
-                    'external_import'
+                $this->translate(
+                    'error_invalid_task'
                 ),
                 '',
                 ContextualFeedbackSeverity::ERROR
@@ -510,16 +502,14 @@ class DataModuleController extends ActionController
                 )
             );
             $this->addFlashMessage(
-                LocalizationUtility::translate(
-                    'autosync_saved',
-                    'external_import'
+                $this->translate(
+                    'autosync_saved'
                 )
             );
         } catch (\Exception $e) {
             $this->addFlashMessage(
-                LocalizationUtility::translate(
+                $this->translate(
                     'autosync_save_failed',
-                    'external_import',
                     [
                         $e->getMessage(),
                     ]
@@ -554,16 +544,14 @@ class DataModuleController extends ActionController
             $dataHandler->process_cmdmap();
             if (count($dataHandler->errorLog) === 0) {
                 $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                        'delete_done',
-                        'external_import'
+                    $this->translate(
+                        'delete_done'
                     )
                 );
             } else {
                 $this->addFlashMessage(
-                    LocalizationUtility::translate(
+                    $this->translate(
                         'delete_failed',
-                        'external_import',
                         [
                             implode(', ', $dataHandler->errorLog),
                         ]
@@ -576,16 +564,14 @@ class DataModuleController extends ActionController
             try {
                 $this->schedulerRepository->deleteTask($uid);
                 $this->addFlashMessage(
-                    LocalizationUtility::translate(
-                        'delete_done',
-                        'external_import'
+                    $this->translate(
+                        'delete_done'
                     )
                 );
             } catch (\Exception $e) {
                 $this->addFlashMessage(
-                    LocalizationUtility::translate(
+                    $this->translate(
                         'delete_failed',
-                        'external_import',
                         [
                             $e->getMessage(),
                         ]
@@ -652,14 +638,14 @@ class DataModuleController extends ActionController
         // Link to synchronizable tables view
         $menu->addMenuItem(
             $menu->makeMenuItem()
-            ->setTitle(LocalizationUtility::translate('function_sync', 'external_import'))
+            ->setTitle($this->translate('function_sync'))
             ->setHref($this->uriBuilder->uriFor('listSynchronizable'))
             ->setActive($action === 'listSynchronizable')
         );
         // Link to non-synchronizable tables view
         $menu->addMenuItem(
             $menu->makeMenuItem()
-            ->setTitle(LocalizationUtility::translate('function_nosync', 'external_import'))
+            ->setTitle($this->translate('function_nosync'))
             ->setHref($this->uriBuilder->uriFor('listNonSynchronizable'))
             ->setActive($action === 'listNonSynchronizable')
         );
@@ -677,7 +663,7 @@ class DataModuleController extends ActionController
         $closeIcon = $this->iconFactory->getIcon('actions-close', IconSize::SMALL);
         $closeButton = $this->moduleTemplate->getDocHeaderComponent()->getButtonBar()->makeLinkButton()
             ->setIcon($closeIcon)
-            ->setTitle(LocalizationUtility::translate('back_to_list', 'external_import'))
+            ->setTitle($this->translate('back_to_list'))
             ->setHref(
                 $this->uriBuilder->uriFor($returnAction)
             );
@@ -701,7 +687,7 @@ class DataModuleController extends ActionController
             if ($numMessages > 5) {
                 array_splice($messageList, 5);
                 $messageList[] = sprintf(
-                    LocalizationUtility::translate('moreMessages', 'external_import'),
+                    $this->translate('moreMessages'),
                     $numMessages
                 );
                 $messages[$severity] = $messageList;
@@ -712,7 +698,7 @@ class DataModuleController extends ActionController
                     $this->addFlashMessage(
                         $aMessage,
                         '',
-                        ContextualFeedbackSeverity::tryFrom($severity),
+                        ContextualFeedbackSeverity::tryFrom($severity) ?? ContextualFeedbackSeverity::OK,
                         $storeInSession
                     );
                 } catch (\Exception $e) {
@@ -740,6 +726,18 @@ class DataModuleController extends ActionController
     protected function getBackendUser(): BackendUserAuthentication
     {
         return $GLOBALS['BE_USER'];
+    }
+
+    /**
+     * Returns the localized label for the given key, falling back to the key itself.
+     *
+     * @param string $key Label key
+     * @param array<mixed>|null $arguments Arguments to replace in the label
+     * @return string
+     */
+    protected function translate(string $key, ?array $arguments = null): string
+    {
+        return LocalizationUtility::translate($key, 'external_import', $arguments) ?? $key;
     }
 
     /**

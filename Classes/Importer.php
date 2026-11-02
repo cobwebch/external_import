@@ -26,6 +26,7 @@ use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Enum\CallType;
 use Cobweb\ExternalImport\Event\ChangeConfigurationBeforeRunEvent;
 use Cobweb\ExternalImport\Exception\InvalidPreviewStepException;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Exception\NoConfigurationException;
 use Cobweb\ExternalImport\Step\AbstractStep;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
@@ -152,7 +153,7 @@ class Importer implements LoggerAwareInterface
     protected $previewData = '';
 
     // Data object from the current step
-    protected ?Data $currentData = null;
+    protected Data $currentData;
 
     /**
      * @var bool Set to true to trigger testing mode (used only for unit testing)
@@ -198,6 +199,7 @@ class Importer implements LoggerAwareInterface
         }
         // Initialize message array
         $this->resetMessages();
+        $this->currentData = GeneralUtility::makeInstance(Data::class);
     }
 
     /**
@@ -356,12 +358,14 @@ class Importer implements LoggerAwareInterface
      * Runs the process through the defined steps.
      *
      * @throws Exception\InvalidPreviewStepException
+     * @throws MissingConfigurationException
      */
     public function runSteps(): void
     {
         $this->setStartTime(time());
         // Get the process steps
-        $steps = $this->externalConfiguration->getSteps();
+        $configuration = $this->getExternalConfiguration();
+        $steps = $configuration->getSteps();
         // If preview is defined, but step is not part of the process, issue exception
         // NOTE: this cannot be checked during a setPreviewStep() call as the configuration is not yet loaded
         if ($this->isPreview() && !in_array($this->getPreviewStep(), $steps, true)) {
@@ -379,8 +383,8 @@ class Importer implements LoggerAwareInterface
                 if (!$this->isProcessAborted() || $step->isExecuteDespiteAbort()) {
                     $step->setImporter($this);
                     $step->setData($this->currentData);
-                    if ($this->externalConfiguration->hasParametersForStep($stepClass)) {
-                        $step->setParameters($this->externalConfiguration->getParametersForStep($stepClass));
+                    if ($configuration->hasParametersForStep($stepClass)) {
+                        $step->setParameters($configuration->getParametersForStep($stepClass));
                     }
                     $step->run();
                     // Abort process if step required it
@@ -426,10 +430,16 @@ class Importer implements LoggerAwareInterface
     /**
      * Returns the model object containing the whole External Import configuration.
      *
-     * @return Configuration|null
+     * @throws MissingConfigurationException
      */
-    public function getExternalConfiguration(): ?Domain\Model\Configuration
+    public function getExternalConfiguration(): Configuration
     {
+        if ($this->externalConfiguration === null) {
+            throw new MissingConfigurationException(
+                'The External Import configuration has not been initialized yet',
+                1793654780
+            );
+        }
         return $this->externalConfiguration;
     }
 
@@ -482,38 +492,38 @@ class Importer implements LoggerAwareInterface
             $data = is_array($data) ? $data : [$data];
             $message = sprintf(
                 '[External Import - %s - %s] %s',
-                $this->externalConfiguration->getTable(),
-                $this->externalConfiguration->getIndex(),
+                $this->externalConfiguration?->getTable(),
+                $this->externalConfiguration?->getIndex(),
                 $message
             );
             // Match devlog severities: 0 is info, 1 is notice, 2 is warning, 3 is fatal error, -1 is "OK" message
             switch ($severity) {
                 case 0:
-                    $this->logger->info(
+                    $this->logger?->info(
                         $message,
                         $data
                     );
                     break;
                 case 1:
-                    $this->logger->notice(
+                    $this->logger?->notice(
                         $message,
                         $data
                     );
                     break;
                 case 2:
-                    $this->logger->warning(
+                    $this->logger?->warning(
                         $message,
                         $data
                     );
                     break;
                 case 3:
-                    $this->logger->error(
+                    $this->logger?->error(
                         $message,
                         $data
                     );
                     break;
                 default:
-                    $this->logger->debug(
+                    $this->logger?->debug(
                         $message,
                         $data
                     );
@@ -618,9 +628,9 @@ class Importer implements LoggerAwareInterface
     }
 
     /**
-     * @return AbstractCallContext
+     * @return AbstractCallContext|null
      */
-    public function getCallContext(): AbstractCallContext
+    public function getCallContext(): ?AbstractCallContext
     {
         return $this->callContext;
     }
@@ -732,9 +742,9 @@ class Importer implements LoggerAwareInterface
     /**
      * Return the current value of the data object
      *
-     * @return Data|null
+     * @return Data
      */
-    public function getCurrentData(): ?Data
+    public function getCurrentData(): Data
     {
         return $this->currentData;
     }

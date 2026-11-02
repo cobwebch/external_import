@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -56,6 +57,7 @@ class ArrayHandler implements DataHandlerInterface
      * @param mixed $rawData Data to handle. Could be of any type, as suited for the data handler.
      * @param Importer $importer Back-reference to the current Importer instance
      * @return RecordList
+     * @throws MissingConfigurationException
      */
     public function handleData($rawData, Importer $importer): array
     {
@@ -69,11 +71,14 @@ class ArrayHandler implements DataHandlerInterface
             // Extract targeted sub-array if arrayPath is defined
             if (array_key_exists('arrayPath', $generalConfiguration) && !empty($generalConfiguration['arrayPath'])) {
                 // Extract parts of the path
-                $segments = str_getcsv(
-                    (string)$generalConfiguration['arrayPath'],
-                    array_key_exists('arrayPathSeparator', $generalConfiguration) ? (string)$generalConfiguration['arrayPathSeparator'] : '/',
-                    '"',
-                    '\\'
+                $segments = array_map(
+                    'strval',
+                    str_getcsv(
+                        (string)$generalConfiguration['arrayPath'],
+                        array_key_exists('arrayPathSeparator', $generalConfiguration) ? (string)$generalConfiguration['arrayPathSeparator'] : '/',
+                        '"',
+                        '\\'
+                    )
                 );
 
                 $rawData = $this->getArrayPathStructure(
@@ -199,11 +204,14 @@ class ArrayHandler implements DataHandlerInterface
     {
         if (!empty($columnConfiguration['arrayPath'] ?? '')) {
             // Extract parts of the path
-            $segments = str_getcsv(
-                (string)$columnConfiguration['arrayPath'],
-                array_key_exists('arrayPathSeparator', $columnConfiguration) ? (string)$columnConfiguration['arrayPathSeparator'] : '/',
-                '"',
-                '\\'
+            $segments = array_map(
+                'strval',
+                str_getcsv(
+                    (string)$columnConfiguration['arrayPath'],
+                    array_key_exists('arrayPathSeparator', $columnConfiguration) ? (string)$columnConfiguration['arrayPathSeparator'] : '/',
+                    '"',
+                    '\\'
+                )
             );
 
             $value = $this->getArrayPathStructure(

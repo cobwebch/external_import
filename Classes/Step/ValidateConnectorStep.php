@@ -17,6 +17,8 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
+
 /**
  * Validation of the External Import configuration specifically for synchronize processes.
  */
@@ -24,6 +26,8 @@ class ValidateConnectorStep extends AbstractStep
 {
     /**
      * Validates that the External Import configuration for a "synchronize" operation has a connector.
+     *
+     * @throws MissingConfigurationException
      */
     public function run(): void
     {

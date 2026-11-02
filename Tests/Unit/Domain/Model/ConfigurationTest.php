@@ -99,9 +99,10 @@ class ConfigurationTest extends UnitTestCase
     }
 
     #[Test]
-    public function getIndexInitiallyReturnsNull(): void
+    public function getIndexInitiallyReturnsEmptyString(): void
     {
-        self::assertNull(
+        self::assertSame(
+            '',
             $this->subject->getIndex()
         );
     }
@@ -281,17 +282,19 @@ class ConfigurationTest extends UnitTestCase
     }
 
     #[Test]
-    public function getStoragePidInitiallyReturnsNull(): void
+    public function getStoragePidInitiallyReturnsZero(): void
     {
-        self::assertNull(
+        self::assertSame(
+            0,
             $this->subject->getStoragePid()
         );
     }
 
     #[Test]
-    public function getTableInitiallyReturnsNull(): void
+    public function getTableInitiallyReturnsEmptyString(): void
     {
-        self::assertNull(
+        self::assertSame(
+            '',
             $this->subject->getTable()
         );
     }

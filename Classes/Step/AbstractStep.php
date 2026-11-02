@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Step;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Abstract class from which all External Import process steps **must** inherit.
@@ -29,9 +30,9 @@ abstract class AbstractStep implements ImporterAwareInterface
     use ImporterAwareTrait;
 
     /**
-     * @var Data|null Object encapsulating the data being imported/processed
+     * @var Data Object encapsulating the data being imported/processed
      */
-    protected ?Data $data = null;
+    protected Data $data;
 
     /**
      * @var bool The import process is aborted if this flag is set to true during the current step
@@ -63,9 +64,10 @@ abstract class AbstractStep implements ImporterAwareInterface
         }
     }
 
-    public function getData(): ?Data
+    public function getData(): Data
     {
-        return $this->data;
+        // Data is normally set by the Importer before the step runs, but make sure an empty object is available otherwise
+        return $this->data ??= GeneralUtility::makeInstance(Data::class);
     }
 
     public function setData(Data $data): void

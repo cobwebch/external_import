@@ -91,7 +91,7 @@ class QueryParameters
         } else {
             $column = null;
         }
-        if (array_key_exists($column, $parameters['columns'])) {
+        if ($column !== null && array_key_exists($column, $parameters['columns'])) {
             $columnName = $parameters['columns'][$column]['name'];
         } else {
             $columnName = '';

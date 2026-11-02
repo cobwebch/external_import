@@ -19,6 +19,7 @@ namespace Cobweb\ExternalImport\Utility;
 
 use Cobweb\ExternalImport\Domain\Repository\BackendUserRepository;
 use Cobweb\ExternalImport\Domain\Repository\LogRepository;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Exception\UnknownReportingKeyException;
 use Cobweb\ExternalImport\Importer;
 use Psr\Log\LoggerAwareInterface;
@@ -103,9 +104,12 @@ class ReportingUtility implements LoggerAwareInterface
             }
             foreach ($messages as $status => $messageList) {
                 foreach ($messageList as $message) {
-                    $configuration = $this->importer->getExternalConfiguration()
-                        ? $this->importer->getExternalConfiguration()->getTable() . ' / ' . $this->importer->getExternalConfiguration()->getIndex()
-                        : 'Invalid configuration';
+                    try {
+                        $externalConfiguration = $this->importer->getExternalConfiguration();
+                        $configuration = $externalConfiguration->getTable() . ' / ' . $externalConfiguration->getIndex();
+                    } catch (MissingConfigurationException) {
+                        $configuration = 'Invalid configuration';
+                    }
                     $data = [
                         'pid' => $pid,
                         'status' => $status,
@@ -208,7 +212,7 @@ class ReportingUtility implements LoggerAwareInterface
                 implode(', ', $recipientMail),
                 $message
             );
-            $this->logger->error($comment);
+            $this->logger?->error($comment);
         }
     }
 

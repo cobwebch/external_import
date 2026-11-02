@@ -451,6 +451,18 @@ parameters:
 			path: ../../Classes/Task/AutomatedSyncAdditionalFieldProvider.php
 
 		-
+			message: '#^Cannot call method sL\(\) on TYPO3\\CMS\\Core\\Localization\\LanguageService\|null\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: ../../Classes/Task/AutomatedSyncTask.php
+
+		-
+			message: '#^Cannot call method sL\(\) on TYPO3\\CMS\\Core\\Localization\\LanguageService\|null\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: ../../Classes/Task/SynchronizationTask.php
+
+		-
 			message: '#^Method Cobweb\\ExternalImport\\Task\\SynchronizationTask\:\:setTaskParameters\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -509,3 +521,21 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: ../../Classes/Utility/ReportingUtility.php
+
+		-
+			message: '#^Cannot call method getVariableProvider\(\) on TYPO3Fluid\\Fluid\\Core\\Rendering\\RenderingContextInterface\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../../Classes/ViewHelpers/ProcessedParametersViewHelper.php
+
+		-
+			message: '#^Cannot call method getVariableProvider\(\) on TYPO3Fluid\\Fluid\\Core\\Rendering\\RenderingContextInterface\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../../Classes/ViewHelpers/ValidateColumnConfigurationViewHelper.php
+
+		-
+			message: '#^Cannot call method getVariableProvider\(\) on TYPO3Fluid\\Fluid\\Core\\Rendering\\RenderingContextInterface\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../../Classes/ViewHelpers/ValidateGeneralConfigurationViewHelper.php

@@ -34,7 +34,7 @@ class LogModuleController extends ActionController
 {
     protected ModuleTemplateFactory $moduleTemplateFactory;
 
-    protected ?ModuleTemplate $moduleTemplate = null;
+    protected ModuleTemplate $moduleTemplate;
 
     protected PageRenderer $pageRenderer;
 

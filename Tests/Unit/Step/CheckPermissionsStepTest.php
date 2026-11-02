@@ -39,9 +39,10 @@ class CheckPermissionsStepTest extends UnitTestCase
     }
 
     #[Test]
-    public function getDataInitiallyReturnsNull(): void
+    public function getDataInitiallyReturnsEmptyDataObject(): void
     {
-        self::assertNull(
+        self::assertEquals(
+            new Data(),
             $this->subject->getData()
         );
     }

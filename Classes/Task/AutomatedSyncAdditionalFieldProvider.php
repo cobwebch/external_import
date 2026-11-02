@@ -185,8 +185,8 @@ class AutomatedSyncAdditionalFieldProvider implements AdditionalFieldProviderInt
         $task->storage = (int)$submittedData[self::$storageFieldName];
     }
 
-    protected function getLanguageService(): ?LanguageService
+    protected function getLanguageService(): LanguageService
     {
-        return $GLOBALS['LANG'] ?? null;
+        return $GLOBALS['LANG'];
     }
 }

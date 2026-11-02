@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\Domain\Repository\ConfigurationRepository;
 use Cobweb\ExternalImport\Domain\Repository\TemporaryKeyRepository;
 use Cobweb\ExternalImport\Domain\Repository\UidRepository;
 use Cobweb\ExternalImport\Enum\CallType;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\Utility\ReportingUtility;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -68,11 +69,10 @@ class ImporterTest extends UnitTestCase
     }
 
     #[Test]
-    public function getExternalConfigurationInitiallyReturnsNull(): void
+    public function getExternalConfigurationInitiallyThrowsException(): void
     {
-        self::assertNull(
-            $this->subject->getExternalConfiguration()
-        );
+        $this->expectException(MissingConfigurationException::class);
+        $this->subject->getExternalConfiguration();
     }
 
     #[Test]

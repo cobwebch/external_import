@@ -39,6 +39,10 @@ in version 10.0.0. Use :code:`getStructuredData()` instead.
 
 Support for the old :code:`group` property was not entirely removed in version 9.0.0. This is now done.
 
+:code:`\Cobweb\ExternalImport\Importer::getExternalConfiguration()` used to return :code:`null`
+when the External Import configuration was not yet initialized. It now throws a
+:php:`\Cobweb\ExternalImport\Exception\MissingConfigurationException` instead.
+
 
 .. _installation-upgrade-900:
 

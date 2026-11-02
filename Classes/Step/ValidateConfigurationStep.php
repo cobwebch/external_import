@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Validator\ColumnConfigurationValidator;
 use Cobweb\ExternalImport\Validator\GeneralConfigurationValidator;
 
@@ -29,6 +30,8 @@ class ValidateConfigurationStep extends AbstractStep
 
     /**
      * Validates the External Import configuration.
+     *
+     * @throws MissingConfigurationException
      */
     public function run(): void
     {

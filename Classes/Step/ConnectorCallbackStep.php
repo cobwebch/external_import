@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 
 /**
@@ -33,6 +34,8 @@ class ConnectorCallbackStep extends AbstractStep
      * Evaluates a rough error status and calls back the connector.
      *
      * NOTE: this step does absolutely nothing with the data.
+     *
+     * @throws MissingConfigurationException
      */
     public function run(): void
     {

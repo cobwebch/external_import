@@ -35,7 +35,7 @@ class StepUtility
      * @param array<string, mixed> $configuration Configuration for the new step
      * @return list<class-string<AbstractStep>> Modified list of steps
      */
-    public function insertStep(array $currentSteps, array $configuration): ?array
+    public function insertStep(array $currentSteps, array $configuration): array
     {
         try {
             $validatedConfiguration = $this->validateCustomStepConfiguration(

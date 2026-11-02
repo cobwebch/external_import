@@ -174,6 +174,15 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
                 $fileName
             );
         }
+        if ($fileObject === null) {
+            throw new \TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException(
+                sprintf(
+                    'File %s could not be retrieved from storage.',
+                    $fileName
+                ),
+                1793655101
+            );
+        }
         // Return the file's ID
         return $fileObject->getUid();
     }
@@ -253,6 +262,15 @@ class ImageTransformation implements SingletonInterface, ImporterAwareInterface
         } else {
             $fileObject = $folder->createFile($fileName);
             $fileObject->setContents($imageContent);
+        }
+        if ($fileObject === null) {
+            throw new \TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException(
+                sprintf(
+                    'File %s could not be retrieved from storage.',
+                    $fileName
+                ),
+                1793655102
+            );
         }
         // Return the file's ID
         return $fileObject->getUid();

@@ -18,6 +18,7 @@ namespace Cobweb\ExternalImport\Message;
  */
 
 use Cobweb\ExternalImport\Event\ReportEvent;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use TYPO3\CMS\Core\Attribute\WebhookMessage;
 use TYPO3\CMS\Core\Messaging\WebhookMessageInterface;
@@ -50,6 +51,7 @@ class AfterImportMessage implements WebhookMessageInterface
      * Prepare and return the message body
      *
      * @return array
+     * @throws MissingConfigurationException
      */
     public function jsonSerialize(): array
     {

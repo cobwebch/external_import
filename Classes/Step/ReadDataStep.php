@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Step;
 use Cobweb\ExternalImport\Domain\Model\ConfigurationKey;
 use Cobweb\ExternalImport\Event\ProcessConnectorParametersEvent;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\Svconnector\Registry\ConnectorRegistry;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -33,6 +34,8 @@ class ReadDataStep extends AbstractStep
 
     /**
      * Reads the data from the external source.
+     *
+     * @throws MissingConfigurationException
      */
     public function run(): void
     {
@@ -141,6 +144,7 @@ class ReadDataStep extends AbstractStep
      * @param array $parameters List of parameters to process
      * @return array The processed parameters
      * @throws CriticalFailureException
+     * @throws MissingConfigurationException
      */
     protected function processParameters(array $parameters): array
     {

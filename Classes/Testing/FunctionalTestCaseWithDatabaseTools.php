@@ -34,6 +34,9 @@ class FunctionalTestCaseWithDatabaseTools extends FunctionalTestCase
     {
         $this->importCSVDataSet(__DIR__ . '/../../Tests/Functional/Fixtures/BackendUser.csv');
         $userRow = $this->getBackendUserRecordFromDatabase(1);
+        if ($userRow === null) {
+            self::fail('Backend user with uid 1 could not be found');
+        }
         $backendUser = GeneralUtility::makeInstance(BackendUserAuthentication::class);
         $request = new ServerRequest('https://www.example.com/', null, 'php://input', [], ['HTTPS' => 'ON']);
         $session = $backendUser->createUserSession($userRow);

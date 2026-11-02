@@ -18,6 +18,7 @@ declare(strict_types=1);
 namespace Cobweb\ExternalImport\Utility;
 
 use Cobweb\ExternalImport\Domain\Model\Data;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\ImporterAwareTrait;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -43,6 +44,7 @@ class MappingUtility implements ImporterAwareInterface
      * @param array<string, mixed> $mappingInformation Mapping configuration
      * @return RecordList
      * @throws \Doctrine\DBAL\Exception
+     * @throws MissingConfigurationException
      */
     public function mapData(array $records, string $table, string $columnName, array $mappingInformation): array
     {
@@ -173,6 +175,7 @@ class MappingUtility implements ImporterAwareInterface
      * @param array<string, mixed> $mappingData Data defining the mapping of fields
      * @return array<array-key, mixed> Hash table for mapping
      * @throws \Doctrine\DBAL\Exception
+     * @throws MissingConfigurationException
      */
     public function getMapping(array $mappingData): array
     {

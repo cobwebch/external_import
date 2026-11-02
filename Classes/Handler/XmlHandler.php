@@ -21,6 +21,7 @@ use Cobweb\ExternalImport\DataHandlerInterface;
 use Cobweb\ExternalImport\Domain\Model\Configuration;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Event\SubstructurePreprocessEvent;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Exception\XpathSelectionFailedException;
 use Cobweb\ExternalImport\Importer;
 use DOMNodeList;
@@ -51,6 +52,7 @@ class XmlHandler implements DataHandlerInterface
      * @param mixed $rawData Data to handle. Could be of any type, as suited for the data handler.
      * @param Importer $importer Back-reference to the current Importer instance
      * @return RecordList
+     * @throws MissingConfigurationException
      */
     public function handleData($rawData, Importer $importer): array
     {
@@ -371,12 +373,12 @@ class XmlHandler implements DataHandlerInterface
         if (!empty($columnConfiguration['attribute'])) {
             // Use namespace or not
             if (empty($columnConfiguration['attributeNS'])) {
-                $value = $node->attributes->getNamedItem($columnConfiguration['attribute'])->nodeValue;
+                $value = $node->attributes?->getNamedItem($columnConfiguration['attribute'])?->nodeValue;
             } else {
-                $value = $node->attributes->getNamedItemNS(
+                $value = $node->attributes?->getNamedItemNS(
                     $columnConfiguration['attributeNS'],
                     $columnConfiguration['attribute']
-                )->nodeValue;
+                )?->nodeValue;
             }
             // Otherwise directly take the node's value
         } else {
@@ -403,7 +405,7 @@ class XmlHandler implements DataHandlerInterface
         $children = $node->childNodes;
         foreach ($children as $child) {
             try {
-                $innerHTML .= $child->ownerDocument->saveXML($child);
+                $innerHTML .= $child->ownerDocument?->saveXML($child);
             } catch (\Exception $e) {
                 // Nothing to do
             }

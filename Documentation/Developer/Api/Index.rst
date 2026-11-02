@@ -140,6 +140,8 @@ getExtensionConfiguration
 
 getExternalConfiguration
   Get the current instance of the :ref:`Configuration model <developer-api-configuration-model>`.
+  A :php:`\Cobweb\ExternalImport\Exception\MissingConfigurationException` is thrown
+  if the configuration has not been loaded yet.
 
 setContext/getContext
   Define or retrieve the execution context. This is mostly informative and is used to set a

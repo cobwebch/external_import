@@ -81,6 +81,9 @@ class StoreDataStep extends AbstractStep
         protected TcaRepositoryInterface $tcaRepository
     ) {}
 
+    /**
+     * @throws MissingConfigurationException
+     */
     public function setImporter(Importer $importer): void
     {
         parent::setImporter($importer);
@@ -996,6 +999,7 @@ class StoreDataStep extends AbstractStep
      *
      * @param array $errorLog
      * @throws \Doctrine\DBAL\Driver\Exception
+     * @throws MissingConfigurationException
      */
     protected function reportTceErrors(array $errorLog): void
     {

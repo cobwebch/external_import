@@ -17,6 +17,8 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
+
 /**
  * Validates the data after it has been mapped to TCA columns.
  *
@@ -26,6 +28,8 @@ class ValidateDataStep extends AbstractStep
 {
     /**
      * Performs the data validation.
+     *
+     * @throws MissingConfigurationException
      */
     public function run(): void
     {

@@ -20,6 +20,7 @@ namespace Cobweb\ExternalImport\Step;
 use Cobweb\ExternalImport\Domain\Model\Data;
 use Cobweb\ExternalImport\Exception\CriticalFailureException;
 use Cobweb\ExternalImport\Exception\InvalidRecordException;
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use Cobweb\ExternalImport\Importer;
 use Cobweb\ExternalImport\ImporterAwareInterface;
 use Cobweb\ExternalImport\Utility\MappingUtility;
@@ -58,6 +59,7 @@ class TransformDataStep extends AbstractStep
      * forcing constant values, running user-defined functions, etc.
      *
      * @throws \Doctrine\DBAL\Exception
+     * @throws MissingConfigurationException
      */
     public function run(): void
     {
@@ -168,6 +170,7 @@ class TransformDataStep extends AbstractStep
      * @param RecordList $records Data to transform
      * @return RecordList
      * @throws \Doctrine\DBAL\Exception
+     * @throws MissingConfigurationException
      */
     public function applyMapping(string $name, array $configuration, array $records): array
     {

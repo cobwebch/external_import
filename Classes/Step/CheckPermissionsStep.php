@@ -17,6 +17,7 @@ namespace Cobweb\ExternalImport\Step;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Cobweb\ExternalImport\Exception\MissingConfigurationException;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
@@ -29,6 +30,8 @@ class CheckPermissionsStep extends AbstractStep
 {
     /**
      * Checks that the current user has enough permissions to run the import process to the end.
+     *
+     * @throws MissingConfigurationException
      */
     public function run(): void
     {
