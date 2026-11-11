@@ -149,7 +149,7 @@ the external data, as the schema below attempts to portray:
 
 
 The structured nested inside the external data (little yellow squares inside the
-red bar) is extracted leading to two rows durign the process. The process may also
+red bar) is extracted leading to two rows during the process. The process may also
 add columns. If the fields of the substructure are mapped to names of already defined
 columns (from the column configuration or the additional fields), the values will
 be put into those fields (and replace any existing value). If they are mapped to
