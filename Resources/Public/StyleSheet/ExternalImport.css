@@ -1,12 +1,14 @@
 /* Styles for the BE module */
 
+/* Background is slightly darker than the module background in light mode and slightly lighter in dark mode */
 .information-table {
 	margin-bottom: 10px;
-	background-color: #dddddd;
+	background-color: var(--typo3-surface-container-high);
 }
+/* Borders use the module background to visually separate the cells */
 .information-table td {
 	padding: 4px;
-	border: 1px solid #ffffff;
+	border: 1px solid var(--module-bg);
 	vertical-align: top;
 }
 .dt-ordering-asc .icon,

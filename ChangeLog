@@ -1,3 +1,7 @@
+2026-11-11 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Adapt configuration details tables to light and dark modes, resolves #407
+
 2026-11-02 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Raise PHPStan level to 8, references #406
