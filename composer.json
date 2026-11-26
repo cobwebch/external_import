@@ -43,12 +43,12 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "9.0.x-dev"
+      "dev-master": "9.1.x-dev"
     },
     "typo3/cms": {
       "extension-key": "external_import",
       "web-dir": ".Build/web",
-      "version": "9.0.0",
+      "version": "9.1.0",
       "Package": {
         "providesPackages": {
         }

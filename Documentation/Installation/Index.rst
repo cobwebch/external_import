@@ -26,6 +26,9 @@ Upgrading and what's new
 Upgrade to 9.1.0
 """"""""""""""""
 
+Version 9.1.0 contains several bugfixes and completes the cleanup related to deprecated
+elements and dropping support for TYPO3 12.
+
 :code:`\Cobweb\ExternalImport\Importer::getContext()` and :code:`\Cobweb\ExternalImport\Importer::setContext()`,
 deprecated since version 8.1.0, have been removed. Use :code:`\Cobweb\ExternalImport\Importer::getCallType()`
 and :code:`\Cobweb\ExternalImport\Importer::setCallType()` instead.
