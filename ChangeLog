@@ -1,3 +1,7 @@
+2026-11-26 Francois Suter (Idéative)  <typo3@ideative.ch>
+
+    * Fix ordering by first column in the log module, references #375
+
 2026-11-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 
     * Adapt configuration details tables to light and dark modes, resolves #407

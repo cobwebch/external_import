@@ -206,4 +206,45 @@ class QueryParametersTest extends UnitTestCase
             $this->subject->getDirection()
         );
     }
+
+    public static function orderParametersProvider(): array
+    {
+        return [
+            'first column' => [
+                'order' => [['column' => '0', 'dir' => 'asc']],
+                'expected' => 'status',
+            ],
+            'other column' => [
+                'order' => [['column' => '1', 'dir' => 'desc']],
+                'expected' => 'crdate',
+            ],
+            'unknown column' => [
+                'order' => [['column' => '5', 'dir' => 'desc']],
+                'expected' => '',
+            ],
+            'no ordering' => [
+                'order' => [],
+                'expected' => '',
+            ],
+        ];
+    }
+
+    #[Test] #[DataProvider('orderParametersProvider')]
+    public function setAllParametersSetsOrderFromColumnName(array $order, string $expected): void
+    {
+        $this->subject->setAllParameters(
+            [
+                'search' => ['value' => ''],
+                'columns' => [
+                    ['name' => 'status', 'searchable' => 'false'],
+                    ['name' => 'crdate', 'searchable' => 'false'],
+                ],
+                'order' => $order,
+            ]
+        );
+        self::assertSame(
+            $expected,
+            $this->subject->getOrder()
+        );
+    }
 }

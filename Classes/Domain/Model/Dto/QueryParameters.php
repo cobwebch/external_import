@@ -86,8 +86,9 @@ class QueryParameters
         // Assemble list of search columns
         $this->setSearchColumns($parameters['columns']);
         // Ordering column name must match existing column
-        if ($parameters['order'] ?? false) {
-            $column = $parameters['order'][0]['column'] ? (int)$parameters['order'][0]['column'] : null;
+        // NOTE: the first column has index 0, which must not be mistaken for an empty value
+        if (isset($parameters['order'][0]['column'])) {
+            $column = (int)$parameters['order'][0]['column'];
         } else {
             $column = null;
         }
