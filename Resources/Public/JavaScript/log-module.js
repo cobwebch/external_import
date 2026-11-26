@@ -166,11 +166,47 @@ class ExternalImportLogModule {
 			],
 			initComplete: function() {
 				this.initializeSearchField();
+				// The initial order event fires before the listener below is attached, so set the sorting icons once here
+				this.updateSortingIcons();
 
 				// Hide the loading mask and show the table
 				document.getElementById('tx_externalimport_loglist_loader').classList.add('hidden');
 				document.getElementById('tx_externalimport_loglist_wrapper').classList.remove('hidden');
 			}.bind(this)
+		});
+		// React to the DataTables order event to update the sorting icons
+		this.table.on('order', this.updateSortingIcons.bind(this));
+	}
+
+	/**
+	 * Updates the sorting icons according to the current ordering of the table
+	 */
+	updateSortingIcons() {
+		let columnIndex = this.table.order()[0][0];
+		let columnDirection = this.table.order()[0][1];
+		let defaultIconIdentifier = 'actions-sort-amount';
+		let activeIconIdentifier = '';
+		if (columnDirection === 'asc') {
+			activeIconIdentifier = 'actions-sort-amount-down';
+		} else if (columnDirection === 'desc') {
+			activeIconIdentifier = 'actions-sort-amount-up';
+		}
+
+		const columns = document.getElementById(this.tableView).getElementsByTagName('th');
+		// Reset all columns to default icon
+		Icons.getIcon(defaultIconIdentifier, Icons.sizes.small).then(iconMarkup => {
+			for (let i = 0; i < columns.length; i++) {
+				let elements = columns[i].getElementsByClassName('sorting-icon');
+				if (elements.length > 0) {
+					elements[0].innerHTML = iconMarkup;
+				}
+			}
+			// Update active column's icon if an active identifier is provided
+			if (activeIconIdentifier && columns[columnIndex]) {
+				Icons.getIcon(activeIconIdentifier, Icons.sizes.small).then(activeIconMarkup => {
+					columns[columnIndex].getElementsByClassName('sorting-icon')[0].innerHTML = activeIconMarkup;
+				});
+			}
 		});
 	}
 
