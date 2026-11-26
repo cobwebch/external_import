@@ -2,6 +2,7 @@
 
     * Fix ordering by first column in the log module, references #375
     * Show sorting indicators in the log module, resolves #375
+    * Change hover styling for sortable columns headers, references #375
 
 2026-11-11 Francois Suter (Idéative)  <typo3@ideative.ch>
 

@@ -18,6 +18,14 @@
 .dt-paging {
 	margin-left: 1rem;
 }
+th.dt-orderable-asc:hover,
+th.dt-orderable-desc:hover {
+	cursor: pointer;
+}
+th.dt-orderable-asc:hover .dt-column-title,
+th.dt-orderable-desc:hover .dt-column-title {
+	text-decoration: underline;
+}
 
 .typo3-TCEforms .tab-pane {
 	border-top: 1px solid #cccccc;
